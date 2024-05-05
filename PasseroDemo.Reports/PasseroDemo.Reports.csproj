@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+	<PropertyGroup>
+		<RootNamespace>PasseroDemo.Reports</RootNamespace>
+		<TargetFrameworks>net48;net7.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Update="My Project\Settings.Designer.vb">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="My Project\Settings.settings">
+			<CustomToolNamespace>My</CustomToolNamespace>
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.vb</LastGenOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+	</ItemGroup>
+
+</Project>
