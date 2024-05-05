@@ -39,5 +39,10 @@ namespace PasseroDemo.Views
         {
             Init();
         }
+
+        private void dataNavigator1_eMoveNextCompleted()
+        {
+            MessageBox.Show("a");
+        }
     }
 }

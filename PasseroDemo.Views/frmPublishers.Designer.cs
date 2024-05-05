@@ -43,6 +43,7 @@
             this.dataNavigator1.Name = "dataNavigator1";
             this.dataNavigator1.Size = new System.Drawing.Size(746, 70);
             this.dataNavigator1.TabIndex = 0;
+            this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
             // 
             // bsPublishers
             // 

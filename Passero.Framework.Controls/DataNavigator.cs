@@ -686,85 +686,79 @@ namespace Passero.Framework.Controls
         public delegate void eAddNewRequestEventHandler(ref bool Cancel);
 
         public event eAfterAddNewEventHandler eAfterAddNewRequest;
-        public delegate void eAfterAddNewEventHandler(ref bool Cancel);
+        public delegate void eAfterAddNewEventHandler();
 
         public event ePrintRequestEventHandler ePrintRequest;
         public delegate void ePrintRequestEventHandler(ref bool Cancel);
 
         public event eAfterPrintEventHandler eAfterPrint;
-        public delegate void eAfterPrintEventHandler(ref bool Cancel);
+        public delegate void eAfterPrintEventHandler();
 
 
         public event eDeleteRequestEventHandler eDeleteRequest;
         public delegate void eDeleteRequestEventHandler(ref bool Cancel);
         
         public event eAfterDeleteEventHandler eAfterDelete;
-        public delegate void eAfterDeleteEventHandler(ref bool Cancel);
+        public delegate void eAfterDeleteEventHandler();
 
 
         public event eRefreshRequestEventHandler eRefreshRequest;
         public delegate void eRefreshRequestEventHandler(ref bool Cancel);
 
         public event eAfterRefreshEventHandler eAfterRefresh;
-        public delegate void eAfterRefreshEventHandler(ref bool Cancel);
+        public delegate void eAfterRefreshEventHandler();
 
 
         public event eCloseRequestEventHandler eCloseRequest;
         public delegate void eCloseRequestEventHandler(ref bool Cancel);
 
         public event eAfterCloseEventHandler eAfterClose;
-        public delegate void eAfterCloseEventHandler(ref bool Cancel);
+        public delegate void eAfterCloseEventHandler();
 
         public event eFindRequestEventHandler eFindRequest;
         public delegate void eFindRequestEventHandler(ref bool Cancel);
 
         public event eAfterFindEventHandler eAfterFind;
-        public delegate void eAfterFindEventHandler(ref bool Cancel);
+        public delegate void eAfterFindEventHandler();
 
 
         public event eSaveRequestEventHandler eSaveRequest;
         public delegate void eSaveRequestEventHandler(ref bool Cancel);
         
-        public event eAfterSaveEventHandler eAfterSave;
-        public delegate void eAfterSaveEventHandler(ref bool Cancel);
-
-
         public event eMovePreviousRequestEventHandler eMovePreviousRequest;
         public delegate void eMovePreviousRequestEventHandler(ref bool Cancel);
 
-        public event eAfterMovePreviousEventHandler eAfterMovePrevious;
-        public delegate void eAfterMovePreviousEventHandler(ref bool Cancel);
+        public event eMovePreviousCompletedEventHandler eMovePreviousCompleted;
+        public delegate void eMovePreviousCompletedEventHandler();
 
         public event eMoveFirstRequestEventHandler eMoveFirstRequest;
         public delegate void eMoveFirstRequestEventHandler(ref bool Cancel);
 
-        public event eAfterMoveFirstEventHandler eAfterMoveFirst;
-        public delegate void eAfterMoveFirstEventHandler(ref bool Cancel);
+        public event eMoveFirstCompletedEventHandler eMoveFirstCompleted;
+        public delegate void eMoveFirstCompletedEventHandler();
 
         public event eMoveLastRequestEventHandler eMoveLastRequest;
         public delegate void eMoveLastRequestEventHandler(ref bool Cancel);
 
-        public event eAfterMoveLastEventHandler eAfterMoveLast;
-        public delegate void eAfterMoveLastEventHandler(ref bool Cancel);
+        public event eMoveLastCompletedEventHandler eMoveLastCompleted;
+        public delegate void eMoveLastCompletedEventHandler();
         
         public event eMoveNextRequestEventHandler eMoveNextRequest;
         public delegate void eMoveNextRequestEventHandler(ref bool Cancel);
 
-        public event eAfterMoveNextEventHandler eAfterMoveNext;
-        public delegate void eAfterMoveNextEventHandler(ref bool Cancel);
+        public event eMoveNextCompletedEventHandler eMoveNextCompleted;
+        public delegate void eMoveNextCompletedEventHandler();
 
         public event eMoveAtItemRequestEventHandler eMoveAtItemRequest;
         public delegate void eMoveAtItemRequestEventHandler(ref bool Cancel);
 
-        public event eAfterMoveAtItemEventHandler eAfterMoveAtItem;
-        public delegate void eAfterMoveAtItemEventHandler(ref bool Cancel);
+        public event eMoveAtItemCompletedEventHandler eMoveAtItemCompleted;
+        public delegate void eMoveAtItemCompletedEventHandler();
 
         public event eUndoRequestEventHandler eUndoRequest;
         public delegate void eUndoRequestEventHandler(ref bool Cancel);
-
-        public event eAfterUndoEventHandler eAfterUndo;
-        public delegate void eAfterUndoEventHandler(ref bool Cancel);
-
+        
+        
 
         private bool _ReadOnlyMode = false;
         private bool _AddNewState = false;
@@ -3069,6 +3063,7 @@ namespace Passero.Framework.Controls
                     if (_DataGridActive == true & _DataGridView is not null)
                     {
                         DataGrid_Delete();
+                        eDeleteCompleted?.Invoke();
                     }
                     else
                     {
@@ -3076,6 +3071,7 @@ namespace Passero.Framework.Controls
                         int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
                         this.MoveLast();
                         eDeleteCompleted?.Invoke();
+                        
                     }
                 }
             }
@@ -3385,6 +3381,7 @@ namespace Passero.Framework.Controls
                 SetButtonsForAddNew();
                 if (eAddNewCompleted != null)
                     eAddNewCompleted();
+                
             }
             else
             {
@@ -3665,11 +3662,14 @@ namespace Passero.Framework.Controls
             {
                 return;
             }
-         
+
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
+                
                 Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveNextItem");
                 UpdateGridPosition();
+                if (eMoveNextCompleted != null)
+                    eMoveNextCompleted();
             }
             else
             {
@@ -3723,6 +3723,8 @@ namespace Passero.Framework.Controls
             {
                 Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveLastItem");
                 UpdateGridPosition();
+                if (eMoveLastCompleted != null)
+                    eMoveLastCompleted();
             }
             else
             {
@@ -3829,8 +3831,11 @@ namespace Passero.Framework.Controls
                         break;
                 }
 
+                
                 if (eUndoCompleted != null)
                     eUndoCompleted();
+                
+                
             }
             else
             {
