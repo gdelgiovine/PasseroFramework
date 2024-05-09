@@ -8,7 +8,7 @@ using Microsoft.VisualBasic.CompilerServices;
 //using Newtonsoft.Json.Linq;
 //using Passero.Framework.Base;
 using Passero.Framework;
-using Passero.Framework.RsReports;
+using Passero.Framework.SSRSReports;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,18 +28,18 @@ using System.Text;
 using Wisej.Web;
 //using Wisej.Web.Data;
 
-namespace Passero.Framework.Controls
+namespace Passero.Framework.SSRSReports
 {
 
-    public partial class XQBEReport : Form
+    public partial class QBEReport : Form
     {
         private string RenderError = "";
         private string CurrentReportName;
         public bool RaiseReportEvents= false;
-        public QBEColumns QBEColumns = new QBEColumns();
+        public Passero.Framework.SSRSReports.QBEColumns QBEColumns = new QBEColumns();
 
-        public QBEReports QBEReports = new QBEReports();    
-        public QBEReport DefaultReport { get; set; }
+        public QBESSRSReports QBEReports = new QBESSRSReports();    
+        public QBESSRSReport DefaultReport { get; set; }
         public bool PrintDefaultReport { get; set; } = false;
         public string ReportsPath { get; set; } = Wisej.Web.Application.StartupPath + "reports";
         public string ReportsPDFUrlPath { get; set; } = @"\Reports\";
@@ -78,7 +78,7 @@ namespace Passero.Framework.Controls
 
         public Control SetFocusControlAfterClose { get; set; }
 
-        public XQBEReport()
+        public QBEReport()
         {
             InitializeComponent();
             this.bSaveQBE.Visible = false;
@@ -118,7 +118,7 @@ namespace Passero.Framework.Controls
             string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(this.Text);
             string expofilenameextension = ".xml";
             System.IO.MemoryStream  Stream = null;
-            QBEReport Report = this.QBEReports[CurrentReportName];
+            QBESSRSReport Report = this.QBEReports[CurrentReportName];
             SSRSRenderFormat format = SSRSRenderFormat.EXCEL ;
             
             
@@ -279,7 +279,7 @@ namespace Passero.Framework.Controls
         {
 
             ReportName = ReportName.Trim().ToUpper();
-            QBEReport report = this.QBEReports[ReportName];
+            QBESSRSReport report = this.QBEReports[ReportName];
             if (report==null)
             {
                 this.RenderError = "No Report!";
@@ -321,7 +321,7 @@ namespace Passero.Framework.Controls
         {
 
             ReportName = ReportName.Trim().ToUpper();
-            QBEReport Report = this.QBEReports[ReportName];
+            QBESSRSReport Report = this.QBEReports[ReportName];
             if (Report == null)
             {
                 this.RenderError = "No Report!";
@@ -342,7 +342,7 @@ namespace Passero.Framework.Controls
         }
 
 
-        private byte[] RenderReport(QBEReport Report, SSRSRenderFormat Format = SSRSRenderFormat.PDF)
+        private byte[] RenderReport(QBESSRSReport Report, SSRSRenderFormat Format = SSRSRenderFormat.PDF)
         {
 
             if (Report == null)
@@ -358,7 +358,7 @@ namespace Passero.Framework.Controls
             }
 
             //Passero.Framework.Reports.SSRSReport SSRSReport = new Reports.SSRSReport();
-            SSRSReport = new RsReports.SSRSReport();
+            SSRSReport = new SSRSReports.SSRSReport();
             if (RaiseReportEvents)
             {
                 this.SSRSReport.ReportRenderRequest -= SSRSReport_ReportRenderRequest;
@@ -385,18 +385,18 @@ namespace Passero.Framework.Controls
         private void SetupQueryGrid(string ReportName)
         {
 
-            QBEReport report = this.QBEReports[ReportName];
+            QBESSRSReport report = this.QBEReports[ReportName];
             SetupQueryGrid(report);
         }
 
 
-        private void SetupQueryGrid(QBEReport QBEReport)
+        private void SetupQueryGrid(QBESSRSReport QBEReport)
         {
 
             if (QBEReport.DataSets.Count == 0)
                 return;
 
-            Passero.Framework.RsReports.DataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
+            Passero.Framework.SSRSReports.DataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
             if (PrimaryDataSet == null)
             {
                 PrimaryDataSet = QBEReport.DataSets.Values.First();
@@ -414,7 +414,7 @@ namespace Passero.Framework.Controls
 
                     i = this.QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
                     // SortColumns
-                    QBEReportSortColumn  sc  = new QBEReportSortColumn();
+                    QBESSRSReportSortColumn  sc  = new QBESSRSReportSortColumn();
                     sc.Name = QBEColumn.DbColumn;
                     sc.FriendlyName = QBEColumn.FriendlyName;
                     sc.Position = i;
@@ -510,9 +510,9 @@ namespace Passero.Framework.Controls
             if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
                 return;
 
-            QBEReport Report = this.QBEReports[this.CurrentReportName];
+            QBESSRSReport Report = this.QBEReports[this.CurrentReportName];
 
-            Passero.Framework.RsReports.DataSet PrimaryDataSet = Report.PrimaryDataSet;
+            Passero.Framework.SSRSReports.DataSet PrimaryDataSet = Report.PrimaryDataSet;
             if (PrimaryDataSet == null)
             {
                 PrimaryDataSet = Report.DataSets.Values.First();
@@ -581,7 +581,7 @@ namespace Passero.Framework.Controls
             Report.SelectedSortColumns.Clear();
             foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
             {
-                QBEReportSortColumn column = new QBEReportSortColumn();
+                QBESSRSReportSortColumn column = new QBESSRSReportSortColumn();
                 column.Name = (string)row[this.dgvc_SelectedSortColumns_name].Value;
                 column.Position = (int)row[this.dgvc_SelectedSortColumns_position].Value;
                 column.FriendlyName = (string)row[this.dgvc_SelectedSortColumns_friendlyname].Value;
@@ -605,7 +605,7 @@ namespace Passero.Framework.Controls
 
 
             //Load Data for other datasets
-            foreach (Passero.Framework.RsReports.DataSet DataSet in Report.DataSets.Values )
+            foreach (Passero.Framework.SSRSReports.DataSet DataSet in Report.DataSets.Values )
             {
                 if (DataSet != PrimaryDataSet )
                 {
@@ -804,15 +804,15 @@ namespace Passero.Framework.Controls
                 return;
             }
 
-            QBEReport Report = QBEReports[CurrentReportName];
-            QBEReportSortColumn SortColumn= (QBEReportSortColumn )this.lstSortColumns.SelectedItem;    
+            QBESSRSReport Report = QBEReports[CurrentReportName];
+            QBESSRSReportSortColumn SortColumn= (QBESSRSReportSortColumn )this.lstSortColumns.SelectedItem;    
             if(Report .SelectedSortColumns .ContainsKey (SortColumn.Name)==false)
             {
                 Report.SelectedSortColumns.Add(SortColumn.Name, SortColumn);
             }
             this.lstSortColumns.SelectedItem = null;
             this.dgv_SelectedSortColumns.Rows.Clear();
-            foreach ( QBEReportSortColumn column in Report.SelectedSortColumns.Values  )
+            foreach ( QBESSRSReportSortColumn column in Report.SelectedSortColumns.Values  )
             {
                 this.dgv_SelectedSortColumns.Rows.Add(column.Position, column.Name, column.FriendlyName, column.AscDesc);
             }
@@ -824,11 +824,11 @@ namespace Passero.Framework.Controls
     
             if (this.dgv_SelectedSortColumns.CurrentRow  is null)
             { return; }
-            QBEReport Report = QBEReports[CurrentReportName];
+            QBESSRSReport Report = QBEReports[CurrentReportName];
             Report.SelectedSortColumns.Remove(this.dgv_SelectedSortColumns.CurrentRow.Cells[this.dgvc_SelectedSortColumns_name].Value.ToString());
             this.dgv_SelectedSortColumns.Rows.Clear();
             this.dgv_SelectedSortColumns.Rows.Clear();
-            foreach (QBEReportSortColumn column in Report.SelectedSortColumns.Values)
+            foreach (QBESSRSReportSortColumn column in Report.SelectedSortColumns.Values)
             {
                 this.dgv_SelectedSortColumns.Rows.Add(column.Position, column.Name, column.FriendlyName, column.AscDesc);
             }

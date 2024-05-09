@@ -6,7 +6,7 @@ using Dapper;
 using Passero.Framework;
 using Passero.Framework;
 using Passero.Framework.Controls;
-using Passero.Framework.Reports;
+using Passero.Framework.SSRSReports;
 using Wisej.Web;
 
 
@@ -22,8 +22,8 @@ namespace PasseroDemo.Views
         // cosi quello base
         public ViewModel <Models .Author> vmAuthor =  new ViewModel <Models .Author> ();
 
-        XQBEForm<Models.Author> xQBEForm_Author = new XQBEForm<Models.Author>();
-        XQBEReport xQBEReport = new  XQBEReport ();
+        QBEForm<Models.Author> xQBEForm_Author = new QBEForm<Models.Author>();
+        QBEReport xQBEReport = new  QBEReport ();
         Passero.Framework.DbLookUp<Models.Author> dblAuthor = new DbLookUp<Models.Author>();
 
         public frmAuthorDEV()
@@ -178,12 +178,12 @@ namespace PasseroDemo.Views
         private void dataNavigator1_eFind()
         {
             
-            xQBEForm_Author = new XQBEForm<Models.Author>(this.DbConnection);
+            xQBEForm_Author = new QBEForm<Models.Author>(this.DbConnection);
 
             xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id","","",true,true,20);
             xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname ), "First Name", "", "", true, true,20);
             xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true,20);
-            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract ), "Have contract", "", "", true, true,QBEColumnsTypes.CheckBox , 20);
+            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract ), "Have contract", "", "", true, true,Passero.Framework.Controls.QBEColumnsTypes.CheckBox , 20);
             //xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
             xQBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
             //xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
@@ -221,7 +221,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
-            xQBEReport = new XQBEReport();
+            xQBEReport = new QBEReport();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

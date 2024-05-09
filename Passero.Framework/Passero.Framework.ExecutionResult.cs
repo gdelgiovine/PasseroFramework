@@ -14,7 +14,9 @@ namespace Passero.Framework
         public Exception Exception = null;
         public string Context = "";
         public InnerExecutionResult InnerExecutionResult;
+#pragma warning disable CS0169 // Il campo 'ExecutionResult.mFailed' non viene mai usato
         private bool mFailed;
+#pragma warning restore CS0169 // Il campo 'ExecutionResult.mFailed' non viene mai usato
 
         public bool Success
         {
@@ -103,7 +105,9 @@ namespace Passero.Framework
         public string DebugInfo = "";
         public Exception Exception = null;
         public string Context = "";
+#pragma warning disable CS0169 // Il campo 'InnerExecutionResult.mFailed' non viene mai usato
         private bool mFailed;
+#pragma warning restore CS0169 // Il campo 'InnerExecutionResult.mFailed' non viene mai usato
 
         public bool Success
         {

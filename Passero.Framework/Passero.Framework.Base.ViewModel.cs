@@ -1,6 +1,4 @@
 ﻿using Dapper;
-using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
-using Microsoft.SqlServer.Server;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
@@ -97,20 +95,26 @@ namespace Passero.Framework
         }
 
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public Type? ModelType
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get { return ModelItem.GetType(); }
             
         }
 
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? NewModeltem
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get { return GetEmptyModel(); }
             set { NewModeltem = value; }
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? ModelItem
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -138,7 +142,9 @@ namespace Passero.Framework
 
 
         }
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public List<ModelClass>? ModelItems
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {

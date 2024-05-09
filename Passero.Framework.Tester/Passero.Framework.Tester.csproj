@@ -24,10 +24,10 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-windows'">
     <PackageReference Include="ReportViewerCore.NETCore">
-      <Version>15.1.18</Version>
+      <Version>15.1.19</Version>
     </PackageReference>
     <PackageReference Include="ReportViewerCore.WinForms">
-      <Version>15.1.18</Version>
+      <Version>15.1.19</Version>
     </PackageReference>
   </ItemGroup>
 

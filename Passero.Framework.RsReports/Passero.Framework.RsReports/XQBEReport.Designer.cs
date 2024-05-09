@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace Passero.Framework.Controls
-{ 
-   
-    partial class QBEForm<ModelClass> where ModelClass : class
+﻿namespace Passero.Framework.SSRSReports
+{
+    partial class QBEReport
     {
         /// <summary>
         /// Required designer variable.
@@ -31,19 +28,42 @@ namespace Passero.Framework.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QBEForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QBEReport));
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
             this.SplitContainer = new Wisej.Web.SplitContainer();
-            this.ResultGrid = new Wisej.Web.DataGridView();
+            this.PanelReportViewer = new Wisej.Web.Panel();
+            this.txtRenderError = new Wisej.Web.TextBox();
+            this.PanelReportInfo = new Wisej.Web.Panel();
+            this.txtReportDescription = new Wisej.Web.TextBox();
+            this.txtReportTitle = new Wisej.Web.TextBox();
+            this.AspNetPanel = new Wisej.Web.AspNetPanel();
+            this.WebBrowser = new Wisej.Web.WebBrowser();
+            this.PdfViewer = new Wisej.Web.PdfViewer();
             this.TabControl = new Wisej.Web.TabControl();
+            this.TabPageReports = new Wisej.Web.TabPage();
+            this.ReportGrid = new Wisej.Web.DataGridView();
+            this.dgvcReportName = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcReportDescription = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcReportFileName = new Wisej.Web.DataGridViewTextBoxColumn();
             this.TabPageReportQuery = new Wisej.Web.TabPage();
             this.QueryGrid = new Wisej.Web.DataGridView();
             this.dgvcNomeCampo = new Wisej.Web.DataGridViewTextBoxColumn();
-            this.dgvcColumnValue = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcValoreCampo = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvcQueryColumn = new Wisej.Web.DataGridViewButtonColumn();
             this.chkLikeOperator = new Wisej.Web.CheckBox();
+            this.TabPageReportSort = new Wisej.Web.TabPage();
+            this.btnSortDown = new Wisej.Web.Button();
+            this.btnSortUp = new Wisej.Web.Button();
+            this.dgv_SelectedSortColumns = new Wisej.Web.DataGridView();
+            this.dgvc_SelectedSortColumns_position = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvc_SelectedSortColumns_name = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvc_SelectedSortColumns_friendlyname = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
+            this.btnSortRemove = new Wisej.Web.Button();
+            this.btnSortAdd = new Wisej.Web.Button();
+            this.lstSortColumns = new Wisej.Web.ListBox();
             this.TabPageExport = new Wisej.Web.TabPage();
             this.PanelExport = new Wisej.Web.Panel();
             this.rbJSON = new Wisej.Web.RadioButton();
@@ -65,14 +85,6 @@ namespace Passero.Framework.Controls
             this.bRefresh = new Wisej.Web.ToolBarButton();
             this.bDelete = new Wisej.Web.ToolBarButton();
             this.Records = new Wisej.Web.ToolBarButton();
-            this.ContextMenuRecords = new Wisej.Web.ContextMenu(this.components);
-            this.menuRecords100 = new Wisej.Web.MenuItem();
-            this.menuRecords500 = new Wisej.Web.MenuItem();
-            this.menuRecords1000 = new Wisej.Web.MenuItem();
-            this.menuRecords2000 = new Wisej.Web.MenuItem();
-            this.menuRecords5000 = new Wisej.Web.MenuItem();
-            this.menuRecords10000 = new Wisej.Web.MenuItem();
-            this.menuRecordsALL = new Wisej.Web.MenuItem();
             this.bPrint = new Wisej.Web.ToolBarButton();
             this.bSave = new Wisej.Web.ToolBarButton();
             this.bSaveQBE = new Wisej.Web.ToolBarButton();
@@ -82,10 +94,15 @@ namespace Passero.Framework.Controls
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
             this.SplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ResultGrid)).BeginInit();
+            this.PanelReportViewer.SuspendLayout();
+            this.PanelReportInfo.SuspendLayout();
             this.TabControl.SuspendLayout();
+            this.TabPageReports.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ReportGrid)).BeginInit();
             this.TabPageReportQuery.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).BeginInit();
+            this.TabPageReportSort.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_SelectedSortColumns)).BeginInit();
             this.TabPageExport.SuspendLayout();
             this.PanelExport.SuspendLayout();
             this.TabPageDebug.SuspendLayout();
@@ -100,83 +117,163 @@ namespace Passero.Framework.Controls
             // 
             // SplitContainer.Panel1
             // 
-            resources.ApplyResources(this.SplitContainer.Panel1, "SplitContainer.Panel1");
-            this.SplitContainer.Panel1.Controls.Add(this.ResultGrid);
+            this.SplitContainer.Panel1.Controls.Add(this.PanelReportViewer);
             // 
             // SplitContainer.Panel2
             // 
-            resources.ApplyResources(this.SplitContainer.Panel2, "SplitContainer.Panel2");
             this.SplitContainer.Panel2.Controls.Add(this.TabControl);
             // 
-            // ResultGrid
+            // PanelReportViewer
             // 
-            resources.ApplyResources(this.ResultGrid, "ResultGrid");
-            this.ResultGrid.DefaultRowHeight = 24;
-            this.ResultGrid.KeepSameRowHeight = true;
-            this.ResultGrid.Name = "ResultGrid";
-            this.ResultGrid.ReadOnly = true;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromName("@buttonFace");
-            resources.ApplyResources(dataGridViewCellStyle1, "dataGridViewCellStyle1");
-            this.ResultGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.ResultGrid.RowTemplate.DefaultCellStyle.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("resource.BackgroundImage")));
-            this.ResultGrid.RowTemplate.DefaultCellStyle.BackgroundImageAlign = ((System.Drawing.ContentAlignment)(resources.GetObject("resource.BackgroundImageAlign")));
-            this.ResultGrid.RowTemplate.DefaultCellStyle.BackgroundImageLayout = ((Wisej.Web.ImageLayout)(resources.GetObject("resource.BackgroundImageLayout")));
-            this.ResultGrid.RowTemplate.DefaultCellStyle.BackgroundImageSource = resources.GetString("resource.BackgroundImageSource");
-            this.ResultGrid.RowTemplate.Height = 20;
-            this.ResultGrid.RowEnter += new Wisej.Web.DataGridViewCellEventHandler(this.ResultGrid_RowEnter);
-            this.ResultGrid.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.ResultGrid_CellDoubleClick);
+            this.PanelReportViewer.Controls.Add(this.txtRenderError);
+            this.PanelReportViewer.Controls.Add(this.PanelReportInfo);
+            this.PanelReportViewer.Controls.Add(this.AspNetPanel);
+            this.PanelReportViewer.Controls.Add(this.WebBrowser);
+            this.PanelReportViewer.Controls.Add(this.PdfViewer);
+            resources.ApplyResources(this.PanelReportViewer, "PanelReportViewer");
+            this.PanelReportViewer.Name = "PanelReportViewer";
+            this.PanelReportViewer.Resize += new System.EventHandler(this.PanelReportViewer_Resize);
+            // 
+            // txtRenderError
+            // 
+            resources.ApplyResources(this.txtRenderError, "txtRenderError");
+            this.txtRenderError.Name = "txtRenderError";
+            // 
+            // PanelReportInfo
+            // 
+            resources.ApplyResources(this.PanelReportInfo, "PanelReportInfo");
+            this.PanelReportInfo.BackColor = System.Drawing.Color.FromName("@toolbar");
+            this.PanelReportInfo.Controls.Add(this.txtReportDescription);
+            this.PanelReportInfo.Controls.Add(this.txtReportTitle);
+            this.PanelReportInfo.Name = "PanelReportInfo";
+            // 
+            // txtReportDescription
+            // 
+            resources.ApplyResources(this.txtReportDescription, "txtReportDescription");
+            this.txtReportDescription.Focusable = false;
+            this.txtReportDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Position = Wisej.Web.LabelPosition.Left;
+            this.txtReportDescription.Name = "txtReportDescription";
+            this.txtReportDescription.ReadOnly = true;
+            this.txtReportDescription.TabStop = false;
+            // 
+            // txtReportTitle
+            // 
+            this.txtReportTitle.Focusable = false;
+            this.txtReportTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Position = Wisej.Web.LabelPosition.Left;
+            resources.ApplyResources(this.txtReportTitle, "txtReportTitle");
+            this.txtReportTitle.Name = "txtReportTitle";
+            this.txtReportTitle.ReadOnly = true;
+            this.txtReportTitle.TabStop = false;
+            // 
+            // AspNetPanel
+            // 
+            resources.ApplyResources(this.AspNetPanel, "AspNetPanel");
+            this.AspNetPanel.Name = "AspNetPanel";
+            // 
+            // WebBrowser
+            // 
+            resources.ApplyResources(this.WebBrowser, "WebBrowser");
+            this.WebBrowser.Name = "WebBrowser";
+            this.WebBrowser.Url = new System.Uri("~/BasicDalWisejCRViewer.aspx", System.UriKind.Relative);
+            // 
+            // PdfViewer
+            // 
+            resources.ApplyResources(this.PdfViewer, "PdfViewer");
+            this.PdfViewer.Name = "PdfViewer";
             // 
             // TabControl
             // 
             resources.ApplyResources(this.TabControl, "TabControl");
+            this.TabControl.Controls.Add(this.TabPageReports);
             this.TabControl.Controls.Add(this.TabPageReportQuery);
+            this.TabControl.Controls.Add(this.TabPageReportSort);
             this.TabControl.Controls.Add(this.TabPageExport);
             this.TabControl.Controls.Add(this.TabPageDebug);
             this.TabControl.Name = "TabControl";
             this.TabControl.PageInsets = new Wisej.Web.Padding(0, 39, 0, 0);
             // 
+            // TabPageReports
+            // 
+            this.TabPageReports.Controls.Add(this.ReportGrid);
+            resources.ApplyResources(this.TabPageReports, "TabPageReports");
+            this.TabPageReports.Name = "TabPageReports";
+            // 
+            // ReportGrid
+            // 
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromName("@buttonFace");
+            this.ReportGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.ReportGrid.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
+            this.dgvcReportName,
+            this.dgvcReportDescription,
+            this.dgvcReportFileName});
+            resources.ApplyResources(this.ReportGrid, "ReportGrid");
+            this.ReportGrid.Name = "ReportGrid";
+            this.ReportGrid.ReadOnly = true;
+            this.ReportGrid.RowTemplate.ReadOnly = true;
+            this.ReportGrid.Click += new System.EventHandler(this.ReportGrid_Click);
+            // 
+            // dgvcReportName
+            // 
+            this.dgvcReportName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.dgvcReportName.DefaultCellStyle = dataGridViewCellStyle2;
+            resources.ApplyResources(this.dgvcReportName, "dgvcReportName");
+            this.dgvcReportName.Name = "dgvcReportName";
+            // 
+            // dgvcReportDescription
+            // 
+            this.dgvcReportDescription.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            resources.ApplyResources(this.dgvcReportDescription, "dgvcReportDescription");
+            this.dgvcReportDescription.Name = "dgvcReportDescription";
+            // 
+            // dgvcReportFileName
+            // 
+            this.dgvcReportFileName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            resources.ApplyResources(this.dgvcReportFileName, "dgvcReportFileName");
+            this.dgvcReportFileName.Name = "dgvcReportFileName";
+            // 
             // TabPageReportQuery
             // 
-            resources.ApplyResources(this.TabPageReportQuery, "TabPageReportQuery");
             this.TabPageReportQuery.Controls.Add(this.QueryGrid);
             this.TabPageReportQuery.Controls.Add(this.chkLikeOperator);
+            resources.ApplyResources(this.TabPageReportQuery, "TabPageReportQuery");
             this.TabPageReportQuery.Name = "TabPageReportQuery";
             // 
             // QueryGrid
             // 
-            resources.ApplyResources(this.QueryGrid, "QueryGrid");
             this.QueryGrid.AllowSortingDataSource = false;
             this.QueryGrid.AllowUserToResizeColumns = false;
             this.QueryGrid.AllowUserToResizeRows = false;
+            resources.ApplyResources(this.QueryGrid, "QueryGrid");
             this.QueryGrid.AutoSizeColumnsMode = Wisej.Web.DataGridViewAutoSizeColumnsMode.AllCells;
             this.QueryGrid.AutoSizeRowsMode = Wisej.Web.DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromName("@buttonFace");
-            this.QueryGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromName("@buttonFace");
+            this.QueryGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.QueryGrid.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
             this.dgvcNomeCampo,
-            this.dgvcColumnValue,
+            this.dgvcValoreCampo,
             this.dgvcQueryColumn});
             this.QueryGrid.DefaultSortMode = Wisej.Web.DataGridViewColumnsSortMode.NotSortable;
             this.QueryGrid.Name = "QueryGrid";
-            this.QueryGrid.RowTemplate.DefaultCellStyle.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("resource.BackgroundImage1")));
-            this.QueryGrid.RowTemplate.DefaultCellStyle.BackgroundImageAlign = ((System.Drawing.ContentAlignment)(resources.GetObject("resource.BackgroundImageAlign1")));
-            this.QueryGrid.RowTemplate.DefaultCellStyle.BackgroundImageLayout = ((Wisej.Web.ImageLayout)(resources.GetObject("resource.BackgroundImageLayout1")));
-            this.QueryGrid.RowTemplate.DefaultCellStyle.BackgroundImageSource = resources.GetString("resource.BackgroundImageSource1");
             // 
             // dgvcNomeCampo
             // 
-            resources.ApplyResources(this.dgvcNomeCampo, "dgvcNomeCampo");
             this.dgvcNomeCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            resources.ApplyResources(this.dgvcNomeCampo, "dgvcNomeCampo");
             this.dgvcNomeCampo.MaxInputLength = 50;
             this.dgvcNomeCampo.Name = "dgvcNomeCampo";
             this.dgvcNomeCampo.ReadOnly = true;
             // 
-            // dgvcColumnValue
+            // dgvcValoreCampo
             // 
-            resources.ApplyResources(this.dgvcColumnValue, "dgvcColumnValue");
-            this.dgvcColumnValue.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgvcColumnValue.MaxInputLength = 1024;
-            this.dgvcColumnValue.Name = "dgvcColumnValue";
+            this.dgvcValoreCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            resources.ApplyResources(this.dgvcValoreCampo, "dgvcValoreCampo");
+            this.dgvcValoreCampo.MaxInputLength = 1024;
+            this.dgvcValoreCampo.Name = "dgvcValoreCampo";
             // 
             // dgvcQueryColumn
             // 
@@ -190,20 +287,110 @@ namespace Passero.Framework.Controls
             this.chkLikeOperator.CheckState = Wisej.Web.CheckState.Checked;
             this.chkLikeOperator.Name = "chkLikeOperator";
             // 
+            // TabPageReportSort
+            // 
+            this.TabPageReportSort.Controls.Add(this.btnSortDown);
+            this.TabPageReportSort.Controls.Add(this.btnSortUp);
+            this.TabPageReportSort.Controls.Add(this.dgv_SelectedSortColumns);
+            this.TabPageReportSort.Controls.Add(this.btnSortRemove);
+            this.TabPageReportSort.Controls.Add(this.btnSortAdd);
+            this.TabPageReportSort.Controls.Add(this.lstSortColumns);
+            resources.ApplyResources(this.TabPageReportSort, "TabPageReportSort");
+            this.TabPageReportSort.Name = "TabPageReportSort";
+            // 
+            // btnSortDown
+            // 
+            resources.ApplyResources(this.btnSortDown, "btnSortDown");
+            this.btnSortDown.Name = "btnSortDown";
+            this.btnSortDown.Click += new System.EventHandler(this.btnSortDown_Click);
+            // 
+            // btnSortUp
+            // 
+            resources.ApplyResources(this.btnSortUp, "btnSortUp");
+            this.btnSortUp.Name = "btnSortUp";
+            this.btnSortUp.Click += new System.EventHandler(this.btnSortUp_Click);
+            // 
+            // dgv_SelectedSortColumns
+            // 
+            resources.ApplyResources(this.dgv_SelectedSortColumns, "dgv_SelectedSortColumns");
+            this.dgv_SelectedSortColumns.AutoSizeColumnsMode = Wisej.Web.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dgv_SelectedSortColumns.CellBorderStyle = Wisej.Web.DataGridViewCellBorderStyle.None;
+            this.dgv_SelectedSortColumns.ColumnHeadersVisible = false;
+            this.dgv_SelectedSortColumns.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
+            this.dgvc_SelectedSortColumns_position,
+            this.dgvc_SelectedSortColumns_name,
+            this.dgvc_SelectedSortColumns_friendlyname,
+            this.dgvc_SelectedSortColumns_ascdesc});
+            this.dgv_SelectedSortColumns.DefaultRowHeight = 24;
+            this.dgv_SelectedSortColumns.Name = "dgv_SelectedSortColumns";
+            this.dgv_SelectedSortColumns.ScrollBars = Wisej.Web.ScrollBars.Vertical;
+            this.dgv_SelectedSortColumns.Selectable = true;
+            // 
+            // dgvc_SelectedSortColumns_position
+            // 
+            this.dgvc_SelectedSortColumns_position.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            this.dgvc_SelectedSortColumns_position.DataPropertyName = "position";
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_position, "dgvc_SelectedSortColumns_position");
+            this.dgvc_SelectedSortColumns_position.Name = "dgvc_SelectedSortColumns_position";
+            // 
+            // dgvc_SelectedSortColumns_name
+            // 
+            this.dgvc_SelectedSortColumns_name.DataPropertyName = "Name";
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_name, "dgvc_SelectedSortColumns_name");
+            this.dgvc_SelectedSortColumns_name.Name = "dgvc_SelectedSortColumns_name";
+            // 
+            // dgvc_SelectedSortColumns_friendlyname
+            // 
+            this.dgvc_SelectedSortColumns_friendlyname.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgvc_SelectedSortColumns_friendlyname.DataPropertyName = "FriendlyName";
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_friendlyname, "dgvc_SelectedSortColumns_friendlyname");
+            this.dgvc_SelectedSortColumns_friendlyname.Name = "dgvc_SelectedSortColumns_friendlyname";
+            this.dgvc_SelectedSortColumns_friendlyname.ReadOnly = true;
+            // 
+            // dgvc_SelectedSortColumns_ascdesc
+            // 
+            this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.None;
+            this.dgvc_SelectedSortColumns_ascdesc.DataPropertyName = "AscDesc";
+            this.dgvc_SelectedSortColumns_ascdesc.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_ascdesc, "dgvc_SelectedSortColumns_ascdesc");
+            this.dgvc_SelectedSortColumns_ascdesc.Items.AddRange(new object[] {
+            "ASC",
+            "DESC"});
+            this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
+            this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
+            // 
+            // btnSortRemove
+            // 
+            resources.ApplyResources(this.btnSortRemove, "btnSortRemove");
+            this.btnSortRemove.Name = "btnSortRemove";
+            this.btnSortRemove.Click += new System.EventHandler(this.btnSortRemove_Click);
+            // 
+            // btnSortAdd
+            // 
+            resources.ApplyResources(this.btnSortAdd, "btnSortAdd");
+            this.btnSortAdd.Name = "btnSortAdd";
+            this.btnSortAdd.Click += new System.EventHandler(this.btnSortAdd_Click);
+            // 
+            // lstSortColumns
+            // 
+            resources.ApplyResources(this.lstSortColumns, "lstSortColumns");
+            this.lstSortColumns.Label.Font = new System.Drawing.Font("default", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.lstSortColumns.Name = "lstSortColumns";
+            // 
             // TabPageExport
             // 
-            resources.ApplyResources(this.TabPageExport, "TabPageExport");
             this.TabPageExport.Controls.Add(this.PanelExport);
+            resources.ApplyResources(this.TabPageExport, "TabPageExport");
             this.TabPageExport.Name = "TabPageExport";
             // 
             // PanelExport
             // 
-            resources.ApplyResources(this.PanelExport, "PanelExport");
             this.PanelExport.Controls.Add(this.rbJSON);
             this.PanelExport.Controls.Add(this.btnExport);
             this.PanelExport.Controls.Add(this.rbXML);
             this.PanelExport.Controls.Add(this.rbCSV);
             this.PanelExport.Controls.Add(this.rbExcel);
+            resources.ApplyResources(this.PanelExport, "PanelExport");
             this.PanelExport.Name = "PanelExport";
             this.PanelExport.TabStop = true;
             // 
@@ -230,18 +417,18 @@ namespace Passero.Framework.Controls
             // 
             // rbExcel
             // 
-            resources.ApplyResources(this.rbExcel, "rbExcel");
             this.rbExcel.Checked = true;
+            resources.ApplyResources(this.rbExcel, "rbExcel");
             this.rbExcel.Name = "rbExcel";
             this.rbExcel.TabStop = true;
             // 
             // TabPageDebug
             // 
-            resources.ApplyResources(this.TabPageDebug, "TabPageDebug");
             this.TabPageDebug.Controls.Add(this.Button2);
             this.TabPageDebug.Controls.Add(this.txtDebug);
             this.TabPageDebug.Controls.Add(this.Button1);
             this.TabPageDebug.Controls.Add(this.cmbRecords);
+            resources.ApplyResources(this.TabPageDebug, "TabPageDebug");
             this.TabPageDebug.Name = "TabPageDebug";
             // 
             // Button2
@@ -261,7 +448,6 @@ namespace Passero.Framework.Controls
             // 
             // cmbRecords
             // 
-            resources.ApplyResources(this.cmbRecords, "cmbRecords");
             this.cmbRecords.Items.AddRange(new object[] {
             resources.GetString("cmbRecords.Items"),
             resources.GetString("cmbRecords.Items1"),
@@ -269,11 +455,11 @@ namespace Passero.Framework.Controls
             resources.GetString("cmbRecords.Items3"),
             resources.GetString("cmbRecords.Items4"),
             resources.GetString("cmbRecords.Items5")});
+            resources.ApplyResources(this.cmbRecords, "cmbRecords");
             this.cmbRecords.Name = "cmbRecords";
             // 
             // NavBar
             // 
-            resources.ApplyResources(this.NavBar, "NavBar");
             this.NavBar.BorderStyle = Wisej.Web.BorderStyle.Solid;
             this.NavBar.Buttons.AddRange(new Wisej.Web.ToolBarButton[] {
             this.bFirst,
@@ -289,6 +475,7 @@ namespace Passero.Framework.Controls
             this.bSaveQBE,
             this.bLoadQBE,
             this.bClose});
+            resources.ApplyResources(this.NavBar, "NavBar");
             this.NavBar.Font = new System.Drawing.Font("default", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
             this.NavBar.Name = "NavBar";
             this.NavBar.TabStop = false;
@@ -351,74 +538,10 @@ namespace Passero.Framework.Controls
             // Records
             // 
             this.Records.AllowHtml = true;
-            this.Records.DropDownMenu = this.ContextMenuRecords;
-            resources.ApplyResources(this.Records, "Records");
             this.Records.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.Records.Name = "Records";
             this.Records.Style = Wisej.Web.ToolBarButtonStyle.DropDownButton;
-            // 
-            // ContextMenuRecords
-            // 
-            resources.ApplyResources(this.ContextMenuRecords, "ContextMenuRecords");
-            this.ContextMenuRecords.MenuItems.AddRange(new Wisej.Web.MenuItem[] {
-            this.menuRecords100,
-            this.menuRecords500,
-            this.menuRecords1000,
-            this.menuRecords2000,
-            this.menuRecords5000,
-            this.menuRecords10000,
-            this.menuRecordsALL});
-            this.ContextMenuRecords.Name = "ContextMenuRecords";
-            this.ContextMenuRecords.MenuItemClicked += new Wisej.Web.MenuItemEventHandler(this.ContextMenuRecords_MenuItemClicked);
-            // 
-            // menuRecords100
-            // 
-            resources.ApplyResources(this.menuRecords100, "menuRecords100");
-            this.menuRecords100.Index = 0;
-            this.menuRecords100.Name = "menuRecords100";
-            this.menuRecords100.Tag = 100;
-            // 
-            // menuRecords500
-            // 
-            resources.ApplyResources(this.menuRecords500, "menuRecords500");
-            this.menuRecords500.Index = 1;
-            this.menuRecords500.Name = "menuRecords500";
-            this.menuRecords500.Tag = 500;
-            // 
-            // menuRecords1000
-            // 
-            resources.ApplyResources(this.menuRecords1000, "menuRecords1000");
-            this.menuRecords1000.Index = 2;
-            this.menuRecords1000.Name = "menuRecords1000";
-            this.menuRecords1000.Tag = 1000;
-            // 
-            // menuRecords2000
-            // 
-            resources.ApplyResources(this.menuRecords2000, "menuRecords2000");
-            this.menuRecords2000.Index = 3;
-            this.menuRecords2000.Name = "menuRecords2000";
-            this.menuRecords2000.Tag = 2000;
-            // 
-            // menuRecords5000
-            // 
-            resources.ApplyResources(this.menuRecords5000, "menuRecords5000");
-            this.menuRecords5000.Index = 4;
-            this.menuRecords5000.Name = "menuRecords5000";
-            this.menuRecords5000.Tag = 5000;
-            // 
-            // menuRecords10000
-            // 
-            resources.ApplyResources(this.menuRecords10000, "menuRecords10000");
-            this.menuRecords10000.Index = 5;
-            this.menuRecords10000.Name = "menuRecords10000";
-            this.menuRecords10000.Tag = 10000;
-            // 
-            // menuRecordsALL
-            // 
-            resources.ApplyResources(this.menuRecordsALL, "menuRecordsALL");
-            this.menuRecordsALL.Index = 6;
-            this.menuRecordsALL.Name = "menuRecordsALL";
-            this.menuRecordsALL.Tag = 0;
+            resources.ApplyResources(this.Records, "Records");
             // 
             // bPrint
             // 
@@ -426,6 +549,7 @@ namespace Passero.Framework.Controls
             resources.ApplyResources(this.bPrint, "bPrint");
             this.bPrint.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bPrint.Name = "bPrint";
+            this.bPrint.Click += new System.EventHandler(this.bPrint_Click);
             // 
             // bSave
             // 
@@ -457,26 +581,33 @@ namespace Passero.Framework.Controls
             this.bClose.Name = "bClose";
             this.bClose.Click += new System.EventHandler(this.bClose_Click);
             // 
-            // XQBEForm
+            // XQBEReport
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromName("@toolbar");
             this.Controls.Add(this.NavBar);
             this.Controls.Add(this.SplitContainer);
-            this.Name = "XQBEForm";
+            this.Name = "XQBEReport";
             this.ShowModalMask = true;
             this.Load += new System.EventHandler(this.XQBEForm_Load);
-            this.Shown += new System.EventHandler(this.XQBEForm_Shown);
-            this.FormClosed += new Wisej.Web.FormClosedEventHandler(this.XQBEForm_FormClosed);
+            this.Shown += new System.EventHandler(this.XQBEReport_Shown);
+            this.FormClosed += new Wisej.Web.FormClosedEventHandler(this.XQBEReport_FormClosed);
             this.SplitContainer.Panel1.ResumeLayout(false);
             this.SplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).EndInit();
             this.SplitContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ResultGrid)).EndInit();
+            this.PanelReportViewer.ResumeLayout(false);
+            this.PanelReportViewer.PerformLayout();
+            this.PanelReportInfo.ResumeLayout(false);
+            this.PanelReportInfo.PerformLayout();
             this.TabControl.ResumeLayout(false);
+            this.TabPageReports.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ReportGrid)).EndInit();
             this.TabPageReportQuery.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).EndInit();
+            this.TabPageReportSort.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_SelectedSortColumns)).EndInit();
             this.TabPageExport.ResumeLayout(false);
             this.PanelExport.ResumeLayout(false);
             this.PanelExport.PerformLayout();
@@ -490,13 +621,36 @@ namespace Passero.Framework.Controls
         #endregion
 
         internal Wisej.Web.SplitContainer SplitContainer;
+        internal Wisej.Web.Panel PanelReportViewer;
+        internal Wisej.Web.Panel PanelReportInfo;
+        internal Wisej.Web.TextBox txtReportDescription;
+        internal Wisej.Web.TextBox txtReportTitle;
+        internal Wisej.Web.AspNetPanel AspNetPanel;
+        internal Wisej.Web.WebBrowser WebBrowser;
+        internal Wisej.Web.PdfViewer PdfViewer;
         internal Wisej.Web.TabControl TabControl;
+        internal Wisej.Web.TabPage TabPageReports;
+        private Wisej.Web.DataGridView ReportGrid;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcReportName;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcReportDescription;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcReportFileName;
         internal Wisej.Web.TabPage TabPageReportQuery;
         private Wisej.Web.DataGridView QueryGrid;
         private Wisej.Web.DataGridViewTextBoxColumn dgvcNomeCampo;
-        private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnValue;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcValoreCampo;
         private Wisej.Web.DataGridViewButtonColumn dgvcQueryColumn;
         internal Wisej.Web.CheckBox chkLikeOperator;
+        internal Wisej.Web.TabPage TabPageReportSort;
+        internal Wisej.Web.Button btnSortDown;
+        internal Wisej.Web.Button btnSortUp;
+        internal Wisej.Web.DataGridView dgv_SelectedSortColumns;
+        internal Wisej.Web.DataGridViewTextBoxColumn dgvc_SelectedSortColumns_position;
+        internal Wisej.Web.DataGridViewTextBoxColumn dgvc_SelectedSortColumns_name;
+        internal Wisej.Web.DataGridViewTextBoxColumn dgvc_SelectedSortColumns_friendlyname;
+        internal Wisej.Web.DataGridViewComboBoxColumn dgvc_SelectedSortColumns_ascdesc;
+        internal Wisej.Web.Button btnSortRemove;
+        internal Wisej.Web.Button btnSortAdd;
+        internal Wisej.Web.ListBox lstSortColumns;
         internal Wisej.Web.TabPage TabPageExport;
         internal Wisej.Web.Panel PanelExport;
         internal Wisej.Web.Button btnExport;
@@ -522,15 +676,7 @@ namespace Passero.Framework.Controls
         internal Wisej.Web.ToolBarButton bSaveQBE;
         internal Wisej.Web.ToolBarButton bLoadQBE;
         internal Wisej.Web.ToolBarButton bClose;
-        public Wisej.Web.DataGridView ResultGrid;
         internal Wisej.Web.RadioButton rbJSON;
-        internal Wisej.Web.ContextMenu ContextMenuRecords;
-        internal Wisej.Web.MenuItem menuRecords100;
-        internal Wisej.Web.MenuItem menuRecords500;
-        internal Wisej.Web.MenuItem menuRecords1000;
-        internal Wisej.Web.MenuItem menuRecords2000;
-        internal Wisej.Web.MenuItem menuRecords5000;
-        internal Wisej.Web.MenuItem menuRecords10000;
-        internal Wisej.Web.MenuItem menuRecordsALL;
+        private Wisej.Web.TextBox txtRenderError;
     }
 }

@@ -75,8 +75,12 @@ namespace Passero.Framework.Controls
         private DateTime mStartRecordTime;
         private bool IsOk = false;
         private System.Drawing.Color tbPhotoForeColor;
+#pragma warning disable CS0169 // Il campo 'CameraForm.tbPhotoBackColor' non viene mai usato
         private System.Drawing.Color tbPhotoBackColor;
+#pragma warning restore CS0169 // Il campo 'CameraForm.tbPhotoBackColor' non viene mai usato
+#pragma warning disable CS0649 // Non è possibile assegnare un valore diverso al campo 'CameraForm.tbVideoForeColor'. Il valore predefinito è
         private System.Drawing.Color tbVideoForeColor;
+#pragma warning restore CS0649 // Non è possibile assegnare un valore diverso al campo 'CameraForm.tbVideoForeColor'. Il valore predefinito è
         private System.Drawing.Color tbVideoBackColor;
 
 

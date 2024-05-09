@@ -117,20 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="bsPublishers.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="model1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>137, 17</value>
-  </metadata>
-  <metadata name="publisherBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>231, 17</value>
-  </metadata>
-  <metadata name="$this.RulerSnapLines" mimetype="application/x-microsoft.net.object.binary.base64">
-    <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0
-        dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EHAQAAAAABAAAAAAAAAAQU
-        U3lzdGVtLkRyYXdpbmcuUG9pbnQCAAAACw==
-</value>
-  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>881, 103</value>
+  </data>
+  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 39</value>
+  </data>
+  <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
+    <value>892, 139</value>
+  </data>
+  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 39</value>
+  </data>
+  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>892, 139</value>
+  </data>
+  <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 39</value>
+  </data>
+  <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>892, 139</value>
+  </data>
 </root>

@@ -127,28 +127,27 @@
   <data name="&gt;&gt;ResultGrid.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
+  <data name="&gt;&gt;cmbRecords.Type" xml:space="preserve">
+    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;ReportGrid.Parent" xml:space="preserve">
+    <value>TabPageReports</value>
+  </data>
   <data name="bPrev.ImageSource" xml:space="preserve">
     <value>icon-left</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>
   </data>
-  <data name="menuRecords10000.Text" xml:space="preserve">
-    <value>10000</value>
+  <data name="bClose.ImageSource" xml:space="preserve">
+    <value>icon-exit</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="RecordLabel.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="dgv_SelectedSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
-  <data name="&gt;&gt;rbCSV.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 178</value>
+  <data name="&gt;&gt;NavBar.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;dgvc_SelectedSortColumns_position.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -158,6 +157,10 @@
   </data>
   <data name="&gt;&gt;btnSortRemove.Name" xml:space="preserve">
     <value>btnSortRemove</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>100, 9</value>
   </data>
   <data name="resource.BackgroundImageAlign1" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
@@ -183,9 +186,6 @@
   <data name="ResultGrid.Location" type="System.Drawing.Point, System.Drawing">
     <value>16, 17</value>
   </data>
-  <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
-    <value>bFirst</value>
-  </data>
   <data name="TabPageDebug.Padding" type="Wisej.Web.Padding, Wisej.Framework">
     <value>3, 3, 3, 3</value>
   </data>
@@ -201,11 +201,17 @@
   <data name="&gt;&gt;menuRecords5000.Name" xml:space="preserve">
     <value>menuRecords5000</value>
   </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Parent" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="ReportGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
   <data name="&gt;&gt;btnSortDown.Parent" xml:space="preserve">
     <value>TabPageReportSort</value>
   </data>
-  <data name="&gt;&gt;QueryGrid.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="dgvcNomeCampo.HeaderText" xml:space="preserve">
+    <value>Column</value>
   </data>
   <data name="&gt;&gt;Button1.ZOrder" xml:space="preserve">
     <value>2</value>
@@ -231,11 +237,11 @@
   <data name="&gt;&gt;SplitContainer.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="bClose.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Button2.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
-  </data>
-  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
   </data>
   <data name="&gt;&gt;bClose.Name" xml:space="preserve">
     <value>bClose</value>
@@ -243,8 +249,8 @@
   <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
     <value>1, 40</value>
   </data>
-  <data name="&gt;&gt;menuRecordsALL.Name" xml:space="preserve">
-    <value>menuRecordsALL</value>
+  <data name="&gt;&gt;bSaveQBE.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="rbCSV.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -254,9 +260,6 @@
   </data>
   <data name="ReportGrid.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
-  </data>
-  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 137</value>
   </data>
   <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Name" xml:space="preserve">
     <value>dgvc_SelectedSortColumns_friendlyname</value>
@@ -279,8 +282,8 @@
   <data name="bFirst.ImageSource" xml:space="preserve">
     <value>icon-first</value>
   </data>
-  <data name="&gt;&gt;btnSortRemove.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="&gt;&gt;menuRecords10000.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecordsALL.Type" xml:space="preserve">
     <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -291,27 +294,21 @@
   <data name="btnSortUp.ImageSource" xml:space="preserve">
     <value>scrollbar-arrow-up</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="resource.BackgroundImage1" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="&gt;&gt;TabPageReportSort.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="bLast.ImageSource" xml:space="preserve">
     <value>icon-last</value>
   </data>
-  <data name="&gt;&gt;menuRecords10000.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="cmbRecords.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="btnSortRemove.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="txtDebug.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;TabPageReports.Name" xml:space="preserve">
-    <value>TabPageReports</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="resource.BackgroundImageSource3" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="&gt;&gt;menuRecords5000.Type" xml:space="preserve">
     <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -327,6 +324,9 @@
   </data>
   <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
     <value>dgvc_SelectedSortColumns_ascdesc</value>
+  </data>
+  <data name="btnSortUp.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
   </data>
   <data name="dgvc_SelectedSortColumns_friendlyname.HeaderText" xml:space="preserve">
     <value>FriendlyName</value>
@@ -367,6 +367,9 @@
   <data name="SplitContainer.Margin" type="Wisej.Web.Padding, Wisej.Framework">
     <value>0, 0, 0, 0</value>
   </data>
+  <data name="&gt;&gt;menuRecordsALL.Name" xml:space="preserve">
+    <value>menuRecordsALL</value>
+  </data>
   <data name="&gt;&gt;ReportGrid.Name" xml:space="preserve">
     <value>ReportGrid</value>
   </data>
@@ -384,6 +387,9 @@
   </data>
   <data name="&gt;&gt;chkLikeOperator.Name" xml:space="preserve">
     <value>chkLikeOperator</value>
+  </data>
+  <data name="Button1.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
   </data>
   <data name="dgvc_SelectedSortColumns_name.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -412,6 +418,9 @@
   <data name="&gt;&gt;lstSortColumns.Parent" xml:space="preserve">
     <value>TabPageReportSort</value>
   </data>
+  <data name="ResultGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
   <data name="rbJSON.Size" type="System.Drawing.Size, System.Drawing">
     <value>85, 23</value>
   </data>
@@ -430,9 +439,6 @@
   <data name="bLast.Text" xml:space="preserve">
     <value>Last</value>
   </data>
-  <data name="TabPageDebug.Hidden" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
   <data name="TabPageReportQuery.Hidden" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -442,14 +448,14 @@
   <data name="menuRecordsALL.Text" xml:space="preserve">
     <value>ALL</value>
   </data>
-  <data name="&gt;&gt;bSaveQBE.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
   <data name="&gt;&gt;dgvcReportName.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;TabPageReportSort.Name" xml:space="preserve">
-    <value>TabPageReportSort</value>
+  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;ResultGrid.Name" xml:space="preserve">
     <value>ResultGrid</value>
@@ -460,8 +466,8 @@
   <data name="&gt;&gt;NavBar.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;bLoadQBE.Name" xml:space="preserve">
-    <value>bLoadQBE</value>
+  <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
+    <value>bFirst</value>
   </data>
   <data name="&gt;&gt;dgvcReportName.Name" xml:space="preserve">
     <value>dgvcReportName</value>
@@ -484,11 +490,14 @@
   <data name="TabPageReportSort.Hidden" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="btnSortRemove.Location" type="System.Drawing.Point, System.Drawing">
-    <value>252, 60</value>
+  <data name="&gt;&gt;TabPageReportSort.Parent" xml:space="preserve">
+    <value>TabControl</value>
   </data>
   <data name="ReportGrid.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 5</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.ZOrder" xml:space="preserve">
+    <value>5</value>
   </data>
   <data name="SplitContainer.SplitterDistance" type="System.Int32, mscorlib">
     <value>394</value>
@@ -501,6 +510,9 @@
   </data>
   <data name="bPrev.Text" xml:space="preserve">
     <value>Previous</value>
+  </data>
+  <data name="cmbRecords.Items5" xml:space="preserve">
+    <value>10000</value>
   </data>
   <data name="&gt;&gt;bSaveQBE.Name" xml:space="preserve">
     <value>bSaveQBE</value>
@@ -517,6 +529,9 @@
   <data name="btnSortDown.Size" type="System.Drawing.Size, System.Drawing">
     <value>36, 25</value>
   </data>
+  <data name="lstSortColumns.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 7</value>
+  </data>
   <data name="Button1.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
@@ -529,8 +544,8 @@
   <data name="&gt;&gt;menuRecords500.Name" xml:space="preserve">
     <value>menuRecords500</value>
   </data>
-  <data name="&gt;&gt;btnExport.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="&gt;&gt;btnSortUp.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="dgvcReportFileName.HeaderText" xml:space="preserve">
     <value>Report FileName</value>
@@ -547,6 +562,9 @@
   <data name="rbJSON.Location" type="System.Drawing.Point, System.Drawing">
     <value>14, 71</value>
   </data>
+  <data name="cmbRecords.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
   <data name="&gt;&gt;Button1.Name" xml:space="preserve">
     <value>Button1</value>
   </data>
@@ -556,8 +574,8 @@
   <data name="resource.BackgroundImageAlign2" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <data name="btnSortUp.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+  <data name="&gt;&gt;dgvcNomeCampo.Name" xml:space="preserve">
+    <value>dgvcNomeCampo</value>
   </data>
   <data name="resource.BackgroundImageLayout" type="Wisej.Web.ImageLayout, Wisej.Framework">
     <value>None</value>
@@ -583,14 +601,11 @@
   <data name="cmbRecords.Items4" xml:space="preserve">
     <value>5000</value>
   </data>
-  <data name="cmbRecords.Items5" xml:space="preserve">
-    <value>10000</value>
+  <data name="btnSortRemove.Location" type="System.Drawing.Point, System.Drawing">
+    <value>252, 60</value>
   </data>
   <data name="bLoadQBE.Text" xml:space="preserve">
     <value>Load Filters</value>
-  </data>
-  <data name="&gt;&gt;rbJSON.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="cmbRecords.Items" xml:space="preserve">
     <value>100</value>
@@ -625,14 +640,14 @@
   <data name="dgvc_SelectedSortColumns_friendlyname.MinimumWidth" type="System.Int32, mscorlib">
     <value>200</value>
   </data>
+  <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
   <data name="bLoadQBE.ImageSource" xml:space="preserve">
     <value>icon-open</value>
   </data>
   <data name="menuRecords500.Text" xml:space="preserve">
     <value>500</value>
-  </data>
-  <data name="PanelExport.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
     <value>890, 137</value>
@@ -654,9 +669,6 @@
   </data>
   <data name="rbXML.Size" type="System.Drawing.Size, System.Drawing">
     <value>79, 23</value>
-  </data>
-  <data name="&gt;&gt;SplitContainer.Type" xml:space="preserve">
-    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;btnSortDown.Name" xml:space="preserve">
     <value>btnSortDown</value>
@@ -703,8 +715,8 @@
   <data name="&gt;&gt;txtDebug.Type" xml:space="preserve">
     <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;btnSortUp.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="&gt;&gt;dgvcReportFileName.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;rbJSON.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -712,11 +724,8 @@
   <data name="bPrint.ImageSource" xml:space="preserve">
     <value>icon-print</value>
   </data>
-  <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 137</value>
-  </data>
-  <data name="cmbRecords.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
+  <data name="&gt;&gt;ReportGrid.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;menuRecords100.Name" xml:space="preserve">
     <value>menuRecords100</value>
@@ -735,9 +744,6 @@
   </data>
   <data name="lstSortColumns.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left</value>
-  </data>
-  <data name="&gt;&gt;menuRecords10000.Name" xml:space="preserve">
-    <value>menuRecords10000</value>
   </data>
   <data name="&gt;&gt;lstSortColumns.Name" xml:space="preserve">
     <value>lstSortColumns</value>
@@ -784,14 +790,14 @@
   <data name="&gt;&gt;dgvc_SelectedSortColumns_name.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
   <data name="&gt;&gt;rbXML.Type" xml:space="preserve">
     <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bRefresh.Name" xml:space="preserve">
     <value>bRefresh</value>
+  </data>
+  <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>359, 6</value>
   </data>
   <data name="&gt;&gt;TabPageReports.Type" xml:space="preserve">
     <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -802,14 +808,14 @@
   <data name="resource.BackgroundImageSource1" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
-  <data name="resource.BackgroundImageSource3" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="&gt;&gt;cmbRecords.Name" xml:space="preserve">
+    <value>cmbRecords</value>
   </data>
   <data name="NavBar.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
   </data>
-  <data name="lstSortColumns.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 7</value>
+  <data name="menuRecords100.Text" xml:space="preserve">
+    <value>100</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel2.Type" xml:space="preserve">
     <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -820,11 +826,17 @@
   <data name="&gt;&gt;Button1.Type" xml:space="preserve">
     <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
+  <data name="NavBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 44</value>
+  </data>
   <data name="&gt;&gt;RecordLabel.Name" xml:space="preserve">
     <value>RecordLabel</value>
   </data>
   <data name="btnExport.Text" xml:space="preserve">
     <value>Export</value>
+  </data>
+  <data name="&gt;&gt;btnSortRemove.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="dgvc_SelectedSortColumns_friendlyname.Width" type="System.Int32, mscorlib">
     <value>200</value>
@@ -850,9 +862,6 @@
   <data name="&gt;&gt;btnExport.Type" xml:space="preserve">
     <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="menuRecords100.Text" xml:space="preserve">
-    <value>100</value>
-  </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>XQBEForm</value>
   </data>
@@ -865,11 +874,8 @@
   <data name="&gt;&gt;menuRecords2000.Type" xml:space="preserve">
     <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>359, 6</value>
-  </data>
-  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 23</value>
+  <data name="txtDebug.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
   </data>
   <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -913,17 +919,23 @@
   <data name="&gt;&gt;bFirst.Type" xml:space="preserve">
     <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
+  <data name="&gt;&gt;bPrev.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
   <data name="&gt;&gt;bDelete.Name" xml:space="preserve">
     <value>bDelete</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel1.Type" xml:space="preserve">
     <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="&gt;&gt;ReportGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="btnExport.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Right</value>
+  </data>
+  <data name="&gt;&gt;menuRecords500.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;dgvcReportDescription.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -931,8 +943,8 @@
   <data name="dgvcColumnValue.HeaderText" xml:space="preserve">
     <value>Value/Condition</value>
   </data>
-  <data name="&gt;&gt;cmbRecords.Name" xml:space="preserve">
-    <value>cmbRecords</value>
+  <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
   </data>
   <data name="dgvcReportDescription.HeaderText" xml:space="preserve">
     <value>Description</value>
@@ -973,11 +985,8 @@
   <data name="resource.BackgroundImageAlign3" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <data name="&gt;&gt;dgvcNomeCampo.Name" xml:space="preserve">
-    <value>dgvcNomeCampo</value>
-  </data>
-  <data name="&gt;&gt;rbXML.Parent" xml:space="preserve">
-    <value>PanelExport</value>
+  <data name="&gt;&gt;bLoadQBE.Name" xml:space="preserve">
+    <value>bLoadQBE</value>
   </data>
   <data name="&gt;&gt;TabPageDebug.Type" xml:space="preserve">
     <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -985,11 +994,11 @@
   <data name="SplitContainer.Size" type="System.Drawing.Size, System.Drawing">
     <value>898, 588</value>
   </data>
-  <data name="dgvcNomeCampo.HeaderText" xml:space="preserve">
-    <value>Column</value>
-  </data>
   <data name="RecordLabel.Text" xml:space="preserve">
     <value>0&lt;br&gt;0</value>
+  </data>
+  <data name="bSave.ImageSource" xml:space="preserve">
+    <value>icon-check</value>
   </data>
   <data name="btnExport.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1042,9 +1051,6 @@
   <data name="&gt;&gt;dgv_SelectedSortColumns.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="cmbRecords.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 30</value>
-  </data>
   <data name="btnSortDown.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
   </data>
@@ -1060,8 +1066,8 @@
   <data name="bRefresh.ImageSource" xml:space="preserve">
     <value>icon-redo</value>
   </data>
-  <data name="&gt;&gt;bPrev.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="resource.BackgroundImage1" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="resource.BackgroundImage2" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -1072,13 +1078,13 @@
   <data name="txtDebug.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
-  <data name="bSave.ImageSource" xml:space="preserve">
-    <value>icon-check</value>
+  <data name="cmbRecords.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 30</value>
   </data>
   <data name="bRefresh.Text" xml:space="preserve">
     <value>Refresh</value>
   </data>
-  <data name="&gt;&gt;NavBar.ZOrder" xml:space="preserve">
+  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
@@ -1093,14 +1099,14 @@
   <data name="btnExport.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 27</value>
   </data>
-  <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>100, 9</value>
+  <data name="&gt;&gt;TabPageReports.Name" xml:space="preserve">
+    <value>TabPageReports</value>
   </data>
   <data name="btnSortDown.Location" type="System.Drawing.Point, System.Drawing">
     <value>766, 59</value>
   </data>
-  <data name="&gt;&gt;ReportGrid.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="PanelExport.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="&gt;&gt;Button2.Parent" xml:space="preserve">
     <value>TabPageDebug</value>
@@ -1120,9 +1126,6 @@
   <data name="&gt;&gt;dgvc_SelectedSortColumns_position.Name" xml:space="preserve">
     <value>dgvc_SelectedSortColumns_position</value>
   </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>7, 19</value>
-  </data>
   <data name="&gt;&gt;btnSortUp.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
@@ -1132,35 +1135,32 @@
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;ReportGrid.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="&gt;&gt;rbXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
   </data>
-  <data name="cmbRecords.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+  <data name="&gt;&gt;menuRecords10000.Name" xml:space="preserve">
+    <value>menuRecords10000</value>
   </data>
-  <data name="NavBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>898, 44</value>
+  <data name="&gt;&gt;TabPageReportSort.Name" xml:space="preserve">
+    <value>TabPageReportSort</value>
   </data>
-  <data name="&gt;&gt;menuRecords500.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="menuRecords10000.Text" xml:space="preserve">
+    <value>10000</value>
   </data>
-  <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>7, 19</value>
   </data>
   <data name="resource.BackgroundImageSource" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
-  <data name="&gt;&gt;lstSortColumns.ZOrder" xml:space="preserve">
-    <value>5</value>
+  <data name="TabPageDebug.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
-  <data name="ReportGrid.RowHeadersWidth" type="System.Int32, mscorlib">
-    <value>24</value>
+  <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>892, 178</value>
   </data>
-  <data name="&gt;&gt;TabPageReportSort.Parent" xml:space="preserve">
-    <value>TabControl</value>
-  </data>
-  <data name="&gt;&gt;cmbRecords.Type" xml:space="preserve">
-    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="RecordLabel.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="resource.BackgroundImageLayout1" type="Wisej.Web.ImageLayout, Wisej.Framework">
     <value>None</value>
@@ -1171,8 +1171,8 @@
   <data name="resource.BackgroundImageLayout3" type="Wisej.Web.ImageLayout, Wisej.Framework">
     <value>None</value>
   </data>
-  <data name="&gt;&gt;SplitContainer.Panel2.Parent" xml:space="preserve">
-    <value>SplitContainer</value>
+  <data name="&gt;&gt;btnExport.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1201,8 +1201,8 @@
   <data name="&gt;&gt;TabPageReportQuery.Name" xml:space="preserve">
     <value>TabPageReportQuery</value>
   </data>
-  <data name="&gt;&gt;ReportGrid.Parent" xml:space="preserve">
-    <value>TabPageReports</value>
+  <data name="&gt;&gt;SplitContainer.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bRefresh.Type" xml:space="preserve">
     <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
@@ -1222,11 +1222,11 @@
   <data name="&gt;&gt;dgvcReportFileName.Name" xml:space="preserve">
     <value>dgvcReportFileName</value>
   </data>
-  <data name="ResultGrid.RowHeadersWidth" type="System.Int32, mscorlib">
-    <value>24</value>
+  <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>890, 137</value>
   </data>
-  <data name="bClose.Text" xml:space="preserve">
-    <value>Close</value>
+  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 23</value>
   </data>
   <data name="dgvcReportName.HeaderText" xml:space="preserve">
     <value>Report Name</value>
@@ -1237,8 +1237,8 @@
   <data name="&gt;&gt;QueryGrid.Name" xml:space="preserve">
     <value>QueryGrid</value>
   </data>
-  <data name="&gt;&gt;dgvcReportFileName.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="&gt;&gt;rbCSV.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="resource.BackgroundImage" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -1249,11 +1249,11 @@
   <data name="btnSortAdd.ImageSource" xml:space="preserve">
     <value>scrollbar-arrow-right</value>
   </data>
-  <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>890, 137</value>
   </data>
-  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+  <data name="&gt;&gt;rbJSON.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="resource.BackgroundImageSource2" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
@@ -1261,11 +1261,11 @@
   <data name="dgvc_SelectedSortColumns_name.HeaderText" xml:space="preserve">
     <value>Name</value>
   </data>
-  <data name="Button1.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
   </data>
-  <data name="bClose.ImageSource" xml:space="preserve">
-    <value>icon-exit</value>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;ContextMenuRecords.Name" xml:space="preserve">
     <value>ContextMenuRecords</value>

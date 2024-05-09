@@ -28,7 +28,9 @@ namespace Passero.Framework.Controls
         }
 
         // Required by the Wisej Form Designer
+#pragma warning disable CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator.components'. Il valore predefinito è null
         private System.ComponentModel.IContainer components;
+#pragma warning restore CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator.components'. Il valore predefinito è null
 
         // NOTE: The following procedure is required by the Wisej Designer
         // It can be modified using the Wisej Designer.  

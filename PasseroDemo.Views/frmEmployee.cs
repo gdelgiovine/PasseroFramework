@@ -1,5 +1,6 @@
 ﻿using Passero.Framework;
 using Passero.Framework.Controls;
+using Passero.Framework.SSRSReports;
 using System;
 using System.CodeDom;
 using Wisej.Web;
@@ -57,7 +58,7 @@ namespace PasseroDemo.Views
         private void QBE_Employee()
         {
 
-            XQBEForm <Models.Employee> xQBEForm_myModel = new XQBEForm<Models.Employee >(this.DbConnection);
+            QBEForm <Models.Employee> xQBEForm_myModel = new QBEForm<Models.Employee >(this.DbConnection);
 
 
             // Here we customize the Result Grid and the Query Grid adding Columns to display in Result and in Query Criteria
@@ -116,7 +117,7 @@ namespace PasseroDemo.Views
 
         private void QBEReport_base()
         {
-            XQBEReport xQBEReport = new XQBEReport();
+            QBEReport xQBEReport = new QBEReport();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

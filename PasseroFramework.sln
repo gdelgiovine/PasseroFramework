@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasseroDemo.Views", "Passer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.Controls", "Passero.Framework.Controls\Passero.Framework.Controls.csproj", "{0128B94E-A09F-4C55-939E-A7DC76EB894F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PasseroDemo.Repositories", "PasseroDemo.Repositories\PasseroDemo.Repositories.csproj", "{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasseroDemo.Repositories", "PasseroDemo.Repositories\PasseroDemo.Repositories.csproj", "{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.SSRSReports", "Passero.Framework.RsReports\Passero.Framework.RsReports\Passero.Framework.SSRSReports.csproj", "{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

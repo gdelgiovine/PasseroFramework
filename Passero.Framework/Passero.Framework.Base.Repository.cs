@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dapper;
 using Dapper.Contrib.Extensions ;
-//using Dommel;
-using Microsoft.ReportingServices.Diagnostics.Internal;
-
-//namespace Passero.Framework.Base
 namespace Passero.Framework
+
 {
   
 
@@ -22,7 +16,9 @@ namespace Passero.Framework
     public class Repository<ModelClass> where ModelClass : class
     {
         private const string mClassName = "Passero.Framework.Base.Repository";
+#pragma warning disable CS0169 // Il campo 'Repository<ModelClass>.ModelProperties' non viene mai usato
         private Dictionary<string, System.Reflection.PropertyInfo> ModelProperties;
+#pragma warning restore CS0169 // Il campo 'Repository<ModelClass>.ModelProperties' non viene mai usato
         public string Name { get; set; } = $"Repository<{typeof(ModelClass).FullName}>";
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult(mClassName);
         public ViewModel<ModelClass> ViewModel { get; set; }
@@ -175,8 +171,12 @@ namespace Passero.Framework
         }
 
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private List <ModelClass>? _ModelItems { get; set; }
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public List<ModelClass>? ModelItems
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -188,8 +188,12 @@ namespace Passero.Framework
             }
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private ModelClass? _Modeltem { get; set; }
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? ModelItem
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -212,8 +216,12 @@ namespace Passero.Framework
             }
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private ModelClass? _ModelShadow { get; set; }
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? ModelItemShadow
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {

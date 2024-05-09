@@ -3,6 +3,7 @@ using System.Data;
 using Wisej.Web;
 using Passero.Framework;
 using Passero.Framework.Controls;
+using Passero.Framework.SSRSReports;
 
 
 namespace PasseroDemo.Views
@@ -17,8 +18,8 @@ namespace PasseroDemo.Views
 
         // cosi quello base
         public Passero.Framework.ViewModel<Models.Author> vmAuthor = new Passero.Framework.ViewModel<Models.Author>();
-        Passero.Framework .Controls.XQBEForm<Models.Author> xQBEForm_Author = new Passero.Framework.Controls.XQBEForm<Models.Author>();
-        Passero.Framework.Controls.XQBEReport xQBEReport = new Passero.Framework.Controls.XQBEReport();
+        Passero.Framework .Controls.QBEForm<Models.Author> QBEForm_Author = new Passero.Framework.Controls.QBEForm<Models.Author>();
+        Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
         Passero.Framework.DbLookUp<Models.Author> dblAuthor = new DbLookUp<Models.Author>();
 
         public frmAuthors()
@@ -71,44 +72,44 @@ namespace PasseroDemo.Views
         private void QBE_Authors()
         {
 
-            xQBEForm_Author = new XQBEForm<Models.Author>(this.DbConnection);
+            QBEForm_Author = new QBEForm<Models.Author>(this.DbConnection);
 
-            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
-            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
-            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
-            xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, QBEColumnsTypes.CheckBox, 20);
+            QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
+            QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
+            QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
+            QBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
             //xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
-            xQBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
+            QBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
             //xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
             //xQBEForm_Author.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
 
-            xQBEForm_Author.SetupQBEForm();
+            QBEForm_Author.SetupQBEForm();
             //            xQBEForm_Author .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
 
             //xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.AllRowsItems;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsItems;
-            xQBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
+            QBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
             //xQBEForm_Author.Owner = this;
-            xQBEForm_Author.SetFocusControlAfterClose = this.txt_au_id;
+            QBEForm_Author.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
-            xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository,() => { this.Reload(); });
+            QBEForm_Author.SetTargetRepository(this.vmAuthor.Repository,() => { this.Reload(); });
             //xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository);
 
 
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
-            xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
+            QBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
 
 
-            xQBEForm_Author.ShowQBE();
+            QBEForm_Author.ShowQBE();
 
         }
 
         private void QBEReport_Authors()
         {
-            xQBEReport = new XQBEReport();
+            xQBEReport = new QBEReport();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 
@@ -119,8 +120,9 @@ namespace PasseroDemo.Views
             //xQBEReport.QBEReports["REPORT1"].DataSources["DataSet2"].Parameters.Add("@au_id", "1123");
 
 
-            xQBEReport.QBEReports.Add("REPORT2", @"C:\Reports\REPORT1.RDL", "REPORT DUE");
+            xQBEReport.QBEReports.Add("REPORT2", @"C:\Reports\REPORT2.RDL", "REPORT DUE");
             xQBEReport.QBEReports["REPORT2"].AddDataSet<Models.Author>("DataSet1", this.vmAuthor.Repository.DbConnection, "SELECT * FROM Authors");
+            xQBEReport.QBEReports["REPORT2"].AddDataSet<Models.Author>("DataSet2", this.vmAuthor.Repository.DbConnection, "SELECT * FROM Authors");
 
             xQBEReport.DefaultReport = xQBEReport.QBEReports["REPORT1"];
 

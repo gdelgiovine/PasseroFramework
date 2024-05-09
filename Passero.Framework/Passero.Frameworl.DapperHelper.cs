@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.ReportingServices.Diagnostics.Internal;
 using Microsoft.VisualBasic;
 using MiniExcelLibs;
-using Newtonsoft.Json.Linq;
-using Passero.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,13 +9,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using Wisej.Web;
 
 
 namespace Passero.Framework.DapperHelper
@@ -178,7 +171,9 @@ namespace Passero.Framework.DapperHelper
             return _ColumnName;
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public static DataTable GetDataTableFromDapperQuery(IDbConnection DbConnection, string SQLQuery, DynamicParameters? Parameters = null)
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             DataTable dataTable = new DataTable();
             IDataReader dataReader;
@@ -230,7 +225,9 @@ namespace Passero.Framework.DapperHelper
 
             // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
             string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
             MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
             if (getTableNameMethod == null)
                 throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
@@ -249,7 +246,9 @@ namespace Passero.Framework.DapperHelper
 
             // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
             string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
             MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
             if (getTableNameMethod == null)
                 throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
@@ -272,7 +271,9 @@ namespace Passero.Framework.DapperHelper
 
             // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
             string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
             MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
             if (getTableNameMethod == null)
                 throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
@@ -290,7 +291,9 @@ namespace Passero.Framework.DapperHelper
             
             // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
             string setTableName = "SetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
             MethodInfo? setTableNameMethod = typeof(SqlMapperExtensions).GetMethod(setTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
             if (setTableNameMethod == null)
                 throw new ArgumentOutOfRangeException($"Method '{setTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");

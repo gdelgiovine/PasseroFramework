@@ -26,8 +26,8 @@ namespace PasseroDemo.Views
         public Repository<Models.Publisher> rpPublisher = new Repository<Models.Publisher>();
         public Repository<Models.Author> rpAuthor = new Repository<Models.Author>();
 
-        XQBEForm<Models.Title> xQBEForm_Title = new XQBEForm<Models.Title>();
-        XQBEReport xQBEReport = new XQBEReport();
+        QBEForm<Models.Title> xQBEForm_Title = new QBEForm<Models.Title>();
+        Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
 
         //private System.Data.SqlClient.SqlConnection sqlConnection;
         //private IEnumerable<PasseroDemo.Models.Title> title ;
@@ -245,7 +245,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eFind()
         {
-            xQBEForm_Title = new XQBEForm<Models.Title>(this.vmTitle.Repository.DbConnection);
+            xQBEForm_Title = new QBEForm<Models.Title>(this.vmTitle.Repository.DbConnection);
 
             xQBEForm_Title.QBEColumns.Add(nameof(Models.Title.title_id), "Title Id", "", "", true, true, 20);
             xQBEForm_Title.QBEColumns.Add(nameof(Models.Title.title), "Title", "", "", true, true, 0);
@@ -274,7 +274,7 @@ namespace PasseroDemo.Views
         }
         private void QBEAuthor_DataGridView(DataGridView DataGridView)
         {
-            XQBEForm<Models.Author> xQBEForm_Author = new XQBEForm<Models.Author>(this.vmTitle.Repository.DbConnection);
+            QBEForm<Models.Author> xQBEForm_Author = new QBEForm<Models.Author>(this.vmTitle.Repository.DbConnection);
             //using XQBEForm<Models.Author> xQBEForm_Author = new XQBEForm<Models.Author>(this.vmTitle.Repository.DbConnection);
             {
                 xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "", "", "", true, true, 20);

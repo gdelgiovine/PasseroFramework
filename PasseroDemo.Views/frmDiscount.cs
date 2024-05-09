@@ -1,9 +1,8 @@
 ﻿using Passero.Framework;
 using Passero.Framework.Controls;
+using Passero.Framework.SSRSReports;
 using System;
-using System.CodeDom;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 
 namespace PasseroDemo.Views
@@ -14,8 +13,8 @@ namespace PasseroDemo.Views
         public System.Data.IDbConnection DbConnection { get; set; }
         private Passero.Framework.ViewModel<Models.Discount  > vmDiscount = new Passero.Framework.ViewModel<Models.Discount>();
         //private Passero.Framework.ViewModel<ModelStub> myViewModelStub = new Passero.Framework.ViewModel<ModelStub>();
-        private Passero.Framework.Controls.XQBEForm<Models.Discount > xQBEForm_Discount = new Passero.Framework.Controls.XQBEForm<Models.Discount >();
-        private Passero.Framework.Controls.XQBEReport xQBEReport = new Passero.Framework.Controls.XQBEReport();
+        private Passero.Framework.Controls.QBEForm<Models.Discount > xQBEForm_Discount = new Passero.Framework.Controls.QBEForm<Models.Discount >();
+        private Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
 
         public frmDiscount()
         {
@@ -71,7 +70,7 @@ namespace PasseroDemo.Views
         private void QBE_Discount()
         {
 
-            xQBEForm_Discount = new XQBEForm<Models.Discount >(this.DbConnection);
+            xQBEForm_Discount = new QBEForm<Models.Discount >(this.DbConnection);
 
             
             
@@ -105,7 +104,7 @@ namespace PasseroDemo.Views
         }
         private void QBEReport_base()
         {
-            xQBEReport = new XQBEReport();
+            QBEReport xQBEReport = new QBEReport();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

@@ -1,18 +1,11 @@
 ﻿using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
-
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
@@ -98,7 +91,9 @@ namespace Passero.Framework.Controls
             }
         }
         private bool Lock = false;
+#pragma warning disable CS0414 // Il campo 'DbLookUpTextBox.SameColumn' è assegnato, ma il suo valore non viene mai usato
         private bool SameColumn = false;
+#pragma warning restore CS0414 // Il campo 'DbLookUpTextBox.SameColumn' è assegnato, ma il suo valore non viene mai usato
         public bool ValidLookUp = false;
         
         //private object mDataSource=null;    
@@ -278,6 +273,7 @@ namespace Passero.Framework.Controls
 
         public void ClearControls(bool FromEditing = false)
         {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
             try
             {
                 foreach (DataBindControl item in this.DataBindControls.Values)
@@ -293,6 +289,7 @@ namespace Passero.Framework.Controls
             catch (Exception ex)
             {
             }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
         }
 
 

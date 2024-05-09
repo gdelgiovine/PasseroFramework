@@ -220,7 +220,9 @@ namespace Passero.Framework
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.GetConfigurationValue({Section},{Key}");
 
+#pragma warning disable CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             bool ok = false;
+#pragma warning restore CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             string value = "";
             try
             {
@@ -264,7 +266,9 @@ namespace Passero.Framework
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.GetSessionConfigurationValue({Section},{Key}");
 
+#pragma warning disable CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             bool ok = false;
+#pragma warning restore CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             string value = "";
             try
             {

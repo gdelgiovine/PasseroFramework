@@ -31,6 +31,7 @@ namespace Passero.Framework
         [WebMethod]
         public static void DisposeWisejSession()
         {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
             try
             {
             }
@@ -39,6 +40,7 @@ namespace Passero.Framework
             {
                 throw;
             }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
 
         }
         public static bool ObjectPropertyExist(object Object, string Property)

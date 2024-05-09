@@ -1,251 +1,22 @@
 ﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
+
+#if NET
+#else
+using Microsoft.Reporting.WebForms;
+#endif
+
 using Passero.Framework;
 using System;
-using System.Collections;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using Wisej.Web;
 
-namespace Passero.Framework.Controls
+
+namespace Passero.Framework.SSRSReports
 {
-    //internal class CustomComponentResourceManager : ComponentResourceManager
-    //{
-    //    public CustomComponentResourceManager(Type type, string resourceName)
-    //       : base(type)
-    //    {
-    //        this.BaseNameField = resourceName;
-    //    }
-    //}
-
-    public enum ViewModelGridModes
-    {
-        NoGridMode = 0,
-        DataGridView = 1,
-        DataRepeater = 2
-    }
-
-    public class DataNavigatorViewModel
-    {
-        public string Name { get; set; }
-        public object ViewModel { get; set;}
-        public string FriendlyName { get; set; }
-        public DataGridView DataGridView { get; set;}
-
-      
-        public DataRepeater DataRepeater { get; set; }
-        private ViewModelGridModes mGridMode = ViewModelGridModes.NoGridMode;
-        public ViewModelGridModes GridMode
-        {
-            get { return mGridMode; }
-            set { mGridMode = value; }
-        }
-
-        public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "ViewModel", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
-        {
-            this.Name = Name;
-            this.FriendlyName = FriendlyName;
-            this.ViewModel = ViewModel;
-
-            this.DataRepeater = DataRepeater;
-            this.DataGridView = DataGridView;
-            if (this.DataRepeater != null)
-            {
-                this.GridMode = ViewModelGridModes.DataRepeater;
-            }
-            if (this.DataGridView != null)
-            {
-                this.GridMode = ViewModelGridModes.DataGridView;
-            }
-        }
-
-    }
-
-    public class ModelPropertyMapping
-    {
-        public string QBEModelProperty { get; set; }
-        public string TargetModelProperty { get; set; }
-
-        public ModelPropertyMapping()
-        {
-
-        }
-        public ModelPropertyMapping(string QBEModelProperty, string TargetModelProperty)
-        {
-            this.TargetModelProperty = TargetModelProperty.Trim();
-            this.QBEModelProperty = QBEModelProperty.Trim();
-        }
-    }
-
-    public class ModelPropertiesMapping : CollectionBase
-    {
-
-        public ModelPropertyMapping Add(string QBEModelProperty, string TargetModelProperty)
-        {
-            var x = new ModelPropertyMapping();
-            x.QBEModelProperty = QBEModelProperty;
-            x.TargetModelProperty = TargetModelProperty;
-            List.Add(x);
-            return x;
-        }
-
-        public ModelPropertyMapping get_Item(int Index)
-        {
-            ModelPropertyMapping ItemRet = default;
-            ItemRet = (ModelPropertyMapping)List[Index];
-            return ItemRet;
-        }
-
-        public void set_Item(int Index, ModelPropertyMapping value)
-        {
-            List[Index] = value;
-        }
-
-
-    }
-    // Stub Class XQBEForm for Resource loading for XQBEForm<ModelClass>
-    public class XQBEForm : Wisej.Web.Form
-    {
-    }
-
-
-    #region QBEBoundControl Class
-    public class QBEBoundControl
-    {
-        private object mControl;
-        private string mModelPropertyName;
-        private string mControlPropertyName;
-
-        public string ControlPropertyName
-        {
-            get
-            {
-                string PropertyNameRet = default;
-                PropertyNameRet = mControlPropertyName;
-                return PropertyNameRet;
-
-            }
-            set
-            {
-                mControlPropertyName = value;
-            }
-        }
-        public string ModelPropertyName
-        {
-            get
-            {
-
-                return mModelPropertyName;
-
-            }
-            set
-            {
-                mModelPropertyName = value;
-
-            }
-        }
-        public object Control
-        {
-            get
-            {
-                object ControlRet = default;
-                ControlRet = mControl;
-                return ControlRet;
-
-            }
-            set
-            {
-
-                mControl = value;
-            }
-        }
-
-
-    }
-
-    public class QBEBoundControls : CollectionBase
-    {
-
-        public bool Add(QBEBoundControl QBEBoundControl)
-        {
-            try
-            {
-                List.Add(QBEBoundControl);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-
-        }
-        public bool Add(string ModelPropertyName, object Control, string PropertyName)
-        {
-
-            var QBEc = new QBEBoundControl();
-            QBEc.Control = Control;
-            QBEc.ModelPropertyName = ModelPropertyName;
-            QBEc.ControlPropertyName = PropertyName;
-            try
-            {
-                List.Add(QBEc);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-
-
-        }
-
-
-    }
-
-
-    #endregion
-
-
-    [Serializable]
-    public enum QBEMode
-    {
-        Query = 0,
-        Report = 1
-    }
-
-    [Serializable]
-    public enum ReportViewerMode
-    {
-        WEB = 0,
-        PDFUrl = 1,
-        PDFStream = 2
-    }
-    [Serializable]
-    public enum UseInQBEEnum
-    {
-        UseInQUE = 1,
-        DoNotUseInQBE = 0
-    }
-
-    [Serializable]
-    public enum QBEResultMode
-    {
-        BoundControls = 0,
-        AllRowsSQLQuery = 2,
-        SingleRowSQLQuery = 1,
-        MultipleRowsSQLQuery = 3,
-        MultipleRowsItems = 4,
-        SingleRowItem = 5,
-        AllRowsItems = 6
-
-    }
 
     [Serializable]
     public enum QBEColumnsTypes
@@ -257,47 +28,6 @@ namespace Passero.Framework.Controls
         TextBox = 4
 
 
-    }
-
-    [Serializable]
-    public class QBEUserColumnsSet
-    {
-        public string Name = "";
-        public string Description = "";
-        public string UserName = "";
-        public string ApplyToUsersOrGroups = "everyone";
-        public string DBObjectName = "";
-        public List<QBEUserColumn> QBEUserColumns;
-    }
-
-
-    [Serializable]
-    public class QBEUserColumn
-    {
-        public string DBColumnName = "";
-        public bool UseInQBE = true;
-        public bool DisplayInQBEResult = true;
-        public string FriendlyName = "";
-        public string QBEValue = "";
-        public string DisplayFormat = "";
-        public System.Drawing.Color BackColor;
-        public System.Drawing.Color ForeColor;
-        public QBEColumnsTypes QBEColumnType;
-        public int ColumnWidth = 0;
-    }
-
-
-    [Serializable]
-    public class DbColumn
-    {
-        public string Name = "";
-        public string FriendlyName = "";
-        public bool IsBoolean = false;
-        public bool IsDate = false;
-        public bool IsTime = false;
-        public bool IsDateTime = false;
-        public bool IsString = false;
-        public bool IsNumeric = false;
     }
 
 
@@ -319,7 +49,7 @@ namespace Passero.Framework.Controls
         private Wisej.Web.DataGridViewContentAlignment mAlignment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
         private System.Drawing.FontStyle mFontStyle = new System.Drawing.FontStyle();
         private string mReportName;
-        public float FontSize { get; set; }  
+        public float FontSize { get; set; }
 
 
         public string ReportName
@@ -454,7 +184,7 @@ namespace Passero.Framework.Controls
             }
             set
             {
-                mQBEValue = Conversions.ToString(value);
+                mQBEValue = value.ToString() ;
             }
         }
 
@@ -548,14 +278,14 @@ namespace Passero.Framework.Controls
         //public XQBEForm QBEForm;
 
 
-        public QBEColumns(): base(StringComparer.InvariantCultureIgnoreCase)
+        public QBEColumns() : base(StringComparer.InvariantCultureIgnoreCase)
         {
         }
 
         public QBEColumn Add(string DbColumn, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, int ColumnWidth = 0)
         {
             var x = new QBEColumn();
-            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox , ColumnWidth);
+            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth);
 
         }
         public QBEColumn Add(string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
@@ -576,7 +306,7 @@ namespace Passero.Framework.Controls
 
         public QBEColumn AddForReport(object Report, string DbColumn, string FriendlyName, object QBEValue = null)
         {
-            return Add( DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
+            return Add(DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
         }
 
         private QBEColumn Add(string ReportName, string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
@@ -595,7 +325,7 @@ namespace Passero.Framework.Controls
             x.QBEColumnType = QBEColumnType;
             x.ColumnSize = ColumnWidth;
             x.Aligment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
-            
+
             //if (DbColumn.IsNumeric() | DbColumn.IsDate())
             //{
             //    x.Aligment = DataGridViewContentAlignment.TopRight;
@@ -635,8 +365,10 @@ namespace Passero.Framework.Controls
     }
 
 
+
+
     [Serializable]
-    public class QBEReportSortColumn
+    public class QBESSRSReportSortColumn
     {
         public string Name { get; set; }
         public string FriendlyName { get; set; }
@@ -644,73 +376,73 @@ namespace Passero.Framework.Controls
         public string AscDesc { get; set; }
     }
 
-    [Serializable ]
+    [Serializable]
     public enum ReportTypes
     {
-        SSRSLocalReport =0,
-        SSRSRemoteServer=1
+        SSRSLocalReport = 0,
+        SSRSRemoteServer = 1
     }
 
 
 
     [Serializable]
-    public class QBEReport
+    public class QBESSRSReport
     {
-        public Dictionary<string, Passero.Framework.Reports.DataSet> DataSets = new Dictionary<string, Reports.DataSet>(StringComparer.InvariantCultureIgnoreCase );
+        public Dictionary<string, Passero.Framework.SSRSReports.DataSet> DataSets = new Dictionary<string, SSRSReports.DataSet>(StringComparer.InvariantCultureIgnoreCase);
         public ReportTypes ReportType = ReportTypes.SSRSLocalReport;
         public Dapper.DynamicParameters SQLQueryParameters = new Dapper.DynamicParameters();
-        public Dictionary<string, QBEReportSortColumn> SortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
-        public Dictionary<string, QBEReportSortColumn> SelectedSortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, QBESSRSReportSortColumn> SortColumns = new Dictionary<string, QBESSRSReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, QBESSRSReportSortColumn> SelectedSortColumns = new Dictionary<string, QBESSRSReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
         public string SQLQuery = "";
-        
+
         private string mReportTitle;
         private string mReportFileName;
         private string mReportDescription;
         private bool mReportUseLike;
         public IDbConnection DbConnection { get; set; }
-        public Reports.DataSet PrimaryDataSet { get; set; }
+        public SSRSReports.DataSet PrimaryDataSet { get; set; }
 
-        public bool SetPrimaryDataSet (string Name)
+        public bool SetPrimaryDataSet(string Name)
         {
             bool result = false;
             if (this.DataSets.ContainsKey(Name))
             {
                 this.PrimaryDataSet = this.DataSets[Name];
-                result = true;  
+                result = true;
             }
 
-            return result;  
+            return result;
         }
-        public Passero.Framework.Reports.DataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery="", DynamicParameters Parameters =null)
+        public Passero.Framework.SSRSReports.DataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery = "", DynamicParameters Parameters = null)
         {
-            Passero.Framework.Reports.DataSet ds = new Reports.DataSet();
+            Passero.Framework.SSRSReports.DataSet ds = new SSRSReports.DataSet();
 
             ds.Name = Name;
-            ds.DbConnection = DbConnection; 
-            
+            ds.DbConnection = DbConnection;
+
             if (SQLQuery != "")
-                ds.SQLQuery  = SQLQuery;
+                ds.SQLQuery = SQLQuery;
             if (Parameters != null)
                 ds.Parameters = Parameters;
             ds.ModelType = typeof(T);
             ds.EnsureReportDataSet();
             this.DataSets.Add(Name, ds);
-            return ds;  
+            return ds;
         }
 
 
         public string OrderBy()
         {
             string s = "";
-            foreach (var item in this.SelectedSortColumns .Values )
+            foreach (var item in this.SelectedSortColumns.Values)
             {
-                s += $"{item.Name} {item.AscDesc}, "; 
+                s += $"{item.Name} {item.AscDesc}, ";
             }
 
             s = s.Trim();
-            if (s.EndsWith (","))
+            if (s.EndsWith(","))
             {
-                s=s.Substring (0,s.Length - 1);
+                s = s.Substring(0, s.Length - 1);
             }
 
             if (s != "")
@@ -718,7 +450,7 @@ namespace Passero.Framework.Controls
             return s;
         }
 
-             
+
         public bool ReportUseLike
         {
             get
@@ -784,22 +516,267 @@ namespace Passero.Framework.Controls
             }
         }
     }
-    public class QBEReports : Dictionary<string,QBEReport >
+    public class QBESSRSReports : Dictionary<string, QBESSRSReport>
     {
-        
-        public QBEReport Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection=null)
+
+        public QBESSRSReport Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection = null)
         {
-            var x = new QBEReport();
-            
+            var x = new QBESSRSReport();
+
             x.ReportDescription = ReportDescription;
             x.ReportFileName = ReportFileName;
             x.ReportTitle = ReportTitle;
-            x.DbConnection = DbConnection;  
-            Add(x.ReportTitle.Trim().ToUpper() ,x);
+            x.DbConnection = DbConnection;
+            Add(x.ReportTitle.Trim().ToUpper(), x);
             return x;
         }
 
-        
+
     }
 
+
+
+    public enum SSRSRenderFormat
+    {
+        XML,
+        NULL,
+        CSV,
+        IMAGE,
+        PDF,
+        HTML40,
+        HTML32,
+        MHTML,
+        EXCEL,
+        WORD
+    }
+    public class DataSet
+    {
+        public string Name { get; set; } = string.Empty;
+        public System.Data.IDbConnection DbConnection { get; set; }
+        public Dapper.DynamicParameters Parameters { get; set; }= new DynamicParameters (); 
+        public string SQLQuery { get; set; }    
+        //public object Repository { get; set; }
+        public Type ModelType { get; set; }
+        public Dictionary<string, System.Reflection.PropertyInfo> ModelProperties= new Dictionary<string, System.Reflection.PropertyInfo>();
+        public object Data { get; set; }    
+        public object Model { get; set; }
+        public DataSet() 
+        {
+        }   
+        public DataSet(string Name, Type ModelType, IDbConnection DbConnection, Dapper .DynamicParameters Parameters=null)
+        {
+            this.Name = Name;   
+            this.ModelType= ModelType;  
+            this.DbConnection = DbConnection;   
+            this.Parameters = Parameters;
+            
+            EnsureReportDataSet ();
+        }   
+
+        public bool EnsureReportDataSet()
+        {
+            if (this.ModelType != null && this.DbConnection != null)
+            {
+                object obj = Activator.CreateInstance(ModelType);
+                this.Model = obj;   
+                Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "DbConnection", DbConnection);
+                Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "Parameters", Parameters);
+                //this.Repository = obj;
+
+                
+                this.ModelProperties.Clear();
+                foreach (var item in Passero.Framework.DapperHelper.Utilities.GetPropertiesInfo(ModelType))
+                {
+                    this.ModelProperties.Add(item.Name, item);
+                }
+                
+
+                return true;
+            }
+            return false;   
+        }
+
+        public void LoadData()
+        {
+            this.Data = this.DbConnection.Query(this.SQLQuery, this.Parameters);
+            
+        }
+    }
+
+    public class ReportRenderRequestEventArgs : EventArgs
+    {
+        public bool Cancel {  get; set; }   
+        public string ReportName { get; set; }  
+        public Dictionary <string,DataSet> DataSets = new Dictionary<string, DataSet> ();
+    }
+
+    public class ReportAfterRenderEventArgs : EventArgs
+    {
+        public bool Cancel { get; set; }
+        public bool Success { get; set; }   
+        public string ReportName { get; set; }
+    }
+    
+    public class SSRSReport
+    {
+        public string ReportPath { get; set; }
+        public SSRSRenderFormat ReportFormat { get; set; } = SSRSRenderFormat.PDF;
+        public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult("Passero.Framework.Reports.SSRSReport.");
+        public Dictionary<string, DataSet> DataSets { get; set; } = new Dictionary<string, DataSet>();
+
+
+#if NET
+        public Microsoft.Reporting.NETCore.LocalReport Report { get; set; } 
+      
+#else
+        public Microsoft.Reporting.WebForms.LocalReport Report { get; set; }
+      
+#endif
+     
+        public SSRSReport()
+        {
+        
+#if NET
+            Report = new Microsoft.Reporting.NETCore.LocalReport();
+#else
+            Report = new Microsoft.Reporting.WebForms.LocalReport();
+#endif
+
+        }
+
+
+        public event EventHandler ReportRenderRequest;
+
+        protected virtual void OnReportRenderRequest(ReportRenderRequestEventArgs e)
+        {
+            ReportRenderRequest?.Invoke(this, e);
+        }
+
+        public event EventHandler ReportAfterRender;
+
+        protected virtual void OnReportAfterRender(ReportAfterRenderEventArgs  e)
+        {
+            ReportAfterRender?.Invoke(this, e);
+        }
+
+        public byte[] Render(SSRSRenderFormat RenderFormat = SSRSRenderFormat.PDF)
+        {
+            LastExecutionResult.Reset();
+            LastExecutionResult.Context = $"Passero.Framework.Reports.SSRSReports.Render({RenderFormat})";
+            byte[] result = null;
+            string f = RenderFormat.ToString();
+
+            try
+            {
+                Report.ReportPath = this.ReportPath;
+                IList<string> DataSetNames = Report.GetDataSourceNames();
+
+                // Invoke OnReportRenderRequest
+                ReportRenderRequestEventArgs  requestargs = new ReportRenderRequestEventArgs();
+                requestargs.DataSets = new Dictionary<string, DataSet>();
+                foreach (string DataSetName in this.DataSetNames() )
+                {
+                    DataSet ds = new DataSet();
+                    ds.Name= DataSetName;
+                    requestargs.DataSets.Add(DataSetName, ds);
+                }
+                this.OnReportRenderRequest (requestargs);   
+                if (requestargs .Cancel ) 
+                {
+                    LastExecutionResult.ResultMessage = "Cancelled by User";
+                    return null;
+                }
+
+                Report.DataSources.Clear();
+
+                if (requestargs .DataSets != null && requestargs .DataSets.Count > 0) 
+                {
+                    bool ok = true;
+                    foreach (var item in requestargs .DataSets .Values )
+                    {
+                        if (item.Data ==null) 
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok) this.DataSets = requestargs.DataSets;                
+                }
+
+                foreach (var item in this.DataSets.Values)
+                {
+                   item.EnsureReportDataSet();
+#if NET
+                   Microsoft.Reporting.NETCore.ReportDataSource  ds = new Microsoft.Reporting.NETCore .ReportDataSource(item.Name ,item.Data);
+                   Report.DataSources.Add(ds);
+#else
+                   Microsoft.Reporting.WebForms.ReportDataSource ds = new Microsoft.Reporting.WebForms.ReportDataSource(item.Name ,item.Data);
+                   Report.DataSources.Add(ds);
+#endif
+                }
+                
+                result = Report.Render(f);
+            }
+            catch (Exception ex)
+            {
+                LastExecutionResult.Exception = ex;
+                LastExecutionResult.ResultMessage = ex.Message;
+                LastExecutionResult.ErrorCode = 1;
+            }
+            return result;
+        }
+
+        public List<string> DataSetNames()
+        {
+            List<string> result = new List<string>();   
+            try
+            {
+                result= Report.GetDataSourceNames().ToList();
+            }
+            catch (Exception)
+            {
+
+            }
+            return result;
+        }
+
+    public ExecutionResult RenderAndSaveReport(string FileName, SSRSRenderFormat RenderFormat = SSRSRenderFormat.PDF)
+        {
+            var ER = new ExecutionResult();
+            ER.Context = $"Passero.Framework.Reports.SSRSReports.RenderAndSaveReport({FileName},{RenderFormat})";
+            byte[] result = null;
+
+            result = Render(RenderFormat);
+            if (LastExecutionResult.Failed)
+            {
+                ER = LastExecutionResult;
+                return ER;
+            }
+
+            if (result is null)
+            {
+                ER.ErrorCode = 2;
+                ER.ResultMessage = "Empty Rendering.";
+                LastExecutionResult = ER;
+                return ER;
+            }
+
+            try
+            {
+                Utilities.SaveByteArrayToFile(result, FileName);
+            }
+
+            catch (Exception ex)
+            {
+                ER.ErrorCode = 3;
+                ER.ResultMessage = ex.Message;
+                LastExecutionResult = ER;
+                return ER;
+            }
+
+            return ER;
+
+        }
+
+    }
 }

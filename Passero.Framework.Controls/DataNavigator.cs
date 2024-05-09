@@ -41,7 +41,9 @@ namespace Passero.Framework.Controls
         }
 
         public ListViewColumns ListViewColumns = new ListViewColumns();
+#pragma warning disable CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator._DataGridListViewDataTable'. Il valore predefinito è null
         private DataTable _DataGridListViewDataTable;
+#pragma warning restore CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator._DataGridListViewDataTable'. Il valore predefinito è null
         private int _DataGridListViewDefaultRowHeight = 24;
         private string _MovePreviousCaption = "Prev.";
         private string _MoveNextCaption = "Next";
@@ -338,6 +340,7 @@ namespace Passero.Framework.Controls
                 _ActiveViewModel = viewModel.ViewModel;
                 _ActiveDataNavigatorViewModel = viewModel;
                 _ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     _ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
@@ -346,6 +349,7 @@ namespace Passero.Framework.Controls
                 {
                     _ModelItem = _ModelItems.GetType().GetGenericArguments()[0];
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
                 _BindingSource = (BindingSource)ReflectionHelper.GetPropertyValue(viewModel.ViewModel, "BindingSource");
                 //ReflectionHelper.SetPropertyValue(ref viewModel.ViewModel, "DataNavigator", this)
                 ReflectionHelper.CallByName( viewModel.ViewModel, "DataNavigator", CallType.Set,this);
@@ -429,9 +433,13 @@ namespace Passero.Framework.Controls
                 SetActiveViewModel(this.ViewModels[viewModel]);
             }
         }
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private object?  _ActiveViewModel  = null;
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public object? ActiveViewModel
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -442,7 +450,9 @@ namespace Passero.Framework.Controls
         
 
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public Type? ModelType
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -459,9 +469,13 @@ namespace Passero.Framework.Controls
             
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private object? _ModelItem = null;
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public object? ModelItem
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -482,9 +496,13 @@ namespace Passero.Framework.Controls
             }
         }
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         private object? _ModelItems = null;
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public object? ModelItems
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -510,7 +528,9 @@ namespace Passero.Framework.Controls
 
         //private object? _ModelItemShadow = null;
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public object? ModelItemShadow
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -536,7 +556,9 @@ namespace Passero.Framework.Controls
 
         //private object? _ModelItemsShadow = null;
 
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public object? ModelItemsShadow
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -561,7 +583,9 @@ namespace Passero.Framework.Controls
         }
 
         private DataSet _Dataset;
+#pragma warning disable CS0169 // Il campo 'DataNavigator._DataTable' non viene mai usato
         private DataTable _DataTable;
+#pragma warning restore CS0169 // Il campo 'DataNavigator._DataTable' non viene mai usato
         private Wisej.Web .BindingSource _BindingSource;
         private string _DataGridListViewRowIndexColumnName = "$<rowindex>$";
         private int _DataGridListViewRowIndexColumnIndex = 0;
@@ -685,40 +709,52 @@ namespace Passero.Framework.Controls
         public event eAddNewRequestEventHandler eAddNewRequest;
         public delegate void eAddNewRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterAddNewRequest' non viene mai usato
         public event eAfterAddNewEventHandler eAfterAddNewRequest;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterAddNewRequest' non viene mai usato
         public delegate void eAfterAddNewEventHandler();
 
         public event ePrintRequestEventHandler ePrintRequest;
         public delegate void ePrintRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterPrint' non viene mai usato
         public event eAfterPrintEventHandler eAfterPrint;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterPrint' non viene mai usato
         public delegate void eAfterPrintEventHandler();
 
 
         public event eDeleteRequestEventHandler eDeleteRequest;
         public delegate void eDeleteRequestEventHandler(ref bool Cancel);
         
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterDelete' non viene mai usato
         public event eAfterDeleteEventHandler eAfterDelete;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterDelete' non viene mai usato
         public delegate void eAfterDeleteEventHandler();
 
 
         public event eRefreshRequestEventHandler eRefreshRequest;
         public delegate void eRefreshRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterRefresh' non viene mai usato
         public event eAfterRefreshEventHandler eAfterRefresh;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterRefresh' non viene mai usato
         public delegate void eAfterRefreshEventHandler();
 
 
         public event eCloseRequestEventHandler eCloseRequest;
         public delegate void eCloseRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterClose' non viene mai usato
         public event eAfterCloseEventHandler eAfterClose;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterClose' non viene mai usato
         public delegate void eAfterCloseEventHandler();
 
         public event eFindRequestEventHandler eFindRequest;
         public delegate void eFindRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterFind' non viene mai usato
         public event eAfterFindEventHandler eAfterFind;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterFind' non viene mai usato
         public delegate void eAfterFindEventHandler();
 
 
@@ -728,13 +764,17 @@ namespace Passero.Framework.Controls
         public event eMovePreviousRequestEventHandler eMovePreviousRequest;
         public delegate void eMovePreviousRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eMovePreviousCompleted' non viene mai usato
         public event eMovePreviousCompletedEventHandler eMovePreviousCompleted;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eMovePreviousCompleted' non viene mai usato
         public delegate void eMovePreviousCompletedEventHandler();
 
         public event eMoveFirstRequestEventHandler eMoveFirstRequest;
         public delegate void eMoveFirstRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eMoveFirstCompleted' non viene mai usato
         public event eMoveFirstCompletedEventHandler eMoveFirstCompleted;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eMoveFirstCompleted' non viene mai usato
         public delegate void eMoveFirstCompletedEventHandler();
 
         public event eMoveLastRequestEventHandler eMoveLastRequest;
@@ -752,7 +792,9 @@ namespace Passero.Framework.Controls
         public event eMoveAtItemRequestEventHandler eMoveAtItemRequest;
         public delegate void eMoveAtItemRequestEventHandler(ref bool Cancel);
 
+#pragma warning disable CS0067 // L'evento 'DataNavigator.eMoveAtItemCompleted' non viene mai usato
         public event eMoveAtItemCompletedEventHandler eMoveAtItemCompleted;
+#pragma warning restore CS0067 // L'evento 'DataNavigator.eMoveAtItemCompleted' non viene mai usato
         public delegate void eMoveAtItemCompletedEventHandler();
 
         public event eUndoRequestEventHandler eUndoRequest;
@@ -788,7 +830,9 @@ namespace Passero.Framework.Controls
         private bool _FKeyEnabled = false;
 
         private string _RecordLabelSeparator = "of";
+#pragma warning disable CS0414 // Il campo 'DataNavigator._RecordLabelNewRow' è assegnato, ma il suo valore non viene mai usato
         private string _RecordLabelNewRow = "New Row";
+#pragma warning restore CS0414 // Il campo 'DataNavigator._RecordLabelNewRow' è assegnato, ma il suo valore non viene mai usato
 
         private bool _DataBoundCompleted = false;
         public bool DataBoundCompleted
@@ -1420,7 +1464,9 @@ namespace Passero.Framework.Controls
         {
             int AffectedRecords = 0;
             int CurrentRowIndex = 0;
+#pragma warning disable CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             int CurrentCellIndex = 0;
+#pragma warning restore CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             if (DataRepeater == null)
             {
                 return AffectedRecords;
@@ -1449,6 +1495,7 @@ namespace Passero.Framework.Controls
                         object eresult = ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get);
                     }
                 }
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     // DataGridView.CurrentCell = DataGridView(CurrentCellIndex, CurrentRowIndex);
@@ -1456,6 +1503,7 @@ namespace Passero.Framework.Controls
                 catch (Exception ex)
                 {
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
                 // this._DataGridRow = DataGridView.CurrentRow.Index;
                 DataRepeater.AllowUserToAddItems = allowAdd;
             }
@@ -1699,6 +1747,7 @@ namespace Passero.Framework.Controls
 
             if (DataRepeater.DataSource != null)
             {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     IList items = (IList)DataRepeater.DataSource;
@@ -1754,6 +1803,7 @@ namespace Passero.Framework.Controls
                     _AddNewState = false;
                     throw;
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
             }
 
             return DataRepeater.CurrentItemIndex;
@@ -1773,6 +1823,7 @@ namespace Passero.Framework.Controls
                 return 0;
             if (DataGridView.DataSource  != null)
             {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {   
                     
@@ -1906,6 +1957,7 @@ namespace Passero.Framework.Controls
                     _AddNewState = false;
                     throw ;
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
 
 
             }
@@ -1927,6 +1979,7 @@ namespace Passero.Framework.Controls
                 return 0;
             if (DataGridView.DataSource is not null)
             {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     DataTable dt;
@@ -2030,6 +2083,7 @@ namespace Passero.Framework.Controls
                     // LockWindow(Me.ParentForm.Handle, False)
                     _AddNewState = false;
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
 
 
             }
@@ -4456,6 +4510,7 @@ namespace Passero.Framework.Controls
 
             if (_DataGridListView.Focused)
             {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     //_DbObject.MoveTo(Conversions.ToInteger(_DataGridListView.CurrentRow.Cells[_DataGridListViewRowIndexColumnName].Value));
@@ -4464,6 +4519,7 @@ namespace Passero.Framework.Controls
                 {
 
                 }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
 
             }
 
