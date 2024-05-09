@@ -16,12 +16,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.Tester", "Passero.Framework.Tester\Passero.Framework.Tester.csproj", "{E36AA3B4-799E-40AC-813B-348D890FB049}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasseroDemo.Views", "PasseroDemo.Views\PasseroDemo.Views.csproj", "{B70C778E-964B-4874-B810-81C7B0D18339}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0FAB72E6-848E-4267-B426-DBB0E9C675B2} = {0FAB72E6-848E-4267-B426-DBB0E9C675B2}
+		{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A} = {E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.Controls", "Passero.Framework.Controls\Passero.Framework.Controls.csproj", "{0128B94E-A09F-4C55-939E-A7DC76EB894F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasseroDemo.Repositories", "PasseroDemo.Repositories\PasseroDemo.Repositories.csproj", "{E636BCB1-BA4D-4479-BFC6-F0EE27BD7B3A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.SSRSReports", "Passero.Framework.RsReports\Passero.Framework.RsReports\Passero.Framework.SSRSReports.csproj", "{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.SSRSReports", "Passero.Framework.SSRSReports\Passero.Framework.SSRSReports.csproj", "{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

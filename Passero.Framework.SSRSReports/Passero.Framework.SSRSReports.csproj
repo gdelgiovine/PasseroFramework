@@ -35,8 +35,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Passero.Framework.Controls\Passero.Framework.Controls.csproj" />
-	  <ProjectReference Include="..\..\Passero.Framework\Passero.Framework.csproj" />
+	  <ProjectReference Include="..\Passero.Framework.Controls\Passero.Framework.Controls.csproj" />
+	  <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
 	</ItemGroup>
 	
 
