@@ -14,7 +14,7 @@ namespace PasseroDemo.Views
         private Passero.Framework.ViewModel<Models.Discount  > vmDiscount = new Passero.Framework.ViewModel<Models.Discount>();
         //private Passero.Framework.ViewModel<ModelStub> myViewModelStub = new Passero.Framework.ViewModel<ModelStub>();
         private Passero.Framework.Controls.QBEForm<Models.Discount > xQBEForm_Discount = new Passero.Framework.Controls.QBEForm<Models.Discount >();
-        private Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
+        private Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
 
         public frmDiscount()
         {
@@ -104,7 +104,7 @@ namespace PasseroDemo.Views
         }
         private void QBEReport_base()
         {
-            QBEReport xQBEReport = new QBEReport();
+            ReportManager xQBEReport = new ReportManager();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

@@ -27,7 +27,7 @@ namespace PasseroDemo.Views
         public Repository<Models.Author> rpAuthor = new Repository<Models.Author>();
 
         QBEForm<Models.Title> xQBEForm_Title = new QBEForm<Models.Title>();
-        Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
+        Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
 
         //private System.Data.SqlClient.SqlConnection sqlConnection;
         //private IEnumerable<PasseroDemo.Models.Title> title ;

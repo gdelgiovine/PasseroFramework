@@ -4,6 +4,11 @@ using Wisej.Web;
 using Passero.Framework;
 using Passero.Framework.Controls;
 using Passero.Framework.SSRSReports;
+using System.IO;
+using System.Data.SqlClient;
+using FastReport.Data;
+using System.Threading;
+using Passero.Framework.FRReports;
 
 
 namespace PasseroDemo.Views
@@ -19,7 +24,7 @@ namespace PasseroDemo.Views
         // cosi quello base
         public Passero.Framework.ViewModel<Models.Author> vmAuthor = new Passero.Framework.ViewModel<Models.Author>();
         Passero.Framework .Controls.QBEForm<Models.Author> QBEForm_Author = new Passero.Framework.Controls.QBEForm<Models.Author>();
-        Passero.Framework.SSRSReports.QBEReport xQBEReport = new Passero.Framework.SSRSReports.QBEReport();
+        Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
         Passero.Framework.DbLookUp<Models.Author> dblAuthor = new DbLookUp<Models.Author>();
 
         public frmAuthors()
@@ -107,17 +112,32 @@ namespace PasseroDemo.Views
 
         }
 
-        private void QBEReport_Authors()
+
+        private void FR_QBEReport_Authors()
         {
-            xQBEReport = new QBEReport();
+            Passero.Framework.FRReports.ReportManager  xQBEReport = new Passero.Framework.FRReports.ReportManager ();
+            xQBEReport.QBEReports.Add("REPORT1", @"C:\Reports\REPORT1.FRX", "REPORT UNO");
+            xQBEReport.QBEReports["REPORT1"].AddDataSet<Models.Author>("Authors", this.vmAuthor.Repository.DbConnection);
+            xQBEReport.DefaultReport = xQBEReport.QBEReports["REPORT1"];
+            xQBEReport.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_id), "", "");
+            xQBEReport.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_fname), "", "");
+            xQBEReport.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_lname), "", "");
+            xQBEReport.SetFocusControlAfterClose = this.txt_au_id;
+            xQBEReport.CallBackAction = () => { this.Reload(); };
+            xQBEReport.ShowQBEReport();
+        }
+
+        private void SSRS_QBEReport_Authors()
+        {
+            xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 
             xQBEReport.QBEReports.Add("REPORT1", @"C:\Reports\REPORT1.RDL", "REPORT UNO");
             xQBEReport.QBEReports["REPORT1"].AddDataSet<Models.Author>("DataSet1", this.vmAuthor.Repository.DbConnection);
             xQBEReport.QBEReports["REPORT1"].AddDataSet<Models.Author>("DataSet2", this.vmAuthor.Repository.DbConnection, "SELECT * FROM Authors");
-            //xQBEReport.QBEReports["REPORT1"].DataSources["DataSet2"].SQLQuery="SELECT * FROM Authors Where au_id=@au_id";
-            //xQBEReport.QBEReports["REPORT1"].DataSources["DataSet2"].Parameters.Add("@au_id", "1123");
+            //xQBEReport.QBEReports["REPORT1"].DataSets["DataSet2"].SQLQuery="SELECT * FROM Authors Where au_id=@au_id";
+            //xQBEReport.QBEReports["REPORT1"].DataSets["DataSet2"].Parameters.Add("@au_id", "1123");
 
 
             xQBEReport.QBEReports.Add("REPORT2", @"C:\Reports\REPORT2.RDL", "REPORT DUE");
@@ -142,7 +162,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
-            this.QBEReport_Authors(); 
+            this.SSRS_QBEReport_Authors(); 
         }
 
         private void dataNavigator1_eFind()
@@ -152,6 +172,73 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eUndo()
         {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string reportsFolder = @"C:\REPORTS";
+            MsSqlDataConnection sqlConnection = new MsSqlDataConnection();
+            sqlConnection.ConnectionString = this.vmAuthor.DbConnection.ConnectionString;
+            sqlConnection.CreateAllTables();
+            FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
+            FastReport.Report xreport = new FastReport.Report();
+            //xreport.Dictionary.ClearRegisteredData();
+            //xreport.Dictionary.Connections.Clear();
+            //xreport.Dictionary.Connections.Add(sqlConnection);
+            xreport.Load(Path.Combine(reportsFolder, "REPORT1.frx"));
+            xreport.Dictionary.ClearRegisteredData();
+            xreport.Dictionary.Connections.Clear();
+            xreport.Dictionary.Connections.Add(sqlConnection);
+
+            TableDataSource table = xreport.GetDataSource("authors") as TableDataSource;
+
+
+            table.SelectCommand = this.vmAuthor.Repository.SQLQuery;
+            
+            foreach (var name in this.vmAuthor.Repository.Parameters.ParameterNames)
+            {
+                CommandParameter parameter = new CommandParameter();
+                parameter.Name = name;
+                parameter.DefaultValue = "";
+                parameter.Value = this.vmAuthor.Repository.Parameters.Get<dynamic>(name);
+                parameter.DataType = (int)SqlDbType.VarChar;
+                
+                
+                table.Parameters.Add(parameter);
+            }
+            
+            
+
+            //xreport.RegisterData(this.vmAuthor .ModelItems, "Authors");
+
+            xreport.Prepare();
+            FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+
+            pdfExport.Export(xreport, @"C:\REPORTS\XREPORT1.pdf");
+
+
+
+
+
+#if NET
+            FastReport.Web.WebReport report = new FastReport.Web.WebReport();
+            report.Report.Dictionary.Connections.Add(sqlConnection);
+            report.Report.Load(Path.Combine(reportsFolder, "REPORT1.frx"));
+            report.Report.Prepare();
+            pdfExport.Export(report.Report, @"C:\REPORTS\REPORT1.pdf");
+
+
+#else
+      
+#endif
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.FR_QBEReport_Authors();
 
         }
     }

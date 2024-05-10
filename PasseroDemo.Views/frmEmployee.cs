@@ -117,7 +117,7 @@ namespace PasseroDemo.Views
 
         private void QBEReport_base()
         {
-            QBEReport xQBEReport = new QBEReport();
+            ReportManager xQBEReport = new ReportManager();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

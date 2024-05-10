@@ -1,34 +1,16 @@
 ﻿
 using Dapper;
-//using Microsoft.Ajax.Utilities;
-//using Microsoft.ReportingServices.ReportProcessing.ExprHostObjectModel;
-//using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-//using Newtonsoft.Json.Linq;
-//using Passero.Framework.Base;
-using Passero.Framework;
-using Passero.Framework.SSRSReports;
+using Passero.Framework.FRReports;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-//using System.Data.Common;
-//using System.Data.SqlClient;
-//using System.Globalization;
 using System.IO;
 using System.Linq;
-
-//using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-//using System.Xml.Linq;
 using Wisej.Web;
-//using Wisej.Web.Data;
 
-namespace Passero.Framework.SSRSReports
+namespace Passero.Framework.FRReports
 {
 
     public partial class ReportManager : Form
@@ -36,10 +18,10 @@ namespace Passero.Framework.SSRSReports
         private string RenderError = "";
         private string CurrentReportName;
         public bool RaiseReportEvents= false;
-        public Passero.Framework.SSRSReports.QBEColumns QBEColumns = new QBEColumns();
+        public FRReports.QBEColumns QBEColumns = new FRReports.QBEColumns();
 
-        public QBEReports QBEReports = new QBEReports();    
-        public QBESSRSReport DefaultReport { get; set; }
+        public FRReports.QBEReports QBEReports = new FRReports.QBEReports();    
+        public FRReports.QBEFRReport DefaultReport { get; set; }
         public bool PrintDefaultReport { get; set; } = false;
         public string ReportsPath { get; set; } = Wisej.Web.Application.StartupPath + "reports";
         public string ReportsPDFUrlPath { get; set; } = @"\Reports\";
@@ -48,7 +30,7 @@ namespace Passero.Framework.SSRSReports
         public string SQLQuery { get; set; } = "";
         public DynamicParameters SQLQueryParameters { get; set; } = new DynamicParameters();
 
-        private  SSRSReport SSRSReport = new SSRSReport();
+        private FRReport FRReport = new FRReport();
 
         public event EventHandler ReportRenderRequest;
 
@@ -100,7 +82,7 @@ namespace Passero.Framework.SSRSReports
          
         }
 
-        private void SSRSReport_ReportRenderRequest(object sender, EventArgs e)
+        private void FRReport_ReportRenderRequest(object sender, EventArgs e)
         {
             if (this.RaiseReportEvents)
             {
@@ -118,19 +100,20 @@ namespace Passero.Framework.SSRSReports
             string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(this.Text);
             string expofilenameextension = ".xml";
             System.IO.MemoryStream  Stream = null;
-            QBESSRSReport Report = this.QBEReports[CurrentReportName];
-            RenderFormat format = RenderFormat.EXCEL ;
+
+            QBEFRReport  Report = this.QBEReports[CurrentReportName];
+            FRRenderFormat format = FRRenderFormat.EXCEL ;
             
             
             if (rbExcel.Checked)
             {
-                format = RenderFormat.EXCEL;
+                format = FRRenderFormat.EXCEL;
                 expofilenameextension = ".xls";
             }
 
             if (rbCSV.Checked)
             {
-                format = RenderFormat.CSV ;
+                format = FRRenderFormat.CSV ;
                 expofilenameextension = ".csv";
             }
 
@@ -141,12 +124,12 @@ namespace Passero.Framework.SSRSReports
             }
             if (rbXML.Checked)
             {
-                format = RenderFormat.XML;
+                format = FRRenderFormat.XML;
                 expofilenameextension = ".xml";
             }
 
             BuildQuery3();
-            byte[] ReportBytes = this.RenderReport(Report,format );
+            byte[] ReportBytes = null;// this.RenderReport(Report,format );
 
 
             //switch (SSRSReport.ReportFormat)
@@ -228,7 +211,7 @@ namespace Passero.Framework.SSRSReports
 
             this.TabControl.Visible = true;
             SetupReportGrid();
-            //SetupQueryGrid();
+            SetupQueryGrid(this.DefaultReport );
 
 
             if (this.Owner == null && this.SetFocusControlAfterClose != null)
@@ -279,7 +262,7 @@ namespace Passero.Framework.SSRSReports
         {
 
             ReportName = ReportName.Trim().ToUpper();
-            QBESSRSReport report = this.QBEReports[ReportName];
+            QBEFRReport  report = this.QBEReports[ReportName];
             if (report==null)
             {
                 this.RenderError = "No Report!";
@@ -296,7 +279,7 @@ namespace Passero.Framework.SSRSReports
 
             this.txtRenderError.Visible = false;
           
-            byte[] ReportBytes = this.RenderReport(ReportName, RenderFormat.PDF);
+            byte[] ReportBytes = this.RenderReport(report, FRRenderFormat.PDF);
           
             if (ReportBytes != null)
             {
@@ -317,11 +300,11 @@ namespace Passero.Framework.SSRSReports
         }
 
 
-        private byte[] RenderReport(string ReportName, RenderFormat Format = RenderFormat.PDF)
+        private byte[] RenderReport(string ReportName, FRRenderFormat Format = FRRenderFormat.PDF)
         {
 
             ReportName = ReportName.Trim().ToUpper();
-            QBESSRSReport Report = this.QBEReports[ReportName];
+            QBEFRReport  Report = this.QBEReports[ReportName];
             if (Report == null)
             {
                 this.RenderError = "No Report!";
@@ -335,14 +318,14 @@ namespace Passero.Framework.SSRSReports
                 MessageBox.Show("No Report DataSets!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-
-            return RenderReport(Report, Format);
+            
+            return RenderReport(Report , Format);
             
 
         }
 
 
-        private byte[] RenderReport(QBESSRSReport Report, RenderFormat Format = RenderFormat.PDF)
+        private byte[] RenderReport(QBEFRReport Report, FRRenderFormat  Format = FRRenderFormat.PDF)
         {
 
             if (Report == null)
@@ -358,22 +341,22 @@ namespace Passero.Framework.SSRSReports
             }
 
             //Passero.Framework.Reports.SSRSReport SSRSReport = new Reports.SSRSReport();
-            SSRSReport = new SSRSReports.SSRSReport();
+            FRReport = new FRReports.FRReport();
             if (RaiseReportEvents)
             {
-                this.SSRSReport.ReportRenderRequest -= SSRSReport_ReportRenderRequest;
-                this.SSRSReport.ReportRenderRequest += SSRSReport_ReportRenderRequest;
+                this.FRReport.ReportRenderRequest -= FRReport_ReportRenderRequest;
+                this.FRReport.ReportRenderRequest += FRReport_ReportRenderRequest;
             }
-            SSRSReport.ReportPath = Report.ReportFileName;
-            SSRSReport.ReportFormat = Format;
-            SSRSReport.DataSets = Report.DataSets;
+            FRReport.ReportPath = Report.ReportFileName;
+            FRReport.ReportFormat = Format;
+            FRReport.DataSets = Report.DataSets;
 
          
 
-            byte[] ReportBytes = SSRSReport.Render(Format );
-            if (SSRSReport.LastExecutionResult.Exception != null)
+            byte[] ReportBytes = FRReport.Render(Format );
+            if (FRReport.LastExecutionResult.Exception != null)
             {
-                this.RenderError = SSRSReport.LastExecutionResult.ResultMessage + "\n" + SSRSReport.LastExecutionResult.Exception.ToString();
+                this.RenderError = FRReport.LastExecutionResult.ResultMessage + "\n" + FRReport.LastExecutionResult.Exception.ToString();
             }
             return ReportBytes;
 
@@ -385,18 +368,18 @@ namespace Passero.Framework.SSRSReports
         private void SetupQueryGrid(string ReportName)
         {
 
-            QBESSRSReport report = this.QBEReports[ReportName];
+            QBEFRReport  report = this.QBEReports[ReportName];
             SetupQueryGrid(report);
         }
 
 
-        private void SetupQueryGrid(QBESSRSReport QBEReport)
+        private void SetupQueryGrid(QBEFRReport  QBEReport)
         {
 
             if (QBEReport.DataSets.Count == 0)
                 return;
 
-            Passero.Framework.SSRSReports.ReportDataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
+            Passero.Framework.FRReports.DataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
             if (PrimaryDataSet == null)
             {
                 PrimaryDataSet = QBEReport.DataSets.Values.First();
@@ -423,7 +406,7 @@ namespace Passero.Framework.SSRSReports
         
                     Type PropertyType = PrimaryDataSet.ModelProperties[QBEColumn.DbColumn].PropertyType;
                     Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
-                    //if (Passero.Framework.Utilities.GetSystemTypeIs(PropertyType) == EnumSystemTypeIs.Boolean)
+                    if (Passero.Framework.Utilities.GetSystemTypeIs(PropertyType) == EnumSystemTypeIs.Boolean)
                     if (PropertyTypeIs == EnumSystemTypeIs.Boolean)
                     {
                         DataGridViewCheckBoxCell ncell = new DataGridViewCheckBoxCell();
@@ -510,9 +493,9 @@ namespace Passero.Framework.SSRSReports
             if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
                 return;
 
-            QBESSRSReport Report = this.QBEReports[this.CurrentReportName];
+            QBEFRReport Report = this.QBEReports[this.CurrentReportName];
 
-            Passero.Framework.SSRSReports.ReportDataSet PrimaryDataSet = Report.PrimaryDataSet;
+            Passero.Framework.FRReports.DataSet PrimaryDataSet = Report.PrimaryDataSet;
             if (PrimaryDataSet == null)
             {
                 PrimaryDataSet = Report.DataSets.Values.First();
@@ -605,7 +588,7 @@ namespace Passero.Framework.SSRSReports
 
 
             //Load Data for other datasets
-            foreach (Passero.Framework.SSRSReports.ReportDataSet DataSet in Report.DataSets.Values )
+            foreach (Passero.Framework.FRReports.DataSet DataSet in Report.DataSets.Values )
             {
                 if (DataSet != PrimaryDataSet )
                 {
@@ -804,7 +787,7 @@ namespace Passero.Framework.SSRSReports
                 return;
             }
 
-            QBESSRSReport Report = QBEReports[CurrentReportName];
+            QBEFRReport  Report = QBEReports[CurrentReportName];
             QBEReportSortColumn SortColumn= (QBEReportSortColumn )this.lstSortColumns.SelectedItem;    
             if(Report .SelectedSortColumns .ContainsKey (SortColumn.Name)==false)
             {
@@ -824,7 +807,7 @@ namespace Passero.Framework.SSRSReports
     
             if (this.dgv_SelectedSortColumns.CurrentRow  is null)
             { return; }
-            QBESSRSReport Report = QBEReports[CurrentReportName];
+            QBEFRReport  Report = QBEReports[CurrentReportName];
             Report.SelectedSortColumns.Remove(this.dgv_SelectedSortColumns.CurrentRow.Cells[this.dgvc_SelectedSortColumns_name].Value.ToString());
             this.dgv_SelectedSortColumns.Rows.Clear();
             this.dgv_SelectedSortColumns.Rows.Clear();

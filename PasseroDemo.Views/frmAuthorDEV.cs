@@ -22,7 +22,7 @@ namespace PasseroDemo.Views
         public ViewModel <Models .Author> vmAuthor =  new ViewModel <Models .Author> ();
 
         QBEForm<Models.Author> xQBEForm_Author = new QBEForm<Models.Author>();
-        QBEReport xQBEReport = new  QBEReport ();
+        ReportManager xQBEReport = new  ReportManager ();
         Passero.Framework.DbLookUp<Models.Author> dblAuthor = new DbLookUp<Models.Author>();
 
         public frmAuthorDEV()
@@ -220,7 +220,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
-            xQBEReport = new QBEReport();
+            xQBEReport = new ReportManager();
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

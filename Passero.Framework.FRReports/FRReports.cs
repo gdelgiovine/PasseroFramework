@@ -1,21 +1,18 @@
 ﻿using Dapper;
-using Dapper.Contrib.Extensions;
+using FastReport;
+using FastReport.Data;
 using Microsoft.VisualBasic;
-
-#if NET
-#else
-using Microsoft.Reporting.WebForms;
-#endif
-
 using Passero.Framework;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 
 
-namespace Passero.Framework.SSRSReports
+namespace Passero.Framework.FRReports
 {
 
     [Serializable]
@@ -275,6 +272,9 @@ namespace Passero.Framework.SSRSReports
 
     public class QBEColumns : Dictionary<string, QBEColumn>
     {
+        //public XQBEForm QBEForm;
+
+
         public QBEColumns() : base(StringComparer.InvariantCultureIgnoreCase)
         {
         }
@@ -383,9 +383,9 @@ namespace Passero.Framework.SSRSReports
 
 
     [Serializable]
-    public class QBESSRSReport
+    public class QBEFRReport
     {
-        public Dictionary<string, Passero.Framework.SSRSReports.ReportDataSet> DataSets = new Dictionary<string, SSRSReports.ReportDataSet>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, Passero.Framework.FRReports.DataSet> DataSets = new Dictionary<string,FRReports.DataSet>(StringComparer.InvariantCultureIgnoreCase);
         public ReportTypes ReportType = ReportTypes.SSRSLocalReport;
         public Dapper.DynamicParameters SQLQueryParameters = new Dapper.DynamicParameters();
         public Dictionary<string, QBEReportSortColumn> SortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
@@ -397,7 +397,7 @@ namespace Passero.Framework.SSRSReports
         private string mReportDescription;
         private bool mReportUseLike;
         public IDbConnection DbConnection { get; set; }
-        public SSRSReports.ReportDataSet PrimaryDataSet { get; set; }
+        public FRReports.DataSet PrimaryDataSet { get; set; }
 
         public bool SetPrimaryDataSet(string Name)
         {
@@ -410,9 +410,9 @@ namespace Passero.Framework.SSRSReports
 
             return result;
         }
-        public Passero.Framework.SSRSReports.ReportDataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery = "", DynamicParameters Parameters = null)
+        public Passero.Framework.FRReports.DataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery = "", DynamicParameters Parameters = null)
         {
-            Passero.Framework.SSRSReports.ReportDataSet ds = new SSRSReports.ReportDataSet();
+            Passero.Framework.FRReports.DataSet ds = new FRReports.DataSet();
 
             ds.Name = Name;
             ds.DbConnection = DbConnection;
@@ -513,12 +513,12 @@ namespace Passero.Framework.SSRSReports
             }
         }
     }
-    public class QBEReports : Dictionary<string, QBESSRSReport>
+    public class QBEReports : Dictionary<string, QBEFRReport >
     {
 
-        public QBESSRSReport Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection = null)
+        public QBEFRReport  Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection = null)
         {
-            var x = new QBESSRSReport();
+            var x = new QBEFRReport();
 
             x.ReportDescription = ReportDescription;
             x.ReportFileName = ReportFileName;
@@ -533,7 +533,7 @@ namespace Passero.Framework.SSRSReports
 
 
 
-    public enum RenderFormat
+    public enum FRRenderFormat
     {
         XML,
         NULL,
@@ -546,7 +546,7 @@ namespace Passero.Framework.SSRSReports
         EXCEL,
         WORD
     }
-    public class ReportDataSet
+    public class DataSet
     {
         public string Name { get; set; } = string.Empty;
         public System.Data.IDbConnection DbConnection { get; set; }
@@ -557,10 +557,10 @@ namespace Passero.Framework.SSRSReports
         public Dictionary<string, System.Reflection.PropertyInfo> ModelProperties= new Dictionary<string, System.Reflection.PropertyInfo>();
         public object Data { get; set; }    
         public object Model { get; set; }
-        public ReportDataSet() 
+        public DataSet() 
         {
         }   
-        public ReportDataSet(string Name, Type ModelType, IDbConnection DbConnection, Dapper .DynamicParameters Parameters=null)
+        public DataSet(string Name, Type ModelType, IDbConnection DbConnection, Dapper .DynamicParameters Parameters=null)
         {
             this.Name = Name;   
             this.ModelType= ModelType;  
@@ -604,7 +604,7 @@ namespace Passero.Framework.SSRSReports
     {
         public bool Cancel {  get; set; }   
         public string ReportName { get; set; }  
-        public Dictionary <string,ReportDataSet> DataSets = new Dictionary<string, ReportDataSet> ();
+        public Dictionary <string,DataSet> DataSets = new Dictionary<string, DataSet> ();
     }
 
     public class ReportAfterRenderEventArgs : EventArgs
@@ -614,33 +614,20 @@ namespace Passero.Framework.SSRSReports
         public string ReportName { get; set; }
     }
     
-    public class SSRSReport
+    public class FRReport
     {
         public string ReportPath { get; set; }
-        public RenderFormat ReportFormat { get; set; } = RenderFormat.PDF;
-        public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult("Passero.Framework.Reports.SSRSReport.");
-        public Dictionary<string, ReportDataSet> DataSets { get; set; } = new Dictionary<string, ReportDataSet>();
+        public FRRenderFormat ReportFormat { get; set; } = FRRenderFormat.PDF;
+        public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult("Passero.Framework.FRReports.");
+        public Dictionary<string, DataSet> DataSets { get; set; } = new Dictionary<string, DataSet>();
 
+        public FastReport.Report Report { get; set; } = new FastReport.Report();
 
-#if NET
-        public Microsoft.Reporting.NETCore.LocalReport Report { get; set; } 
-      
-#else
-        public Microsoft.Reporting.WebForms.LocalReport Report { get; set; }
-      
-#endif
      
-        public SSRSReport()
+        public FRReport()
         {
-        
-#if NET
-            Report = new Microsoft.Reporting.NETCore.LocalReport();
-#else
-            Report = new Microsoft.Reporting.WebForms.LocalReport();
-#endif
-
+            Report = new FastReport.Report();
         }
-
 
         public event EventHandler ReportRenderRequest;
 
@@ -656,70 +643,174 @@ namespace Passero.Framework.SSRSReports
             ReportAfterRender?.Invoke(this, e);
         }
 
-        public byte[] Render(RenderFormat RenderFormat = RenderFormat.PDF)
+
+
+        private void PrepareReport()
+        {
+
+            MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
+            Report.Dictionary.Connections.Clear();
+            foreach (var dataset in this.DataSets )
+            {
+                if (dataset.Value.DbConnection.GetType()== typeof(System.Data.SqlClient .SqlConnection))
+                {
+                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
+                }
+            }
+            
+            Report.Load(this.ReportPath);
+            bool datasets_validated = true;
+            foreach (var dataset in this.DataSets)
+            {
+                //TableDataSource table = Report.GetDataSource(dataset.Value.Name) as TableDataSource;
+                TableDataSource table = Report.GetDataSource("C") as TableDataSource;
+                if (table != null)
+                {
+                    table.Parameters.Clear();
+                    table.Connection.ConnectionString = dataset.Value.DbConnection.ConnectionString;
+                    table.SelectCommand = dataset.Value.SQLQuery;
+                    foreach (var name in dataset.Value.Parameters.ParameterNames)
+                    {
+                        CommandParameter parameter = new CommandParameter();
+                        parameter.Name = name;
+                        parameter.DefaultValue = "";
+                        parameter.Value = dataset.Value.Parameters.Get<dynamic>(name);
+                        parameter.DataType = (int)SqlDbType.VarChar;
+                        table.Parameters.Add(parameter);
+                    }
+                }
+                else
+                {
+                    datasets_validated =false;
+                    break;
+                }
+            }
+
+            if (datasets_validated == true)
+            {
+                Report.Prepare();
+                FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                pdfExport.Export(Report, @"C:\REPORTS\XREPORT1.pdf");
+            }
+
+        }
+
+
+        public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF)
         {
             LastExecutionResult.Reset();
-            LastExecutionResult.Context = $"Passero.Framework.Reports.SSRSReports.Render({RenderFormat})";
+            LastExecutionResult.Context = $"Passero.Framework.FSReports.FRReport.Render({RenderFormat})";
             byte[] result = null;
             string f = RenderFormat.ToString();
 
+            
+            MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
+            Report.Dictionary.Connections.Clear();
+            foreach (var dataset in this.DataSets)
+            {
+                if (dataset.Value.DbConnection.GetType() == typeof(System.Data.SqlClient.SqlConnection))
+                {
+                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
+                }
+            }
+
+
             try
             {
-                Report.ReportPath = this.ReportPath;
-                IList<string> DataSetNames = Report.GetDataSourceNames();
+                Report.Load(this.ReportPath);
+
 
                 // Invoke OnReportRenderRequest
-                ReportRenderRequestEventArgs  requestargs = new ReportRenderRequestEventArgs();
-                requestargs.DataSets = new Dictionary<string, ReportDataSet>();
-                foreach (string DataSetName in this.DataSetNames() )
-                {
-                    ReportDataSet ds = new ReportDataSet();
-                    ds.Name= DataSetName;
-                    requestargs.DataSets.Add(DataSetName, ds);
-                }
-                this.OnReportRenderRequest (requestargs);   
-                if (requestargs .Cancel ) 
-                {
-                    LastExecutionResult.ResultMessage = "Cancelled by User";
-                    return null;
-                }
+                //ReportRenderRequestEventArgs requestargs = new ReportRenderRequestEventArgs();
+                //requestargs.DataSets = new Dictionary<string, DataSet>();
+                //foreach (string DataSetName in this.DataSetNames())
+                //{
+                //    DataSet ds = new DataSet();
+                //    ds.Name = DataSetName;
+                //    requestargs.DataSets.Add(DataSetName, ds);
+                //}
+                //this.OnReportRenderRequest(requestargs);
+                //if (requestargs.Cancel)
+                //{
+                //    LastExecutionResult.ResultMessage = "Cancelled by User";
+                //    return null;
+                //}
 
-                Report.DataSources.Clear();
 
-                if (requestargs .DataSets != null && requestargs .DataSets.Count > 0) 
+
+                bool datasets_validated = true;
+                foreach (var dataset in this.DataSets)
                 {
-                    bool ok = true;
-                    foreach (var item in requestargs .DataSets .Values )
+                    TableDataSource table = Report.GetDataSource(dataset.Value.Name) as TableDataSource;
+                    if (table != null)
                     {
-                        if (item.Data ==null) 
+                        table.Parameters.Clear();
+                        table.Connection.ConnectionString = dataset.Value.DbConnection.ConnectionString;
+                        table.SelectCommand = dataset.Value.SQLQuery;
+                        foreach (var name in dataset.Value.Parameters.ParameterNames)
                         {
-                            ok = false;
-                            break;
+                            CommandParameter parameter = new CommandParameter();
+                            parameter.Name = name;
+                            parameter.DefaultValue = "";
+                            parameter.Value = dataset.Value.Parameters.Get<dynamic>(name);
+                            parameter.DataType = (int)SqlDbType.VarChar;
+                            table.Parameters.Add(parameter);
                         }
                     }
-                    if (ok) this.DataSets = requestargs.DataSets;                
+                    else
+                    {
+                        datasets_validated = false;
+                        break;
+                    }
                 }
 
-                foreach (var item in this.DataSets.Values)
+                if (datasets_validated == true)
                 {
-                   item.EnsureReportDataSet();
-#if NET
-                   Microsoft.Reporting.NETCore.ReportDataSource  ds = new Microsoft.Reporting.NETCore .ReportDataSource(item.Name ,item.Data);
-                   Report.DataSources.Add(ds);
-#else
-                   Microsoft.Reporting.WebForms.ReportDataSource ds = new Microsoft.Reporting.WebForms.ReportDataSource(item.Name ,item.Data);
-                   Report.DataSources.Add(ds);
-#endif
+                    Report.Prepare();
+                    MemoryStream stream = new MemoryStream();
+                    switch (RenderFormat)
+                    {
+                        case FRRenderFormat.XML:
+                            break;
+                        case FRRenderFormat.NULL:
+                            break;
+                        case FRRenderFormat.CSV:
+                            break;
+                        case FRRenderFormat.IMAGE:
+                            break;
+                        case FRRenderFormat.PDF:
+                            FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                            //pdfExport.Export(Report, @"C:\REPORTS\XREPORT1.pdf");
+                            pdfExport.Export(Report,stream );
+                            result = stream.ToArray();    
+                            break;
+                        case FRRenderFormat.HTML40:
+                            break;
+                        case FRRenderFormat.HTML32:
+                            break;
+                        case FRRenderFormat.MHTML:
+                            break;
+                        case FRRenderFormat.EXCEL:
+                            break;
+                        case FRRenderFormat.WORD:
+                            break;
+                        default:
+                            break;
+                    }
+
+                   
                 }
-                
-                result = Report.Render(f);
+
+
             }
             catch (Exception ex)
             {
-                LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultMessage = ex.Message;
-                LastExecutionResult.ErrorCode = 1;
+                    LastExecutionResult.Exception = ex;
+                    LastExecutionResult.ResultMessage = ex.Message;
+                    LastExecutionResult.ErrorCode = 1;
             }
+
+
             return result;
         }
 
@@ -728,16 +819,34 @@ namespace Passero.Framework.SSRSReports
             List<string> result = new List<string>();   
             try
             {
-                result= Report.GetDataSourceNames().ToList();
+
+                foreach (DataSourceBase dataSource in Report.Dictionary.DataSources)
+                {
+                    string dataSourceName = dataSource.Name;
+
+                    // You can also check its type if needed
+                    if (dataSource is TableDataSource)
+                    {
+                        // It's a TableDataSource
+                        TableDataSource tableDataSource = dataSource as TableDataSource;
+                        // Additional handling for TableDataSource
+                        result.Add(dataSourceName);
+                    }
+                  
+                    
+                }
+
+
+                
             }
             catch (Exception)
             {
-
+                int x = 0;
             }
             return result;
         }
 
-    public ExecutionResult RenderAndSaveReport(string FileName, RenderFormat RenderFormat = RenderFormat.PDF)
+    public ExecutionResult RenderAndSaveReport(string FileName, FRRenderFormat RenderFormat = FRRenderFormat.PDF)
         {
             var ER = new ExecutionResult();
             ER.Context = $"Passero.Framework.Reports.SSRSReports.RenderAndSaveReport({FileName},{RenderFormat})";

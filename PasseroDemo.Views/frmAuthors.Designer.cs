@@ -42,6 +42,8 @@
             this.txt_phone = new Wisej.Web.TextBox();
             this.txt_au_fname = new Wisej.Web.TextBox();
             this.txt_au_lname = new Wisej.Web.TextBox();
+            this.button1 = new Wisej.Web.Button();
+            this.button2 = new Wisej.Web.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.SuspendLayout();
             // 
@@ -180,11 +182,31 @@
             this.txt_au_lname.Size = new System.Drawing.Size(193, 46);
             this.txt_au_lname.TabIndex = 28;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(586, 135);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 37);
+            this.button1.TabIndex = 37;
+            this.button1.Text = "button1";
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(586, 178);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(100, 37);
+            this.button2.TabIndex = 38;
+            this.button2.Text = "button2";
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // frmAuthors
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(798, 551);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.chk_Contract);
             this.Controls.Add(this.txt_email);
             this.Controls.Add(this.txt_zip);
@@ -219,5 +241,7 @@
         internal Wisej.Web.TextBox txt_phone;
         internal Wisej.Web.TextBox txt_au_fname;
         internal Wisej.Web.TextBox txt_au_lname;
+        private Wisej.Web.Button button1;
+        private Wisej.Web.Button button2;
     }
 }

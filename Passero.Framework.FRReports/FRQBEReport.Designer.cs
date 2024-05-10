@@ -1,4 +1,4 @@
-﻿namespace Passero.Framework.SSRSReports
+﻿namespace Passero.Framework.FRReports
 {
     partial class ReportManager
     {
@@ -89,8 +89,8 @@
             this.bSaveQBE = new Wisej.Web.ToolBarButton();
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
-            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
+            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
@@ -571,6 +571,11 @@
             this.bClose.Name = "bClose";
             this.bClose.Click += new System.EventHandler(this.bClose_Click);
             // 
+            // pbEngineLogo
+            // 
+            resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
+            this.pbEngineLogo.Name = "pbEngineLogo";
+            // 
             // dgvc_SelectedSortColumns_ascdesc
             // 
             this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.None;
@@ -582,11 +587,6 @@
             "DESC"});
             this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
             this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
-            // 
-            // pbEngineLogo
-            // 
-            resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
-            this.pbEngineLogo.Name = "pbEngineLogo";
             // 
             // ReportManager
             // 
