@@ -22,6 +22,7 @@ namespace Passero.Framework.Controls
 
     public partial class DataNavigator
     {
+        private const string mClassName = "Passero.Framework.Controls.DataNavigator";
 
         public enum EventType
         {
@@ -41,9 +42,7 @@ namespace Passero.Framework.Controls
         }
 
         public ListViewColumns ListViewColumns = new ListViewColumns();
-#pragma warning disable CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator._DataGridListViewDataTable'. Il valore predefinito è null
         private DataTable _DataGridListViewDataTable;
-#pragma warning restore CS0649 // Non è possibile assegnare un valore diverso al campo 'DataNavigator._DataGridListViewDataTable'. Il valore predefinito è null
         private int _DataGridListViewDefaultRowHeight = 24;
         private string _MovePreviousCaption = "Prev.";
         private string _MoveNextCaption = "Next";
@@ -60,11 +59,16 @@ namespace Passero.Framework.Controls
       
         private int _PrintFKey = (int)Keys.F8;
 
-        //public string RecordLabelSeparator { get; set; } = "of";
+        public void RaiseEventBoundCompleted()
+        {
+            if (eBoundCompleted != null)
+                eBoundCompleted();
+        }
+
         public string RecordLabelHtmlFormat { get; set; } = "<p style='margin-top:2px;line-height:1.0;text-align:center;'>{0}<br>{1}<br>{2}</p>";
 
-        public Dictionary <string, DataNavigatorViewModel > ViewModels { get; set; } = new Dictionary<string, DataNavigatorViewModel> ();
-
+        public Dictionary <string, DataNavigatorViewModel > ViewModels { get; set; } = new Dictionary<string, DataNavigatorViewModel>(StringComparer.InvariantCultureIgnoreCase);
+        
         private DataRepeater __DataRepeater;
         private DataRepeater _DataRepeater
         {
@@ -88,8 +92,7 @@ namespace Passero.Framework.Controls
             {
                 if(_ActiveViewModel ==null)
                     return 0;
-
-                return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
+                return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
             }
         }
 
@@ -99,7 +102,7 @@ namespace Passero.Framework.Controls
                 if (this._ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
-                    return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
+                    return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
                 else
                     return -1;
             }
@@ -107,7 +110,7 @@ namespace Passero.Framework.Controls
                 if (DesignMode == false)
                 {
                     if (_ActiveViewModel != null)
-                        Passero.Framework.ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "CurrentModelItemIndex", value);
+                        ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "CurrentModelItemIndex", value);
                 }
             }
         }
@@ -121,172 +124,294 @@ namespace Passero.Framework.Controls
                     return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");
                 else
                    return -1;
-                
             }
             set
             {
                 if (DesignMode == false)
                 {
                     if (_ActiveViewModel != null)
-                        Passero.Framework.ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewCurrentModelItemIndex", value);
+                        ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewCurrentModelItemIndex", value);
                 }
             }
         }
 
 
 
-        public void ViewModel_AddNew(object NewItem = null, bool InsertAtCursor = false)
+        public ExecutionResult ViewModel_AddNew(object NewItem = null, bool InsertAtCursor = false)
         {
+            string ERContext = $"{mClassName}ViewModel_AddNew()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
 
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    this.DataGrid_AddNew(NewItem, InsertAtCursor);
+                    ER = this.DataGrid_AddNew(NewItem, InsertAtCursor);
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    this.DataRepeater_AddNew(NewItem, InsertAtCursor);
+                    ER = this.DataRepeater_AddNew(NewItem, InsertAtCursor);
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this.ActiveViewModel, "AddNew", Microsoft.VisualBasic.CallType.Method, NewItem);
-                    break;
-            }
-        }
-
-
-        public void ViewModel_DeleteItem()
-        {
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
-            {
-                case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
-                    {
-                        this.DataGrid_Delete();
-                    }
-                    break;
-                case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
-                    {
-                        this.DataRepeater_Delete();
-                    }
-                    break;
-                default:
-                    Framework.ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, null);
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "AddNew", Microsoft.VisualBasic.CallType.Method, NewItem);
                     break;
             }
 
-        }
 
-
-        public void ViewModel_DeleteItems()
-        {
-            Passero.Framework.ReflectionHelper.CallByName(ActiveViewModel, "DeleteItems", CallType.Method);
-        }
-
-        public void ViewModel_UndoChanges()
-        {
-            if (DataGridView != null && DataGridActive)
+            if (ER.Success)
             {
-                DataGrid_Undo();
+                this._AddNewState = true;
+                SetButtonsForAddNew();
+                if (eAddNewCompleted != null)
+                    eAddNewCompleted();
             }
             else
             {
-                Passero.Framework.ReflectionHelper.CallByName(ActiveViewModel, "UndoChanges", CallType.Method);
+                if (eError != null)
+                    eError("ViewModel_AddNew", ER);
             }
+
+            return ER;
+
         }
 
-        public void ViewModel_MoveLastItem()
+
+
+        public ExecutionResult ViewModel_DeleteItem()
         {
+            string ERContext = $"{mClassName}.ViewModel_DeleteItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
 
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
                     if (this._DataGridView != null && this.DataGridActive)
                     {
-                        this.DataGrid_MoveLast();
+                        ER = this.DataGrid_Delete();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
                     if (this._DataRepeater != null && this.DataGridActive)
                     {
-                        this.DataRepeater_MoveLast();
+                        ER = this.DataRepeater_Delete();
                     }
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "MoveLastItem", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, null);
                     break;
             }
+            ER.Context = ERContext;
+            return ER;
+
         }
 
 
-        public void ViewModel_MoveFirstItem()
+
+        public ExecutionResult ViewModel_DeleteItems()
         {
+            string ERContext = $"{mClassName}.ViewModel_DeleteItems()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+            ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItems", Microsoft.VisualBasic.CallType.Method, null);
+            ER.Context = ERContext;
+            return ER;
+        }
+
+
+
+        public ExecutionResult ViewModel_UndoChanges()
+        {
+            string ERContext = $"{mClassName}.ViewModel_UndoChanges()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
                     if (this._DataGridView != null && this.DataGridActive)
                     {
-                        this.DataGrid_MoveFirst();
+                        ER = this.DataGrid_Undo();
+                        if (eUndoCompleted != null)
+                            eUndoCompleted();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
                     if (this._DataRepeater != null && this.DataGridActive)
                     {
-                        this.DataRepeater_MoveFirst();
+                        this.DataRepeater_Undo();
+                        if (eUndoCompleted != null)
+                            eUndoCompleted();
                     }
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges",false);
+                    if (ER.Success)
+                    {
+                        if (eUndoCompleted != null)
+                            eUndoCompleted();
+                    }
                     break;
             }
+            ER.Context = ERContext;
+            return ER;
 
 
-            //if (this._DataGridView != null && this._DataGridActive)
-            //{
-            //    this.DataGrid_MoveFirst();
-            //}
-            //else
-            //{
-            //    Framework.ReflectionHelper.CallByName(this.ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method, null);
-            //}
         }
 
-
-        public void ViewModel_MovePreviousItem()
+        public ExecutionResult ViewModel_MoveFirstItem()
         {
-            if (DataGridView != null && DataGridActive)
-            {
-                DataGrid_MovePrevious();
-            }
-            else
-            {
-                Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "MovePreviousItem", CallType.Method);
-            }
-        }
 
-        public void ViewModel_MoveNextItem()
-        {
+            string ERContext = $"{mClassName}.ViewModel_MoveFirstItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
                     if (this._DataGridView != null && this.DataGridActive)
                     {
-                        this.DataGrid_MoveNext();
+                        ER = this.DataGrid_MoveFirst();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
                     if (this._DataRepeater != null && this.DataGridActive)
                     {
-                        this.DataRepeater_MoveNext();
+                        ER = this.DataRepeater_MoveFirst();
                     }
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "MoveNextItem", CallType.Method);
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method);
                     break;
             }
+
+            ER.Context = ERContext;
+            return ER;
         }
 
-        public void ViewModel_UdpateItem()
+        public ExecutionResult ViewModel_MoveLastItem()
         {
+
+            string ERContext = $"{mClassName}.ViewModel_MoveLastItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            {
+                case ViewModelGridModes.DataGridView:
+                    if (this._DataGridView != null && this.DataGridActive)
+                    {
+                        ER = this.DataGrid_MoveLast();
+                    }
+                    break;
+                case ViewModelGridModes.DataRepeater:
+                    if (this._DataRepeater != null && this.DataGridActive)
+                    {
+                        ER = this.DataRepeater_MoveLast();
+                    }
+                    break;
+                default:
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveLastItem", Microsoft.VisualBasic.CallType.Method);
+                    break;
+            }
+            ER.Context = ERContext;
+            return ER;
+        }
+
+
+
+
+        public ExecutionResult ViewModel_MovePreviousItem()
+        {
+            string ERContext = $"{mClassName}.ViewModel_MovePreviousItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            {
+                case ViewModelGridModes.DataGridView:
+                    if (this._DataGridView != null && this.DataGridActive)
+                    {
+                        ER = this.DataGrid_MovePrevious();
+                    }
+                    break;
+                case ViewModelGridModes.DataRepeater:
+                    if (this._DataRepeater != null && this.DataGridActive)
+                    {
+                        ER = this.DataRepeater_MovePrevious();
+                    }
+                    break;
+                default:
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MovePreviousItem", Microsoft.VisualBasic.CallType.Method);
+                    break;
+            }
+
+            ER.Context = ERContext;
+            return ER;
+
+        }
+
+
+        public ExecutionResult ViewModel_MoveNextItem()
+        {
+            string ERContext = $"{mClassName}.ViewModel_MoveNextItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            {
+                case ViewModelGridModes.DataGridView:
+                    if (this._DataGridView != null && this.DataGridActive)
+                    {
+                        ER = this.DataGrid_MoveNext();
+                    }
+                    break;
+                case ViewModelGridModes.DataRepeater:
+                    if (this._DataRepeater != null && this.DataGridActive)
+                    {
+                        ER = this.DataRepeater_MoveNext();
+                    }
+                    break;
+                default:
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethod(ref this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method, null);
+                    break;
+            }
+            ER.Context = ERContext;
+            return ER;
+
+        }
+
+        public ExecutionResult ViewModel_ReloadItems()
+        {
+
+            string ERContext = $"{mClassName}.ViewModel_ReloadItems()"; ;
+            ExecutionResult ER = new ExecutionResult(ERContext);
+      
+            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            {
+                case ViewModelGridModes.DataGridView:
+                    if (this._DataGridView != null && this.DataGridActive)
+                    {
+                        this._DataGridView.DataSource = this.ModelItems;
+                        ER = this.DataGrid_MoveFirst();
+                    }
+                    break;
+                case ViewModelGridModes.DataRepeater:
+                    if (this._DataRepeater != null && this.DataGridActive)
+                    {
+                        this._DataRepeater.DataSource = this.ModelItems;
+                        //Me._DataRepeater.Refresh()
+                        ER = this.DataRepeater_MoveFirst();
+                    }
+                    break;
+                default:
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethod2(ref this._ActiveViewModel, "ReloadItems", null);
+
+                    break;
+            }
+            ER.Context = ERContext;
+            return ER;
+        }
+
+
+        public ExecutionResult ViewModel_UdpateItem(object item = null)
+        {
+            string ERContext = $"{mClassName}.ViewModel_UdpateItem()"; 
+            
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
@@ -302,14 +427,53 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItem", Microsoft.VisualBasic.CallType.Method);
+
+                    if (DataBindingMode() == Framework.DataBindingMode.BindingSource)
+                    {
+                    }
+
+                    if (_AddNewState)
+                    {
+                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem",item);
+                        if (ER.Success)
+                        {
+                            this.ViewModel_MoveLastItem();
+                            _AddNewState = false;
+                        }
+                    }
+                    else
+                    {
+                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItem", item);
+                    }
                     break;
+
             }
+            ER.Context = ERContext;
+
+
+            if (ER.Success)
+            {
+                SetButtonForSave();
+                if (eSaveCompleted != null)
+                    eSaveCompleted();
+            }
+            else
+            {
+               if (eError != null)
+                    eError("ViewModel_UdpateItem", ER);
+            }
+
+            return ER;
+
         }
 
 
-        public void ViewModel_UdpateItems()
+        public ExecutionResult ViewModel_UdpateItems()
         {
+
+            string ERContext = $"{mClassName}.ViewModel_UdpateItems()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
@@ -325,9 +489,12 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, null);
                     break;
             }
+
+            ER.Context = ERContext;
+            return ER;
         }
 
 
@@ -340,8 +507,7 @@ namespace Passero.Framework.Controls
                 _ActiveViewModel = viewModel.ViewModel;
                 _ActiveDataNavigatorViewModel = viewModel;
                 _ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
-#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
-                try
+               try
                 {
                     _ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
                 }
@@ -349,9 +515,7 @@ namespace Passero.Framework.Controls
                 {
                     _ModelItem = _ModelItems.GetType().GetGenericArguments()[0];
                 }
-#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
                 _BindingSource = (BindingSource)ReflectionHelper.GetPropertyValue(viewModel.ViewModel, "BindingSource");
-                //ReflectionHelper.SetPropertyValue(ref viewModel.ViewModel, "DataNavigator", this)
                 ReflectionHelper.CallByName( viewModel.ViewModel, "DataNavigator", CallType.Set,this);
 
                 switch (this.ActiveDataNavigatorViewModel.GridMode)
@@ -414,7 +578,6 @@ namespace Passero.Framework.Controls
             {
                 _ActiveViewModel = null;
                 _ActiveDataNavigatorViewModel = null;
-                //ReflectionHelper.SetPropertyValue(ref viewModel.ViewModel, "DataNavigator", null);
                 ReflectionHelper.CallByName (viewModel.ViewModel, "DataNavigator", CallType.Set,null);
             }
             if (_ModelItems != null)
@@ -433,13 +596,9 @@ namespace Passero.Framework.Controls
                 SetActiveViewModel(this.ViewModels[viewModel]);
             }
         }
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        private object?  _ActiveViewModel  = null;
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public object? ActiveViewModel
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        private object  _ActiveViewModel  = null;
+        public object ActiveViewModel
         {
             get
             {
@@ -447,149 +606,115 @@ namespace Passero.Framework.Controls
             }
           
         }
-        
-
-
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public Type? ModelType
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        public Type ModelType
         {
             get
             {
-                //if (_ModelItems != null)
-                //    return Passero.Framework.ReflectionHelper.GetListType(_ModelItems);
-
                 if (this._ActiveViewModel != null)
                 {
-                    return (Type)Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
+                    return (Type)ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
                 }
-               
                 return null;    
             }
             
         }
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        private object? _ModelItem = null;
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public object? ModelItem
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        private object _ModelItem = null;
+        public object ModelItem
         {
             get
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
-                    return Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "Model", CallType.Get ,null);
+                    _ModelItem = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
+                    return _ModelItem;
                 }
-                return null;    
+                return null;
             }
             set
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
-                    Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "Model", CallType.Set, value );
+                    ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Set, value);
+                    _ModelItem = value;
                 }
-                
-
             }
         }
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        private object? _ModelItems = null;
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public object? ModelItems
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        private object _ModelItems = null;
+
+        public object ModelItems
         {
             get
             {
-
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
-                    return Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItems", CallType.Get, null);
+                    _ModelItems = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+                    return _ModelItems;
                 }
                 return null;
-               
             }
             set
             {
-
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
-                    Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItems", CallType.Set, value);
+                    ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Set, value);
+                    _ModelItems = value;
                 }
-
-
             }
         }
 
-        //private object? _ModelItemShadow = null;
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public object? ModelItemShadow
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+    
+
+        public object ModelItemShadow
         {
             get
             {
-
                 if (this._ActiveViewModel != null)
                 {
-                    return Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Get, null);
+                    return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Get, null);
                 }
                 return null;
-
             }
             set
             {
-
                 if (this._ActiveViewModel != null)
                 {
-                    Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Set, value);
+                    ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Set, value);
                 }
-
-
             }
         }
 
-        //private object? _ModelItemsShadow = null;
+        
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public object? ModelItemsShadow
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        public object ModelItemsShadow
         {
             get
             {
-
                 if (this._ActiveViewModel != null)
                 {
-                    return Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Get, null);
+                    return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Get, null);
                 }
                 return null;
-
             }
             set
             {
-
                 if (this._ActiveViewModel != null)
                 {
-                    Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Set, value);
+                    ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Set, value);
                 }
-
-
             }
         }
 
         private DataSet _Dataset;
-#pragma warning disable CS0169 // Il campo 'DataNavigator._DataTable' non viene mai usato
         private DataTable _DataTable;
-#pragma warning restore CS0169 // Il campo 'DataNavigator._DataTable' non viene mai usato
+        private Wisej.Web.CurrencyManager _CurrencyManager;
         private Wisej.Web .BindingSource _BindingSource;
         private string _DataGridListViewRowIndexColumnName = "$<rowindex>$";
         private int _DataGridListViewRowIndexColumnIndex = 0;
-
         private DataGridView __DataGrid;
 
         private DataGridView _DataGridView
@@ -607,7 +732,6 @@ namespace Passero.Framework.Controls
             }
         }
         private DataGridView __DataGridListView;
-
         private DataGridView _DataGridListView
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
@@ -644,7 +768,6 @@ namespace Passero.Framework.Controls
         private bool _DataGridListViewActive = false;
 
         private Panel _DataPanel;
-
 
         public event eAddNewEventHandler eAddNew;
         public delegate void eAddNewEventHandler();
@@ -709,54 +832,39 @@ namespace Passero.Framework.Controls
         public event eAddNewRequestEventHandler eAddNewRequest;
         public delegate void eAddNewRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterAddNewRequest' non viene mai usato
         public event eAfterAddNewEventHandler eAfterAddNewRequest;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterAddNewRequest' non viene mai usato
         public delegate void eAfterAddNewEventHandler();
 
         public event ePrintRequestEventHandler ePrintRequest;
         public delegate void ePrintRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterPrint' non viene mai usato
         public event eAfterPrintEventHandler eAfterPrint;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterPrint' non viene mai usato
         public delegate void eAfterPrintEventHandler();
-
 
         public event eDeleteRequestEventHandler eDeleteRequest;
         public delegate void eDeleteRequestEventHandler(ref bool Cancel);
-        
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterDelete' non viene mai usato
-        public event eAfterDeleteEventHandler eAfterDelete;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterDelete' non viene mai usato
-        public delegate void eAfterDeleteEventHandler();
 
+        public event eAfterDeleteEventHandler eAfterDelete;
+        public delegate void eAfterDeleteEventHandler();
 
         public event eRefreshRequestEventHandler eRefreshRequest;
         public delegate void eRefreshRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterRefresh' non viene mai usato
         public event eAfterRefreshEventHandler eAfterRefresh;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterRefresh' non viene mai usato
         public delegate void eAfterRefreshEventHandler();
-
 
         public event eCloseRequestEventHandler eCloseRequest;
         public delegate void eCloseRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterClose' non viene mai usato
+
         public event eAfterCloseEventHandler eAfterClose;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterClose' non viene mai usato
         public delegate void eAfterCloseEventHandler();
 
         public event eFindRequestEventHandler eFindRequest;
         public delegate void eFindRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eAfterFind' non viene mai usato
         public event eAfterFindEventHandler eAfterFind;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eAfterFind' non viene mai usato
         public delegate void eAfterFindEventHandler();
-
 
         public event eSaveRequestEventHandler eSaveRequest;
         public delegate void eSaveRequestEventHandler(ref bool Cancel);
@@ -764,17 +872,13 @@ namespace Passero.Framework.Controls
         public event eMovePreviousRequestEventHandler eMovePreviousRequest;
         public delegate void eMovePreviousRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eMovePreviousCompleted' non viene mai usato
         public event eMovePreviousCompletedEventHandler eMovePreviousCompleted;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eMovePreviousCompleted' non viene mai usato
         public delegate void eMovePreviousCompletedEventHandler();
 
         public event eMoveFirstRequestEventHandler eMoveFirstRequest;
         public delegate void eMoveFirstRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eMoveFirstCompleted' non viene mai usato
         public event eMoveFirstCompletedEventHandler eMoveFirstCompleted;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eMoveFirstCompleted' non viene mai usato
         public delegate void eMoveFirstCompletedEventHandler();
 
         public event eMoveLastRequestEventHandler eMoveLastRequest;
@@ -792,15 +896,14 @@ namespace Passero.Framework.Controls
         public event eMoveAtItemRequestEventHandler eMoveAtItemRequest;
         public delegate void eMoveAtItemRequestEventHandler(ref bool Cancel);
 
-#pragma warning disable CS0067 // L'evento 'DataNavigator.eMoveAtItemCompleted' non viene mai usato
         public event eMoveAtItemCompletedEventHandler eMoveAtItemCompleted;
-#pragma warning restore CS0067 // L'evento 'DataNavigator.eMoveAtItemCompleted' non viene mai usato
         public delegate void eMoveAtItemCompletedEventHandler();
 
         public event eUndoRequestEventHandler eUndoRequest;
         public delegate void eUndoRequestEventHandler(ref bool Cancel);
-        
-        
+
+        public event eErrorEventHandler eError;
+        public delegate void eErrorEventHandler(string Operation, ExecutionResult ExecutionResult);
 
         private bool _ReadOnlyMode = false;
         private bool _AddNewState = false;
@@ -830,10 +933,7 @@ namespace Passero.Framework.Controls
         private bool _FKeyEnabled = false;
 
         private string _RecordLabelSeparator = "of";
-#pragma warning disable CS0414 // Il campo 'DataNavigator._RecordLabelNewRow' è assegnato, ma il suo valore non viene mai usato
         private string _RecordLabelNewRow = "New Row";
-#pragma warning restore CS0414 // Il campo 'DataNavigator._RecordLabelNewRow' è assegnato, ma il suo valore non viene mai usato
-
         private bool _DataBoundCompleted = false;
         public bool DataBoundCompleted
         {
@@ -859,8 +959,6 @@ namespace Passero.Framework.Controls
             {
                 _Language = value;
                 SetLanguage(_Language);
-
-
             }
         }
 
@@ -1138,9 +1236,8 @@ namespace Passero.Framework.Controls
         {
             get
             {
-                BindingSource BindingSourceRet = default;
-                BindingSourceRet = _BindingSource;
-                return BindingSourceRet;
+                _CurrencyManager = _BindingSource.CurrencyManager;
+                return _BindingSource;
             }
             set
             {
@@ -1161,35 +1258,28 @@ namespace Passero.Framework.Controls
                 _DataPanel = value;
             }
         }
-        public int DataGridRow
-        {
-            get
-            {
-                int DataGridRowRet = default;
-                DataGridRowRet = _DataGridRow;
-                return DataGridRowRet;
-            }
-            set
-            {
-                _DataGridRow = value;
-            }
-        }
+    
         public DataGridView DataGridView
         {
             get
             {
-                DataGridView DataGridRet = default;
-                DataGridRet = _DataGridView;
-                return DataGridRet;
+                return _DataGridView;
             }
             set
             {
                 _DataGridView = value;
-                //if (DbObject is not null & _DataGrid is not null)
-                //{
-                //    _DataGrid.DataSource = DbObject.DataTable;
-                //}
+            }
+        }
 
+        public DataRepeater  DataRepeater
+        {
+            get
+            {
+                return _DataRepeater;
+            }
+            set
+            {
+                _DataRepeater = value;
             }
         }
 
@@ -1197,17 +1287,13 @@ namespace Passero.Framework.Controls
         {
             get
             {
-                DataGridView DataGridListViewRet = default;
-                DataGridListViewRet = _DataGridListView;
-                return DataGridListViewRet;
+                return _DataGridListView;
             }
             set
             {
                 _DataGridListView = value;
-                _DataGridListView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                _DataGridListView.MultiSelect = false;
-
-
+                //_DataGridListView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                //_DataGridListView.MultiSelect = false;
             }
         }
         private string _Caption="DataNavigator";
@@ -1253,7 +1339,6 @@ namespace Passero.Framework.Controls
             set
             {
                 _NavigationEnabled = value;
-
                 switch (_NavigationEnabled)
                 {
                     case var @case when @case == false:
@@ -1291,32 +1376,10 @@ namespace Passero.Framework.Controls
             UpdateButtonsCaption();
             if (LoadData)
             {
-                Passero.Framework.ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method );
+                ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method );
                 //_DbObject.Open(true);
             }
 
-            //if (_DbObject.IsReadOnly)
-            //{
-            //    AddNewVisible = false;
-            //    AddNewEnabled = false;
-            //    DisableNew();
-            //    DeleteEnabled = false;
-            //    DeleteVisible = false;
-            //    DisableDelete();
-            //    SaveEnabled = false;
-            //    SaveVisible = false;
-            //    DisableSave();
-            //    UndoEnabled = false;
-            //    UndoVisible = false;
-            //    DisableUndo();
-            //}
-            //else
-            //{
-            //    AddNewVisible = true;
-            //    DeleteVisible = true;
-            //    SaveVisible = true;
-            //    UndoVisible = true;
-            //}
             UpdateRecordLabel();
             if (ModelItems == null)
             {
@@ -1337,139 +1400,134 @@ namespace Passero.Framework.Controls
             }
 
         }
-        public int DataGrid_Save()
+        public ExecutionResult DataGrid_Save()
         {
+            var ERContext = $"{mClassName}.DataGrid_Save()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             int i = 0;
             var argDataGridView = _DataGridView;
-            i= DataGrid_Update(ref argDataGridView);
+            ER = this.DataGrid_Update(ref argDataGridView);
             _DataGridView = argDataGridView;
-            return i;
+            return ER;
         }
 
-        public int DataGrid_Save(DataGridView DataGridView)
+        public ExecutionResult DataRepeater_Save()
         {
-            return DataGrid_Update(ref DataGridView);
+            var ERContext = $"{mClassName}.DataRepeater_Save()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+            int i = 0;
+            var argDataRepeater = _DataRepeater;
+            ER = this.DataRepeater_Update(ref argDataRepeater);
+            _DataRepeater = argDataRepeater;
+            return ER;
         }
 
-        public int DataGrid_Update()
+
+        public ExecutionResult DataGrid_Save(DataGridView DataGridView)
         {
+            return this.DataGrid_Update(ref DataGridView);
+        }
+
+        public ExecutionResult DataRepeater_Save(DataRepeater DataRepeater)
+        {
+            return this.DataRepeater_Update(ref DataRepeater);
+        }
+
+        public ExecutionResult DataGrid_Update()
+        {
+            var ERContext = $"{mClassName}.DataGrid_Update()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             int i = 0;
             var argDataGridView = _DataGridView;
-            i= DataGrid_Update(ref argDataGridView);
+            ER = this.DataGrid_Update(ref argDataGridView);
             _DataGridView = argDataGridView;
-            return i;
+            return ER;
+
         }
 
-  
-        public int DataGrid_Update(ref DataGridView DataGridView)
+        public ExecutionResult DataGrid_Update(ref Wisej.Web.DataGridView DataGridView)
         {
+            var ERContext = $"{mClassName}.DataGrid_Update()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             int AffectedRecords = 0;
             int CurrentRowIndex = 0;
             int CurrentCellIndex = 0;
-
-            if (DataGridView is null)
+            if (DataGridView == null)
             {
-                return AffectedRecords;
+                return ER;
             }
-
-            if (DataGridView is not null && DataGridView.DataSource is not null && DataGridView.CurrentRow is not null)
+            if (DataGridView != null && DataGridView.DataSource != null && DataGridView.CurrentRow != null)
             {
                 bool allowAdd = DataGridView.AllowUserToAddRows;
                 CurrentRowIndex = DataGridView.CurrentRow.Index;
-                CurrentCellIndex = this.DataGridView.CurrentCell.ColumnIndex;
-
-                //try
-                //{
-                    DataGridView.EndEdit();
-
-                    //Type dsType = DataGridView.DataSource.GetType().GetGenericArguments().Single();
-                    //IList dt= (IList)DataGridView.DataSource;
-                    //    object instance = (object)Activator.CreateInstance(dsType);
-
-
-                    if (this._ActiveViewModel != null)
+                CurrentCellIndex = DataGridView.CurrentCell.ColumnIndex;
+                DataGridView.EndEdit();
+                if (this._ActiveViewModel != null)
+                {
+                    if (this._AddNewState == true)
                     {
-                        if (this._AddNewState  == true)
+                        object item = ((IList)this._ModelItems)[this.NewItemIndex];
+                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                        if (ER.Success)
                         {
-
-                            object item=((IList)this._ModelItems)[this.NewItemIndex];
-                            var result = Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", CallType.Method, item);
-                            var eresult = (Passero.Framework .ExecutionResult)Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get );
-                            if (eresult.Success)
-                            {
-                                _AddNewState = false;   
-                            }
+                            this._AddNewState = false;
                         }
-
-                        else
-                        {
-                            var result = Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", CallType.Method, this._ModelItems );
-                            var eresult = Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get);
-
-                        }  
-
                     }
-           
-                    //DataGridView.Refresh();
-                //}
-                //catch (Exception ex)
-                //{
-                //    throw;
-                //}
-
+                    else
+                    {
+                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                    }
+                }
                 try
                 {
                     DataGridView.CurrentCell = DataGridView[CurrentCellIndex, CurrentRowIndex];
                 }
-                catch (Exception )
+                catch (Exception ex)
                 {
                 }
-
-                _DataGridRow = DataGridView.CurrentRow.Index;
+                this._DataGridRow = DataGridView.CurrentRow.Index;
                 DataGridView.AllowUserToAddRows = allowAdd;
-
-
-
-
             }
-            
-            if (_AddNewState ==false)
+            if (this._AddNewState == false)
             {
-                foreach (DataGridViewRow _row in DataGridView.Rows)
+                foreach (Wisej.Web.DataGridViewRow _row in DataGridView.Rows)
+                {
                     _row.ReadOnly = false;
-                SetDataNavigator();
+                }
+                this.SetDataNavigator();
             }
             else
             {
-                SetButtonsForAddNew();
+                this.SetButtonsForAddNew();
             }
-
-
-            return AffectedRecords;
-
-
+            ER.Value = AffectedRecords;
+            return ER;
         }
 
-
-        public int DataRepeater_Update()
+        public ExecutionResult DataRepeater_Update()
         {
+            var ERContext = $"{mClassName}.DataRepeater_Update()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             int i = 0;
             var argDataRepeater = _DataRepeater;
-            i = this.DataRepeater_Update(ref argDataRepeater);
+            ER = this.DataRepeater_Update(ref argDataRepeater);
             _DataRepeater = argDataRepeater;
-            return i;
+            return ER;
         }
 
-        public int DataRepeater_Update(ref Wisej.Web.DataRepeater DataRepeater)
+        public ExecutionResult DataRepeater_Update(ref Wisej.Web.DataRepeater DataRepeater)
         {
+            var ERContext = $"{mClassName}.DataRepeater_Update()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             int AffectedRecords = 0;
             int CurrentRowIndex = 0;
-#pragma warning disable CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             int CurrentCellIndex = 0;
-#pragma warning restore CS0219 // La variabile è assegnata, ma il suo valore non viene mai usato
             if (DataRepeater == null)
             {
-                return AffectedRecords;
+                ER.Value = AffectedRecords;
+                return ER;
             }
             if (DataRepeater != null && DataRepeater.DataSource != null && DataRepeater.CurrentItem != null)
             {
@@ -1482,45 +1540,39 @@ namespace Passero.Framework.Controls
                     if (this._AddNewState == true)
                     {
                         object item = ((IList)this._ModelItems)[this.NewItemIndex];
-                        object result = ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", CallType.Method, new[] { item });
-                        ExecutionResult eresult = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get);
-                        if (eresult.Success)
+                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                       if (ER.Success)
                         {
                             this._AddNewState = false;
                         }
                     }
                     else
                     {
-                        object result = ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", CallType.Method, new[] { this._ModelItems });
-                        object eresult = ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get);
+                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                     }
                 }
-#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
-                    // DataGridView.CurrentCell = DataGridView(CurrentCellIndex, CurrentRowIndex);
+                    //DataGridView.CurrentCell = DataGridView(CurrentCellIndex, CurrentRowIndex)
                 }
                 catch (Exception ex)
                 {
                 }
-#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
-                // this._DataGridRow = DataGridView.CurrentRow.Index;
+
                 DataRepeater.AllowUserToAddItems = allowAdd;
             }
             if (this._AddNewState == false)
             {
-                // foreach (Wisej.Web.DataGridViewRow _row in DataGridView.Rows)
-                // {
-                //     _row.ReadOnly = false;
-                // }
                 this.SetDataNavigator();
             }
             else
             {
                 this.SetButtonsForAddNew();
             }
-            return AffectedRecords;
+            return ER;
         }
+
+
         private int FindFirstEditableColumn(DataGridView DataGridView)
         {
 
@@ -1542,25 +1594,246 @@ namespace Passero.Framework.Controls
         {
             _DataGridRow = -1;
         }
-        public int DataGrid_AddNew(object Item=null, bool InsertAtCursor = false)
+
+        public ExecutionResult DataGrid_AddNew(object Item = null, bool InsertAtCursor = false)
         {
             var argDataGridView = _DataGridView;
             return DataGrid_AddNew(ref argDataGridView, Item, InsertAtCursor);
-            
+
         }
 
-        public int DataRepeater_Delete()
+        public ExecutionResult DataGrid_AddNew(ref DataGridView DataGridView, object Item = null, bool InsertAtCurrentRow = false)
+        {
+            string ERContext = $"{mClassName}.DataGrid_AddNew()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+            
+            int ColumnIndex = 0;
+            int RowIndex = 0;
+            int GridRowIndex = 0;
+            int NewRowIndex = -1;
+
+            if (DataGridView == null)
+            {
+                ER.ResultMessage = "Null DataGridView";
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                return ER;
+            }
+
+            if (DataGridView.DataSource != null)
+            {
+                try
+                {
+                    var items = (IList)DataGridView.DataSource;
+                    var T = ReflectionHelper.GetListType(items);
+                    _AddNewState = true;
+                    ColumnIndex = FindFirstEditableColumn(DataGridView);
+                    if (Item == null)
+                    {
+                        Item = Activator.CreateInstance(T);
+                    }
+
+                    if (DataGridView.RowCount == 0)
+                    {
+                        items.Add(Item);
+                        _AddNewState = true;
+                        RowIndex = 0;
+                        GridRowIndex = 0;
+                        NewRowIndex = 0;
+                        _NewItemIndex = 0;
+                        _DataGridView.DataSource = null;
+                        _DataGridView.DataSource = items;
+                    }
+                    else
+                    {
+                        GridRowIndex = DataGridView.CurrentRow.Index;
+                        if (InsertAtCurrentRow == true)
+                        {
+                            // ------- INSERISCE NELLA POSIZIONE DEL CURSORE ----
+                            // INSTANT C# NOTE: The following VB 'Select Case' included either a non-ordinal switch expression or non-ordinal, range-type, or non-constant 'Case' expressions and was converted to C# 'if-else' logic:
+                            //					 Select Case DataGridView.SortOrder
+                            // ORIGINAL LINE: Case = SortOrder.None
+                            if (DataGridView.SortOrder == SortOrder.None)
+                            {
+                                RowIndex = DataGridView.CurrentRow.Index;
+                                items.Insert(RowIndex, Item);
+                                NewRowIndex = RowIndex;
+                            }
+                            // ORIGINAL LINE: Case = SortOrder.Descending
+                            else if (DataGridView.SortOrder == SortOrder.Descending)
+                            {
+                                RowIndex = DataGridView.Rows.Count - 1;
+                                NewRowIndex = RowIndex;
+                            }
+                            // ORIGINAL LINE: Case = SortOrder.Ascending
+                            else if (DataGridView.SortOrder == SortOrder.Ascending)
+                            {
+                                RowIndex = 0;
+                                items.Insert(RowIndex, Item);
+                                NewRowIndex = 0;
+                            }
+                        }
+                        else
+                        {
+
+                            DataGridView.CurrentCell = DataGridView[ColumnIndex, DataGridView.Rows.Count - 1];
+                            // ------- INSERISCE ALLA FINE O ALL'INIZIO-----------
+
+                            // INSTANT C# NOTE: The following VB 'Select Case' included either a non-ordinal switch expression or non-ordinal, range-type, or non-constant 'Case' expressions and was converted to C# 'if-else' logic:
+                            //					 Select Case DataGridView.SortOrder
+                            // ORIGINAL LINE: Case = SortOrder.Descending
+                            if (DataGridView.SortOrder == SortOrder.Descending)
+                            {
+                                RowIndex = DataGridView.Rows.Count - 1;
+                                items.Insert(RowIndex, Item);
+                                NewRowIndex = RowIndex;
+                            }
+                            // ORIGINAL LINE: Case = SortOrder.Ascending
+                            else if (DataGridView.SortOrder == SortOrder.Ascending)
+                            {
+                                RowIndex = 0;
+                                NewRowIndex = RowIndex;
+                                items.Insert(RowIndex, Item);
+                            }
+                            // ORIGINAL LINE: Case = SortOrder.None
+                            else if (DataGridView.SortOrder == SortOrder.None)
+                            {
+                                RowIndex = items.Add(Item);
+                                NewRowIndex = RowIndex;
+                                //DataGridView.Rows.Insert(RowIndex, newrow);
+                            }
+                            // ----------------------------------------------------
+                        }
+                        ColumnIndex = DataGridView.CurrentCell.ColumnIndex;
+                        _DataGridView.DataSource = null;
+                        _DataGridView.DataSource = items;
+                    }
+
+                    foreach (var _row in DataGridView.Rows)
+                    {
+                        _row.ReadOnly = true;
+                    }
+                    DataGridView.Rows[RowIndex].ReadOnly = false;
+                    DataGridView.CurrentCell = DataGridView[ColumnIndex, RowIndex];
+                    _DataGridRow = DataGridView.CurrentCell.RowIndex;
+                  
+                    _AddNewState = true;
+                    _NewItemIndex = NewRowIndex;
+                    ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    UpdateRecordLabel();
+                    SetButtonsForAddNew();
+                    
+                }
+                catch (Exception ex)
+                {
+                    ER.Exception = ex;
+                    ER.ResultMessage = ex.Message;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 2;
+                    _AddNewState = false;
+                }
+            }
+            ER.Value = _DataGridRow;
+            return ER;
+        }
+
+        public ExecutionResult DataGrid_Delete()
+        {
+            return this.DataGrid_Delete(_DataGridView);
+
+        }
+
+        public ExecutionResult DataGrid_Delete(DataGridView DataGridView)
+        {
+            string ERContext = $"{mClassName}.DataGrid_Delete()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            int RowIndex = 0;
+            if (DataGridView == null)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "DataGridView is null!";
+                ER.Value = 0;
+                return ER; // Exit Function
+            }
+
+            if (DataGridView.DataSource != null)
+            {
+                //If Me._ManageChanges = True Then
+                if (DataGridView.CurrentRow != null)
+                {
+                    RowIndex = DataGridView.CurrentRow.Index;
+                    if (!DataGridView.CurrentRow.IsNewRow)
+                    {
+                        if (this._ActiveViewModel != null)
+                        {
+                            object item = ((IList)this._ModelItems)[RowIndex];
+                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
+                            DataGridView.DataSource = null;
+                            DataGridView.DataSource = this._ModelItems;
+                        }
+                    }
+                }
+
+                int xRec = 1;
+                if (RowIndex != 0)
+                {
+                    if (RowIndex < DataGridView.Rows.Count)
+                    {
+                        foreach (DataGridViewColumn Column in DataGridView.Columns)
+                        {
+                            if (Column.Visible)
+                            {
+                                DataGridView.CurrentCell = DataGridView.Rows[RowIndex].Cells[Column.Index];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (DataGridViewColumn Column in DataGridView.Columns)
+                        {
+                            if (Column.Visible)
+                            {
+                                DataGridView.CurrentCell = DataGridView.Rows[RowIndex - 1].Cells[Column.Index];
+                                break;
+                            }
+                        }
+                    }
+                }
+                ER.Value = xRec;
+            }
+            else
+            {
+                SetDataNavigator();
+                ER.Value = 0;
+            }
+            return ER;
+
+        }
+
+
+
+        public ExecutionResult DataRepeater_Delete()
         {
             return this.DataRepeater_Delete(_DataRepeater);
-
         }
 
-        public int DataRepeater_Delete(DataRepeater DataRepeater)
+        public ExecutionResult DataRepeater_Delete(DataRepeater DataRepeater)
         {
+
+            string ERContext = $"{mClassName}.DataRepeater_Delete()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             int RowIndex = 0;
             if (DataRepeater == null)
             {
-                return 0; // Exit Function
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "DataGridView is null!";
+                ER.Value = 0;
+                return ER; // Exit Function
             }
             if (DataRepeater.DataSource != null)
             {
@@ -1573,7 +1846,7 @@ namespace Passero.Framework.Controls
                         {
                             object item = ((IList)this._ModelItems)[RowIndex];
 
-                            object result = Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
+                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
                             DataRepeater.Refresh();
                             if (RowIndex < DataRepeater.ItemCount)
                             {
@@ -1605,14 +1878,18 @@ namespace Passero.Framework.Controls
                         //Next
                     }
                 }
-                return xRec;
+                ER.Value = xRec;
+
             }
             else
             {
                 SetDataNavigator();
-                return 0;
+                ER.Value = 0;
             }
+            return ER;
         }
+
+
 
         private DataNavigatorViewModel _ActiveDataNavigatorViewModel = null;
 
@@ -1625,129 +1902,200 @@ namespace Passero.Framework.Controls
 
         }
 
-     
-      
-
-
-        private void DataRepeater_MoveNext(bool IgnoreManageNavigation = false)
+        private ExecutionResult DataRepeater_MoveNext(bool IgnoreManageNavigation = false)
         {
+
+            var ERContenxt = $"{mClassName}.DataRepeater_MoveNext()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataRepeater == null)
             {
-                return;
+                return ER;
             }
 
             if (DataGridActive)
             {
                 if (this._DataRepeater != null)
                 {
-                    Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveNextItem");
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
 
+            ER.Context = ERContenxt;
+            return ER;
+
+
         }
 
-        private void DataRepeater_MoveLast(bool IgnoreManageNavigation = false)
+
+        private ExecutionResult DataRepeater_MoveLast(bool IgnoreManageNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.DataRepeater_MoveLast()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
             if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataRepeater == null)
             {
-                return;
+                return ER;
             }
 
             if (DataGridActive)
             {
                 if (this._DataRepeater != null)
                 {
-                    Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveLastItem");
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveLastItem");
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
+            ER.Context = ERContenxt;
+            return ER;
+
         }
-        private void DataRepeater_MovePrevious(bool IgnoreManageNavigation = false)
+
+
+        private ExecutionResult DataRepeater_MovePrevious(bool IgnoreManageNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.DataRepeater_MovePrevious()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataRepeater == null)
             {
-                return;
+                return ER;
             }
 
             if (DataGridActive)
             {
                 if (this._DataRepeater != null)
                 {
-                    Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MovePreviousItem");
+                    ER =(ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
+
+            ER.Context = ERContenxt;
+            return ER;
+
+
         }
 
-        private void DataRepeater_MoveFirst(bool IgnoreManageNavigation = false)
+
+
+        private ExecutionResult DataRepeater_MoveFirst(bool IgnoreManageNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.DataRepeater_MoveFirst()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataRepeater == null)
             {
-                return;
+                return ER;
             }
 
             if (DataGridActive)
             {
                 if (this._DataRepeater != null)
                 {
-                    Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveFirstItem");
+                    Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
+
+            ER.Context = ERContenxt;
+            return ER;
+
         }
 
-        public int DataRepeater_Save()
+
+
+
+        public ExecutionResult DataRepeater_Undo()
         {
-            int i = 0;
-            var argDataRepeater = _DataRepeater;
-            i = this.DataRepeater_Update(ref argDataRepeater);
-            _DataRepeater = argDataRepeater;
-            return i;
+            return DataRepeater_Undo(this._DataRepeater);
         }
 
-        public int DataRepeater_Save(DataRepeater DataRepeater)
+        public ExecutionResult DataRepeater_Undo(DataRepeater DataRepeater)
         {
-            return this.DataRepeater_Update(ref DataRepeater);
-        }
+            var ERContext = $"{mClassName}.DataGrid_Undo()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
 
-        public void DataRepeater_Undo()
-        {
-            this.DataRepeater_Undo(this._DataRepeater);
-        }
-
-        public void DataRepeater_Undo(DataRepeater DataRepeater)
-        {
             if (DataRepeater == null)
             {
-                return;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "DataRepeater is Null!";
+                return ER;
             }
-            if (DataRepeater.DataSource != null)
+
+            if (DataRepeater.DataSource == null)
             {
-                Microsoft.VisualBasic.Interaction.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
-                DataRepeater.DataSource = this.ModelItems;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 2;
+                ER.ResultMessage = "DataRepeater.DataSource is Null!";
+                return ER;
             }
+
+            try
+            {
+                if (DataRepeater.DataSource != null)
+                {
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    DataRepeater.DataSource = this.ModelItems;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 3;
+            }
+
             _AddNewState = false;
             SetDataNavigator();
+            ER.Context = ERContext;
+            return ER;
+
         }
 
-        public int DataRepeater_AddNew(object Item = null, bool InsertAtCursor = false)
-        {
 
+        public ExecutionResult DataRepeater_AddNew(object Item = null, bool InsertAtCursor = false)
+        {
+            
             var argDataRepeater = _DataRepeater;
             return DataRepeater_AddNew(ref argDataRepeater, Item, InsertAtCursor);
             
         }
 
-        public int DataRepeater_AddNew(ref DataRepeater DataRepeater, object NewItem = null, bool InsertAtCurrentRow = false)
+        public ExecutionResult DataRepeater_AddNew(ref DataRepeater DataRepeater, object NewItem = null, bool InsertAtCurrentRow = false)
         {
+            string ERContext = $"{mClassName}.DataRepeater_AddNew()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             int NewRowIndex = -1;
+            if (this.ActiveViewModel == null)
+            {
+                ER.ResultMessage = "ActiveViewModel is null";
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                return ER;
+            }
+
             if (DataRepeater == null)
-                return 0;
+            {
+                ER.ResultMessage = "DataRepeater is null";
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 2;
+                return ER;
+            }
+
+            if (DataRepeater.DataSource == null)
+            {
+                ER.ResultMessage = "DataRepeater.DataSource is null";
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 3;
+                return ER;
+            }
 
             if (DataRepeater.DataSource != null)
             {
-#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
                 try
                 {
                     IList items = (IList)DataRepeater.DataSource;
@@ -1757,10 +2105,10 @@ namespace Passero.Framework.Controls
                     {
                         NewItem = Activator.CreateInstance(T);
                     }
-
                     if (items.Count == 0)
                     {
-                        items = Framework.ReflectionHelper.GetBindingListOfType(T);
+
+                        items = ReflectionHelper.GetBindingListOfType(T);
                         DataRepeater.DataSource = items;
                         _AddNewState = true;
                         DataRepeater.AddNew();
@@ -1769,19 +2117,18 @@ namespace Passero.Framework.Controls
                         DataRepeater.CurrentItemIndex = NewRowIndex;
                         DataRepeater.Refresh();
                         DataRepeater.Select();
-                        if (Framework.ReflectionHelper.IsBindingList(items))
+                        if (ReflectionHelper.IsBindingList(items))
                         {
-                            items = (IList)ReflectionHelper.ConvertBindingListToList(items,T);
+                            items =(IList)ReflectionHelper.ConvertBindingListToList(items, T);
                         }
-
                         this.ModelItems = items;
                         this.ModelItem = NewItem;
                     }
                     else
                     {
-                        if (InsertAtCurrentRow)
+                        if (InsertAtCurrentRow == true)
                         {
-                            // GridRowIndex = DataRepeater.CurrentItemIndex
+
                         }
                         else
                         {
@@ -1791,398 +2138,95 @@ namespace Passero.Framework.Controls
                             DataRepeater.CurrentItemIndex = NewRowIndex;
                         }
                         DataRepeater.Refresh();
+
                     }
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
-                    Framework.ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
+
                 }
                 catch (Exception ex)
                 {
+                    ER.ResultMessage = ex.Message;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.Exception = ex;
+                    ER.ErrorCode = 10;
                     _AddNewState = false;
-                    throw;
                 }
-#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
             }
 
-            return DataRepeater.CurrentItemIndex;
+            ER.Value = DataRepeater.CurrentItemIndex;
+            return ER;
+
         }
 
-
-
-
-        public int DataGrid_AddNew(ref DataGridView DataGridView, object Item = null, bool InsertAtCurrentRow = false)
+        public ExecutionResult DataGrid_Undo()
         {
-
-            int ColumnIndex = 0;
-            int RowIndex = 0;
-            int GridRowIndex = 0;
-            int NewRowIndex = -1;
-            if (DataGridView is null)
-                return 0;
-            if (DataGridView.DataSource  != null)
-            {
-#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
-                try
-                {   
-                    
-                    IList items = (IList)DataGridView.DataSource;
-                    Type T = Passero.Framework.ReflectionHelper.GetListType(items );
-                    _AddNewState = true;
-                    ColumnIndex = FindFirstEditableColumn(DataGridView);
-                    if (Item==null)
-                    {
-                        Item = Activator.CreateInstance(T);
-                    }
-                    
-
-                    if (DataGridView.RowCount == 0)
-                    {
-                        items.Add(Item);
-                        _AddNewState = true;
-                        RowIndex = 0;
-                        GridRowIndex = 0;
-                        NewRowIndex = 0;
-                        this._NewItemIndex = 0;
-                        this._DataGridView.DataSource = null;
-                        this._DataGridView.DataSource = items;
-                        
-                    }
-
-                    else
-                    {
-                        GridRowIndex = DataGridView.CurrentRow.Index;
-                        if (InsertAtCurrentRow == true)
-                        {
-                            // ------- INSERISCE NELLA POSIZIONE DEL CURSORE ----
-                            switch (DataGridView.SortOrder)
-                            {
-                                case var @case when @case == SortOrder.None:
-                                    {
-                                        RowIndex = DataGridView.CurrentRow.Index;
-                                        items.Insert(RowIndex, Item);
-                                        NewRowIndex = RowIndex;
-                                        break;
-                                    }
-                                case var case1 when case1 == SortOrder.Descending:
-                                    {
-                                        RowIndex = DataGridView.Rows.Count - 1;
-                                        NewRowIndex = RowIndex;
-                                        break;
-                                    }
-                                case var case2 when case2 == SortOrder.Ascending:
-                                    {
-                                        RowIndex = 0;
-                                        items.Insert(RowIndex, Item);
-                                        NewRowIndex = 0;
-                                        break;
-                                    }
-                            }
-                        }
-
-                        // ----------------------------------------------------
-                        else
-                        {
-
-                            DataGridView.CurrentCell = DataGridView[ColumnIndex, DataGridView.Rows.Count - 1];
-                            // ------- INSERISCE ALLA FINE O ALL'INIZIO-----------
-
-                            switch (DataGridView.SortOrder)
-                            {
-                                case var case3 when case3 == SortOrder.Descending:
-                                    {
-
-                                        RowIndex = DataGridView.Rows.Count - 1;
-                                        items.Insert(RowIndex, Item);
-                                        NewRowIndex = RowIndex;
-                                        break;
-                                    }
-                                case var case4 when case4 == SortOrder.Ascending:
-                                    {
-
-                                        RowIndex = 0;
-                                        NewRowIndex = RowIndex;
-                                        items.Insert(RowIndex, Item);
-                                        break;
-                                    }
-                                case var case5 when case5 == SortOrder.None:
-                                    {
-
-                                        RowIndex= items.Add(Item);
-                                        NewRowIndex = RowIndex;
-                                        //DataGridView.Rows.Insert(RowIndex, newrow);
-                                        break;
-                                    }
-                            }
-                            // ----------------------------------------------------
-                        }
-                        ColumnIndex = DataGridView.CurrentCell.ColumnIndex;
-                        this._DataGridView.DataSource = null;
-                        this._DataGridView.DataSource = items;
-                    }
-
-
-                    foreach (DataGridViewRow _row in DataGridView.Rows)
-                    {
-                        _row.ReadOnly = true;
-                       
-                    }
-                    DataGridView.Rows[RowIndex].ReadOnly = false;
-                    DataGridView.CurrentCell = DataGridView[ColumnIndex, RowIndex];
-                    _DataGridRow = DataGridView.CurrentCell.RowIndex;
-
-                    bool ok = true;
-                    //bool ok=(bool)Passero.Framework.ReflectionHelper.CallByName(this._ViewModel, "AddNew", CallType.Method);
-                    
-                    if (ok==true)
-                    {
-                        _AddNewState = true;
-                        this._NewItemIndex = NewRowIndex;
-
-                        //Passero.Framework.ReflectionHelper.CallByName(this._ViewModel, "AddNewCurrentModelItemIndex", CallType.Set, _NewItemIndex);
-                        UpdateRecordLabel();
-                        SetButtonsForAddNew();
-                    }
-                    else
-                    {
-                        _AddNewState = false;
-                        MessageBox.Show("ERROR ViewModel.AddNew");
-                    }
-                    
-                }
-                catch (Exception ex)
-                {
+            return this.DataGrid_Undo(_DataGridView);
+        }
+        public ExecutionResult DataGrid_Undo(DataGridView DataGridView)
+        {
+            string ERContext = $"{mClassName}.DataGrid_Undo()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             
-                    _AddNewState = false;
-                    throw ;
-                }
-#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
-
-
-            }
-            
-            return _DataGridRow;
-        }
-
-
-
-
-        public int DataGrid_AddNew2(ref DataGridView DataGridView, bool InsertAtCursor = false)
-        {
-
-            int ColumnIndex = 0;
-            int RowIndex = 0;
-            int GridRowIndex = 0;
-            int xRowIndex = 0;
-            if (DataGridView is null)
-                return 0;
-            if (DataGridView.DataSource is not null)
+            if (DataGridView == null)
             {
-#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
-                try
-                {
-                    DataTable dt;
-                    dt = Passero.Framework.DapperHelper.Utilities.ObjectListToDataTable((object)this.DataGridView.DataSource);
-                    //DataTable dt = (DataTable)DataGridView.DataSource;
-                    
-                    string Rf = dt.DefaultView.RowFilter;
-                    string Rs = dt.DefaultView.Sort;
-                    _AddNewState = true;
-                    dt.DefaultView.RowFilter = "";
-                    ColumnIndex = FindFirstEditableColumn(DataGridView);
-                    // GridRowIndex = DataGridView.CurrentRow.Index
-
-                    if (DataGridView.RowCount == 0)
-                    {
-                        RowIndex = 0;
-                       
-                        dt.Rows.Add();
-                        GridRowIndex = DataGridView.CurrentRow.Index;
-                    }
-
-                    else
-                    {
-                        GridRowIndex = DataGridView.CurrentRow.Index;
-                        if (InsertAtCursor == true)
-                        {
-                            // ------- INSERISCE NELLA POSIZIONE DEL CURSORE ----
-                            // RowIndex = DataGridView.CurrentRow.Index
-
-                            switch (DataGridView.SortOrder)
-                            {
-                                case var @case when @case == SortOrder.None:
-                                    {
-                                        xRowIndex = ((DataTable)DataGridView.DataSource).Rows.IndexOf(((DataRowView)DataGridView.CurrentRow.DataBoundItem).Row) + 1;
-                                        DataRow nRow;
-                                        nRow = dt.NewRow();
-                                        dt.Rows.InsertAt(nRow, xRowIndex);
-                                        RowIndex = xRowIndex;
-                                        break;
-                                    }
-                                case var case1 when case1 == SortOrder.Descending:
-                                    {
-                                        dt.Rows.Add();
-                                        RowIndex = DataGridView.Rows.Count - 1;
-                                        break;
-                                    }
-                                case var case2 when case2 == SortOrder.Ascending:
-                                    {
-                                        dt.Rows.Add();
-                                        RowIndex = 0;
-                                        break;
-                                    }
-                            }
-                        }
-
-                        // ----------------------------------------------------
-                        else
-                        {
-
-                            DataGridView.CurrentCell = DataGridView[ColumnIndex, DataGridView.Rows.Count - 1];
-                            // ------- INSERISCE ALLA FINE O ALL'INIZIO-----------
-
-                            switch (DataGridView.SortOrder)
-                            {
-                                case var case3 when case3 == SortOrder.Descending:
-                                    {
-                                        dt.Rows.Add();
-                                        RowIndex = DataGridView.Rows.Count - 1;
-                                        break;
-                                    }
-                                case var case4 when case4 == SortOrder.Ascending:
-                                    {
-                                        dt.Rows.Add();
-                                        RowIndex = 0;
-                                        break;
-                                    }
-                                case var case5 when case5 == SortOrder.None:
-                                    {
-                                        dt.Rows.Add();
-                                        RowIndex = DataGridView.Rows.Count - 1;
-                                        break;
-                                    }
-                            }
-                            // ----------------------------------------------------
-                        }
-                        ColumnIndex = DataGridView.CurrentCell.ColumnIndex;
-                    }
-
-
-                    foreach (DataGridViewRow _row in DataGridView.Rows)
-                        _row.ReadOnly = true;
-                    DataGridView.Rows[RowIndex].ReadOnly = false;
-                    DataGridView.CurrentCell = DataGridView[ColumnIndex, RowIndex];
-                    _DataGridRow = DataGridView.CurrentCell.RowIndex;
-                    _AddNewState = true;
-                    UpdateRecordLabel();
-                    SetButtonsForAddNew();
-                }
-                catch (Exception ex)
-                {
-                    // LockWindow(Me.ParentForm.Handle, False)
-                    _AddNewState = false;
-                }
-#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
-
-
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "DataGridView is Null!";
+                return ER;
             }
-            // LockWindow(Me.ParentForm.Handle, False)
-            return _DataGridRow;
-        }
 
-        public int DataGrid_Delete()
-        {
-            return DataGrid_Delete(_DataGridView);
-        }
+            if (DataGridView.DataSource == null)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 2;
+                ER.ResultMessage = "DataGridView.DataSource is Null!";
+                return ER;
+            }
 
-        public int DataGrid_Delete(DataGridView DataGridView)
-        {
-            int RowIndex = 0;
-            if (DataGridView is null)
-                return 0; // Exit Function
-            if (DataGridView.DataSource is not null)
+            try
             {
 
-                // If Me._ManageNavigation = True Then
-                if (DataGridView.CurrentRow is not null)
+                if (DataGridView.DataSource != null)
                 {
-                    RowIndex = DataGridView.CurrentRow.Index;
-                    if (DataGridView.CurrentRow.IsNewRow == false)
+                    DataGridView.CancelEdit();
+                    DataGridView.DataSource = null;
+                    ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    DataGridView.DataSource = this.ModelItems;
+                    DataGridViewColumn c = Framework.ControlsUtilities.GetFirstVisibleColumnForDataGridView(DataGridView);
+                    if (c != null)
                     {
-                        if (this._ActiveViewModel != null)
-                        {
-                            object item = ((IList)this._ModelItems)[RowIndex];
-                            var result =    Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "DeleteItem", CallType.Method, item);
-                            DataGridView.DataSource = null;
-                            DataGridView.DataSource = this._ModelItems;
-                        }
+                        DataGridView.SetCurrentCell(c.Index, this.CurrentModelItemIndex);
                     }
                 }
-                // endif
-                int xRec = 1;
-                if (RowIndex != 0)
+                foreach (DataGridViewRow _row in DataGridView.Rows)
                 {
-                    if (RowIndex < DataGridView.Rows.Count)
-                    {
-                        foreach (DataGridViewColumn Column in DataGridView.Columns)
-                        {
-                            if (Column.Visible == true)
-                            {
-                                DataGridView.CurrentCell = DataGridView.Rows[RowIndex].Cells[Column.Index];
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (DataGridViewColumn Column in DataGridView.Columns)
-                        {
-                            if (Column.Visible == true)
-                            {
-                                DataGridView.CurrentCell = DataGridView.Rows[RowIndex - 1].Cells[Column.Index];
-                                break;
-                            }
-                        }
-                    }
+                    _row.ReadOnly = false;
                 }
-                return xRec;
             }
-            else
+            catch (Exception ex)
             {
-                SetDataNavigator();
-                return 0;
+
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 3;
+
             }
 
-        }
-
-        public void DataGrid_Undo()
-        {
-            DataGrid_Undo(_DataGridView);
-
-        }
-
-        public void DataGrid_Undo(DataGridView DataGridView)
-        {
-
-            if (DataGridView is null)
-                return;
-            if (DataGridView.DataSource is not null)
-            {
-                _DataGridView.CancelEdit();
-                _DataGridView.DataSource = null;
-                Passero.Framework.ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", CallType.Method, true);
-                _DataGridView.DataSource = this.ModelItems;
-                
-            }
-            foreach (DataGridViewRow _row in DataGridView.Rows)
-                _row.ReadOnly = false;
 
             _AddNewState = false;
             SetDataNavigator();
-
+            ER.Context = ERContext;
+            return ER;
 
         }
+
+
+
         public void CancelFind()
         {
             _FindPending = false;
@@ -3121,7 +3165,7 @@ namespace Passero.Framework.Controls
                     }
                     else
                     {
-                        Passero.Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "DeleteItem");
+                        Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "DeleteItem");
                         int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
                         this.MoveLast();
                         eDeleteCompleted?.Invoke();
@@ -3137,62 +3181,44 @@ namespace Passero.Framework.Controls
 
         }
 
-      
+
         public void Save(bool OverrideManagedChanges = false)
         {
-
+            var ERContext = $"{mClassName}.DataNavigator.Save()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             bool Cancel = false;
-            eSaveRequest?.Invoke(ref Cancel);
+            if (eSaveRequest != null)
+                eSaveRequest(ref Cancel);
             if (Cancel == true)
-                return;
-
-
-            if (SaveVisible == false | SaveEnabled == false)
-                return;
-
-            if (DataGridListView is not null)
             {
-                //DataGridListView.DataSource = _DbObject.DataTable;
+                return;
             }
-
+            if (SaveVisible == false || SaveEnabled == false)
+            {
+                return;
+            }
+            if (DataGridListView != null)
+            {
+                //DataGridListView.DataSource = _DbObject.DataTable
+            }
             if (OverrideManagedChanges == false && _ManageChanges == true)
             {
                 if (MessageBox.Show(_SaveMessage, ParentForm.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (_DataGridActive == true & _DataGridView is not null)
-                    {
-                        DataGrid_Update();
-                        SetButtonForSave();
-                    }
-                    else
-                    {
-                        if (_AddNewState == true)
-                        {
-                            Passero.Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "InsertItem");
-                            var eresult = (Passero.Framework.ExecutionResult)Passero.Framework.ReflectionHelper.CallByName(this._ActiveViewModel, "LastExecutionResult", CallType.Get);
-                            if (eresult.Success)
-                            {
-                                _AddNewState = false;
-                            }
-                        }
-                        else
-                        {
-                            Passero.Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "UpdateItem");
-                        }
-                        SetButtonForSave();
-                    }
-                    SetButtonForSave();
-                    eSaveCompleted?.Invoke();
+                    ER = this.ViewModel_UdpateItem();
                 }
             }
             else
             {
                 SetButtonForSave();
-                eSave?.Invoke();
+                if (eSave != null)
+                    eSave();
             }
-
             this.UpdateRecordLabel();
         }
+
+
+
         public void CheckDataPanel()
         {
 
@@ -3258,7 +3284,7 @@ namespace Passero.Framework.Controls
 
         private void bRefresh_Click(object sender, EventArgs e)
         {
-            _RefreshData();
+            RefreshData();
         }
 
         private void bNew_Click(object sender, EventArgs e)
@@ -3365,135 +3391,119 @@ namespace Passero.Framework.Controls
             //ShowHeader = _ShowHeader;
         }
 
+  public ExecutionResult AddNew(object item = null, bool OverrideManagedChanges = false)
+    {
+        string ERContext = $"{mClassName}.AddNew()";
+        ExecutionResult ER = new ExecutionResult(ERContext);
 
-        public void AddNew(object item = null, bool OverrideManagedChanges = false)
+        if (this.ActiveViewModel == null)
         {
-            if (item == null)
+            ER.ResultCode = ExecutionResultCodes.Failed;
+            ER.ErrorCode = 1;
+            ER.ResultMessage = "ActiveViewModel is null.";
+            return ER;
+        }
+
+        if (item == null)
+        {
+            try
             {
                 item = Activator.CreateInstance(this.ModelType);
             }
-            bool Cancel = false;
-            _DataBoundCompleted = false;
-            if (eAddNewRequest != null)
-                eAddNewRequest(ref Cancel);
-            if (Cancel)
+            catch (Exception ex)
             {
-                return;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 2;
+                ER.ResultMessage = "ModelType is null.";
+                return ER;
             }
-            if (!AddNewVisible)
-            {
-                return;
-            }
-            int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
-            if (!OverrideManagedChanges && _ManageChanges)
-            {
-                
-                switch (this._ActiveDataNavigatorViewModel.GridMode)
-                {
-                    case ViewModelGridModes.DataGridView:
-                        if (_DataGridActive && _DataGridView != null)
-                        {
-                            DataGrid_AddNew(item);
-                        }
-                        break;
-
-                    case ViewModelGridModes.DataRepeater:
-                        if (_DataGridActive && _DataRepeater != null)
-                        {
-                            DataRepeater_AddNew(item);
-                        }
-                        break;
-
-                    default:
-                        if (this.BindingSource != null && this.DataBindingMode() == Framework.DataBindingMode.BindingSource)
-                        {
-                            this.BindingSource.AddNew();
-                            this.MoveLast();
-                        }
-                        break;
-
-
-                }
-
-                //if (_DataGridActive && _DataGridView != null)
-                //{
-                //    DataGrid_AddNew(item);
-                //}
-                //else
-                //{
-                //    if (this.BindingSource != null && this.DataBindingMode() == Framework.DataBindingMode.BindingSource)
-                //    {
-                //        this.BindingSource.AddNew();
-                //        this.MoveLast();
-                //    }
-                //}
-
-                this._AddNewState = true;
-                Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
-                Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "AddNewState", Microsoft.VisualBasic.CallType.Set, true);
-                Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Set, item);
-                SetButtonsForAddNew();
-                if (eAddNewCompleted != null)
-                    eAddNewCompleted();
-                
-            }
-            else
-            {
-                this._AddNewState = true;
-                Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
-                //CallByName(Me._ViewModel, "AddNewState", CallType.Set, True)
-                SetButtonsForAddNew();
-                if (eAddNew != null)
-                    eAddNew();
-            }
-            UpdateRecordLabel();
         }
 
+        bool Cancel = false;
+        _DataBoundCompleted = false;
 
+        if (eAddNewRequest != null)
+            eAddNewRequest(ref Cancel);
 
+        if (Cancel)
+        {
+            ER.ResultCode = ExecutionResultCodes.Warning;
+            ER.ErrorCode = 3;
+            ER.ResultMessage = "Operation Cancelled by User.";
+            return ER;
+        }
+
+        int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
+        int newIndex = index;
+
+        if (!OverrideManagedChanges && _ManageChanges)
+        {
+
+            ER = this.ViewModel_AddNew(item);
+
+        
+        }
+        else
+        {
+            this._AddNewState = true;
+            ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
+            SetButtonsForAddNew();
+            if (eAddNew != null)
+                eAddNew();
+        }
+        UpdateRecordLabel();
+        return null;
+    }
 
         public void UpdateRecordLabel()
         {
-            if (this.ActiveViewModel == null)
-                return;
-            int itemscount = 0;
-            int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
-            object items = Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "ModelItems");
-            if (items!=null)
-                itemscount = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(items, "Count");
-            this.RecordLabel.Text = String.Format(this.RecordLabelHtmlFormat, index + 1, this.RecordLabelSeparator, itemscount);
-
-            //if (this._AddNewPending )
-            //{
-            //    int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ViewModel, "CurrentModelItemIndex");
-            //    object items = Passero.Framework.ReflectionHelper.GetPropertyValue(this.ViewModel, "ModelItems");
-            //    int itemscount = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(items, "Count");
-            //    this.RecordLabel.Text = String.Format(this.RecordLabelHtmlFormat, index + 1, this.RecordLabelSeparator, itemscount);
-            //}
-            //else
-            //{
-               
-            //    int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ViewModel, "CurrentModelItemIndex");
-            //    object items=Passero.Framework.ReflectionHelper.GetPropertyValue(this.ViewModel, "ModelItems");
-            //    int itemscount= (int)Passero.Framework.ReflectionHelper.GetPropertyValue(items, "Count");
-            //    this.RecordLabel.Text = String.Format(this.RecordLabelHtmlFormat, index+1, this.RecordLabelSeparator, itemscount);
-            //}
-
-            
-           
-
-
-        }
-        public void DataGrid_MoveFirst(bool IgnoreManageNavigation = false)
-        {
-
-            if (IgnoreManageNavigation == false & _ManageNavigation == true | _DataGridView is null)
-                return;
-            if (_DataGridActive == true & _DataGridView is not null & DataGridView.CurrentRow is not null)
+            if (ActiveViewModel == null)
             {
-                _DataGridView.CurrentCell = _DataGridView.Rows[0].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                return;
             }
+            var itemscount = 0;
+            int index = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "CurrentModelItemIndex");
+            itemscount = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "ModelItemsCount");
+            RecordLabel.Text = string.Format(RecordLabelHtmlFormat, index + 1, RecordLabelSeparator, itemscount);
+            if (itemscount == 0 && AddNewState == false)
+            {
+                SetButtonForEmptyModelItems();
+            }
+
         }
+
+
+
+        public ExecutionResult MoveFirst(bool OverrideManagedNavigation = false)
+        {
+            var ERContenxt = $"{mClassName}.MoveFirst()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+            bool Cancel = false;
+
+            _DataBoundCompleted = false;
+            if (eMoveFirstRequest != null)
+                eMoveFirstRequest(ref Cancel);
+            if (Cancel)
+            {
+                return ER;
+            }
+            if (!OverrideManagedNavigation && _ManageNavigation)
+            {
+                this.ViewModel_MoveFirstItem();
+            }
+            else
+            {
+                if (eMoveFirst != null)
+                    eMoveFirst();
+            }
+            MoveFirstDataGridListView();
+            UpdateRecordLabel();
+            ER.Context = ERContenxt;
+            return ER;
+
+        }
+
+
         private void MoveFirstDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3503,49 +3513,34 @@ namespace Passero.Framework.Controls
 
         }
 
-        public void MoveFirst(bool OverrideManagedNavigation = false)
+
+        public ExecutionResult DataGrid_MovePrevious(bool IgnoreManageNavigation = false)
         {
-            bool Cancel = false;
-            _DataBoundCompleted = false;
-            if (eMoveFirstRequest != null)
-                eMoveFirstRequest(ref Cancel);
-            if (Cancel)
+            var ERContenxt = $"{mClassName}.DataGrid_MovePrevious()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
+            if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataGridView == null)
             {
-                return;
+                return ER;
             }
-            if (!OverrideManagedNavigation && _ManageNavigation)
-            {
-                Framework.ReflectionHelper.InvokeMethod (ref _ActiveViewModel, "MoveFirstItem");
-                UpdateGridPosition();
 
-            }
-            else
-            {
-
-                if (eMoveFirst != null)
-                    eMoveFirst();
-            }
-            MoveFirstDataGridListView();
-            UpdateRecordLabel();
-        }
-
-
-        public void DataGrid_MovePrevious(bool IgnoreManageNavigation = false)
-        {
-
-            if (IgnoreManageNavigation == false & _ManageNavigation == true | _DataGridView is null)
-                return;
-
-            if (_DataGridActive == true & _DataGridView is not null & DataGridView.CurrentRow is not null)
+            if (_DataGridActive == true && _DataGridView != null && _DataGridView.CurrentRow != null)
             {
                 if (_DataGridView.CurrentRow.Index > 0)
                 {
                     _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
                 }
             }
 
+            ER.Context = ERContenxt;
+            return ER;
 
         }
+
+
+
+
         private void MovePreviousDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3568,7 +3563,7 @@ namespace Passero.Framework.Controls
             }
             else
             {
-                Passero.Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MovePreviousItem");
+                Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
                 MovePreviousDataGridListView();
             }
             UpdateRecordLabel();
@@ -3608,20 +3603,22 @@ namespace Passero.Framework.Controls
         }
 
 
-        public void MovePrevious(bool OverrideManagedNavigation = false)
+        public ExecutionResult MovePrevious(bool OverrideManagedNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.MovePrevious()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             bool Cancel = false;
             _DataBoundCompleted = false;
             if (eMovePreviousRequest != null)
                 eMovePreviousRequest(ref Cancel);
             if (Cancel == true)
             {
-                return;
+                return ER;
             }
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MovePreviousItem");
-                UpdateGridPosition();
+                ViewModel_MovePreviousItem();
             }
             else
             {
@@ -3630,24 +3627,38 @@ namespace Passero.Framework.Controls
             }
             MovePreviousDataGridListView();
             UpdateRecordLabel();
+
+            ER.Context = ERContenxt;
+            return ER;
+
         }
 
-
-
-        public void DataGrid_MoveNext(bool IgnoreManageNavigation = false)
+        public ExecutionResult DataGrid_MoveNext(bool IgnoreManageNavigation = false)
         {
+            string ERContenxt = $"{mClassName}.DataGrid_MoveNext()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
 
-            if (IgnoreManageNavigation == false & _ManageNavigation == true | _DataGridView is null)
-                return;
-
-            if (_DataGridActive == true & _DataGridView is not null & _DataGridView.CurrentRow is not null)
+            if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataGridView == null)
             {
-                if (_DataGridView.CurrentRow.Index < _DataGridView.Rows.Count - 1)
+                return ER;
+            }
+            if (DataGridActive)
+            {
+                if (_DataGridView != null && _DataGridView.CurrentRow != null)
                 {
-                    _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index + 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                    if (_DataGridView.CurrentRow.Index < _DataGridView.Rows.Count - 1)
+                    {
+                        _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index + 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
+                    }
                 }
             }
+
+            ER.Context = ERContenxt;
+            return ER;
+
         }
+
 
         private void MoveNextDataGridListView()
         {
@@ -3670,18 +3681,23 @@ namespace Passero.Framework.Controls
                 }
             }
         }
-        public void MoveAtItem(int ItemIndex, bool OverrideManagedNavigation = false)
+
+        private ExecutionResult MoveAtItem(int ItemIndex, bool OverrideManagedNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.MoveAtItem()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
 
             bool Cancel = false;
             _DataBoundCompleted = false;
-            eMoveAtItemRequest?.Invoke(ref Cancel);
+            if (eMoveAtItemRequest != null)
+                eMoveAtItemRequest(ref Cancel);
             if (Cancel == true)
-                return;
-            
+            {
+                return ER;
+            }
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                if (_DataGridActive == true & _DataGridView is not null)
+                if (_DataGridActive == true && _DataGridView != null)
                 {
                     if (_DataGridView.CurrentRow.Index < _DataGridView.Rows.Count - 1)
                     {
@@ -3690,40 +3706,42 @@ namespace Passero.Framework.Controls
                 }
                 else
                 {
-                    Passero.Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveAtItem",ItemIndex);
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", ItemIndex);
                     MoveAtItemDataGridListView(ItemIndex);
-                    eUndoCompleted?.Invoke();
+                    if (eUndoCompleted != null)
+                        eUndoCompleted();
                 }
             }
             else
             {
                 MoveNextDataGridListView();
-                eMoveAtItem?.Invoke();
+                if (eMoveAtItem != null)
+                    eMoveAtItem();
             }
-
             UpdateRecordLabel();
 
+            ER.Context = ERContenxt;
+            return ER;
 
         }
 
-        public void MoveNext(bool OverrideManagedNavigation = false)
+
+        public ExecutionResult MoveNext(bool OverrideManagedNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.MoveNext()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             bool Cancel = false;
             _DataBoundCompleted = false;
             if (eMoveNextRequest != null)
                 eMoveNextRequest(ref Cancel);
             if (Cancel == true)
             {
-                return;
+                return ER;
             }
-
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                
-                Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveNextItem");
-                UpdateGridPosition();
-                if (eMoveNextCompleted != null)
-                    eMoveNextCompleted();
+                this.ViewModel_MoveNextItem();
             }
             else
             {
@@ -3732,26 +3750,52 @@ namespace Passero.Framework.Controls
             }
             MoveNextDataGridListView();
             UpdateRecordLabel();
+            ER.Context = ERContenxt;
+            return ER;
+
         }
 
 
-        public void DataGrid_MoveLast(bool IgnoreManageNavigation = false)
+
+        public  ExecutionResult DataGrid_MoveFirst(bool IgnoreManageNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.DataGrid_MoveFirst()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
 
-            if (IgnoreManageNavigation == false & _ManageNavigation == true | _DataGridView is null)
-                return;
-            if (_DataGridActive == true & _DataGridView is not null & DataGridView.CurrentRow is not null)
+            if (!IgnoreManageNavigation && _ManageNavigation || _DataGridView == null)
             {
-                for (int i = 0, loopTo = _DataGridView.Columns.Count - 1; i <= loopTo; i++)
-                {
-                    if (_DataGridView.Columns[i].ReadOnly == false)
-                    {
-                        _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.RowCount - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
-                        break;
-                    }
-                }
+                return ER;
             }
+            if (_DataGridActive && _DataGridView != null && _DataGridView.CurrentRow != null)
+            {
+                _DataGridView.CurrentCell = _DataGridView.Rows[0].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
+            }
+            ER.Context = ERContenxt;
+            return ER;
+
         }
+
+        public ExecutionResult DataGrid_MoveLast(bool IgnoreManageNavigation = false)
+        {
+            var ERContenxt = $"{mClassName}.DataGrid_MoveLast()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+            if (IgnoreManageNavigation == false && _ManageNavigation == true || _DataGridView == null)
+            {
+                return ER;
+            }
+            if (_DataGridActive == true && _DataGridView != null && _DataGridView.CurrentRow != null)
+            {
+                _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.Rows.Count - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
+                ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", _DataGridView.CurrentRow.Index);
+            }
+            ER.Context = ERContenxt;
+            return ER;
+
+        }
+
+
+   
 
         private void MoveLastDataGridListView()
         {
@@ -3761,24 +3805,23 @@ namespace Passero.Framework.Controls
             }
         }
 
-
-
-        public void MoveLast(bool OverrideManagedNavigation = false)
+        public ExecutionResult MoveLast(bool OverrideManagedNavigation = false)
         {
+            var ERContenxt = $"{mClassName}.MoveLast()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             bool Cancel = false;
             _DataBoundCompleted = false;
             if (eMoveLastRequest != null)
                 eMoveLastRequest(ref Cancel);
             if (Cancel == true)
             {
-                return;
+                return ER;
             }
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "MoveLastItem");
-                UpdateGridPosition();
-                if (eMoveLastCompleted != null)
-                    eMoveLastCompleted();
+                this.ViewModel_MoveLastItem();
+                
             }
             else
             {
@@ -3788,70 +3831,86 @@ namespace Passero.Framework.Controls
             }
             MoveLastDataGridListView();
             UpdateRecordLabel();
+            ER.Context = ERContenxt;
+            return ER;
         }
 
 
 
-        public void RefreshData()
-        {
-            _RefreshData();
-            //if (_DataGridActive == true & _DataGrid is not null)
-            //{
 
-            //}
-            //else
-            //{
-            //    Passero.Framework.ReflectionHelper.InvokeMethod(ref this._ViewModel, "ReloadItems");
-            //}
-            //UpdateRecordLabel();
-        }
-        private void _RefreshData()
+        private ExecutionResult RefreshData()
         {
+
+            var ERContenxt = $"{mClassName}.RefreshData()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
 
             bool Cancel = false;
             _DataBoundCompleted = false;
-            eRefreshRequest?.Invoke(ref Cancel);
-            if (Cancel == true)
-                return;
-
-            if (RefreshVisible == false | RefreshEnabled == false)
-                return;
-
+            if (eRefreshRequest != null)
+                eRefreshRequest(ref Cancel);
+            if (Cancel)
+            {
+                return ER;
+            }
+            if (!RefreshVisible || !RefreshEnabled)
+            {
+                return ER;
+            }
             CheckDataChange();
 
-            if (_ManageNavigation == true)
+
+            if (_ManageNavigation)
             {
-                if (_DataGridActive == true & _DataGridView is not null)
+                switch (this._ActiveDataNavigatorViewModel.GridMode)
                 {
+                    case ViewModelGridModes.DataGridView:
+                        if (this._DataGridView != null && this.DataGridActive)
+                        {
 
-                   
+                        }
+                        break;
+                    case ViewModelGridModes.DataRepeater:
+                        if (this._DataRepeater != null && this.DataGridActive)
+                        {
+
+                        }
+                        break;
+                    default:
+                        ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
+                        break;
                 }
-                else
-                {
-                    Passero.Framework.ReflectionHelper.InvokeMethod(ref this._ActiveViewModel , "ReloadItems");
-                }
-                eRefreshCompleted ?.Invoke();   
+
+
+                if (eRefreshCompleted != null)
+                    eRefreshCompleted();
             }
-
-
             else
             {
-                eRefresh?.Invoke();
+                if (eRefresh != null)
+                    eRefresh();
             }
             UpdateRecordLabel();
-
+            ER.Context = ERContenxt;
+            return ER;
         }
 
 
-        public void Undo(bool OverrideManagedChanges = false)
+
+
+
+
+        public ExecutionResult Undo(bool OverrideManagedChanges = false)
         {
+            var ERContenxt = $"{mClassName}.Undo()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+
             bool Cancel = false;
             _DataBoundCompleted = false;
             if (eUndoRequest != null)
                 eUndoRequest(ref Cancel);
             if (Cancel)
             {
-                return;
+                return ER;
             }
             SetButtonForUndo();
             if (DataGridListView != null)
@@ -3861,35 +3920,8 @@ namespace Passero.Framework.Controls
             if (!OverrideManagedChanges && _ManageChanges)
             {
 
-                switch (this._ActiveDataNavigatorViewModel.GridMode)
-                {
-                    case ViewModelGridModes.DataGridView:
-                        if (_DataGridActive && _DataGridView != null)
-                        {
-                            DataGrid_Undo();
-                        }
-                        break;
+                ER = this.ViewModel_UndoChanges();
 
-                    case ViewModelGridModes.DataRepeater:
-                        if (_DataGridActive && _DataRepeater != null)
-                        {
-                            DataGrid_Undo();
-                        }
-                        break;
-                    case ViewModelGridModes.NoGridMode:
-                        Framework.ReflectionHelper.InvokeMethod(ref _ActiveViewModel, "UndoChanges");
-                        if (_AddNewState)
-                        {
-                            this.MoveAtItem(this.AddNewCurrentModelItemIndex);
-                        }
-                        break;
-                }
-
-                
-                if (eUndoCompleted != null)
-                    eUndoCompleted();
-                
-                
             }
             else
             {
@@ -3898,13 +3930,30 @@ namespace Passero.Framework.Controls
             }
             _AddNewState = false;
             UpdateRecordLabel();
+
+
+            ER.Context = ERContenxt;
+            return ER;
+
         }
+
+
         public bool AddViewModel(string Name, object ViewModel, string FriendlyName = "DataNavigator", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
+
             DataNavigatorViewModel DataNavigatorViewModel = null;
-            DataNavigatorViewModel = new DataNavigatorViewModel(ViewModel, Name, FriendlyName, DataGridView, DataRepeater);
-            this.ViewModels[Name]= DataNavigatorViewModel;
-            return true;
+            try
+            {
+                DataNavigatorViewModel = new DataNavigatorViewModel(ViewModel, Name, FriendlyName, DataGridView, DataRepeater);
+                this.ViewModels[Name] = DataNavigatorViewModel;
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+            
         }
 
 
@@ -3979,7 +4028,7 @@ namespace Passero.Framework.Controls
                 case var case7 when case7 == (int)_RefreshFKey:
                     {
 
-                        _RefreshData();
+                        RefreshData();
                         break;
                     }
 
@@ -4267,135 +4316,6 @@ namespace Passero.Framework.Controls
         }
 
 
-        // Private Sub _DataGrid_CancelRowEdit(sender As Object, e As System.Windows.Forms.QuestionEventArgs) Handles _DataGrid.E
-        // DataGrid_Undo()
-        // End Sub
-
-        //private void _mDBObject_DataEventAfter(BasicDAL.DataEventType EventType)
-        //{
-
-        //    switch (EventType)
-        //    {
-        //        case BasicDAL.DataEventType.AddNew:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-
-        //        case BasicDAL.DataEventType.AddToDataSet:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-
-        //        case BasicDAL.DataEventType.Binding:
-        //            {
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.BindingFromDataReader:
-        //            {
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.ControlsBinding:
-        //            {
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Delete:
-        //        case BasicDAL.DataEventType.DeleteAll:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.DeleteFromDataSet:
-        //        case BasicDAL.DataEventType.DeleteFromDataTable:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Disposing:
-        //            {
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Initializing:
-        //            {
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Insert:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.MoveFirst:
-        //        case BasicDAL.DataEventType.MoveLast:
-        //        case BasicDAL.DataEventType.MoveNext:
-        //        case BasicDAL.DataEventType.MovePrevious:
-        //        case BasicDAL.DataEventType.MoveTo:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Query:
-        //            {
-        //                DataGridListViewInit();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.UndoChanges:
-        //            {
-        //                SetDataNavigator();
-        //                break;
-        //            }
-        //        case BasicDAL.DataEventType.Update:
-        //        case BasicDAL.DataEventType.UpdateFromDataSet:
-        //        case BasicDAL.DataEventType.UpdateFromDataTable:
-        //            {
-        //                // Me._AddNewPending = True
-        //                SetDataNavigator();
-        //                break;
-        //            }
-
-        //        default:
-        //            {
-        //                break;
-        //            }
-        //            // Me._AddNewPending = False
-        //    }
-
-        //}
-
-
-
-        //public void SetDataGridListView(BasicDAL.DbObject DbObject, DataGridView DataGridListView, bool Active = true)
-        //{
-
-        //    DataGridActive = false;
-        //    this.DbObject = DbObject;
-        //    this.DataGridListView = DataGridListView;
-        //    this.DataGridListView.DataSource = this.DbObject.DataTable;
-        //    DataGridListViewActive = Active;
-        //    DataGridListViewInit();
-
-        //}
-
-
-        //public void SetDataGrid(BasicDAL.DbObject DbObject, DataGridView DataGrid, bool Active = true)
-        //{
-        //    this.DbObject = DbObject;
-        //    this.DataGrid = DataGrid;
-        //    DataGridActive = Active;
-        //    DataGridListViewActive = false;
-        //}
-
-        //public void SetDataNavigator(BasicDAL.DbObject DbObject)
-        //{
-
-        //    DataGridActive = false;
-        //    DataGridListViewActive = false;
-        //    this.DbObject = DbObject;
-
-
-        //}
-
-
 
         public void SetDataNavigator()
         {
@@ -4479,6 +4399,7 @@ namespace Passero.Framework.Controls
             UpdateButtonsCaption();
             UpdateRecordLabel();
         }
+
 
 
         public void UpdateButtonsCaption()

@@ -310,7 +310,7 @@ namespace Passero.Framework.Controls
         //public XQBEForm QBEForm = null;
         private string mDbColumn;
         private bool mUseInQBE;
-        private bool mDisplayInQBEResult;
+        private bool mDisplayInQBEResult = true;
         private string mFriendlyName = "";
         private string mQBEValue;
         private string mDisplayFormat = "";

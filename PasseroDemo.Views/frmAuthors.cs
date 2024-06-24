@@ -47,9 +47,7 @@ namespace PasseroDemo.Views
             vmAuthor.BindingSource = this.bsAuthors;
 
             vmAuthor.CreatePasseroBindingFromBindingSource();
-            this.dataNavigator1.ViewModels["Employee"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmAuthor , "Employee");
-            this.dataNavigator1.SetActiveViewModel("Employee");
-
+            
             
             // Questo Metodo sta nel ViewModel Customizzato
             //this.vmAuthor.GetAuthors();
@@ -61,9 +59,11 @@ namespace PasseroDemo.Views
             //this.dbLookUpTextBox1.DisplayMember = "au_fullname";
             //this.dbLookUpTextBox1.ValueMember = "au_id";
             //this.dbLookUpTextBox1.SelectClause = "SELECT *, TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
-            this.dataNavigator1.ViewModels["Author"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
-            this.dataNavigator1.SetActiveViewModel("Author");
-            this.dataNavigator1.InitDataNavigator();
+            this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
+            this.dataNavigator1.SetActiveViewModel("Authors");
+            this.dataNavigator1.InitDataNavigator(true);
+
+            this.dataGridView1.DataSource = this.vmAuthor.ModelItems;
             
         }
 
@@ -83,12 +83,12 @@ namespace PasseroDemo.Views
             QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
             QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
             QBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
-            //xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
-            QBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
-            //xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
-            //xQBEForm_Author.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
+            ////xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
+            //QBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
+            ////xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
+            ////xQBEForm_Author.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
 
-            QBEForm_Author.SetupQBEForm();
+            //QBEForm_Author.SetupQBEForm();
             //            xQBEForm_Author .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
 
             //xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
@@ -96,7 +96,7 @@ namespace PasseroDemo.Views
             //xQBEForm_Author.QBEResultMode = QBEResultMode.AllRowsItems;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsItems;
             QBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
-            //xQBEForm_Author.Owner = this;
+            QBEForm_Author.Owner = this;
             QBEForm_Author.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
             QBEForm_Author.SetTargetRepository(this.vmAuthor.Repository,() => { this.Reload(); });
@@ -106,7 +106,7 @@ namespace PasseroDemo.Views
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
             QBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
-
+            QBEForm_Author.AutoLoadData =true;
 
             QBEForm_Author.ShowQBE();
 
@@ -238,6 +238,8 @@ namespace PasseroDemo.Views
 
         private void button2_Click(object sender, EventArgs e)
         {
+
+
             this.FR_QBEReport_Authors();
 
         }

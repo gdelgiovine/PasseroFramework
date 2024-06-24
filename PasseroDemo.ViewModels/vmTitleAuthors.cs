@@ -18,7 +18,7 @@ namespace PasseroDemo.ViewModels
         {
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Titleauthor>();
-            return this.GetItem($"Select * FROM {this.Repository.GetTableName()} Where title_id=@title_id and au_id=@au_id", new { title_id = title_id, au_id =au_id });
+            return this.GetItem($"Select * FROM {this.Repository.GetTableName()} Where title_id=@title_id and au_id=@au_id", new { title_id = title_id, au_id =au_id }).Value ;
 
         }
 

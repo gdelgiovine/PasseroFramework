@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dapper;
 using Dapper.Contrib.Extensions ;
+using Microsoft.Ajax.Utilities;
 namespace Passero.Framework
 
 {
@@ -16,9 +18,7 @@ namespace Passero.Framework
     public class Repository<ModelClass> where ModelClass : class
     {
         private const string mClassName = "Passero.Framework.Base.Repository";
-#pragma warning disable CS0169 // Il campo 'Repository<ModelClass>.ModelProperties' non viene mai usato
         private Dictionary<string, System.Reflection.PropertyInfo> ModelProperties;
-#pragma warning restore CS0169 // Il campo 'Repository<ModelClass>.ModelProperties' non viene mai usato
         public string Name { get; set; } = $"Repository<{typeof(ModelClass).FullName}>";
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult(mClassName);
         public ViewModel<ModelClass> ViewModel { get; set; }
@@ -26,9 +26,20 @@ namespace Passero.Framework
         
         public ErrorNotificationMessageBox ErrorNotificationMessageBox { get; set; }
         public DynamicParameters Parameters { get; set; }
-        public string SQLQuery { get; set; } = "";
-
+        
         public event EventHandler ModelEvents;
+        private string mSQLQuery = "";
+        public string SQLQuery
+        {
+            get
+            {
+                return mSQLQuery;
+            }
+            set
+            {
+                mSQLQuery = value;
+            }
+        }
 
         protected virtual void OnModelEvents(EventArgs e)
         {
@@ -51,132 +62,173 @@ namespace Passero.Framework
 
 
         private int _CurrentModelItemIndex = -1;
-        
+
         public int CurrentModelItemIndex
         {
             get
             {
-              return _CurrentModelItemIndex;
+                return _CurrentModelItemIndex;
             }
             set
             {
-                if (_ModelItems is null)
+                if (value < -1)
                 {
-                    _CurrentModelItemIndex = -1;
-
+                    value = -1;
                 }
-                else
+                _CurrentModelItemIndex = value;
+                if (value > -1)
                 {
-                    if (_CurrentModelItemIndex != value)
+                    if (_ModelItems.Count < value)
                     {
-                        if (value < 0)
-                            value = 0;
-                        if (value > _ModelItems.Count() - 1)
-                            value = _ModelItems.Count() - 1;
-                        _CurrentModelItemIndex = value;
                         _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
                     }
                 }
             }
         }
 
-        public ModelClass GetModelItemsAt(int index)
+
+        public ExecutionResult<ModelClass> GetModelItemsAt(int index)
         {
-            if (this._ModelItems is null)
-                return null;
-            if (index>0 && index <this._ModelItems.Count())  
-                return this._ModelItems .ElementAt(index);
-            return null;
+            var ERContext = $"{mClassName}.GetModelItemsAt()";
+            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+            if (_ModelItems == null)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = "Invalid Index!";
+                ER.ErrorCode = 0;
+            }
+            if (index > -1 && index < _ModelItems.Count())
+            {
+                ER.Value = _ModelItems.ElementAt(index);
+            }
+            LastExecutionResult = ER.ToExecutionResult();
+            return ER;
+
         }
 
-        public void MoveFirstItem()
+
+        public ExecutionResult MoveFirstItem()
         {
-            if (this._ModelItems != null && this._ModelItems .Count >0)
+            var ERContext = $"{mClassName}.MoveFirstItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
             {
-                this._CurrentModelItemIndex = 0;
-                this._Modeltem = this._ModelItems.ElementAt(0);
+                _CurrentModelItemIndex = 0;
+                _Modeltem = _ModelItems.ElementAt(0);
             }
             else
             {
-                this._Modeltem = null;
-                this._CurrentModelItemIndex = -1;
+                _Modeltem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Invalid Index Position.";
             }
+            return ER;
         }
 
-        public void MoveLastItem()
+
+        public ExecutionResult MoveLastItem()
         {
-            if (this._ModelItems != null && this._ModelItems.Count > 0)
+            var ERContext = $"{mClassName}.MoveLastItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
             {
-                this._CurrentModelItemIndex = this._ModelItems .Count ()-1;
-                this._Modeltem = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
+                _CurrentModelItemIndex = _ModelItems.Count() - 1;
+                _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
             }
             else
             {
-                this._Modeltem = null;
-                this._CurrentModelItemIndex = -1;
+                _Modeltem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Invalid Index Position.";
             }
+            return ER;
         }
 
-        public void MovePreviousItem()
+
+        public ExecutionResult MovePreviousItem()
         {
-            if (this._ModelItems != null && this._ModelItems.Count > 0)
+            var ERContext = $"{mClassName}.MovePreviousItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
             {
-                if (this._CurrentModelItemIndex>0 )
+                if (_CurrentModelItemIndex > 0)
                 {
-                    this._CurrentModelItemIndex--;
-                    this._Modeltem = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
-                }    
-            }
-            else
-            {
-                this._Modeltem = null;
-                this._CurrentModelItemIndex = -1;
-            }
-        }
-
-        public void MoveNextItem()
-        {
-            if (this._ModelItems != null && this._ModelItems.Count > 0)
-            {
-                if (this._CurrentModelItemIndex < this._ModelItems .Count()-1)
-                {
-                    this._CurrentModelItemIndex++;
-                    this._Modeltem = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
+                    _CurrentModelItemIndex -= 1;
+                    _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
                 }
             }
             else
             {
-                this._Modeltem = null;
-                this._CurrentModelItemIndex = -1;
+                _Modeltem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Invalid Index Position.";
             }
+            return ER;
         }
 
 
-        public void MoveAtItem(int Index)
+        public ExecutionResult MoveNextItem()
         {
-            if (this._ModelItems != null && this._ModelItems.Count > 0)
-            { 
-                if (Index >= 0 && Index < this._ModelItems.Count())
+            var ERContext = $"{mClassName}.MoveNextItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
+            {
+                if (_CurrentModelItemIndex < _ModelItems.Count() - 1)
                 {
-                    this._CurrentModelItemIndex = Index;
-                    this._Modeltem = this._ModelItems.ElementAt(Index);
+                    _CurrentModelItemIndex += 1;
+                    _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
                 }
             }
             else
             {
-                this._Modeltem = null;
-                this._CurrentModelItemIndex = -1;
+                _Modeltem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Invalid Index Position.";
             }
-
+            return ER;
         }
 
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        private List <ModelClass>? _ModelItems { get; set; }
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+        public ExecutionResult MoveAtItem(int Index)
+        {
+            var ERContext = $"{mClassName}.MoveAtItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
+            {
+                if (Index >= 0 && Index < _ModelItems.Count())
+                {
+                    _CurrentModelItemIndex = Index;
+                    _Modeltem = _ModelItems.ElementAt(Index);
+                }
+            }
+            else
+            {
+                _Modeltem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Invalid Index Position.";
+            }
+            return ER;
+        }
+
+
+        private List <ModelClass>? _ModelItems { get; set; }= new List<ModelClass> ();  
         public List<ModelClass>? ModelItems
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
@@ -188,36 +240,22 @@ namespace Passero.Framework
             }
         }
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
         private ModelClass? _Modeltem { get; set; }
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? ModelItem
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get
             {
-                //if (_ModelItems != null && _ModelItems.Count > 0)
-                //{
-                //    _Modeltem = _ModelItems.ElementAt(this._CurrentModelItemIndex );  
-                //}
                 return _Modeltem;
             }
             set
             {
-                //if (_ModelItems != null && _ModelItems.Count > 0)
-                //{
-                //    if (this._CurrentModelItemIndex > -1)
-                //    {
-                //        _ModelItems[this._CurrentModelItemIndex] = value;
-                //    }
-                //}
                 _Modeltem = value;
             }
         }
 
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        private ModelClass? _ModelShadow { get; set; }
+        private ModelClass? _ModelItemShadow { get; set; }
 #pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? ModelItemShadow
@@ -225,11 +263,11 @@ namespace Passero.Framework
         {
             get
             {
-                return _ModelShadow;
+                return _ModelItemShadow;
             }
             set
             {
-                _ModelShadow = value;
+                _ModelItemShadow = value;
             }
         }
 
@@ -271,29 +309,40 @@ namespace Passero.Framework
         //public SqlConnection SqlConnection { get; set; }
         public IDbConnection DbConnection { get; set; }
         //public SqlTransaction SqlTransaction { get; set; }
-        public IDbTransaction SqlTransaction { get; set; }
+        public IDbTransaction DbTransaction { get; set; }
+        public int DbCommandTimeout { get; set; } = 30;
+
         public DbContext DbContext { get; set; }
         public DbObject<ModelClass> DbObject { get; set; }
 
-
-        public ModelClass SetModelShadow()
+        public ModelClass GetModelItemClone()
         {
-            _ModelShadow = Utilities.Clone(_Modeltem);
-            if (this.ViewModel != null)
-            {
-                this.ViewModel.ModelItemShadow = _ModelShadow;
-            }
-            return _ModelShadow;
+            return Utilities.Clone(_Modeltem);
         }
 
-        public List<ModelClass> SetModelItemsShadow()
+        public List<ModelClass> GetModelItemsClone()
+        {
+            return Utilities.Clone(_ModelItems);
+        }
+
+
+        public void SetModelItemShadow()
+        {
+            _ModelItemShadow = Utilities.Clone(_Modeltem);
+            //TBD: verifica se è superfluo
+            if (ViewModel != null)
+            {
+                ViewModel.ModelItemShadow = _ModelItemShadow;
+            }
+        }
+
+        public void SetModelItemsShadow()
         {
             _ModelItemsShadow = Utilities.Clone(_ModelItems);
             if (this.ViewModel != null)
             {
-                this.ViewModel.ModelItemShadow = _ModelShadow;
+                this.ViewModel.ModelItemShadow = _ModelItemShadow;
             }
-            return _ModelItemsShadow;
         }
 
         public ModelClass GetEmptyModel()
@@ -311,8 +360,8 @@ namespace Passero.Framework
         {
            
             _Modeltem = GetEmptyModel();
-            SetModelShadow();
-            this.SqlTransaction = SqlTransaction;
+            SetModelItemShadow();
+            this.DbTransaction = SqlTransaction;
             this.DbConnection = SqlConnection;
             DbObject = new DbObject<ModelClass>(this.DbConnection);
             
@@ -322,7 +371,7 @@ namespace Passero.Framework
         {
           
             _Modeltem = GetEmptyModel();
-            SetModelShadow();
+            SetModelItemShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
             
 
@@ -332,7 +381,7 @@ namespace Passero.Framework
         {
           
             _Modeltem = GetEmptyModel();
-            SetModelShadow();
+            SetModelItemShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
             
 
@@ -342,9 +391,9 @@ namespace Passero.Framework
         {
            
             _Modeltem = GetEmptyModel();
-            SetModelShadow();
+            SetModelItemShadow();
             this.DbContext = DbContext;
-            SqlTransaction = DbContext.SqlTransaction;
+            DbTransaction = DbContext.SqlTransaction;
             DbConnection = DbContext.SqlConnection;
             DbObject = new DbObject<ModelClass>(DbConnection);
             
@@ -357,7 +406,7 @@ namespace Passero.Framework
 
             if (ModelShadow is null)
             {
-                ModelShadow = _ModelShadow;
+                ModelShadow = _ModelItemShadow;
             }
 
             return !Utilities.ObjectsEquals(_Modeltem, ModelShadow);
@@ -365,58 +414,81 @@ namespace Passero.Framework
         }
 
 
-        public void HandleExeception(ExecutionResult executionResult )
+        public void HandleExeception(ExecutionResult ER)
         {
-            if (this.ErrorNotificationMessageBox == null | executionResult ==null)
+
+            if (ER == null)
+            {
                 return;
+            }
 
-            
-            
-            StringBuilder msg= new StringBuilder();
-
-            msg.Append($"{executionResult.Context}\n\r");
-            msg.Append($"{this.Name}\n\r");
-            msg.Append($"{executionResult.ResultMessage}");
-            
-            this.ErrorNotificationMessageBox .Show( msg.ToString() );   
-            //Passero.Framework.ReflectionHelper.CallByName(this.ErrorNotificationMessageBox, "Show", Microsoft.VisualBasic.CallType.Method, msg);
-
+            switch (ErrorNotificationMode)
+            {
+                case ErrorNotificationModes.ThrowException:
+                    throw ER.Exception;
+                case ErrorNotificationModes.Silent:
+                    break;
+                case ErrorNotificationModes.ShowDialog:
+                    if (ErrorNotificationMessageBox != null)
+                    {
+                        StringBuilder msg = new StringBuilder();
+                        msg.AppendLine($"Context: {ER.Context}");
+                        msg.AppendLine($"Repository: {Name}");
+                        msg.AppendLine($"Error Message: {ER.ResultMessage}");
+                        msg.AppendLine($"Debug Info: {ER.DebugInfo}");
+                        ErrorNotificationMessageBox.Show(msg.ToString());
+                    }
+                    break;
+                default:
+                    break;
+            }
 
         }
+
+
         public void SetSQLQuery(string SQLQuery, DynamicParameters parameters )
         {
             this.SQLQuery = SQLQuery;
             this.Parameters = parameters;   
 
         }
-        public ModelClass GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = default)
+
+      
+
+
+        public ExecutionResult<ModelClass> GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.GetItem()");
+            var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
             try
             {
-                _Modeltem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).Single();
-                if (this.ViewModel != null)
+                _Modeltem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).SingleOrDefault();
+                if (ViewModel != null)
                 {
-                    this.ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItem = _Modeltem;
                 }
-                SetModelShadow();
-                LastExecutionResult = ER;
-                this.SQLQuery = Query;
-                this.Parameters = (DynamicParameters)Params;
-                return _Modeltem;
+                SetModelItemShadow();
+                LastExecutionResult = ER.ToExecutionResult();
+                mSQLQuery = Query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                ER.Value = _Modeltem;
+
+                return ER;
             }
             catch (Exception ex)
             {
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
-                HandleExeception(ER);
+                ER.DebugInfo = $"SQLQuery = {Query}";
+                LastExecutionResult = ER.ToExecutionResult();
+                HandleExeception(ER.ToExecutionResult());
                 return null;
-                
+
             }
 
         }
+
 
 
         public ModelClass GetCurrentItem()
@@ -428,121 +500,102 @@ namespace Passero.Framework
             return null;    
         }
 
-        public List<ModelClass> GetAllItems(System.Data.IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = default)
+        public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            return GetItems (Buffered, CommandTimeout).ToList();
+            return GetItems(this.mSQLQuery, this.Parameters, Transaction, Buffered, CommandTimeout);
         }
 
-        public List<ModelClass> GetItems(string Query, object Params = null, System.Data.IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = default)
+
+        public ExecutionResult<List<ModelClass>> GetItems(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.GetItems()");
-            string sqlquery = "";
+            var ER = new ExecutionResult<List<ModelClass>>($"{mClassName}.GetItems()");
+            if (Equals(Query, ""))
+            {
+                Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                Parameters = new DynamicParameters();
+            }
+            this._CurrentModelItemIndex = -1;
             try
             {
-                this._ModelItems = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).ToList<ModelClass >();
-                if (this.ViewModel != null)
-                {
-                    this.ViewModel.ModelItems = _ModelItems;
-                    this.ViewModel.ModelItem = _Modeltem;
-                    this.ViewModel.MoveFirstItem();
-                    
-                }
-                if (this._ModelItems.Count() > 0)
-                {
-                    _Modeltem = this._ModelItems.First();
-                    this.MoveFirstItem();
-                    SetModelItemsShadow();
-                }
-                LastExecutionResult = ER;
-                this.SQLQuery = sqlquery;
-                this.Parameters = (DynamicParameters)Params;
-                return _ModelItems;
-                
-            }
-
-            catch (Exception ex)
-            {
-                
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.DebugInfo = $"SQLQuery = {Query}";
-                LastExecutionResult = ER;
-                HandleExeception ( ER );    
-
-                return null;
-            }
-
-        }
-
-        public List<ModelClass> ReloadItems(bool Buffered = true, int? CommandTimeout = default)
-        {
-            var ER = new ExecutionResult($"{mClassName}.ReloadItems()");
-            _ModelItems = DbConnection.Query<ModelClass>(this.SQLQuery, this.Parameters, this.SqlTransaction, Buffered, CommandTimeout).ToList<ModelClass>();
-            if (this.ViewModel != null)
-            {
-                this.ViewModel.ModelItems = _ModelItems;
-                this.ViewModel.ModelItem = _Modeltem;
-                this.ViewModel.MoveFirstItem();
-            }
-
-            if (_ModelItems.Count() > 0)
-            {
-                _Modeltem = _ModelItems.First();
-                this.MoveFirstItem();
-                SetModelItemsShadow();
-            }
-            LastExecutionResult = ER;
-            return _ModelItems; 
-        }
-
-        public List<ModelClass> GetItems(bool Buffered = true, int? CommandTimeout = default)
-        {
-            var ER = new ExecutionResult($"{mClassName}.GetItems()");
-            try
-            {
-                if (this.SQLQuery =="")
-                {
-                    this.SQLQuery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<ModelClass>()}";
-                    this.Parameters = new DynamicParameters();
-                }
-
-                this._CurrentModelItemIndex = -1;
-                //_ModelItems = DbConnection.GetAll<ModelClass>().ToList<ModelClass>();
-                _ModelItems = DbConnection.Query<ModelClass >(this.SQLQuery,this.Parameters ,SqlTransaction ,Buffered ,CommandTimeout ).ToList<ModelClass>();
-
-                if (this.ViewModel != null)
-                {
-                    this.ViewModel .ModelItems = _ModelItems;
-                    this.ViewModel.ModelItem = _Modeltem;
-                    this.ViewModel.MoveFirstItem();
-                }
-
-                if (_ModelItems.Count() >0)
+                _ModelItemsShadow = new List<ModelClass>();
+                //_ModelItemsShadow.Clear();
+                _ModelItems = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).ToList();
+                if (_ModelItems.Count() > 0)
                 {
                     _Modeltem = _ModelItems.First();
-                    this.MoveFirstItem();
+                    _CurrentModelItemIndex = 0;
+                    MoveFirstItem();
                     SetModelItemsShadow();
                 }
-         
-                LastExecutionResult = ER;
-                
-                return _ModelItems;
+                if (ViewModel != null)
+                {
+                    ViewModel.ModelItems = _ModelItems;
+                    ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItemsShadow = _ModelItemsShadow;
+                    ViewModel.MoveFirstItem();
+                    _CurrentModelItemIndex = 0;
+                }
+                this.SQLQuery = Query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                ER.Value = _ModelItems;
             }
-
             catch (Exception ex)
             {
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
-                HandleExeception(ER);
-                return null;
+                ER.DebugInfo = $"Query = {Query}";
+                HandleExeception(ER.ToExecutionResult());
             }
+            LastExecutionResult = ER.ToExecutionResult();
+            return ER;
 
-            
         }
 
+        public ExecutionResult ReloadItems(bool Buffered = true, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.ReloadItems()");
+            try
+            {
+                if (this.mSQLQuery.IsNullOrWhiteSpace() == false)
+                {
+                    _ModelItems = DbConnection.Query<ModelClass>(mSQLQuery, Parameters, DbTransaction , Buffered, CommandTimeout).ToList();
+                }
+
+                if (_ModelItems.Count() > 0)
+                {
+                    _Modeltem = _ModelItems.First();
+                    MoveFirstItem();
+                    SetModelItemsShadow();
+                }
+                if (ViewModel != null)
+                {
+                    ViewModel.ModelItems = _ModelItems;
+                    ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItemsShadow = _ModelItemsShadow;
+                    ViewModel.MoveFirstItem();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query = {this.mSQLQuery}";
+                HandleExeception(ER);
+            }
+
+            LastExecutionResult = ER;
+            return ER;
+
+        }
+
+        
+
+       
        
         public Repository <ModelClass> Clone()
         {
@@ -552,232 +605,438 @@ namespace Passero.Framework
             return newrepository;   
         }
 
-        public long InsertItem(ModelClass Model = null)
+        public ExecutionResult InsertItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
 
             var ER = new ExecutionResult($"{mClassName}.InsertItem()");
-            long x;
-            if (Model is null)
+            long x = 0;
+            if (Model == null)
             {
-                Model = this.ModelItem;
+                Model = ModelItem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
             }
 
             try
             {
-              
-                x =  DbConnection.Insert(Model);
-                
-                this.mAddNewState = false;
-                return x;
+
+                x = DbConnection.Insert(Model, Transaction, CommandTimeout);
+
+                ModelItem = Model;
+                ModelItemShadow = Model;
+                if (ModelItems == null)
+                {
+                    ModelItems = new List<ModelClass>();
+                    ModelItems.Add(Model);
+                }
+                if (ModelItemsShadow == null)
+                {
+                    ModelItemsShadow = new List<ModelClass>();
+                    ModelItemsShadow.Add(Model);
+                }
+                //ModelItems.Add(Model)
+                ModelItemsShadow.Add(Model);
+                mAddNewState = false;
+
+
             }
-
-
             catch (Exception ex)
             {
-                this.mAddNewState = false;
+                //mAddNewState = False
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResult.eResultCode.Failed;
-                LastExecutionResult = ER;
-                
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleExeception(ER);
-                this.UndoChanges();
-                return 0L;
-                
+
             }
-
-
+            LastExecutionResult = ER;
+            return ER;
         }
 
-        public long InsertItems(IEnumerable<ModelClass> ModelItems)
+
+        public ExecutionResult InsertItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItems()");
-            long x;
-            try
+            long x = 0;
+
+            if (ModelItems == null)
             {
-                
-                x= DbConnection.Insert(ModelItems);
-                this.mAddNewState = false;
-                return x;
+                ModelItems = this.ModelItems;
             }
 
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
+            }
+            try
+            {
+
+                x = DbConnection.Insert(ModelItems, Transaction, CommandTimeout);
+                mAddNewState = false;
+                ER.Value = x;
+
+            }
             catch (Exception ex)
             {
-                this.mAddNewState = false;
+                //mAddNewState = False
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Value = 0;
                 HandleExeception(ER);
-                return 0L;
-                
+
             }
 
+            LastExecutionResult = (ER);
+            return ER;
 
         }
+
 
         public bool UndoChanges()
         {
-            var ER = new ExecutionResult("Passero.Framework.Base.Repository.UndoChanges()");
+            //var ER = new ExecutionResult($"{mClassName}.UndoChanges()");
+            var result = false;
+            ModelItem = ModelItemShadow;
+            if (AddNewState == true)
+            {
+                AddNewState = false;
+            }
+            return result;
+        }
+
+        public ExecutionResult UpdateItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItem()");
             bool result = false;
 
-            this.ModelItem = this.ModelItemShadow;
-            if (this.AddNewState == true)
-                this.AddNewState = false;
-            return result;
-
-        }
-
-        public bool UpdateItem(ModelClass Model = null)
-        {
-
-            var ER = new ExecutionResult("Passero.Framework.Base.Repository.UpdateItem()");
-            bool result;
-            if (Model is null)
+            if (Model == null)
             {
                 Model = _Modeltem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
             }
 
             try
             {
-                // TO DO: Creare metodo per aggiornare usando il valore delle chiavi primarie ricavato dal ModelShadow
-                // Questo permetterebbe l'aggiornamento ANCHE delle colonne facenti parte della chiave primaria.
-                result = DbConnection.Update(Model);
-               
-
-                result = DbConnection.Update<ModelClass>(Model);
+                result = DbConnection.Update(Model, Transaction, CommandTimeout);
                 if (result)
                 {
-                    _ModelShadow = Model;
+                    _ModelItemShadow = Model;
                 }
-                return result;
+
             }
             catch (Exception ex)
             {
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleExeception(ER);
-                return false;
-                //if (ErrorNotification)
-                //{
-                //    throw;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
+
             }
+            LastExecutionResult = ER;
+            return ER;
 
         }
 
-        public bool UpdateItems(IEnumerable<ModelClass> ModelItems)
+        public List<PropertyInfo> EntityProperties = DapperHelper.Utilities.GetPropertiesInfo(typeof(ModelClass), true);
+        public List<PropertyInfo> EntityPrimaryKeys = DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(typeof(ModelClass));
+        private string mSqlUpdateCommand = DapperHelper.Utilities.GetUpdateSqlCommand(typeof(ModelClass));
+        public string SqlUpdateCommand(bool Refresh = false)
+        {
+            if (Refresh)
+            {
+                mSqlUpdateCommand = DapperHelper.Utilities.GetUpdateSqlCommand(typeof(ModelClass));
+                EntityPrimaryKeys = DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(typeof(ModelClass));
+                EntityProperties = DapperHelper.Utilities.GetPropertiesInfo(typeof(ModelClass), true);
+            }
+            return mSqlUpdateCommand;
+        }
+
+        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemEx()");
+            int result = 0;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _Modeltem;
+            }
+            if (ModelItemShadow == null)
+            {
+                ModelItemShadow = _ModelItemShadow;
+            }
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
+            }
+
+            try 
+            { 
+                if (ReflectionHelper.Compare<ModelClass>(ModelItem, ModelItemShadow) == false)
+                {
+                    DynamicParameters @params = new DynamicParameters();
+                    foreach (PropertyInfo k in this.EntityProperties)
+                    {
+                        @params.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItem, k.Name));
+                    }
+                    foreach (PropertyInfo k in this.EntityPrimaryKeys)
+                    {
+                        @params.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemShadow, k.Name));
+                    }
+                    result = DbConnection.Execute(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                    if (result > 0)
+                    {
+                        _ModelItemShadow = ModelItem;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleExeception(ER);
+
+            }
+            LastExecutionResult = ER;
+            return ER;
+
+        }
+
+
+        public ExecutionResult UpdateItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
+            bool esito = false;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
+            }
 
             try
             {
-                return DbConnection.Update(ModelItems);
+                esito = DbConnection.Update(ModelItems);
             }
-
             catch (Exception ex)
             {
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleExeception(ER);
-                return false;
-                //if (ErrorNotification)
-                //{
-                //    throw;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
+                esito = false;
             }
-
+            LastExecutionResult = ER;
+            return ER;
 
         }
 
-
-        public bool DeleteItem(ModelClass Model = null)
+        public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModelManager.Delete()");
-            bool result;
-            if (Model is null)
+            var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
+            int affectedrecords = 0;
+
+            if (ModelItems == null)
             {
-                Model = _Modeltem;
+                ModelItems = this.ModelItems;
             }
+
+            if (ModelItemsShadow == null)
+            {
+                ModelItemsShadow = this.ModelItemsShadow;
+            }
+
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
+            }
+
 
             try
             {
-                result = DbConnection.Delete(Model);
-                if (result)
+                DynamicParameters parameters;
+                for (int i = 0; i < ModelItems.Count(); i++)
                 {
-                    _ModelItems .Remove(Model);
-                    _ModelItemsShadow.Remove(Model);
-
-                    _Modeltem = GetEmptyModel();
-                    _ModelShadow = GetEmptyModel();
-                   
+                    parameters = new DynamicParameters();
+                    if (!ReflectionHelper.Compare<ModelClass>(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
+                    {
+                        foreach (var k in this.EntityProperties)
+                        {
+                            parameters.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItems.ElementAt(i), k.Name));
+                        }
+                        foreach (var k in this.EntityPrimaryKeys)
+                        {
+                            parameters.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemsShadow.ElementAt(i), k.Name));
+                        }
+                        affectedrecords += DbConnection.Execute(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                        _ModelItemsShadow[i] = ModelItems.ElementAt(i);
+                    }
+                    else
+                    {
+                        affectedrecords += 1;
+                    }
                 }
-                return result;
-            }
 
+            }
             catch (Exception ex)
             {
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
+                ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleExeception(ER);
-                return false;
-                //if (ErrorNotification)
-                //{
-                //    throw;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
+                ER.Value = affectedrecords;
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+        public ModelClass GetEmptyModelItem()
+        {
+            return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+        }
+
+        public ExecutionResult DeleteItem(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
+
+            bool _result = false;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _Modeltem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
             }
 
+            try
+            {
+                _result = DbConnection.Delete(ModelItem, Transaction, CommandTimeout);
+                if (_result)
+                {
+                    _ModelItems.Remove(ModelItem);
+                    //If (AutoUpdateModelItemsShadows) Then
+                    _ModelItemsShadow.Remove(ModelItem);
+                    //End If
+                    _Modeltem = GetEmptyModelItem();
+                    _ModelItemShadow = GetEmptyModelItem();
+                }
+                ER.Value = _result;
+
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleExeception(ER);
+
+            }
+
+            LastExecutionResult = ER;
+            return ER;
 
         }
 
-        public bool DeleteItems(IEnumerable<ModelClass> ModelItems)
+
+
+        public ExecutionResult DeleteItems(IEnumerable<ModelClass> ModelItems, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
+            bool result = false;
+
+            if (Transaction == null)
+            {
+                Transaction = this.DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = this.DbCommandTimeout;
+            }
 
             try
             {
-                return DbConnection.Delete(ModelItems);
-            }
 
+                result = DbConnection.Delete(ModelItems, Transaction, CommandTimeout);
+                ER.Value = result;
+            }
             catch (Exception ex)
             {
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                LastExecutionResult = ER;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+
                 HandleExeception(ER);
-                return false;
-                //if (ErrorNotification)
-                //{
-                //    throw;
-                //}
-                //else
-                //{
-                //    return false;
-                //}
             }
 
+            LastExecutionResult = ER;
+            return ER;
 
         }
+        public string DefaultSQLQuery { get; set; } = "";
+        private DynamicParameters mDefaultSQLQueryParameters;
+        public DynamicParameters DefaultSQLQueryParameters
+        {
+            get
+            {
+                return mDefaultSQLQueryParameters;
+            }
+            set
+            {
+                mDefaultSQLQueryParameters = value;
+            }
+        }
+
+
+
+
         public string GetTableName()
         {
             string tableName = "";

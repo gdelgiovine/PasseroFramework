@@ -80,7 +80,7 @@ namespace Passero.Framework
             catch (Exception ex)
             {
                 er.ErrorCode = 1;
-                er.ResultCode = (Framework.ExecutionResult.eResultCode)1;
+                er.ResultCode = ExecutionResultCodes.Failed;
                 er.ResultMessage = ex.Message;
                 er.Exception = ex;
             }

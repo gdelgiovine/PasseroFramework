@@ -63,7 +63,7 @@
             this.NavigationBar.Name = "NavigationBar";
             this.NavigationBar.ResizableEdges = Wisej.Web.AnchorStyles.Right;
             this.NavigationBar.ShowUser = false;
-            this.NavigationBar.Size = new System.Drawing.Size(247, 674);
+            this.NavigationBar.Size = new System.Drawing.Size(247, 611);
             this.NavigationBar.TabIndex = 0;
             this.NavigationBar.Text = "Passero Pubs Demo";
             this.NavigationBar.ItemClick += new Wisej.Web.Ext.NavigationBar.NavigationBarItemClickEventHandler(this.NavigationBar_ItemClick);
@@ -156,7 +156,7 @@
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.Controls.Add(this.NavigationBar);
             this.Name = "MainPage";
-            this.Size = new System.Drawing.Size(1434, 674);
+            this.Size = new System.Drawing.Size(1349, 611);
             this.Load += new System.EventHandler(this.MaiPage_Load);
             this.Resize += new System.EventHandler(this.MaiPage_Resize);
             this.ResumeLayout(false);

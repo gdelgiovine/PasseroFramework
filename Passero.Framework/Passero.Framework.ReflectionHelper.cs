@@ -14,17 +14,60 @@ namespace Passero.Framework
 {
     public class ReflectionHelper
     {
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public static object? CallByName(object? ObjectRef,string ProcName, CallType UseCallType, params object?[] Args  )
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+
+
+
+        public static bool Compare<T>(T Object1, T object2)
         {
-            return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType, Args);
+            //Get the type of the object
+            Type type = typeof(T);
+
+            //return false if any of the object is false
+            if (object.Equals(Object1, default(T)) || object.Equals(object2, default(T)))
+            {
+                return false;
+            }
+
+            //Loop through each properties inside class and get values for the property from both the objects and compare
+            foreach (System.Reflection.PropertyInfo property in type.GetProperties())
+            {
+                if (property.Name != "ExtensionData")
+                {
+                    string Object1Value = string.Empty;
+                    string Object2Value = string.Empty;
+                    if (type.GetProperty(property.Name).GetValue(Object1, null) != null)
+                    {
+                        Object1Value = type.GetProperty(property.Name).GetValue(Object1, null).ToString();
+                    }
+                    if (type.GetProperty(property.Name).GetValue(object2, null) != null)
+                    {
+                        Object2Value = type.GetProperty(property.Name).GetValue(object2, null).ToString();
+                    }
+                    if (Object1Value.Trim() != Object2Value.Trim())
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
+
+
+        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType, params object[] Args)
+        {
+            
+          return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType, Args);
+            
+        }
+
+        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType)
+        {
+
+            return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType);
+
+        }
         public static Type GetListType(object List)
         {
             if (List == null)
@@ -183,48 +226,99 @@ namespace Passero.Framework
             Object.GetType().GetProperty(PropertyName)?.SetValue(Object, PropertyValue);
         }
 
-        public static object InvokeMethod2(ref object Object, string MethodName, params object[] MethodParameters)
+        /// <summary>
+        /// Allows late bound invocation of
+        /// properties and methods.
+        /// </summary>
+        /// <param name="target">Object implementing the property or method.</param>
+        /// <param name="methodName">Name of the property or method.</param>
+        /// <param name="callType">Specifies how to invoke the property or method.</param>
+        /// <param name="args">List of arguments to pass to the method.</param>
+        /// <returns>The result of the property or method invocation.</returns>
+        public static object _CallByName(object target, string methodName, CallType callType, params object[] args)
         {
-            object result = null;
+            switch (callType)
+            {
+                case CallType.Get:
+                    {
+                        PropertyInfo p = target.GetType().GetProperty(methodName);
+                        return p.GetValue(target, args);
+                    }
+                case CallType.Let:
+                case CallType.Set:
+                    {
+                        PropertyInfo p = target.GetType().GetProperty(methodName);
+                        p.SetValue(target, args[0], null);
+                        return null;
+                    }
+                case CallType.Method:
+                    {
+                        MethodInfo m = target.GetType().GetMethod(methodName);
+                        return m.Invoke(target, args);
+                    }
+            }
+            return null;
+        }
 
-            if (Object is null)
-                return result ;
 
-            Type type = Object.GetType();
+        public static object InvokeMethod2(ref object RefObject, string MethodName, params object[] MethodParameters)
+        {
 
+            if (RefObject is null)
+                return null ;
+            object result= new object();
+            Type type = RefObject.GetType();
             MethodInfo methodInfo = type.GetMethod(MethodName);
             if (methodInfo != null)
             {
-             
                 ParameterInfo[] parameters = methodInfo.GetParameters();
-                object classInstance = Object;// Activator.CreateInstance(type, null);
+                //object classInstance = RefObject;// Activator.CreateInstance(type, null);
 
-                if (parameters.Length == 0)
+                if (parameters.Length ==0)
                 {
-                    // This works fine
-                    result = methodInfo.Invoke(classInstance, null);
+                    result = methodInfo.Invoke(RefObject , null);
                 }
                 else
                 {
                     object[] parametersArray = MethodParameters;
 
                     // The invoke does NOT work;
-                    // it throws "Object does not match target type"             
-                    result = methodInfo.Invoke(methodInfo, parametersArray);
+                    // it throws "Object does not match target type"
+                    try
+                    {
+                        result = (object)methodInfo.Invoke(RefObject, parametersArray);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+
+                    
                 }
             }
             return result;
         }
 
 
-        public static object InvokeMethod(ref object Object, string MethodName, params object[] MethodParameters)
+        public static object InvokeMethodByName(ref object Object, string MethodName, params object[] MethodParameters)
         {
             return Interaction.CallByName(Object, MethodName, CallType.Method, MethodParameters);
         }
 
-        public static object InvokeMethod<T>(ref T Object, string MethodName, params object[] MethodParameters)
+        public static object InvokeMethodByName(ref object Object, string MethodName)
+        {
+            return Interaction.CallByName(Object, MethodName, CallType.Method);
+        }
+
+        public static object InvokeMethodByName<T>(ref T Object, string MethodName, params object[] MethodParameters)
         {
             return Interaction.CallByName(Object, MethodName, CallType.Method, MethodParameters);
+        }
+
+        public static object InvokeMethodByName<T>(ref T Object, string MethodName)
+        {
+            return Interaction.CallByName(Object, MethodName, CallType.Method);
         }
 
     }

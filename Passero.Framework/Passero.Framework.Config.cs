@@ -72,7 +72,7 @@ namespace Passero.Framework
             if (System.IO.File.Exists(FileName) == false)
             {
                 LastExecutionResult.ErrorCode = 1;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Il file {FileName} non esiste!";
                 return "";
             }
@@ -89,7 +89,7 @@ namespace Passero.Framework
                 else
                 {
                     LastExecutionResult.ErrorCode = 2;
-                    LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                    LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                     LastExecutionResult.ResultMessage = $"Il file {FileName} non contiene valori JSON!";
                 }
             }
@@ -98,7 +98,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 3;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = ex.Message;
             }
             return JsonConfigurationString;
@@ -125,7 +125,7 @@ namespace Passero.Framework
                 else
                 {
                     LastExecutionResult.ErrorCode = 1;
-                    LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                    LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                     LastExecutionResult.ResultMessage = $"La configurazione letta non è una stringa JSON valida!";
 
                 }
@@ -135,7 +135,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 2;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = ex.Message;
             }
 
@@ -163,7 +163,7 @@ namespace Passero.Framework
             if (System.IO.File.Exists(this.FileName) == false)
             {
                 LastExecutionResult.ErrorCode = 1;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Il file {_FileName} non esiste!";
                 return false;
             }
@@ -208,7 +208,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 2;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = ex.Message;
             }
 
@@ -236,14 +236,14 @@ namespace Passero.Framework
                     else
                     {
                         LastExecutionResult.ErrorCode = 3;
-                        LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                        LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                         LastExecutionResult.ResultMessage = $"La chiave {Key} non esiste nella Sezione {Section} del file {FileName}";
                     }
                 }
                 else
                 {
                     LastExecutionResult.ErrorCode = 2;
-                    LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                    LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                     LastExecutionResult.ResultMessage = $"La Sezione {Section} non esiste nel file {FileName}";
                 }
             }
@@ -254,7 +254,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode =    ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante la lettura del file {FileName}{Constants.vbCrLf}{ex.Message}";
             }
 
@@ -282,14 +282,14 @@ namespace Passero.Framework
                     else
                     {
                         LastExecutionResult.ErrorCode = 3;
-                        LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                        LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                         LastExecutionResult.ResultMessage = $"La chiave {Key} non esiste nella Sezione {Section} del dizionario di sessione.";
                     }
                 }
                 else
                 {
                     LastExecutionResult.ErrorCode = 2;
-                    LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                    LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                     LastExecutionResult.ResultMessage = $"La Sezione {Section} non esiste nel del dizionario di sessione.";
                 }
             }
@@ -300,7 +300,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante la lettura del dizionario di sessione.{Constants.vbCrLf}{ex.Message}";
             }
 
@@ -326,7 +326,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante aggiunta sezione {Section}{Constants.vbCrLf}{ex.Message}";
             }
 
@@ -354,7 +354,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante rimozione sezione {Section}{Constants.vbCrLf}{ex.Message}";
             }
 
@@ -382,7 +382,7 @@ namespace Passero.Framework
                     else
                     {
                         LastExecutionResult.ErrorCode = 1;
-                        LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                        LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                         LastExecutionResult.ResultMessage = $"La sezione {Section} non esiste del dizionario di sessione.";
                         return false;
                     }
@@ -404,7 +404,7 @@ namespace Passero.Framework
                     else
                     {
                         LastExecutionResult.ErrorCode = 2;
-                        LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                        LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                         LastExecutionResult.ResultMessage = $"La chiave {Key} della sezione {Section} non esiste del dizionario di sessione.";
                         return false;
                     }
@@ -416,7 +416,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 3;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante modifica del dizionario di sessione, sezione {Section} chiave {Key}.{Constants.vbCrLf}{ex.Message}";
             }
 

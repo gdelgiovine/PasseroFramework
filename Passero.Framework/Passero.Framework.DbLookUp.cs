@@ -67,7 +67,7 @@ namespace Passero.Framework
             catch (Exception ex)
             {
 
-                LastExecutionResult .ResultCode = ExecutionResult.eResultCode.Failed;
+                LastExecutionResult .ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult .ErrorCode = 1;
                 LastExecutionResult.ResultMessage = ex.Message;
                 LastExecutionResult.Exception = ex;

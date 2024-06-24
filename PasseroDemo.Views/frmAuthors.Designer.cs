@@ -44,7 +44,9 @@
             this.txt_au_lname = new Wisej.Web.TextBox();
             this.button1 = new Wisej.Web.Button();
             this.button2 = new Wisej.Web.Button();
+            this.dataGridView1 = new Wisej.Web.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // bsAuthors
@@ -200,11 +202,19 @@
             this.button2.Text = "button2";
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.Location = new System.Drawing.Point(24, 268);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(692, 191);
+            this.dataGridView1.TabIndex = 39;
+            // 
             // frmAuthors
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(798, 551);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.chk_Contract);
@@ -222,6 +232,7 @@
             this.Text = "Authors";
             this.Load += new System.EventHandler(this.frmAuthors_Load);
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,5 +254,6 @@
         internal Wisej.Web.TextBox txt_au_lname;
         private Wisej.Web.Button button1;
         private Wisej.Web.Button button2;
+        private Wisej.Web.DataGridView dataGridView1;
     }
 }

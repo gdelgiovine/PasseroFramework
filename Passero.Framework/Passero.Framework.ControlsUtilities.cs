@@ -1,14 +1,10 @@
-﻿using Microsoft.Ajax.Utilities;
+﻿
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Wisej.Web;
 
 namespace Passero.Framework
@@ -16,6 +12,122 @@ namespace Passero.Framework
     public static class ControlsUtilities
 
     {
+        public static  DataGridViewColumn GetFirstVisibleColumnForDataGridView(DataGridView DataGridView)
+        {
+            foreach (DataGridViewColumn c in DataGridView.Columns)
+            {
+                if (c.Visible == true)
+                {
+                    return c;
+                }
+            }
+            return null;
+        }
+
+        public static DataGridViewColumn GetFirstVisibleColumnForDataGridViewRow(DataGridViewRow DataGridViewRow)
+        {
+            foreach (DataGridViewCell c in DataGridViewRow.Cells)
+            {
+                if (c.Visible == true)
+                {
+                    return c.OwningColumn;
+                }
+            }
+            return null;
+        }
+
+        public static DataGridViewColumn GetFirstEditableColumnForDataGridView(DataGridView DataGridView)
+        {
+            foreach (DataGridViewColumn c in DataGridView.Columns)
+            {
+                if (c.ReadOnly == false)
+                {
+                    return c;
+                }
+            }
+            return null;
+        }
+        public static DataGridViewColumn GetFirstEditableColumnForDataGridViewRow(DataGridViewRow DataGridViewRow)
+        {
+            foreach (DataGridViewCell c in DataGridViewRow.Cells)
+            {
+                if (c.ReadOnly == false)
+                {
+                    return c.OwningColumn;
+                }
+            }
+            return null;
+        }
+
+        public static Control GetDataRepeaterItemControl(DataRepeaterItem DataRepeaterItem, Control TemplateControl)
+        {
+            if (DataRepeaterItem.Controls.ContainsKey(TemplateControl.Name))
+            {
+                return DataRepeaterItem.Controls[TemplateControl.Name];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static Control GetDataRepeaterCurrentItemControl(DataRepeater DataRepeater, Control TemplateControl)
+        {
+            if (DataRepeater.CurrentItem.Controls.ContainsKey(TemplateControl.Name))
+            {
+                return DataRepeater.CurrentItem.Controls[TemplateControl.Name];
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static object GetDataRepeaterItemControlProperty(DataRepeaterItem DataRepeaterItem, Control TemplateControl, string PropertyName)
+        {
+            object Value = null;
+            if (DataRepeaterItem.Controls.ContainsKey(TemplateControl.Name))
+            {
+                Value = ReflectionHelper.GetPropertyValue(DataRepeaterItem.Controls[TemplateControl.Name], PropertyName);
+            }
+            return Value;
+        }
+
+        public static bool SetDataRepeaterItemControlProperty(DataRepeaterItem DataRepeaterItem, Control TemplateControl, string PropertyName, object Value)
+        {
+            bool esito = false;
+            if (DataRepeaterItem.Controls.ContainsKey(TemplateControl.Name))
+            {
+                ReflectionHelper.CallByName(DataRepeaterItem.Controls[TemplateControl.Name], PropertyName, CallType.Set, Value);
+                //ReflectionHelper.SetPropertyValue(ref DataRepeaterItem.Controls[TemplateControl.Name], PropertyName, Value);
+                esito = true;
+            }
+            return esito;
+        }
+        public static   Control GetDataRepeaterControl(DataRepeater DataRepeater, Control TemplateControl, int Index = -1)
+        {
+            if (Index == -1)
+            {
+                if (DataRepeater.CurrentItem.Controls.ContainsKey(TemplateControl.Name))
+                {
+                    return DataRepeater.CurrentItem.Controls[TemplateControl.Name];
+                }
+            }
+            else
+            {
+                int _index = DataRepeater.CurrentItemIndex;
+                Control _control = null;
+                DataRepeater.CurrentItemIndex = Index;
+                if (DataRepeater.CurrentItem.Controls.ContainsKey(TemplateControl.Name))
+                {
+                    _control = DataRepeater.CurrentItem.Controls[TemplateControl.Name];
+                }
+                DataRepeater.CurrentItemIndex = _index;
+                return _control;
+            }
+
+            return null;
+        }
+
 
 
         public static Dictionary<string, DataBindControl> CreatePasseroBindingFromBindingSource(Form Form, BindingSource BindingSource)

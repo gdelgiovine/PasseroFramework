@@ -36,14 +36,14 @@ namespace PasseroDemo.ViewModels
             else
             {
                 //return this.Repository.GetItems();
-                return this.GetAllItems();
+                return this.GetAllItems().Value.ToList();
                 
             }
         }
         public bool UpdateAuthor(Models.Author author = null) 
         {
             
-            return this.UpdateItem(author);
+            return (bool)this.UpdateItem(author).Value ;
             //return this.Repository.UpdateItem (author);
         }
     }

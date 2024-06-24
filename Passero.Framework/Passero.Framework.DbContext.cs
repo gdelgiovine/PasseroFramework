@@ -79,7 +79,7 @@ namespace Passero.Framework
             {
                 mSqlTransaction = value;
                 foreach (ViewModel<object> _ViewModel in ViewModels.Values)
-                    _ViewModel.Repository.SqlTransaction = SqlTransaction;
+                    _ViewModel.Repository.DbTransaction = SqlTransaction;
 
             }
         }
@@ -123,7 +123,7 @@ namespace Passero.Framework
             {
                 ViewModels.Add(ViewModel.Name, ViewModel);
                 ViewModel.Repository.DbConnection = SqlConnection;
-                ViewModel.Repository.SqlTransaction = SqlTransaction;
+                ViewModel.Repository.DbTransaction = SqlTransaction;
                 return true;
             }
             else

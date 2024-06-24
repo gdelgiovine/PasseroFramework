@@ -11,7 +11,9 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
+
 
 
 namespace Passero.Framework.DapperHelper
@@ -20,17 +22,193 @@ namespace Passero.Framework.DapperHelper
     public class Utilities
     {
 
-        public static string GetUpdateSqlCommand(string SQLQuery, IDbConnection dbConnection )
+        public static List<PropertyInfo> GetPropertiesInfo(Type ModelClass, bool ExcludeComputed = false)
+        {
+            var properties = ModelClass.GetProperties();
+
+            List<PropertyInfo> x = new List<PropertyInfo>();
+            foreach (PropertyInfo p in properties)
+            {
+                if (p.GetCustomAttribute<Dapper.Contrib.Extensions.ComputedAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.WriteAttribute>() != null)
+                {
+                    if (ExcludeComputed == false)
+                    {
+                        x.Add(p);
+                    }
+                }
+                else
+                {
+                    x.Add(p);
+                }
+            }
+            return x;
+        }
+
+        public static List<PropertyInfo> GetPrimaryKeysPropertiesInfo(Type ModelClass)
+        {
+            var properties = ModelClass.GetProperties();
+            List<PropertyInfo> x = new List<PropertyInfo>();
+            foreach (PropertyInfo p in properties)
+            {
+                if (p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null)
+                {
+                    x.Add(p);
+                }
+            }
+            return x;
+        }
+
+
+        public static string GetPrimaryKeyNames(Type ModelClass)
+        {
+            var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+
+            var values = string.Join(",", properties.Select((p) => $"{p.Name}"));
+            return values;
+
+        }
+        public static List<string> GetPrimaryKeyNamesList(Type ModelClass)
+        {
+            List<string> x = new List<string>();
+            var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+
+            var values = string.Join(",", properties.Select((p) => $"{p.Name}"));
+            x = values.Split(',').ToList();
+            return x;
+        }
+
+
+
+
+
+        public static bool PropertyIsWriteable(PropertyInfo pi)
         {
 
-            System.Data.Common.DataAdapter da = DbProviderFactories.GetFactory((System.Data.Common .DbConnection)dbConnection).CreateDataAdapter();
-
-
-            //var cmdbuilder = new System.Data.Common.DbCommandBuilder(da);
-
-            //return cmdbuilder.GetUpdateCommand().CommandText;
-            return "";
+            var attributes = pi.GetCustomAttributes(typeof(WriteAttribute), false).AsList();
+            if (attributes.Count != 1)
+            {
+                return true;
+            }
+            WriteAttribute writeAttribute = (WriteAttribute)attributes[0];
+            return writeAttribute.Write;
         }
+
+        public static bool PropertyIsExplicitKey(PropertyInfo pi)
+        {
+            var attributes = pi.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public static bool PropertyIsIdentityKey(PropertyInfo pi)
+        {
+            var attributes = pi.GetCustomAttributes(typeof(KeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public static bool PropertyIsExplicitKey(Type ModelClass, string PropertyName)
+        {
+            if (string.IsNullOrEmpty(PropertyName.Trim()))
+            {
+                return false;
+            }
+
+            var pi = ModelClass.GetProperty(PropertyName);
+            if (pi == null)
+            {
+                return false;
+            }
+            var attributes = pi.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).AsList();
+
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        public static bool PropertyIsIdentityKey(Type ModelClass, string PropertyName)
+        {
+            if (string.IsNullOrEmpty(PropertyName.Trim()))
+            {
+                return false;
+            }
+
+            var pi = ModelClass.GetProperty(PropertyName);
+            if (pi == null)
+            {
+                return false;
+            }
+
+            var attributes = pi.GetCustomAttributes(typeof(KeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        public static DynamicParameters GetDynamicParameters(object Params)
+        {
+            if (Params == null) 
+                return null;    
+
+            switch (Params.GetType().Name)
+            {
+                case "VB$AnonymousType_0`1":
+                    return null;
+                    break;
+                case "DynamicParameters":
+                    return (DynamicParameters)Params;
+            }
+            return null;
+        }
+
+        public static string GetUpdateSqlCommand(Type ModelClass)
+        {
+            List<PropertyInfo> properties;
+            StringBuilder sbset = new StringBuilder();
+            StringBuilder sbwhere = new StringBuilder();
+            string setlist;
+            string wherelist;
+            string sql;
+            properties = DapperHelper.Utilities.GetPropertiesInfo(ModelClass, true);
+            foreach (PropertyInfo pi in properties)
+            {
+                if (!DapperHelper.Utilities.PropertyIsIdentityKey(pi))
+                {
+                    sbset.Append($"{pi.Name}=@{pi.Name}, ");
+                }
+                if (DapperHelper.Utilities.PropertyIsExplicitKey(pi) || DapperHelper.Utilities.PropertyIsIdentityKey(pi))
+                {
+                    sbwhere.Append($"{pi.Name}=@{pi.Name}_shadow AND ");
+                }
+            }
+            setlist = sbset.ToString().Trim();
+            wherelist = sbwhere.ToString().Trim();
+            if (setlist.EndsWith(","))
+            {
+                setlist = setlist.Substring(0, setlist.Length - 1);
+            }
+            if (wherelist.EndsWith("AND"))
+            {
+                wherelist = wherelist.Substring(0, wherelist.Length - 3);
+            }
+            sql = $"UPDATE {DapperHelper.Utilities.GetTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
+            return sql;
+        }
+
 
 
 
@@ -64,7 +242,7 @@ namespace Passero.Framework.DapperHelper
             return values;
         }
 
-        public static IEnumerable<PropertyInfo> GetPropertiesInfo(Type ModelClass, bool excludeKey = false)
+        public static IEnumerable<PropertyInfo> GetPropertiesInfo2(Type ModelClass, bool excludeKey = false)
         {
             var properties =ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
             return properties;

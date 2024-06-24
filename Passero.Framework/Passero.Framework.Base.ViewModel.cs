@@ -31,11 +31,11 @@ namespace Passero.Framework
         //{
         //    ReadControlsCompleted?.Invoke(this, e);
         //}
-        private object _DataNavigator = null;
+        private object mDataNavigator = null;
         public object DataNavigator
         {
-            get { return _DataNavigator; }
-            set { _DataNavigator = value; }
+            get { return mDataNavigator; }
+            set { mDataNavigator = value; }
         }
         public Wisej.Web.Form OwnerView { get; set; }   
         public string Name { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
@@ -43,42 +43,69 @@ namespace Passero.Framework
         public DateTime MaxDateTime { get; set; } = new DateTime(9999, 12, 31, 23, 59, 59, 999);
         public UseModelData UseModelData { get; set; } = UseModelData.InternalRepository;
         public BindingBehaviour bindingBehaviour { get; set; }=BindingBehaviour.SelectInsertUpdate;
-        private ErrorNotificationMessageBox _ErrorNotificationMessageBox = new ErrorNotificationMessageBox();   
-        private ErrorNotificationModes _ErrorNotificationMode = ErrorNotificationModes.ThrowException;
-        private ModelClass _ModelItemShadow;
+        private ErrorNotificationMessageBox mErrorNotificationMessageBox = new ErrorNotificationMessageBox();   
+        private ErrorNotificationModes mErrorNotificationMode = ErrorNotificationModes.ThrowException;
+        private ModelClass mModelItemShadow;
         private ModelClass ExternalModelShadow;
-        private int _AddNewCurrentModelItemIndex = -1;
-        private int _CurrentModelItemIndex=-1;
-        private List<ModelClass> _ModelItems;
-        private List<ModelClass> _ModelItemsShadow;
+        private int mAddNewCurrentModelItemIndex = -1;
+        private int mCurrentModelItemIndex=-1;
+        private List<ModelClass> mModelItems;
+        private List<ModelClass> mModelItemsShadow;
         private BindingSource mBindingSource;
         private Dictionary<string, Wisej.Web.Control> BindingSourceControls = new Dictionary<string, Control>();
         private DataBindingMode mDataBindingMode = DataBindingMode.Passero;
+        
+        
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult(mClassName);
         public ErrorNotificationModes  ErrorNotificationMode
         {
-            get { return _ErrorNotificationMode; }
-            set { _ErrorNotificationMode = value; this.Repository.ErrorNotificationMode = value; }
+            get { return mErrorNotificationMode; }
+            set { mErrorNotificationMode = value; 
+                this.Repository.ErrorNotificationMode = value; }
         }
         public ErrorNotificationMessageBox ErrorNotificationMessageBox        {
-            get { return _ErrorNotificationMessageBox; }
-            set { this._ErrorNotificationMessageBox = value; this.Repository.ErrorNotificationMessageBox = value; }
-        } 
+            get { return mErrorNotificationMessageBox; }
+            set { this.mErrorNotificationMessageBox = value; 
+                this.Repository.ErrorNotificationMessageBox = value; }
+        }
 
         public void HandleExeception(ExecutionResult executionResult)
         {
-            if (this.ErrorNotificationMessageBox == null | executionResult == null)
+            if (executionResult == null)
+            {
                 return;
+            }
 
-            StringBuilder msg = new StringBuilder();
+            switch (this.ErrorNotificationMode)
+            {
+                case ErrorNotificationModes.ShowDialog:
+                    StringBuilder msg = new StringBuilder();
+                    msg.Append($"{executionResult.Context}");
+                    msg.Append($"{executionResult.ResultMessage}");
+                    msg.Append($"{Name}");
+                    ReflectionHelper.CallByName(ErrorNotificationMessageBox, "Show", Microsoft.VisualBasic.CallType.Method, msg);
+                    break;
+                case ErrorNotificationModes.Silent:
+                    break;
+                case ErrorNotificationModes.ThrowException:
+                    throw executionResult.Exception;
+            }
 
-            msg.Append($"{executionResult.Context}");
-            msg.Append($"{executionResult.ResultMessage}");
-            msg.Append($"{this.Name}");
+        }
+        private string mSQLQuery;
 
-            Passero.Framework.ReflectionHelper.CallByName(this.ErrorNotificationMessageBox, "Show", Microsoft.VisualBasic.CallType.Method, msg);
-
-
+        public string SQLQuery
+        {
+            get
+            {
+                mSQLQuery = Repository.SQLQuery;
+                return mSQLQuery;
+            }
+            set
+            {
+                mSQLQuery = value;
+                Repository.SQLQuery = value;
+            }
         }
 
 
@@ -95,33 +122,26 @@ namespace Passero.Framework
         }
 
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public Type? ModelType
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get { return ModelItem.GetType(); }
             
         }
 
 
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         public ModelClass? NewModeltem
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
             get { return GetEmptyModel(); }
             set { NewModeltem = value; }
         }
-
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public ModelClass? ModelItem
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        public ModelClass ModelItem
         {
             get
             {
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _ModelItemShadow;
+                        return mModelItemShadow;
                     default:
                         return Repository.ModelItem;
                 }
@@ -131,7 +151,8 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        this._ModelItemShadow = value;
+                        mModelItemShadow = value;
+                        Repository.ModelItem = value;
                         break;
 
                     case UseModelData.InternalRepository:
@@ -142,17 +163,15 @@ namespace Passero.Framework
 
 
         }
-#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
-        public List<ModelClass>? ModelItems
-#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+        public List<ModelClass> ModelItems
         {
             get
             {
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _ModelItems;
-
+                        return mModelItems;
                     default:
                         return Repository.ModelItems;
                 }
@@ -162,19 +181,22 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        this._ModelItems = value;
+                        mModelItems = value;
                         break;
 
                     case UseModelData.InternalRepository:
                         Repository.ModelItems = value;
                         break;
                 }
-                //
-                if (this.mBindingSource !=null )
-                    this.mBindingSource .DataSource = value; 
-                //
+                
+                if (mBindingSource != null)
+                {
+                    mBindingSource.DataSource = value;
+                }
+                
             }
         }
+
         public List<ModelClass> ModelItemsShadow
         {
             get
@@ -182,8 +204,7 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _ModelItemsShadow;
-
+                        return mModelItemsShadow;
                     default:
                         return Repository.ModelItemsShadow;
                 }
@@ -193,16 +214,17 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        this._ModelItemsShadow = value;
+                        mModelItemsShadow = value;
                         break;
 
                     case UseModelData.InternalRepository:
-                        Repository.ModelItemsShadow  = value;
+                        Repository.ModelItemsShadow = value;
                         break;
                 }
             }
         }
-     
+
+
 
         public int ModelItemsCount
         {
@@ -211,7 +233,7 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _ModelItems.Count;
+                        return mModelItems.Count;
 
                     default:
                         return Repository.ModelItems.Count;
@@ -220,31 +242,31 @@ namespace Passero.Framework
         }
         public int CurrentModelItemIndex
         {
-            get {
+            get
+            {
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _CurrentModelItemIndex ;
-
+                        return mCurrentModelItemIndex;
                     default:
                         return Repository.CurrentModelItemIndex;
                 }
             }
-            set {
-
+            set
+            {
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        _CurrentModelItemIndex = value;
+                        mCurrentModelItemIndex = value;
                         break;
-
                     case UseModelData.InternalRepository:
                         Repository.CurrentModelItemIndex = value;
+                        mCurrentModelItemIndex = value;
                         break;
                 }
-
-            }  
+            }
         }
+
 
         public int AddNewCurrentModelItemIndex
         {
@@ -253,30 +275,28 @@ namespace Passero.Framework
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        return _AddNewCurrentModelItemIndex;
-
+                        return mAddNewCurrentModelItemIndex;
                     default:
                         return Repository.AddNewCurrentModelItemIndex;
                 }
             }
             set
             {
-
                 switch (UseModelData)
                 {
                     case UseModelData.External:
-                        _AddNewCurrentModelItemIndex = value;
+                        mAddNewCurrentModelItemIndex = value;
                         break;
 
                     case UseModelData.InternalRepository:
                         Repository.AddNewCurrentModelItemIndex = value;
+                        mAddNewCurrentModelItemIndex = value;
                         break;
                 }
-
             }
         }
 
-      
+
         public int CreatePasseroBindingFromBindingSource(Form Form=null, BindingSource BindingSource =null)
         {
             //if (this.DataBindingMode == DataBindingMode.BindingSource)
@@ -313,39 +333,70 @@ namespace Passero.Framework
             return this.DataBindControls.Count();
         }
 
-        private ModelClass ExternalGetModelItemsAt(int index)
+        private ExecutionResult<ModelClass> ExternalGetModelItemsAt(int index)
         {
-            if (this._ModelItems is null)
-                return null;
-            if (index > 0 && index < this._ModelItems.Count())
-                return this._ModelItems.ElementAt(index);
-            return null;
+
+            var ERContext = $"{mClassName}.ExternalGetModelItemsAt()";
+            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+            if (mModelItems == null)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = "Invalid Index!";
+                ER.ErrorCode = 0;
+            }
+            if (index > 0 && index < mModelItems.Count())
+            {
+                ER.Value = mModelItems.ElementAt(index);
+            }
+            LastExecutionResult = ER.ToExecutionResult();
+            return ER;
+
         }
 
-        public ModelClass GetModelItemsAt(int index)
+
+        public ExecutionResult<ModelClass> GetModelItemsAt(int index)
         {
-            if (UseModelData ==  UseModelData.External  )
-                return ExternalGetModelItemsAt(index);  
+            var ERContext = $"{mClassName}.GetModelItemsAt()";
+            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+
+            if (UseModelData == UseModelData.External)
+            {
+                ER = ExternalGetModelItemsAt(index);
+            }
             else
-                return Repository.GetModelItemsAt(index);
+            {
+                ER = Repository.GetModelItemsAt(index);
+            }
+
+            ER.Context = ERContext;
+            LastExecutionResult = ER.ToExecutionResult();
+            return ER;
+
         }
 
         public ModelClass ModelItemShadow
         {
             get
             {
-                if (UseModelData == UseModelData.External  ) 
-                    return this.ExternalModelShadow ;
+                if (UseModelData == UseModelData.External)
+                {
+                    return this.ExternalModelShadow;
+                }
                 else
-                    return Repository.ModelItemShadow;  
+                {
+                    return Repository.ModelItemShadow;
+                }
             }
             set
             {
-                if (UseModelData == UseModelData.External  )
-                    this.ExternalModelShadow = value;   
+                if (UseModelData == UseModelData.External)
+                {
+                    this.ExternalModelShadow = value;
+                }
                 else
+                {
                     Repository.ModelItemShadow = value;
-                // Me.BindingSource = New BindingSource(_Model)
+                }
             }
         }
 
@@ -355,7 +406,7 @@ namespace Passero.Framework
             {
                 ModelShadow = ExternalModelShadow;
             }
-            return !Utilities.ObjectsEquals(_ModelItemShadow, ModelShadow);
+            return !Utilities.ObjectsEquals(mModelItemShadow, ModelShadow);
         }
 
         public bool IsModelDataChanged(ModelClass ModelShadow = null)
@@ -366,207 +417,287 @@ namespace Passero.Framework
                 return ExternalModelDataChanged(ModelShadow);
         }
 
-        public void MoveFirstItem()
+        public void DataNavigatorRaiseEventBoundCompled()
         {
+            if (mDataNavigator != null)
+            {
+                ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "RaiseEventBoundCompleted");
+            }
+        }
+        public void SetModelItemShadow()
+        {
+            ModelItemShadow = Utilities.Clone(ModelItem);
+        }
+
+        public ExecutionResult MoveFirstItem()
+        {
+            var ERContext = $"{mClassName}.MoveFirstItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             if (UseModelData == UseModelData.InternalRepository)
             {
-                this.Repository.MoveFirstItem();   
+                ER = Repository.MoveFirstItem();
             }
             else
             {
-                if (this._ModelItemShadow  != null && this._ModelItems.Count > 0)
+                if (mModelItemShadow != null && mModelItems.Count > 0)
                 {
-                    this._CurrentModelItemIndex = 0;
-                    this._ModelItemShadow = this._ModelItems.ElementAt(0);
+                    mCurrentModelItemIndex = 0;
+                    mModelItemShadow = mModelItems.ElementAt(0);
                 }
                 else
                 {
-                    this._ModelItemShadow = null;
-                    this._CurrentModelItemIndex = -1;
+                    mModelItemShadow = null;
+                    mCurrentModelItemIndex = -1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
                 }
             }
-            this.SetModelShadow();
 
-            switch (this.mDataBindingMode)
+            if (ER.Success)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.MoveFirst ();
-                    break;
-                default:
-                    break;
+                SetModelItemShadow();
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.MoveFirst();
+                        DataNavigatorRaiseEventBoundCompled();
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            return ER;
 
         }
 
-        public void MoveLastItem()
+
+        public ExecutionResult MoveLastItem()
         {
+            var ERContext = $"{mClassName}.MoveLastItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             if (UseModelData == UseModelData.InternalRepository)
             {
-                this.Repository.MoveLastItem();
+                ER = Repository.MoveLastItem();
+                if (ER.Success)
+                {
+                    mCurrentModelItemIndex = Repository.CurrentModelItemIndex;
+                    mAddNewCurrentModelItemIndex = Repository.AddNewCurrentModelItemIndex;
+                }
             }
             else
             {
-                if (this._ModelItemShadow != null && this._ModelItems.Count > 0)
+                if (mModelItemShadow != null && ModelItemsCount > 0)
                 {
-                    this._CurrentModelItemIndex = this._ModelItems.Count() - 1;
-                    this._ModelItemShadow = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
+                    mCurrentModelItemIndex = mModelItems.Count() - 1;
                 }
                 else
                 {
-                    this._ModelItemShadow = null;
-                    this._CurrentModelItemIndex = -1;
+                    mCurrentModelItemIndex = -1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
                 }
             }
-            this.SetModelShadow();
 
-            switch (this.mDataBindingMode)
+            if (ER.Success)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.MoveLast();
-                    break;
-                default:
-                    break;
+                SetModelItemShadow();
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.MoveLast();
+                        break;
+                    default:
+                        break;
+                }
             }
 
-          
+            return ER;
+
         }
 
-        public void MovePreviousItem()
+
+        public ExecutionResult MovePreviousItem()
         {
+            var ERContext = $"{mClassName}.MovePreviousItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             if (UseModelData == UseModelData.InternalRepository)
             {
-                this.Repository.MovePreviousItem();
+                ER = Repository.MovePreviousItem();
             }
             else
             {
-                if (this._ModelItems != null && this._ModelItems.Count > 0)
+                if (mModelItems != null && mModelItems.Count > 0)
                 {
-                    if (this._CurrentModelItemIndex > 0)
+                    if (mCurrentModelItemIndex > 0)
                     {
-                        this._CurrentModelItemIndex--;
-                        this._ModelItemShadow = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
+                        mCurrentModelItemIndex -= 1;
+                        mModelItemShadow = mModelItems.ElementAt(mCurrentModelItemIndex);
                     }
                 }
                 else
                 {
-                    this._ModelItemShadow = null;
-                    this._CurrentModelItemIndex = -1;
+                    mModelItemShadow = null;
+                    mCurrentModelItemIndex = -1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
                 }
             }
-            
-            this.SetModelShadow();
 
-            switch (this.mDataBindingMode)
+
+            if (ER.Success)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if(AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.MovePrevious();
-                    break;
-                default:
-                    break;
+                SetModelItemShadow();
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.MovePrevious();
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            
+            return ER;
+
         }
 
-        public void MoveNextItem()
-        {
 
+
+        public ExecutionResult MoveNextItem()
+        {
+            var ERContext = $"{mClassName}.MoveNextItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
             if (UseModelData == UseModelData.InternalRepository)
             {
-                this.Repository.MoveNextItem();
+                ER = Repository.MoveNextItem();
             }
             else
             {
-                if (this._ModelItems != null && this._ModelItems.Count > 0)
+                if (mModelItems != null && mModelItems.Count > 0)
                 {
-                    if (this._CurrentModelItemIndex < this._ModelItems.Count()-1)
+                    if (mCurrentModelItemIndex < mModelItems.Count() - 1)
                     {
-                        this._CurrentModelItemIndex++;
-                        this._ModelItemShadow = this._ModelItems.ElementAt(this._CurrentModelItemIndex);
+                        mCurrentModelItemIndex += 1;
+                        mModelItemShadow = mModelItems.ElementAt(mCurrentModelItemIndex);
                     }
                 }
                 else
                 {
-                    this._ModelItemShadow = null;
-                    this._CurrentModelItemIndex = -1;
+                    mModelItemShadow = null;
+                    mCurrentModelItemIndex = -1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
                 }
             }
-            this.SetModelShadow();
 
-            switch (this.mDataBindingMode)
+            if (ER.Success)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.MoveNext();
-                    break;
-                default:
-                    break;
+                SetModelItemShadow();
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.MoveNext();
+                        break;
+                    default:
+                        break;
+                }
             }
 
+            return ER;
         }
 
-        public void MoveAtItem(int Index)
+        public ExecutionResult MoveAtItem(int Index)
         {
+            var ERContext = $"{mClassName}.MoveAtItem()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
             if (UseModelData == UseModelData.InternalRepository)
-            {           
-                this.Repository.MoveAtItem(Index);
+            {
+                ER = Repository.MoveAtItem(Index);
             }
             else
             {
-                if (this._ModelItems != null && this._ModelItems.Count > 0)
+                if (mModelItems != null && mModelItems.Count > 0)
                 {
-                    if (Index > 0 && Index < this._ModelItems.Count())
+                    if (Index > 0 && Index < mModelItems.Count())
                     {
-                        this._CurrentModelItemIndex = Index;
-                        this._ModelItemShadow = this._ModelItems.ElementAt(Index);
+                        mCurrentModelItemIndex = Index;
+                        mModelItemShadow = mModelItems.ElementAt(Index);
                     }
                 }
                 else
                 {
-                    this._ModelItemShadow = null;
-                    this._CurrentModelItemIndex = -1;
+                    mModelItemShadow = null;
+                    mCurrentModelItemIndex = -1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
+                    return ER;
                 }
             }
-            this.SetModelShadow();
-   
-            switch (this.mDataBindingMode)
+
+            if (ER.Success)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.Position =this.CurrentModelItemIndex ;
-                    break;
-                default:
-                    break;
+                SetModelItemShadow();
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.Position = CurrentModelItemIndex;
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            return ER;
         }
+
 
         private bool mAddNewState;
         public bool AddNewState
@@ -583,38 +714,56 @@ namespace Passero.Framework
 
          
         }
-        public bool AddNew()
+        public ExecutionResult AddNew(object newItem = null)
         {
-            if (mAddNewState == false) 
+            var ER = new ExecutionResult($"{mClassName}.AddNew()");
+            if (mAddNewState == false)
             {
-                    this._ModelItemShadow = (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+                try
+                {
+                    ER.Context = "Checking newItem";
+                    if (newItem == null)
+                    {
+                        newItem = (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+                    }
+                    ModelItem = (ModelClass)newItem;
+                    ModelItemShadow = (ModelClass)newItem;
 
-                    switch (this.mDataBindingMode)
+                    ER.Context = "DataBinding";
+                    switch (mDataBindingMode)
                     {
                         case DataBindingMode.None:
                             break;
                         case DataBindingMode.Passero:
-                            WriteControls(this._ModelItemShadow);
+                            WriteControls(ModelItemShadow);
                             break;
                         case DataBindingMode.BindingSource:
-                            this.AddNewCurrentModelItemIndex = this.CurrentModelItemIndex;
-                            this.BindingSource.AddNew();
-                            this.MoveLastItem();
-                            
-                            Passero.Framework.ReflectionHelper.InvokeMethod2(ref _DataNavigator, "UpdateRecordLabel", null);
+                            AddNewCurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
+                            mBindingSource.AddNew();
+                            ModelItems[mBindingSource.CurrencyManager.Position] = ModelItem;
+                            mBindingSource.CurrencyManager.UpdateBindings();
+                            CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
+                            ReflectionHelper.CallByName( mDataNavigator, "UpdateRecordLabel", CallType.Method);
                             break;
                         default:
                             break;
                     }
+                    Repository.AddNewState = mAddNewState;
+                    mAddNewState = true;
 
-                    //WriteControls(this.Model);
-                    
-                this.Repository.AddNewState = mAddNewState;
-                mAddNewState = true;
-                return true;    
+                }
+                catch (Exception ex)
+                {
+                    ER.Exception = ex;
+                    ER.ResultMessage = ex.Message;
+                    ER.ErrorCode = 1;
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                }
             }
-            return false;   
+            LastExecutionResult = ER;
+            return ER;
         }
+
 
         public string Description { get; set; }
 
@@ -645,6 +794,35 @@ namespace Passero.Framework
             set { this.Repository.DbConnection = value; }
         }
         public Dictionary<string, DataBindControl> DataBindControls { get; set; } = new Dictionary<string, DataBindControl>(StringComparer.InvariantCultureIgnoreCase);
+
+        public IDbTransaction DbTransaction
+        {
+            get
+            {
+                return Repository.DbTransaction;
+            }
+            set
+            {
+                Repository.DbTransaction = value;
+            }
+        }
+        public int DbCommandTimeout
+        {
+            get
+            {
+                return Repository.DbCommandTimeout;
+            }
+            set
+            {
+                Repository.DbCommandTimeout = value;
+            }
+        }
+
+        public ModelClass GetEmptyModelItem()
+        {
+            return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+        }
+
 
         public bool AutoWriteControls { get; set; } = false;
         public bool AutoReadControls { get; set; } = false;
@@ -698,20 +876,55 @@ namespace Passero.Framework
             return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         }
 
+        private DynamicParameters mDefaultSQLQueryParameters;
+        public DynamicParameters DefaultSQLQueryParameters
+        {
+            get
+            {
+                mDefaultSQLQueryParameters = Repository.DefaultSQLQueryParameters;
+                return mDefaultSQLQueryParameters;
+            }
+            set
+            {
+                mDefaultSQLQueryParameters = value;
+                Repository.DefaultSQLQueryParameters = value;
+            }
+        }
+        private string mDefaultSQLQuery;
+        public  string DefaultSQLQuery
+        {
+            get
+            {
+                mDefaultSQLQuery = Repository.DefaultSQLQuery;
+                return mDefaultSQLQuery;
+            }
+            set
+            {
+                mDefaultSQLQuery = value;
+                Repository.DefaultSQLQuery = value;
+            }
+        }
+
+
         public ViewModel()
         {
-           
-            Repository = new Repository<ModelClass>(); // (Model)
-            
+            Repository = new Repository<ModelClass>();
+            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            DefaultSQLQueryParameters = new DynamicParameters();
+
             Repository.ViewModel = this;
             Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
-            _ModelItemShadow = GetEmptyModel();
+            Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
+            Repository.ErrorNotificationMode = this.ErrorNotificationMode;
+            mModelItemShadow = GetEmptyModelItem();
+
+
         }
 
         public ViewModel(ref Repository<ModelClass> Repository)
         {
            
-            _ModelItemShadow = GetEmptyModel();
+            mModelItemShadow = GetEmptyModel();
             this.Repository = Repository;
         }
         public void Init(ModelClass Model, string Name, string Description, DataBindingMode DataBindingMode = DataBindingMode.Passero)
@@ -719,8 +932,8 @@ namespace Passero.Framework
             this.Name = Name;
             this.Description = Description;
             this.mDataBindingMode = DataBindingMode;
-            Repository.DbObject.DbConnection = Repository.DbConnection;
-            Repository.DbObject.GetSchema();
+            //Repository.DbObject.DbConnection = Repository.DbConnection;
+            //Repository.DbObject.GetSchema();
         }
 
 
@@ -728,8 +941,8 @@ namespace Passero.Framework
         {
             this.mDataBindingMode = DataBindingMode;
             Repository.DbConnection = DbConnection;
-            Repository.DbObject.DbConnection = Repository.DbConnection;
-            Repository.DbObject.GetSchema();
+            //Repository.DbObject.DbConnection = Repository.DbConnection;
+            //Repository.DbObject.GetSchema();
         }
 
         public void Init(DataBindingMode DataBindingMode = DataBindingMode.Passero)
@@ -739,358 +952,638 @@ namespace Passero.Framework
 
         }
 
-        public List<ModelClass> ReloadItems()
+        public ExecutionResult ReloadItems()
         {
-            return this.Repository.ReloadItems();
+            var ERContenxt = $"{mClassName}.ReloadItems()";
+            ExecutionResult ER = new ExecutionResult(ERContenxt);
+            ER = Repository.ReloadItems();
+            ER.Context = ERContenxt;
+            return ER;
         }
 
-        public ModelClass GetItem(string SqlQuery, object Parameters, IDbTransaction Transaction=null, bool Buffered=true,int? CommandTimeout = null)
+
+        public ExecutionResult<ModelClass> GetItem(string SqlQuery, object Parameters, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            //ModelClass  x= this.Repository.SqlConnection.Query<ModelClass>(sqlquery, parameters, transaction).Single<ModelClass>();
-            ModelClass x = this.Repository.GetItem(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+            var ERContenxt = $"{mClassName}.GetItems()";
+            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContenxt);
+            ER.Value = null;
+            ER = Repository.GetItem(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
             switch (UseModelData)
             {
                 case UseModelData.External:
-                    this._ModelItemShadow = x;
+                    mModelItemShadow = ER.Value;
                     break;
                 case UseModelData.InternalRepository:
-                    this.Repository.ModelItem = x;
-                    
+
+                    Repository.ModelItem = ER.Value;
                     break;
+
                 default:
                     break;
             }
-            this.ModelItem = x; 
-            return x;
+            ModelItem = ER.Value;
+            DataNavigatorRaiseEventBoundCompled();
+            return ER;
         }
 
-        public List <ModelClass> GetItems(string SqlQuery, object Parameters=null, System.Data.IDbTransaction Transaction = null, bool Buffered = true,int? CommandTimeout = null)
+
+        public ExecutionResult<List<ModelClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
+            string ERContenxt = $"{mClassName}.GetItems()";
+            ExecutionResult<List<ModelClass>> ER = new ExecutionResult<List<ModelClass>>(ERContenxt);
+
+
             List<ModelClass> x = null;
             try
             {
-                x = this.Repository.DbConnection.Query<ModelClass>(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout).ToList<ModelClass>();
-                if (x != null)
+                this.mCurrentModelItemIndex = -1;
+                this.Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
+                this.Repository.ErrorNotificationMode = this.ErrorNotificationMode;
+
+                this.Repository.SQLQuery = SqlQuery;
+
+                //this.Repository.Parameters = (DynamicParameters)Parameters;
+                this.Repository.Parameters = DapperHelper.Utilities .GetDynamicParameters (Parameters);
+                ER = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+
+                if (ER.Success)
                 {
+                    x = ER.Value;
+                    this.mCurrentModelItemIndex = 0;
                     switch (UseModelData)
                     {
                         case UseModelData.External:
-                            this._ModelItemShadow = x.DefaultIfEmpty(GetEmptyModel()).First();
-                            this._ModelItems = x;
+                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            mModelItems = x;
+                            //If (AutoUpdateModelItemsShadows) Then
                             SetModelItemsShadow();
-                            this.SetModelShadow();
+                            //End If
+                            SetModelItemShadow();
                             break;
                         case UseModelData.InternalRepository:
-                            this.Repository.ModelItems = x;
-                            this.Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModel()).First();
-                            this.Repository.SetModelItemsShadow();
-                            this.Repository.SetModelShadow();
-                            this.Repository.CurrentModelItemIndex = 0;
+                            Repository.ModelItems = x;
+                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            //If (AutoUpdateModelItemsShadows) Then
+                            Repository.SetModelItemsShadow();
+                            //End If
+                            Repository.SetModelItemShadow();
+                            Repository.CurrentModelItemIndex = 0;
                             break;
                         default:
                             break;
                     }
-                    if (this.mDataBindingMode == DataBindingMode.BindingSource)
+
+                    if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
-                         this.mBindingSource.DataSource = this.ModelItems;
+                        mBindingSource.DataSource = ModelItems;
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query = {SqlQuery}";
+                HandleExeception(ER.ToExecutionResult());
             }
-            return x;   
+            this.MoveFirstItem();
+            LastExecutionResult = ER.ToExecutionResult();
+            //DataNavigatorRaiseEventBoundCompled()
+            return ER;
         }
 
-        public List<ModelClass> GetAllItems(System.Data.IDbTransaction Transaction = null, bool Buffered = true,int ? CommandTimeout = null)
+        public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
+            var ERContenxt = $"{mClassName}.GetAllItems()";
+            ExecutionResult<List<ModelClass>> ER = new ExecutionResult<List<ModelClass>>(ERContenxt);
             List<ModelClass> x = null;
-          
-                try
+            try
+            {
+                ER = Repository.GetAllItems(Transaction, Buffered, CommandTimeout);
+                if (ER.Success)
                 {
-                    x = this.Repository.GetAllItems(Transaction, Buffered ,CommandTimeout);
-
+                    x = ER.Value;
                     switch (UseModelData)
                     {
                         case UseModelData.External:
-                            this._ModelItemShadow = x.DefaultIfEmpty(GetEmptyModel()).First();
-                            this._ModelItems = x;
+                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            mModelItems = x;
+                            if (mDataBindingMode == DataBindingMode.BindingSource)
+                            {
+                                mBindingSource.DataSource = ModelItems;
 
+                            }
                             break;
                         case UseModelData.InternalRepository:
-                            this.Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModel()).First();
-                            this.Repository.ModelItems = x;
+                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            Repository.ModelItems = x;
+                            if (mDataBindingMode == DataBindingMode.BindingSource)
+                            {
+                                mBindingSource.DataSource = Repository.ModelItems;
+
+                            }
                             break;
                         default:
                             break;
                     }
 
-                    
-                    if (this.mDataBindingMode == DataBindingMode.BindingSource)
-                    {
-                        this.mBindingSource.DataSource = this.ModelItems;
-                    }
-
-                //this.ModelItem = x.FirstOrDefault<ModelClass>(GetEmptyModel());
                 }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-
-               
-            return x;   
-        }
-
-      
-        public bool UndoChanges(bool AllItems=false)
-        {
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.UndoChanges()");
-            bool result = false;
-
-            if (this.AddNewState == false)
-            {
-                this.ModelItem = Passero.Framework.Utilities.Clone<ModelClass>(this.ModelItemShadow);
-                if (this.ModelItems.Count >= this.CurrentModelItemIndex)
-                    this.ModelItems[this.CurrentModelItemIndex] = Passero.Framework.Utilities.Clone<ModelClass>(this.ModelItemsShadow[this.CurrentModelItemIndex]);
             }
-            if (AllItems)
-                this.ModelItems = Passero.Framework.Utilities.Clone<List<ModelClass>>(this.ModelItemsShadow);
-
-            switch (this.mDataBindingMode)
+            catch (Exception ex)
             {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (AutoWriteControls)
-                        this.WriteControls();
-                    break;
-                case DataBindingMode.BindingSource:
-                    
-                    this.mBindingSource.CancelEdit ();  
-
-                    if (this.AddNewState)
-                    {
-                        
-                        this.mBindingSource.Position = this.AddNewCurrentModelItemIndex;
-                        this.MoveAtItem(this.AddNewCurrentModelItemIndex);
-
-                        if (DataNavigator != null)
-                        {
-                            object x = this.DataNavigator;
-                            Passero.Framework.ReflectionHelper.InvokeMethod2(ref x, "UpdateRecordLabel", null);
-                        }
-                    }
-                    //this.mBindingSource.CancelEdit();
-                    break;
-                default:
-                    break;
-            }
-            if (this.mAddNewState == true)
-                this.mAddNewState = false;
-
-
-            return result;
-
-        }
-
-        public long InsertItem(ModelClass Item = null)
-        {
-
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.InsertItem()");
-            if (Item is null)
-            {
-                Item = this.ModelItem;
-            }
-            long  x = 0;
-
-
-            switch (this.mDataBindingMode)
-            {
-                case DataBindingMode.None:
-                    break;
-                case DataBindingMode.Passero:
-                    if (this.AutoReadControls == true)
-                    {
-                        this.ReadControls();
-                    }
-                    break;
-                case DataBindingMode.BindingSource:
-                    this.mBindingSource.EndEdit();
-                    break;
-                default:
-                    break;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query = {SQLQuery}";
+                HandleExeception(ER.ToExecutionResult());
             }
 
-
-            //if (this.AutoReadControls == true)
+            //if (this.DataNavigator != null)
             //{
-            //    this.ReadControls();
+            //    ReflectionHelper.CallByName(this.DataNavigator, "InitDataNavigator", Microsoft.VisualBasic.CallType.Method, null);
             //}
 
-            x = this.Repository.InsertItem (Item);
-            if (x>0)
+            this.MoveFirstItem();
+            LastExecutionResult = ER.ToExecutionResult();
+            //DataNavigatorRaiseEventBoundCompled()
+            return ER;
+        }
+
+
+
+        public ExecutionResult UndoChanges(bool AllItems = false)
+        {
+            var ERContenxt = $"{mClassName}.UndoChanges()";
+            var ER = new ExecutionResult(ERContenxt);
+            var result = false;
+            try
             {
-                this.ModelItem = Item;
+                if (this.AddNewState == false)
+                {
+                    this.ModelItem = Utilities.Clone<ModelClass>(this.ModelItemShadow);
+                    if (this.ModelItems.Count >= this.CurrentModelItemIndex)
+                    {
+                        this.ModelItems[this.CurrentModelItemIndex] =Utilities.Clone<ModelClass>(this.ModelItemShadow);
+                    }
+                }
+                else
+                {
+                    if (this.ModelItemsCount > 0)
+                    {
+                        this.ModelItems.RemoveAt(this.ModelItemsCount - 1);
+                    }
+                }
+
+
+                //If AllItems And AutoUpdateModelItemsShadows = True Then
+                this.ModelItems = Utilities.Clone<List<ModelClass>>(this.ModelItemsShadow);
+                //End If
+
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero :
+                        if (AutoWriteControls)
+                        {
+                            WriteControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        if (AddNewState)
+                        {
+                            mBindingSource.Position = AddNewCurrentModelItemIndex;
+                            MoveAtItem(AddNewCurrentModelItemIndex);
+                            if (mDataNavigator != null)
+                            {
+                                ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "UpdateRecordLabel");
+                            }
+                        }
+                        else
+                        {
+                            mBindingSource.CancelEdit();
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+                if (mAddNewState == true)
+                {
+                    mAddNewState = false;
+                }
+
             }
-            this.LastExecutionResult = this.Repository.LastExecutionResult;
-            return x;
+            catch (Exception ex)
+            {
+
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+
+            }
+
+            return ER;
 
         }
 
-        public long InsertItems(List<ModelClass> Items = null)
+
+        public ExecutionResult InsertItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.UpdateItems()");
-            if (ModelItem is null)
+            var ERContext = $"{mClassName}.InsertItem()";
+            var ER = new ExecutionResult(ERContext);
+            if (Item == null)
             {
-                ModelItem = this.ModelItem;
+                Item = ModelItem;
             }
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
             long x = 0;
-            x = this.Repository.InsertItems(Items);
-            if (x > 0   )
-            {
-                this.ModelItem = Items.ElementAt(0);
-                this.ModelItems = Items;
-            }
-            this.LastExecutionResult = this.Repository.LastExecutionResult;
-            return x;
-        }
-
-   
-        public bool UpdateItem(ModelClass Item=null)
-        {
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.UpdateItem()");
-            bool x = false;
-
-            if (Item==null)
-                Item=this.ModelItem;
-
-            if (this.mAddNewState == true)
-            {
-                
-                //long r= this.Repository.InsertItem(Item);
-                long r = this.InsertItem(Item);
-                return r> 0;
-            }
-
-            //this.LastExecutionResult = this.Repository.LastExecutionResult;
-            this.LastExecutionResult = this.LastExecutionResult;
-            if (Item is null)
-            {
-                Item = this.ModelItem;
-            }
-            
 
 
-            switch (this.mDataBindingMode)  
+            switch (mDataBindingMode)
             {
                 case DataBindingMode.None:
                     break;
-                case DataBindingMode.Passero:
-                    if (this.AutoReadControls == true)
+                case DataBindingMode.Passero :
+                    if (AutoReadControls == true)
                     {
-                        this.ReadControls();
+                        ReadControls();
                     }
                     break;
                 case DataBindingMode.BindingSource:
-                    this.mBindingSource .EndEdit ();
-              
+                    //BindingSource.CurrencyManager.EndCurrentEdit()
+                    BindingSource.EndEdit();
+                    Item = (ModelClass)BindingSource.Current;
+                    ModelItem = Item;
                     break;
+                //Item = CType(mBindingSource.Current, ModelClass)
+
                 default:
                     break;
             }
-           
-            x = this.Repository.UpdateItem(Item);
-            if (x)
-            {
-                this.ModelItem = Item;
-            }
-            return x;
-            
-        }
-        public bool UpdateItems()
-        {
-            return UpdateItems(null);
-        }
-        public bool UpdateItems(List<ModelClass> Items )
-        {
 
-           
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.UpdateItems()");
-            if (Items is null)
+            ER = Repository.InsertItem(Item, DbTransaction, DbCommandTimeout);
+            ER.Context = ERContext;
+
+
+            if (ER.Success)
             {
-                Items = this.ModelItems;
+                this.mAddNewState = false;
+
             }
-            bool x = false;
-            x = this.Repository.UpdateItems(Items);
-            this.LastExecutionResult = this.Repository.LastExecutionResult;
-            if (x)
-            {
-                this.ModelItem = Items.ElementAt(0);
-                this.ModelItems = Items;
-            }
-            return x;
+
+            LastExecutionResult = ER;
+
+
+
+            return ER;
+
         }
 
-        public bool DeleteItem(ModelClass Item=null)
+        public ExecutionResult InsertItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
-            var ER = new ExecutionResult("Passero.Framework.Base.ViewModel.DeleteItem()");
-            if (Item is null)
+            var ERContenxt = $"{mClassName}.InsertItems()";
+            var ER = new ExecutionResult(ERContenxt );
+            if (ModelItem == null)
             {
-                Item = this.ModelItem;
+                ModelItem = ModelItem;
+            }
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
             }
 
-            bool x = false;
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+            long x = 0;
+            ER = Repository.InsertItems(Items, DbTransaction, DbCommandTimeout);
+            ER.Context = ERContenxt;
+            x = Convert.ToInt64(ER.Value);
+            if (x > 0)
+            {
+                ModelItem = Items.ElementAt(0);
+                ModelItems = Items;
+                CurrentModelItemIndex = 0;
+            }
+            LastExecutionResult = ER;
+            this.AddNewState = false;
+
+            return ER;
+        }
 
 
-            switch (this.mDataBindingMode)
+
+
+
+        public ExecutionResult UpdateItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERcontext = $"{mClassName}.UpdateItem()";
+            var ER = new ExecutionResult(ERcontext);
+            var x = false;
+            if (mAddNewState == true)
+            {
+                //long r= this.Repository.InsertItem(Item);
+                //Dim r = InsertItem(Item)
+                ER = InsertItem(Item, DbTransaction, DbCommandTimeout);
+                ER.Context = ERcontext;
+                LastExecutionResult = ER;
+                return ER;
+            }
+
+
+            if (Item == null)
+            {
+                Item = ModelItem;
+            }
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+            switch (mDataBindingMode)
             {
                 case DataBindingMode.None:
                     break;
                 case DataBindingMode.Passero:
-                    x = this.Repository.DeleteItem(Item);
-                    if (x == false)
-                        return x;
-                    this.ModelItem = ModelItems.ElementAt(0);
-                        if (this.AutoReadControls == true)
-                        {
-                            this.ReadControls();
-                        }
+                    if (AutoReadControls == true)
+                    {
+                        ReadControls();
+                    }
                     break;
                 case DataBindingMode.BindingSource:
-                   
-                    this.mBindingSource.Remove(Item);
-                    this.mBindingSource.EndEdit(); 
-                    x = this.Repository.DeleteItem(Item);
+                    mBindingSource.EndEdit();
+                    ModelItem = Item;
                     break;
                 default:
                     break;
             }
 
-            
-            return x;
+            ER = Repository.UpdateItem(Item, DbTransaction, DbCommandTimeout);
+
+            if (Convert.ToBoolean(ER.Value))
+            {
+                ModelItem = Item;
+            }
+
+            ER.Context = ERcontext;
+            LastExecutionResult = ER;
+            return ER;
 
         }
 
-        public bool DeleteItems(List<ModelClass> Items)
+       
+
+        public ExecutionResult UpdateItemEx(ModelClass Item = null, ModelClass ItemShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
-            bool x = false;
-            x = this.Repository.DeleteItems (Items);
-            if (x)
+            var ERcontext = $"{mClassName}.UpdateItemEx()";
+            var ER = new ExecutionResult();
+            var x = false;
+
+
+            if (mAddNewState == true)
+            {
+                //long r= this.Repository.InsertItem(Item);
+                //Dim r = InsertItem(Item)
+                ER = InsertItem(Item);
+                ER.Context = ERcontext;
+                LastExecutionResult = ER;
+                return ER;
+            }
+
+
+            if (Item == null)
+            {
+                Item = ModelItem;
+            }
+            if (ItemShadow == null)
+            {
+                ItemShadow = ModelItemShadow;
+            }
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+            switch (mDataBindingMode)
+            {
+                case DataBindingMode.None:
+                    break;
+                case DataBindingMode.Passero :
+                    if (AutoReadControls == true)
+                    {
+                        ReadControls();
+                    }
+                    break;
+                case DataBindingMode.BindingSource:
+                    mBindingSource.EndEdit();
+                    ModelItem = Item;
+                    break;
+                default:
+                    break;
+            }
+
+            ER = Repository.UpdateItemEx(Item, ItemShadow, DbTransaction, DbCommandTimeout);
+
+            if (Convert.ToBoolean(ER.Value))
+            {
+                ModelItem = Item;
+            }
+
+            ER.Context = ERcontext;
+            LastExecutionResult = ER;
+            return ER;
+
+        }
+        public ExecutionResult UpdateItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+
+            var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
+            string Context = ER.Context;
+
+            if (Items == null)
+            {
+                Items = ModelItems;
+            }
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+
+            ER = Repository.UpdateItems(Items, DbTransaction, DbCommandTimeout);
+            LastExecutionResult = Repository.LastExecutionResult;
+            if (Convert.ToBoolean(ER.Value))
+            {
+                ModelItem = Items.ElementAt(0);
+                ModelItems = Items;
+            }
+
+            return ER;
+
+        }
+
+
+        public ExecutionResult UpdateItemsEx(List<ModelClass> Items = null, List<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemsEx()");
+            string Context = ER.Context;
+
+            if (Items == null)
+            {
+                Items = ModelItems;
+            }
+            if (ItemsShadow == null)
+            {
+                ItemsShadow = ModelItemsShadow;
+            }
+
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+
+            ER = Repository.UpdateItemsEx(Items, ItemsShadow, DbTransaction, DbCommandTimeout);
+            LastExecutionResult = Repository.LastExecutionResult;
+            if (Convert.ToBoolean(ER.Value))
+            {
+                ModelItem = Items.ElementAt(0);
+                ModelItems = Items;
+            }
+
+            return ER;
+
+        }
+
+
+        public ExecutionResult DeleteItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
+            string Context = ER.Context;
+            if (Item == null)
+            {
+                Item = ModelItem;
+            }
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+
+            switch (mDataBindingMode)
+            {
+                case DataBindingMode.None:
+                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+                    break;
+                case DataBindingMode.Passero :
+                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+
+                    if (Convert.ToBoolean(ER.Value))
+                    {
+                        ModelItem = ModelItems.ElementAt(0);
+                        if (AutoReadControls == true)
+                        {
+                            ReadControls();
+                        }
+                    }
+                    break;
+                case DataBindingMode.BindingSource:
+
+                    mBindingSource.Remove(Item);
+                    mBindingSource.EndEdit();
+                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+                    this.CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
+                    break;
+                default:
+                    break;
+            }
+
+            ER.Context = Context;
+            LastExecutionResult = ER;
+            return ER;
+
+        }
+
+
+        public ExecutionResult DeleteItems(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
+            string Context = ER.Context;
+            var x = false;
+
+            if (DbTransaction == null)
+            {
+                DbTransaction = this.DbTransaction;
+            }
+
+            if (DbCommandTimeout == null)
+            {
+                DbCommandTimeout = this.DbCommandTimeout;
+            }
+            ER = Repository.DeleteItems(Items, DbTransaction, DbCommandTimeout);
+            if (Convert.ToBoolean(ER.Value))
             {
 
                 foreach (var item in Items)
                 {
-                    this.ModelItems.Remove(item);
+                    ModelItems.Remove(item);
                 }
 
-                this.ModelItem = Items.ElementAt(0);
-                
+                ModelItem = Items.ElementAt(0);
+
             }
-            return x;
+            ER.Context = Context;
+            LastExecutionResult = ER;
+            return ER;
+
         }
+
 
 
 
@@ -1373,9 +1866,9 @@ namespace Passero.Framework
 
         public List<ModelClass> SetModelItemsShadow()
         {
-            _ModelItemsShadow = Utilities.Clone(_ModelItems);
+            mModelItemsShadow = Utilities.Clone(mModelItems);
             
-            return _ModelItemsShadow;
+            return mModelItemsShadow;
         }
         public int ReadControls(ModelClass Model = null)
         {

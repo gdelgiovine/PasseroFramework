@@ -31,7 +31,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.SetActiveViewModel("Publishers");
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
-            this.dataNavigator1.Init(true);
+            this.dataNavigator1.Init(false);
 
         }
 

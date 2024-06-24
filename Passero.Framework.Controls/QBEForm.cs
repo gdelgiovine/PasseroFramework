@@ -205,8 +205,8 @@ namespace Passero.Framework.Controls
             this.TabPageExport.Hidden = false;
             this.TabPageDebug .Hidden = true;  
             this.PanelExport.Visible = true;
-     
 
+            this.CheckQBEColumns();
             this.SetupQueryGrid();
             this.SetupResultGrid(OverrideResultGridDefinition );
 
@@ -221,17 +221,9 @@ namespace Passero.Framework.Controls
                 this.MdiParent = this.Owner.MdiParent;
         }
 
-
-
-        public void SetupQueryGrid()
+        public void CheckQBEColumns()
         {
-            
-
-            this.QueryGrid.Rows.Clear();
-
-
-            // Empty QBEColumns
-            if (this.QBEColumns .Count == 0) 
+            if (this.QBEColumns.Count == 0)
             {
 
                 foreach (var item in this.ModelProperties.Values)
@@ -240,12 +232,18 @@ namespace Passero.Framework.Controls
                     column.DbColumn = item.Name;
                     column.FriendlyName = item.Name;
                     column.UseInQBE = true;
-                    this.QBEColumns.Add(column.DbColumn ,column );
+                    this.QBEColumns.Add(column.DbColumn, column);
                 }
-            
+
             }
+        }
 
 
+        public void SetupQueryGrid()
+        {
+            
+            this.QueryGrid.Rows.Clear();
+       
             foreach (var QBEColumn in this.QBEColumns.Values)
             {
                 if (QBEColumn.UseInQBE)
@@ -304,6 +302,7 @@ namespace Passero.Framework.Controls
                     this.ResultGrid.Columns.Clear();
                 }
                 this.ResultGrid.AutoGenerateColumns = false;
+
                 foreach (QBEColumn column in ResultColumns.Values)
                 {
                     DataGridViewColumn nc;
@@ -394,8 +393,6 @@ namespace Passero.Framework.Controls
                                 break;
                         }
                     }
-
-
                     
                     if (newcolumn )
                     { 
@@ -420,8 +417,7 @@ namespace Passero.Framework.Controls
         public void DoQuery()
         {
             BuildQuery3();
-            //this.ResultGrid.Visible = false;
-            this.ResultGrid.DataSource = this.mRepository.GetItems(this.SQLQuery, this.SQLQueryParameters);
+            this.ResultGrid.DataSource = this.mRepository.GetItems(this.SQLQuery, this.SQLQueryParameters).Value ;
             this.ResultGrid.Visible = true;
         }
 
@@ -853,7 +849,7 @@ namespace Passero.Framework.Controls
             {
                 try
                 {
-                    Passero.Framework.ReflectionHelper.InvokeMethod(ref TargetRepository, "SetSQLQuery", sqlquery, parameters);
+                    Passero.Framework.ReflectionHelper.InvokeMethodByName(ref TargetRepository, "SetSQLQuery", sqlquery, parameters);
                 }
                 catch (Exception)
                 {

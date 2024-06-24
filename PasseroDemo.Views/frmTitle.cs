@@ -69,7 +69,7 @@ namespace PasseroDemo.Views
             //this.cmb_pub_id.ValueMember = nameof(vmPublisher.Model.pub_id);
             //this.cmb_pub_id.DisplayMember = nameof(vmPublisher.Model.pub_name);
 
-            this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).ToList();
+            this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).Value.ToList();
             this.cmb_pub_id.ValueMember = nameof(rpPublisher.ModelItem.pub_id);
             this.cmb_pub_id.DisplayMember = nameof(rpPublisher.ModelItem.pub_name);
 
@@ -226,9 +226,11 @@ namespace PasseroDemo.Views
         private void bsTitles_CurrentChanged(object sender, EventArgs e)
         {
 
-            this.vmTitleAuthor.GetItems($"Select * FROM " +
+            ExecutionResult < List <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
                                                 $"{Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Titleauthor>()} " +
                                                 $"WHERE title_id=@title_id", new { title_id = this.txt_title_id.Text });
+            
+            
             this.dgv_TitleAuthors.DataSource = this.vmTitleAuthor.ModelItems;
             
             
@@ -239,7 +241,7 @@ namespace PasseroDemo.Views
             string sv = this.cmb_pub_id.SelectedValue.ToString();
             //this.cmb_pub_id .DataSource = vmPublisher.GetPublishers();
             //this.cmb_pub_id.DataSource = vmPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).ToList();
-            this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).ToList();
+            this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).Value.ToList();
             this.cmb_pub_id.SelectedValue = sv;
         }
 

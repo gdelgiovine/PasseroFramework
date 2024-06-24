@@ -19,13 +19,13 @@ namespace PasseroDemo.ViewModels
         {
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Title>();
-            return this.GetItem($"Select * FROM {this.Repository.GetTableName()} Where title_id=@ID", new { title_id = title_id });
+            return this.GetItem($"Select * FROM {this.Repository.GetTableName()} Where title_id=@ID", new { title_id = title_id }).Value ;
             
         }
 
         public List <Models.Title> GetTitles()
         {
-            return this.GetAllItems();
+            return this.GetAllItems().Value.ToList ();
         }
         public List<Models.Titleauthor > GetTitleAuthors(string title_id)
         {
