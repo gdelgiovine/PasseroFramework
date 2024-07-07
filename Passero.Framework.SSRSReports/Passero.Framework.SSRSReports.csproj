@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.*" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
     <PackageReference Include="Wisej-3" Version="3.5.*" />
     <PackageReference Include="System.Data.SqlClient" Version="4.*" />
@@ -24,12 +24,12 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
     <PackageReference Include="ReportViewerCore.NETCore">
-      <Version>15.1.19</Version>
+      <Version>15.1.21</Version>
     </PackageReference>
   </ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-		<PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1620.0" />
+		<PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1652.0" />
 		<Reference Include="Microsoft.VisualBasic" />
 		<Reference Include="System.Web" />
 	</ItemGroup>

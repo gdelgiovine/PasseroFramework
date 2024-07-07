@@ -1,14 +1,13 @@
 ﻿
 using Dapper;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using Passero.Framework.FRReports;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Wisej.Web;
+using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace Passero.Framework.FRReports
 {
@@ -414,22 +413,26 @@ namespace Passero.Framework.FRReports
                         ncell.IndeterminateValue = "";
                         ncell.TrueValue = true;
                         ncell.FalseValue = false;
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectNotEqual(QBEColumn.QBEValue, null, false)))
-                        {
-                            if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(QBEColumn.QBEValue, "True", false)))
+
+
+                            if (Conversions.ToBoolean(Operators.ConditionalCompareObjectNotEqual(QBEColumn.QBEValue, null, false)))
                             {
-                                ncell.Value = true;
+                                if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(QBEColumn.QBEValue, "True", false)))
+                                {
+                                    ncell.Value = true;
+                                }
+                                else
+                                {
+                                    ncell.Value = false;
+                                }
                             }
                             else
                             {
-                                ncell.Value = false;
+                                ncell.Value = ncell.IndeterminateValue;
                             }
-                        }
-                        else
-                        {
-                            ncell.Value = ncell.IndeterminateValue;
-                        }
-                        this.QueryGrid.Rows[i].Cells[1] = ncell;
+
+
+                            this.QueryGrid.Rows[i].Cells[1] = ncell;
                         this.QueryGrid.Rows[i].Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
                     }
                     this.QueryGrid.Rows[i].Tag = QBEColumn.DbColumn;
@@ -831,7 +834,7 @@ namespace Passero.Framework.FRReports
 
         private void PanelReportViewer_Resize(object sender, EventArgs e)
         {
-            this.PdfViewer.Top = this.PanelReportInfo .Height + 1;
+            this.PdfViewer.Top = this.PanelReportInfo.Height;
             this.PdfViewer.Left = 0;
             this.PdfViewer.Width = this.PanelReportViewer.Width;
             this.PdfViewer.Height =  this.PanelReportViewer.Height - this.PanelReportInfo.Top - 35;

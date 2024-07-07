@@ -10,11 +10,11 @@ using Wisej.Web;
 
 namespace Passero.Framework.Controls
 {
-    public partial class DbLookUpTextBox : Wisej.Web .TextBox
+    public partial class DbLookUpTextBox : Wisej.Web.TextBox
     {
         public Dictionary<string, DataBindControl> DataBindControls { get; set; } = new Dictionary<string, DataBindControl>(StringComparer.InvariantCultureIgnoreCase);
 
-    
+
 
         #region Initialization
         // Initialization Code 
@@ -40,7 +40,7 @@ namespace Passero.Framework.Controls
             KeyPress += DbLookUpTextBox_KeyPress;
         }
 
-       
+
 
         private void DbLookUpTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -95,7 +95,7 @@ namespace Passero.Framework.Controls
         private bool SameColumn = false;
 #pragma warning restore CS0414 // Il campo 'DbLookUpTextBox.SameColumn' è assegnato, ma il suo valore non viene mai usato
         public bool ValidLookUp = false;
-        
+
         //private object mDataSource=null;    
         //public object DataSource 
         //{ get
@@ -107,11 +107,11 @@ namespace Passero.Framework.Controls
         //        mDataSource =value;
         //        //Type type = Passero.Framework .ReflectionHelper .GetListType (mDataSource);
         //        DataTable dt = Passero.Framework.DataBaseHelper.ListToDataTable(mDataSource);
-               
+
         //    }
         //}
         private bool mShowSearchTool = true;
-        
+
         public bool ShowSearchTool
         {
             get
@@ -174,9 +174,9 @@ namespace Passero.Framework.Controls
             set
             {
                 mValueMember = value;
-                if (LookUpMode == LookUpModes.Standard )
+                if (LookUpMode == LookUpModes.Standard)
                 {
-                    this.mDisplayMember = value;    
+                    this.mDisplayMember = value;
                 }
                 SetupDefault();
             }
@@ -215,14 +215,14 @@ namespace Passero.Framework.Controls
                 if (this.DisplayMember.Trim() == "" | this.ValueMember.Trim() == "")
                     return;
 
-                if (value==null)
+                if (value == null)
                 {
                     this.Text = "";
                     ClearControls();
                     return;
                 }
 
-                if (value!= null && value.Equals(mValue))
+                if (value != null && value.Equals(mValue))
                     return;
 
                 if (mValue == (value))
@@ -233,18 +233,18 @@ namespace Passero.Framework.Controls
                 // deve cercare nel datasource il relativo DisplayValue
                 if (this.ValueMember.Equals(this.DisplayMember, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    this.SameColumn = true; 
+                    this.SameColumn = true;
                 }
                 else
                 {
-                    this.SameColumn =false;
+                    this.SameColumn = false;
                 }
 
                 //this.EnsureSQLQueryValueMember();
                 this.LookUp();
                 if (this.ValidLookUp == false)
                     this.Text = "";
-          
+
             }
         }
 
@@ -257,17 +257,17 @@ namespace Passero.Framework.Controls
         public Type ModelClass
         {
             get
-            { return mModelClass;  }
+            { return mModelClass; }
             set
             {
                 mModelClass = value;
-                TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(mModelClass );
+                TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(mModelClass);
             }
         }
         public string SelectClause { get; set; } = "SELECT * ";
         public void SetupDefault()
         {
-            
+
 
         }
 
@@ -280,10 +280,10 @@ namespace Passero.Framework.Controls
                 {
                     Control control = (Control)Activator.CreateInstance(item.Control.GetType());
                     object _value = Interaction.CallByName(control, item.ControlPropertyName, CallType.Get);
-                    Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set,_value);
+                    Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, _value);
                 }
 
-                if (FromEditing==false)
+                if (FromEditing == false)
                     this.Text = "";
             }
             catch (Exception ex)
@@ -300,9 +300,9 @@ namespace Passero.Framework.Controls
 
             if (this.ModelClass == null)
                 return;
-            
 
-            object _value = Interaction .CallByName (this,this.BoundPropertyName , CallType.Get);   
+
+            object _value = Interaction.CallByName(this, this.BoundPropertyName, CallType.Get);
 
             if (_value.ToString().Trim() == "")
                 return;
@@ -328,9 +328,9 @@ namespace Passero.Framework.Controls
                 return;
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
             this.SQLQuery = $"{this.SelectClause} FROM {TableName} WHERE {this.ValueMember}=@ValueMember";
-            
+
             this.DbParameters.Add("@ValueMember", this.mValue);
-            
+
         }
 
         private void EnsureSQLQueryDisplayMember()
@@ -342,12 +342,12 @@ namespace Passero.Framework.Controls
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
             this.SQLQuery = $"{this.SelectClause} FROM {TableName} WHERE {this.DisplayMember}=@DisplayMember";
-          
+
             this.DbParameters.Add("@DisplayMember", this.Text);
 
         }
 
-        public void LookUp(bool FromEditing=false)
+        public void LookUp(bool FromEditing = false)
         {
             ValidLookUp = false;
             this.ClearControls(FromEditing);
@@ -370,34 +370,34 @@ namespace Passero.Framework.Controls
 
             this.EnsureSQLQuery();
 
-            string _sqlquery = Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, DbParameters );
-            if (SQLQuery == "" )
+            string _sqlquery = Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, DbParameters);
+            if (SQLQuery == "")
                 return;
             if (DbConnection == null)
                 return;
             try
-            { 
+            {
 
                 Model = (IDictionary<string, object>)DbConnection.Query(SQLQuery, DbParameters).FirstOrDefault();
                 if (Model != null)
                 {
                     this.Lock = true;
-                    if (LookUpMode == LookUpModes.Standard )
+                    if (LookUpMode == LookUpModes.Standard)
                     {
-                        this.Text= Model[this.ValueMember].ToString ();
+                        this.Text = Model[this.ValueMember].ToString();
                     }
                     else
                     {
                         this.Text = Model[this.DisplayMember].ToString();
-                       
+
                         this.mValue = Model[this.ValueMember];
                     }
                     this.Lock = false;
 
                     // DataBindControls
-                    foreach (DataBindControl  item in this.DataBindControls .Values )
+                    foreach (DataBindControl item in this.DataBindControls.Values)
                     {
-                       
+
                         if (Model[item.ModelPropertyName] is not null)
                         {
                             Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, Model[item.ModelPropertyName]);
@@ -415,7 +415,7 @@ namespace Passero.Framework.Controls
                     //this.Lock = true;
                     //this.Text = "";
                     //this.Lock = false;
-                    
+
                 }
 
             }
@@ -441,7 +441,7 @@ namespace Passero.Framework.Controls
             _DataBindControl.Control = Control;
             _DataBindControl.ControlPropertyName = ControlPropertyName;
             _DataBindControl.ModelPropertyName = ModelPropertyName;
-          
+
             DataBindControls[Key] = _DataBindControl;
             return true;
         }

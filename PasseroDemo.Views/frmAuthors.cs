@@ -63,7 +63,6 @@ namespace PasseroDemo.Views
             this.dataNavigator1.SetActiveViewModel("Authors");
             this.dataNavigator1.InitDataNavigator(true);
 
-            this.dataGridView1.DataSource = this.vmAuthor.ModelItems;
             
         }
 
@@ -107,7 +106,7 @@ namespace PasseroDemo.Views
             QBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
             QBEForm_Author.AutoLoadData =true;
-
+            QBEForm_Author.ResultGrid.RowHeaderColumn.Visible = false;
             QBEForm_Author.ShowQBE();
 
         }
@@ -153,6 +152,7 @@ namespace PasseroDemo.Views
 
             xQBEReport.SetFocusControlAfterClose = this.txt_au_id;
             xQBEReport.CallBackAction = () => { this.Reload(); };
+            xQBEReport.Text = "Authors Reports";
             xQBEReport.ShowQBEReport();
         }
         private void frmAuthors_Load(object sender, EventArgs e)
@@ -175,68 +175,8 @@ namespace PasseroDemo.Views
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string reportsFolder = @"C:\REPORTS";
-            MsSqlDataConnection sqlConnection = new MsSqlDataConnection();
-            sqlConnection.ConnectionString = this.vmAuthor.DbConnection.ConnectionString;
-            sqlConnection.CreateAllTables();
-            FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
-            FastReport.Report xreport = new FastReport.Report();
-            //xreport.Dictionary.ClearRegisteredData();
-            //xreport.Dictionary.Connections.Clear();
-            //xreport.Dictionary.Connections.Add(sqlConnection);
-            xreport.Load(Path.Combine(reportsFolder, "REPORT1.frx"));
-            xreport.Dictionary.ClearRegisteredData();
-            xreport.Dictionary.Connections.Clear();
-            xreport.Dictionary.Connections.Add(sqlConnection);
 
-            TableDataSource table = xreport.GetDataSource("authors") as TableDataSource;
-
-
-            table.SelectCommand = this.vmAuthor.Repository.SQLQuery;
-            
-            foreach (var name in this.vmAuthor.Repository.Parameters.ParameterNames)
-            {
-                CommandParameter parameter = new CommandParameter();
-                parameter.Name = name;
-                parameter.DefaultValue = "";
-                parameter.Value = this.vmAuthor.Repository.Parameters.Get<dynamic>(name);
-                parameter.DataType = (int)SqlDbType.VarChar;
-                
-                
-                table.Parameters.Add(parameter);
-            }
-            
-            
-
-            //xreport.RegisterData(this.vmAuthor .ModelItems, "Authors");
-
-            xreport.Prepare();
-            FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-
-            pdfExport.Export(xreport, @"C:\REPORTS\XREPORT1.pdf");
-
-
-
-
-
-#if NET
-            FastReport.Web.WebReport report = new FastReport.Web.WebReport();
-            report.Report.Dictionary.Connections.Add(sqlConnection);
-            report.Report.Load(Path.Combine(reportsFolder, "REPORT1.frx"));
-            report.Report.Prepare();
-            pdfExport.Export(report.Report, @"C:\REPORTS\REPORT1.pdf");
-
-
-#else
-      
-#endif
-
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
+        private void btnFastReportReport_Click(object sender, EventArgs e)
         {
 
 

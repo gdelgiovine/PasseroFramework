@@ -117,82 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="resource.BackgroundImage" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="resource.BackgroundImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <assembly alias="Wisej.Framework" name="Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171" />
-  <data name="resource.BackgroundImageLayout" type="Wisej.Web.ImageLayout, Wisej.Framework">
-    <value>None</value>
-  </data>
-  <data name="resource.BackgroundImageSource" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 33</value>
-  </data>
-  <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>870, 134</value>
-  </data>
-  <data name="resource.BackgroundImage1" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="resource.BackgroundImageAlign1" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="resource.BackgroundImageLayout1" type="Wisej.Web.ImageLayout, Wisej.Framework">
-    <value>None</value>
-  </data>
-  <data name="resource.BackgroundImageSource1" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>859, 98</value>
-  </data>
-  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 33</value>
-  </data>
-  <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>870, 134</value>
-  </data>
-  <data name="resource.BackgroundImage2" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="resource.BackgroundImageAlign2" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>MiddleLeft</value>
-  </data>
-  <data name="resource.BackgroundImageLayout2" type="Wisej.Web.ImageLayout, Wisej.Framework">
-    <value>None</value>
-  </data>
-  <data name="resource.BackgroundImageSource2" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="dgv_SelectedSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>463, 96</value>
-  </data>
-  <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 116</value>
-  </data>
-  <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 33</value>
-  </data>
-  <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>870, 134</value>
-  </data>
-  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 33</value>
-  </data>
-  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>870, 134</value>
-  </data>
-  <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 33</value>
-  </data>
-  <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>870, 134</value>
-  </data>
+  <metadata name="bsJobs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="$this.RulerSnapLines" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0
+        dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EHAQAAAAABAAAAAAAAAAQU
+        U3lzdGVtLkRyYXdpbmcuUG9pbnQCAAAACw==
+</value>
+  </metadata>
 </root>

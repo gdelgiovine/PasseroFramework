@@ -131,10 +131,85 @@
   <data name="SplitContainer.Orientation" type="Wisej.Web.Orientation, Wisej.Framework">
     <value>Horizontal</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="PanelReportInfo.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtReportTitle.LabelText" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="txtReportTitle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 30</value>
+  </data>
+  <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Name" xml:space="preserve">
+    <value>txtReportTitle</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtReportDescription.LabelText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
+    <value>167, 3</value>
+  </data>
+  <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 30</value>
+  </data>
+  <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Name" xml:space="preserve">
+    <value>txtReportDescription</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelReportInfo.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Top</value>
+  </data>
+  <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 36</value>
+  </data>
+  <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Name" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="txtRenderError.Location" type="System.Drawing.Point, System.Drawing">
     <value>428, 44</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="txtRenderError.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -157,81 +232,6 @@
     <value>PanelReportViewer</value>
   </data>
   <data name="&gt;&gt;txtRenderError.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="PanelReportInfo.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="txtReportDescription.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="txtReportDescription.LabelText" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
-    <value>303, 2</value>
-  </data>
-  <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
-    <value>236, 30</value>
-  </data>
-  <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Name" xml:space="preserve">
-    <value>txtReportDescription</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Type" xml:space="preserve">
-    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Parent" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="txtReportTitle.LabelText" xml:space="preserve">
-    <value>Report</value>
-  </data>
-  <data name="txtReportTitle.Location" type="System.Drawing.Point, System.Drawing">
-    <value>5, 2</value>
-  </data>
-  <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>292, 30</value>
-  </data>
-  <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Name" xml:space="preserve">
-    <value>txtReportTitle</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Type" xml:space="preserve">
-    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Parent" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 1</value>
-  </data>
-  <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>548, 35</value>
-  </data>
-  <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Name" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Type" xml:space="preserve">
-    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Parent" xml:space="preserve">
-    <value>PanelReportViewer</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="AspNetPanel.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
@@ -400,10 +400,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 137</value>
   </data>
   <data name="TabPageReports.Text" xml:space="preserve">
     <value>Avalaible Reports</value>
@@ -445,7 +445,7 @@
     <value>24</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>881, 103</value>
+    <value>877, 99</value>
   </data>
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -493,10 +493,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 137</value>
   </data>
   <data name="TabPageReportQuery.Text" xml:space="preserve">
     <value>Search Criteria</value>
@@ -595,7 +595,7 @@
     <value>294, 27</value>
   </data>
   <data name="dgv_SelectedSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>463, 101</value>
+    <value>463, 97</value>
   </data>
   <data name="dgv_SelectedSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -670,7 +670,7 @@
     <value>6, 7</value>
   </data>
   <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 121</value>
+    <value>240, 117</value>
   </data>
   <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -691,10 +691,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 137</value>
   </data>
   <data name="TabPageReportSort.Text" xml:space="preserve">
     <value>Report Sorting</value>
@@ -862,10 +862,10 @@
     <value>True</value>
   </data>
   <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 137</value>
   </data>
   <data name="TabPageExport.Text" xml:space="preserve">
     <value>Export</value>
@@ -1015,13 +1015,13 @@
     <value>True</value>
   </data>
   <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageDebug.Padding" type="Wisej.Web.Padding, Wisej.Framework">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 137</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>
@@ -1208,8 +1208,8 @@
         4eHhioqKtbW1FBQUIiIiQEBAxMTETk5O0tLST09Ppqamenp6ISEh8PDwiYmJbGxs58G9sjouwF9VxWti
         4rWx+vLyXV1dl5eX2JyWz4R8a2trtkY74rSwmJiYp6enMTEx7M3K3aijxcXFXFxcMDAwPz8/u1FH04+J
         e3t7tra2zoN7tkU6xWph8drX7M7Lu1JIwF5Uyndu6urqq6urwMDA+Pj44+Pj1dXVv7+/3Nzc8fHxj4+P
-        zs7Ox8fHlZWVpKSkqqqqsbGxo6OjsrKynZ2dubm5uLi4lpaWnJyc9ebkQwYjkgAAAAlwSFlzAAAOwQAA
-        DsEBuJFr7QAACilJREFUeF7tmvt/2uYVxt+QJW6XZL2su3RLu/s6bAhgG3CctXZHLm6CnaVLs61yJQxC
+        zs7Ox8fHlZWVpKSkqqqqsbGxo6OjsrKynZ2dubm5uLi4lpaWnJyc9ebkQwYjkgAAAAlwSFlzAAAOwAAA
+        DsABataJCQAACilJREFUeF7tmvt/2uYVxt+QJW6XZL2su3RLu/s6bAhgG3CctXZHLm6CnaVLs61yJQxC
         ILAD3v//w55zEUhCwthNYprq+4nRe9f7nHPeI0FrMjIyMjIylporOebqT65pw3m4krvO15V3ZJV3L7LI
         m0Y2/dMbuZtSPxchxZi+ciV36wcgWTd9sc1GFcNuV3/G9aUmpHjlPQrv980HuQ9/LiaAhI9+ceNq7uov
         NXB/taJVs/Jrqs8q5slLrV0Uf4yoxravX/vNb3M38Xcbfyz7Ov5dI0H4IxGh6k2YJqKYo5oWMOaTJY5v
@@ -1352,6 +1352,12 @@
   <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_ascdesc</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
   <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
     <value>bFirst</value>
   </data>
@@ -1429,12 +1435,6 @@
   </data>
   <data name="&gt;&gt;bClose.Type" xml:space="preserve">
     <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
-    <value>dgvc_SelectedSortColumns_ascdesc</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>ReportManager</value>

@@ -33,7 +33,7 @@ namespace PasseroDemo.Views
         {
             // Set DbConnection with you DbConnection Object
             // You can store it inside the ConfigurationManager 
-            //this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["DbConnectionName"];
+            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
             vmEmployee.Init(this.DbConnection);
             vmEmployee.DataBindControlsAutoSetMaxLenght = true;
             vmEmployee.AutoWriteControls = true;
@@ -41,7 +41,7 @@ namespace PasseroDemo.Views
             vmEmployee.AutoFitColumnsLenght = true;
             // here we setting the Data Bind using a BindingSource so we can use a DataSource and visual binding at design time
             vmEmployee.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
-            vmEmployee.BindingSource = this.bindingSource1;
+            vmEmployee.BindingSource = this.bsEmployee ;
 
             // Set the DataNavigator1 ViewMode 
 
@@ -49,8 +49,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.SetActiveViewModel("Employee");
             // Questo Metodo invece sta nella classe base ViewModel
             // .GetAllItems() is a built-in methos of ViewModel Class
-            this.vmEmployee.GetAllItems();
-            this.dataNavigator1.UpdateRecordLabel();
+            this.dataNavigator1.Init(true);
 
         }
 
@@ -85,7 +84,7 @@ namespace PasseroDemo.Views
             //xQBEForm_myModel.QBEResultMode = QBEResultMode.MultipleRowsItems;
 
             // Setting the Owner Form 
-            //xQBEForm_myModel.Owner = this;
+            xQBEForm_myModel.Owner = this;
             //xQBEForm_myModel.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEForm_myModel.CallBackAction = () => { methodtocall(); };
 
@@ -143,7 +142,7 @@ namespace PasseroDemo.Views
             xQBEReport.ShowQBEReport();
         }
 
-        private void frmPasseroBaseView_Load(object sender, EventArgs e)
+        private void frmEmployee_Load(object sender, EventArgs e)
         {
             this.Init();
         }

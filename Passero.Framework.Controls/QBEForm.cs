@@ -10,17 +10,17 @@ using System.Text;
 using Wisej.Web;
 namespace Passero.Framework.Controls
 {
-   
+
     public partial class QBEForm<ModelClass> : Wisej.Web.Form where ModelClass : class
     {
 
-        
+
         public int TopRows { get; set; } = 0;
         public string RecordLabelSeparator { get; set; } = "of";
         public string RecordLabelHtmlFormat { get; set; } = "<p style='margin-top:2px;line-height:1.0;text-align:center;'>{0}<br>{1}<br>{2}</p>";
         private Dictionary<string, System.Reflection.PropertyInfo> ModelProperties;
         private Repository<ModelClass> mRepository = new Repository<ModelClass>();
-        public DynamicParameters SQLQueryParameters =new DynamicParameters();
+        public DynamicParameters SQLQueryParameters = new DynamicParameters();
         public string SQLQuery = "";
         public ModelClass QBEModel
         {
@@ -42,7 +42,7 @@ namespace Passero.Framework.Controls
         {
             get
             {
-                
+
                 return mRepository;
             }
             set
@@ -62,7 +62,7 @@ namespace Passero.Framework.Controls
         public QBEResultMode QBEResultMode { get; set; }
         public IDbConnection DbConnection { get; set; }
         public QBEColumns QBEColumns = new QBEColumns();
-        
+
 
 
         public bool UseLikeOperator
@@ -78,8 +78,8 @@ namespace Passero.Framework.Controls
         public bool AutoLoadData { get; set; } = true;
 
         public TargetModelItems<ModelClass> ResultGridModelItems = null;
-       
-        public Wisej .Web.Control   SetFocusControlAfterClose { get; set; }
+
+        public Wisej.Web.Control SetFocusControlAfterClose { get; set; }
 
         public QBEForm()
         {
@@ -89,7 +89,7 @@ namespace Passero.Framework.Controls
             this.TabPageReportQuery.Hidden = true;
             this.RecordLabel.Text = this.RecordLabelHtmlFormat;
             this.bSaveQBE.Visible = false;
-            this.bLoadQBE .Visible = false;
+            this.bLoadQBE.Visible = false;
             this.bPrint.Visible = false;
 
         }
@@ -113,7 +113,7 @@ namespace Passero.Framework.Controls
             }
             else
             {
-                
+
             }
         }
 
@@ -123,11 +123,11 @@ namespace Passero.Framework.Controls
         {
 
             string filename = "";
-            filename = System.IO.Path.GetTempPath ()+@"\"+ System.Guid .NewGuid().ToString();
-            string exportfilename = Passero.Framework.FileHelper .GetSafeFileName(this.Text);
+            filename = System.IO.Path.GetTempPath() + @"\" + System.Guid.NewGuid().ToString();
+            string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(this.Text);
             string expofilenameextension = "";
             System.IO.FileStream Stream = null;
-            
+
             if (rbExcel.Checked)
             {
                 MiniExcelLibs.MiniExcel.SaveAs(filename, this.Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.XLSX);
@@ -136,7 +136,7 @@ namespace Passero.Framework.Controls
 
             if (rbCSV.Checked)
             {
-                MiniExcelLibs.MiniExcel.SaveAs(filename, this.Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.CSV );
+                MiniExcelLibs.MiniExcel.SaveAs(filename, this.Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.CSV);
                 expofilenameextension = ".csv";
             }
 
@@ -149,7 +149,7 @@ namespace Passero.Framework.Controls
             if (rbXML.Checked)
             {
                 DataTable dt;
-                dt= Passero.Framework .DataBaseHelper .ListToDataTable(this.Repository.ModelItems);
+                dt = Passero.Framework.DataBaseHelper.ListToDataTable(this.Repository.ModelItems);
                 dt.TableName = "Row";
                 dt.WriteXml(filename, XmlWriteMode.WriteSchema, true);
                 dt.Dispose();
@@ -179,10 +179,10 @@ namespace Passero.Framework.Controls
         {
             this.ShowQBE(true);
         }
-        public void ShowQBE(bool Wait=false)
+        public void ShowQBE(bool Wait = false)
         {
             this.SetupQBEForm();
-            
+
             if (this.AutoLoadData)
                 this.LoadData();
 
@@ -198,17 +198,17 @@ namespace Passero.Framework.Controls
         }
 
 
-        public void SetupQBEForm(bool OverrideResultGridDefinition=false)
+        public void SetupQBEForm(bool OverrideResultGridDefinition = false)
         {
-            
+
             this.TabPageReportQuery.Hidden = false;
             this.TabPageExport.Hidden = false;
-            this.TabPageDebug .Hidden = true;  
+            this.TabPageDebug.Hidden = true;
             this.PanelExport.Visible = true;
 
             this.CheckQBEColumns();
             this.SetupQueryGrid();
-            this.SetupResultGrid(OverrideResultGridDefinition );
+            this.SetupResultGrid(OverrideResultGridDefinition);
 
             this.ResultGrid.Dock = DockStyle.Fill;
             //this.ResultGrid.Visible = true;
@@ -241,9 +241,9 @@ namespace Passero.Framework.Controls
 
         public void SetupQueryGrid()
         {
-            
+
             this.QueryGrid.Rows.Clear();
-       
+
             foreach (var QBEColumn in this.QBEColumns.Values)
             {
                 if (QBEColumn.UseInQBE)
@@ -252,7 +252,7 @@ namespace Passero.Framework.Controls
                     i = this.QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
                     if (Passero.Framework.Utilities.GetSystemTypeIs(this.ModelProperties[QBEColumn.DbColumn].PropertyType) == EnumSystemTypeIs.Boolean)
                     {
-                        DataGridViewCheckBoxCell ncell= new DataGridViewCheckBoxCell();
+                        DataGridViewCheckBoxCell ncell = new DataGridViewCheckBoxCell();
                         ncell.ThreeState = true;
                         ncell.IndeterminateValue = "";
                         ncell.TrueValue = true;
@@ -306,15 +306,15 @@ namespace Passero.Framework.Controls
                 foreach (QBEColumn column in ResultColumns.Values)
                 {
                     DataGridViewColumn nc;
-                    bool newcolumn=false;
-                    if (this.ResultGrid.Columns[column.DbColumn]==null)
+                    bool newcolumn = false;
+                    if (this.ResultGrid.Columns[column.DbColumn] == null)
                     {
-                       nc = new DataGridViewColumn();
-                       newcolumn  = true;
+                        nc = new DataGridViewColumn();
+                        newcolumn = true;
                     }
                     else
                     {
-                       nc = this.ResultGrid.Columns[column.DbColumn];
+                        nc = this.ResultGrid.Columns[column.DbColumn];
                     }
 
                     switch (column.QBEColumnType)
@@ -344,7 +344,7 @@ namespace Passero.Framework.Controls
                     }
 
 
-                    if (newcolumn  == true)
+                    if (newcolumn == true)
                     {
                         nc.Name = column.DbColumn;
                         nc.HeaderText = column.FriendlyName;
@@ -384,7 +384,7 @@ namespace Passero.Framework.Controls
                                 nc.Width = Wisej.Base.TextUtils.MeasureText("0", nc.DefaultCellStyle.Font).Width * 30;
                                 break;
                             case -1:
-                                nc.AutoSizeMode = (DataGridViewAutoSizeColumnMode)DataGridViewAutoSizeColumnsMode.AllCells ;
+                                nc.AutoSizeMode = (DataGridViewAutoSizeColumnMode)DataGridViewAutoSizeColumnsMode.AllCells;
                                 break;
                             case -2:
                                 nc.AutoSizeMode = (DataGridViewAutoSizeColumnMode)DataGridViewAutoSizeColumnsMode.Fill;
@@ -393,9 +393,9 @@ namespace Passero.Framework.Controls
                                 break;
                         }
                     }
-                    
-                    if (newcolumn )
-                    { 
+
+                    if (newcolumn)
+                    {
                         this.ResultGrid.Columns.Add(nc);
                     }
 
@@ -407,7 +407,7 @@ namespace Passero.Framework.Controls
             }
 
         }
-      
+
 
         public void LoadData()
         {
@@ -417,13 +417,13 @@ namespace Passero.Framework.Controls
         public void DoQuery()
         {
             BuildQuery3();
-            this.ResultGrid.DataSource = this.mRepository.GetItems(this.SQLQuery, this.SQLQueryParameters).Value ;
+            this.ResultGrid.DataSource = this.mRepository.GetItems(this.SQLQuery, this.SQLQueryParameters).Value;
             this.ResultGrid.Visible = true;
         }
 
         private void MovePrevious()
         {
-      
+
             ResultGrid.Focus();
             if (ResultGrid.CurrentRow.ClientIndex > 0)
             {
@@ -438,7 +438,7 @@ namespace Passero.Framework.Controls
         }
         private void MoveNext()
         {
-         
+
 
             ResultGrid.Focus();
             if (ResultGrid.CurrentRow.ClientIndex < ResultGrid.Rows.Count - 1)
@@ -451,7 +451,7 @@ namespace Passero.Framework.Controls
         }
         private void MoveFirst()
         {
-       
+
             ResultGrid.Focus();
             if (Conversions.ToBoolean(ResultGrid.Rows.Count))
             {
@@ -462,7 +462,7 @@ namespace Passero.Framework.Controls
         }
         private void MoveLast()
         {
-            
+
             ResultGrid.Focus();
             if (Conversions.ToBoolean(ResultGrid.Rows.Count))
             {
@@ -476,7 +476,7 @@ namespace Passero.Framework.Controls
         private void BuildQuery3()
         {
 
-            StringBuilder  sqlwhere = new StringBuilder ();
+            StringBuilder sqlwhere = new StringBuilder();
             string _WhereAND = "";
             this.QueryGrid.EndEdit();
             DynamicParameters parameters = new DynamicParameters();
@@ -486,9 +486,9 @@ namespace Passero.Framework.Controls
             {
                 StringBuilder sqlwhereitem = new StringBuilder();
                 string Value = "";
-                if (item[1].Value!=null)
+                if (item[1].Value != null)
                     Value = item[1].Value.ToString();
-                
+
                 string _WhereItemOR = "";
                 string[] Values;
                 Type PropertyType = this.ModelProperties[item.Tag.ToString()].PropertyType;
@@ -497,7 +497,7 @@ namespace Passero.Framework.Controls
                 {
                     Value = Value.Trim();
 
-                    
+
                     if (Value != ";")
                     {
                         Values = Strings.Split(Value, ";");
@@ -515,12 +515,12 @@ namespace Passero.Framework.Controls
                         if (this.chkLikeOperator.Checked)
                         {
                             sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                            parameters.Add(parametername, "%"+_Value+"%", Passero.Framework.Utilities.GetDbType(PropertyType));
+                            parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
                         }
                         else
                         {
                             sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                            parameters.Add(parametername,RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
+                            parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
                         }
 
                         if (sqlwhereitem.Length > 0)
@@ -531,9 +531,9 @@ namespace Passero.Framework.Controls
                     }
                     if (sqlwhere.Length > 0)
                     {
-                        _WhereAND  = " AND ";
+                        _WhereAND = " AND ";
                     }
-                    sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString ()} )");
+                    sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
 
                 }
 
@@ -551,14 +551,14 @@ namespace Passero.Framework.Controls
             //parameters.Add("@"+item.Tag, Utente, DbType.String);
 
             string sTopRows = "";
-         
-            if (this.TopRows >0)
+
+            if (this.TopRows > 0)
             {
                 sTopRows = $"TOP ({this.TopRows})";
             }
             this.SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<ModelClass>()}";
-            if (sqlwhere.ToString ().Trim () != "")
-                this.SQLQuery=this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
+            if (sqlwhere.ToString().Trim() != "")
+                this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
             this.SQLQueryParameters = parameters;
         }
 
@@ -568,7 +568,7 @@ namespace Passero.Framework.Controls
 
             Value = Value.ToUpper();
             string _operator = "";
-            if(Value.StartsWith ("="))
+            if (Value.StartsWith("="))
                 _operator = " = ";
             if (Value.StartsWith(">"))
                 _operator = " > ";
@@ -580,19 +580,19 @@ namespace Passero.Framework.Controls
                 _operator = " <= ";
             if (Value.StartsWith("<>"))
                 _operator = " <> ";
-            if (Value.StartsWith("LIKE ",  StringComparison.CurrentCultureIgnoreCase ))
+            if (Value.StartsWith("LIKE ", StringComparison.CurrentCultureIgnoreCase))
                 _operator = " LIKE ";
-            if (Value.StartsWith("NOT LIKE ", StringComparison.CurrentCultureIgnoreCase ))
+            if (Value.StartsWith("NOT LIKE ", StringComparison.CurrentCultureIgnoreCase))
                 _operator = " NOT LIKE ";
             if (_operator == "")
                 _operator = " = ";
 
-            return _operator;   
+            return _operator;
         }
         private string RemoveComparisionOperator(string Value)
         {
             string op = GetComparisionOperator(Value).Trim();
-            
+
             if (Value.StartsWith(op, StringComparison.CurrentCultureIgnoreCase) == false)
                 Value = op + Value;
             return Value.Substring(op.Length).Trim();
@@ -600,37 +600,37 @@ namespace Passero.Framework.Controls
 
         private void XQBEForm_Load(object sender, EventArgs e)
         {
-          
+
         }
 
         private void bPrev_Click(object sender, EventArgs e)
         {
-            this.MovePrevious ();   
+            this.MovePrevious();
         }
 
         private void bFirst_Click(object sender, EventArgs e)
         {
-            this.MoveFirst ();  
+            this.MoveFirst();
         }
 
         private void bNext_Click(object sender, EventArgs e)
         {
-            this.MoveNext ();   
+            this.MoveNext();
         }
 
         private void bLast_Click(object sender, EventArgs e)
         {
-            this.MoveLast ();   
+            this.MoveLast();
         }
 
         private void bRefresh_Click(object sender, EventArgs e)
         {
-            this.DoQuery ();    
+            this.DoQuery();
         }
 
         private void bDelete_Click(object sender, EventArgs e)
         {
-           ClearFilters (); 
+            ClearFilters();
         }
 
         public void ClearFilters()
@@ -693,7 +693,7 @@ namespace Passero.Framework.Controls
 
                     }
                 }
-                
+
 
                 if (this.Owner != null && this.ResultGridModelItemsCallBackAction != null)
                 {
@@ -743,14 +743,14 @@ namespace Passero.Framework.Controls
                 try
                 {
 
-                    ResultGridModelItems = new TargetModelItems<ModelClass> ();
-                    
-                    foreach (DataGridViewRow row in this.ResultGrid .SelectedRows)
+                    ResultGridModelItems = new TargetModelItems<ModelClass>();
+
+                    foreach (DataGridViewRow row in this.ResultGrid.SelectedRows)
                     {
-                        ResultGridModelItems.Items.Add((ModelClass)row.DataBoundItem );
+                        ResultGridModelItems.Items.Add((ModelClass)row.DataBoundItem);
                     }
-                    
-                    Passero.Framework.ReflectionHelper.SetPropertyValue(ref ResultGridModelItems, "Items", this.ResultGridModelItems.Items ) ;
+
+                    Passero.Framework.ReflectionHelper.SetPropertyValue(ref ResultGridModelItems, "Items", this.ResultGridModelItems.Items);
                 }
                 catch (Exception)
                 {
@@ -765,7 +765,7 @@ namespace Passero.Framework.Controls
 
             //Microsoft.Reporting.WebForms.ReportViewer x = new Microsoft.Reporting.WebForms.ReportViewer();
             //x.BackColor = System.Drawing.Color.White;   
-            
+
         }
 
 
@@ -775,7 +775,7 @@ namespace Passero.Framework.Controls
                 return;
 
             ModelClass currentrowmodel = (ModelClass)this.ResultGrid.CurrentRow.DataBoundItem;
-            foreach (QBEBoundControl  item in this.QBEBoundControls)
+            foreach (QBEBoundControl item in this.QBEBoundControls)
             {
                 var Value = Interaction.CallByName(currentrowmodel, item.ModelPropertyName, CallType.Get, (object[])null);
                 if (Value is not null)
@@ -784,7 +784,7 @@ namespace Passero.Framework.Controls
                 }
                 else
                 {
-                    Interaction.CallByName(item.Control,item.ControlPropertyName, CallType.Set, "");
+                    Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, "");
                 }
             }
             this.CloseQBEForm();
@@ -801,18 +801,18 @@ namespace Passero.Framework.Controls
             object TargetModel = Passero.Framework.ReflectionHelper.GetPropertyValue(TargetRepository, "ModelItem");
             if (TargetModel is null)
             {
-                TargetModel = GetEmptyModel (); 
+                TargetModel = GetEmptyModel();
             }
             Type TargetModelType = TargetModel.GetType();
             DynamicParameters parameters = new DynamicParameters();
-            
-            Dictionary<string, PropertyInfo> TargetModelProperties = new Dictionary<string, PropertyInfo>();    
+
+            Dictionary<string, PropertyInfo> TargetModelProperties = new Dictionary<string, PropertyInfo>();
             foreach (var item in TargetModelType.GetProperties())
             {
                 TargetModelProperties.Add(item.Name, item);
             }
-            
-            
+
+
             string propertyname = "";
             object propertyvalue;
             string _AND = "";
@@ -820,7 +820,7 @@ namespace Passero.Framework.Controls
             int i = 1;
             StringBuilder sqlwhere = new StringBuilder();
             string sqlquery = "";
-            foreach (DataGridViewRow  row in ResultGrid.SelectedRows)
+            foreach (DataGridViewRow row in ResultGrid.SelectedRows)
             {
                 StringBuilder sqlwhererow = new StringBuilder();
                 _AND = "";
@@ -837,13 +837,13 @@ namespace Passero.Framework.Controls
                     i++;
                 }
                 sqlwhere.Append($" {_OR} ( {sqlwhererow.ToString()} )");
-            
+
                 _OR = " OR ";
             }
 
             sqlquery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName(TargetModel)}";
             if (sqlwhere.ToString() != "")
-                sqlquery = sqlquery + " WHERE "+ sqlwhere.ToString();
+                sqlquery = sqlquery + " WHERE " + sqlwhere.ToString();
 
             if (this.TargetRepository != null)
             {
@@ -854,15 +854,15 @@ namespace Passero.Framework.Controls
                 catch (Exception)
                 {
 
-                    
+
                 }
-                
+
             }
 
             this.CloseQBEForm();
         }
 
-      
+
 
         private void CopyDataRow(DataRow oSourceRow, DataRow oTargetRow)
         {
@@ -895,14 +895,14 @@ namespace Passero.Framework.Controls
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            this.ExportResultGrid ();   
+            this.ExportResultGrid();
         }
 
         private void ResultGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-         
 
-            if  (this.ResultGrid .CurrentRow ==null)
+
+            if (this.ResultGrid.CurrentRow == null)
                 return;
 
 
@@ -955,17 +955,68 @@ namespace Passero.Framework.Controls
 
         private void bClose_Click(object sender, EventArgs e)
         {
-            this.CloseQBEForm (true);
+            this.CloseQBEForm(true);
 
         }
 
-     
+
 
         private void ResultGrid_Appear(object sender, EventArgs e)
         {
             //this.ResultGrid.Visible = true;
         }
+
+
+        private void ManageToolsClick(ComponentTool Tool)
+        {
+            if (Tool.Name == "selectrows")
+            {
+                if (Tool.Pushed == false)
+                {
+                    this.ResultGrid.SelectAllRows();
+                    Tool.Pushed = true;
+                }
+
+                else
+                {
+                    this.ResultGrid.ClearSelection();
+                    Tool.Pushed = false;
+                }
+            }
+
+            if (Tool.Name == "movefirst")
+            {
+                MoveFirst();
+            }
+            if (Tool.Name == "movelast")
+            {
+                MoveLast();
+            }
+            if (Tool.Name == "moveprevious")
+            {
+                MovePrevious();
+            }
+            if (Tool.Name == "movenext")
+            {
+                MoveNext();
+            }
+            if (Tool.Name == "autosize")
+            {
+                this.ResultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                foreach (DataGridViewColumn column in this.ResultGrid.Columns)
+                {
+                    if (column.Visible)
+                        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                }
+            }
+        }
+        private void SplitContainer_Panel1_ToolClick(object sender, ToolClickEventArgs e)
+        {
+            ManageToolsClick(e.Tool);
+         }
+
     }
 
- 
+
+
 }

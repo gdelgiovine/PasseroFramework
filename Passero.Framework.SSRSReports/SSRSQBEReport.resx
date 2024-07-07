@@ -131,10 +131,85 @@
   <data name="SplitContainer.Orientation" type="Wisej.Web.Orientation, Wisej.Framework">
     <value>Horizontal</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="PanelReportInfo.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtReportTitle.LabelText" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="txtReportTitle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 30</value>
+  </data>
+  <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Name" xml:space="preserve">
+    <value>txtReportTitle</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtReportDescription.LabelText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
+    <value>167, 3</value>
+  </data>
+  <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 30</value>
+  </data>
+  <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Name" xml:space="preserve">
+    <value>txtReportDescription</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelReportInfo.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Top</value>
+  </data>
+  <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 36</value>
+  </data>
+  <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Name" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="txtRenderError.Location" type="System.Drawing.Point, System.Drawing">
     <value>428, 44</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="txtRenderError.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -157,81 +232,6 @@
     <value>PanelReportViewer</value>
   </data>
   <data name="&gt;&gt;txtRenderError.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="PanelReportInfo.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="txtReportDescription.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="txtReportDescription.LabelText" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
-    <value>303, 2</value>
-  </data>
-  <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
-    <value>236, 30</value>
-  </data>
-  <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Name" xml:space="preserve">
-    <value>txtReportDescription</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Type" xml:space="preserve">
-    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.Parent" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="txtReportTitle.LabelText" xml:space="preserve">
-    <value>Report</value>
-  </data>
-  <data name="txtReportTitle.Location" type="System.Drawing.Point, System.Drawing">
-    <value>5, 2</value>
-  </data>
-  <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>292, 30</value>
-  </data>
-  <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Name" xml:space="preserve">
-    <value>txtReportTitle</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Type" xml:space="preserve">
-    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.Parent" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;txtReportTitle.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 1</value>
-  </data>
-  <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>548, 35</value>
-  </data>
-  <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Name" xml:space="preserve">
-    <value>PanelReportInfo</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Type" xml:space="preserve">
-    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.Parent" xml:space="preserve">
-    <value>PanelReportViewer</value>
-  </data>
-  <data name="&gt;&gt;PanelReportInfo.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="AspNetPanel.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
@@ -303,9 +303,6 @@
   <data name="PdfViewer.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="PdfViewer.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="&gt;&gt;PdfViewer.Name" xml:space="preserve">
     <value>PdfViewer</value>
   </data>
@@ -341,6 +338,15 @@
   </data>
   <data name="&gt;&gt;PanelReportViewer.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="SplitContainer.Panel1.Text" xml:space="preserve">
+    <value>Report Viewer</value>
+  </data>
+  <data name="componentTool1.ImageSource" xml:space="preserve">
+    <value>icon-refresh</value>
+  </data>
+  <data name="componentTool1.ToolTipText" xml:space="preserve">
+    <value>Refresh Report Data</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel1.Name" xml:space="preserve">
     <value>SplitContainer.Panel1</value>
@@ -400,10 +406,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 109</value>
   </data>
   <data name="TabPageReports.Text" xml:space="preserve">
     <value>Avalaible Reports</value>
@@ -445,7 +451,7 @@
     <value>24</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>881, 103</value>
+    <value>873, 67</value>
   </data>
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -493,10 +499,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 109</value>
   </data>
   <data name="TabPageReportQuery.Text" xml:space="preserve">
     <value>Search Criteria</value>
@@ -513,35 +519,119 @@
   <data name="&gt;&gt;TabPageReportQuery.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="btnSortDown.ImageSource" xml:space="preserve">
-    <value>scrollbar-arrow-down</value>
+  <data name="flowLayoutPanel1.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
-  <data name="btnSortDown.Location" type="System.Drawing.Point, System.Drawing">
-    <value>766, 59</value>
+  <data name="lstSortColumns.LabelText" xml:space="preserve">
+    <value>Columns</value>
   </data>
-  <data name="btnSortDown.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="lstSortColumns.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
+    <value>173, 101</value>
+  </data>
+  <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="componentTool2.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-left</value>
+  </data>
+  <data name="componentTool2.ToolTipText" xml:space="preserve">
+    <value>Remove from Sort List</value>
+  </data>
+  <data name="componentTool3.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-right</value>
+  </data>
+  <data name="componentTool3.ToolTipText" xml:space="preserve">
+    <value>Add to Sort List</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Name" xml:space="preserve">
+    <value>lstSortColumns</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Type" xml:space="preserve">
+    <value>Wisej.Web.ListBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnSortRemove.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-left</value>
+  </data>
+  <data name="btnSortRemove.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="btnSortRemove.Size" type="System.Drawing.Size, System.Drawing">
     <value>36, 25</value>
   </data>
-  <data name="btnSortDown.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+  <data name="btnSortRemove.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
   </data>
-  <data name="&gt;&gt;btnSortDown.Name" xml:space="preserve">
-    <value>btnSortDown</value>
+  <data name="&gt;&gt;btnSortRemove.Name" xml:space="preserve">
+    <value>btnSortRemove</value>
   </data>
-  <data name="&gt;&gt;btnSortDown.Type" xml:space="preserve">
+  <data name="&gt;&gt;btnSortRemove.Type" xml:space="preserve">
     <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;btnSortDown.Parent" xml:space="preserve">
-    <value>TabPageReportSort</value>
+  <data name="&gt;&gt;btnSortRemove.Parent" xml:space="preserve">
+    <value>panel1</value>
   </data>
-  <data name="&gt;&gt;btnSortDown.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;btnSortRemove.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="btnSortAdd.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-right</value>
+  </data>
+  <data name="btnSortAdd.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 31</value>
+  </data>
+  <data name="btnSortAdd.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortAdd.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Name" xml:space="preserve">
+    <value>btnSortAdd</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>182, 3</value>
+  </data>
+  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 61</value>
+  </data>
+  <data name="panel1.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;panel1.Name" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;panel1.Type" xml:space="preserve">
+    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="btnSortUp.ImageSource" xml:space="preserve">
     <value>scrollbar-arrow-up</value>
   </data>
   <data name="btnSortUp.Location" type="System.Drawing.Point, System.Drawing">
-    <value>766, 27</value>
+    <value>3, 3</value>
   </data>
   <data name="btnSortUp.Size" type="System.Drawing.Size, System.Drawing">
     <value>36, 25</value>
@@ -556,17 +646,65 @@
     <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;btnSortUp.Parent" xml:space="preserve">
-    <value>TabPageReportSort</value>
+    <value>panel2</value>
   </data>
   <data name="&gt;&gt;btnSortUp.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnSortDown.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Left</value>
+  </data>
+  <data name="btnSortDown.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-down</value>
+  </data>
+  <data name="btnSortDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 31</value>
+  </data>
+  <data name="btnSortDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortDown.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Name" xml:space="preserve">
+    <value>btnSortDown</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Parent" xml:space="preserve">
+    <value>panel2</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>230, 3</value>
+  </data>
+  <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 59</value>
+  </data>
+  <data name="panel2.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="panel2.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;panel2.Name" xml:space="preserve">
+    <value>panel2</value>
+  </data>
+  <data name="&gt;&gt;panel2.Type" xml:space="preserve">
+    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;panel2.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;panel2.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <metadata name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <data name="dgv_SelectedSortColumns.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Bottom, Left</value>
-  </data>
   <data name="dgvc_SelectedSortColumns_position.HeaderText" xml:space="preserve">
     <value>Position</value>
   </data>
@@ -592,13 +730,28 @@
     <value>100</value>
   </data>
   <data name="dgv_SelectedSortColumns.Location" type="System.Drawing.Point, System.Drawing">
-    <value>294, 27</value>
+    <value>278, 3</value>
+  </data>
+  <data name="dgv_SelectedSortColumns.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>20</value>
   </data>
   <data name="dgv_SelectedSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>463, 101</value>
+    <value>607, 101</value>
   </data>
   <data name="dgv_SelectedSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
+  </data>
+  <data name="componentTool4.ImageSource" xml:space="preserve">
+    <value>spinner-up</value>
+  </data>
+  <data name="componentTool4.ToolTipText" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="componentTool5.ImageSource" xml:space="preserve">
+    <value>spinner-down</value>
+  </data>
+  <data name="componentTool5.ToolTipText" xml:space="preserve">
+    <value>Move Down</value>
   </data>
   <data name="&gt;&gt;dgv_SelectedSortColumns.Name" xml:space="preserve">
     <value>dgv_SelectedSortColumns</value>
@@ -607,94 +760,43 @@
     <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;dgv_SelectedSortColumns.Parent" xml:space="preserve">
-    <value>TabPageReportSort</value>
+    <value>flowLayoutPanel1</value>
   </data>
   <data name="&gt;&gt;dgv_SelectedSortColumns.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="btnSortRemove.ImageSource" xml:space="preserve">
-    <value>scrollbar-arrow-left</value>
-  </data>
-  <data name="btnSortRemove.Location" type="System.Drawing.Point, System.Drawing">
-    <value>252, 58</value>
-  </data>
-  <data name="btnSortRemove.Size" type="System.Drawing.Size, System.Drawing">
-    <value>36, 25</value>
-  </data>
-  <data name="btnSortRemove.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;btnSortRemove.Name" xml:space="preserve">
-    <value>btnSortRemove</value>
+  <data name="flowLayoutPanel1.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
   </data>
-  <data name="&gt;&gt;btnSortRemove.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="flowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
   </data>
-  <data name="&gt;&gt;btnSortRemove.Parent" xml:space="preserve">
+  <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>888, 107</value>
+  </data>
+  <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Name" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Parent" xml:space="preserve">
     <value>TabPageReportSort</value>
   </data>
-  <data name="&gt;&gt;btnSortRemove.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="btnSortAdd.ImageSource" xml:space="preserve">
-    <value>scrollbar-arrow-right</value>
-  </data>
-  <data name="btnSortAdd.Location" type="System.Drawing.Point, System.Drawing">
-    <value>252, 27</value>
-  </data>
-  <data name="btnSortAdd.Size" type="System.Drawing.Size, System.Drawing">
-    <value>36, 25</value>
-  </data>
-  <data name="btnSortAdd.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;btnSortAdd.Name" xml:space="preserve">
-    <value>btnSortAdd</value>
-  </data>
-  <data name="&gt;&gt;btnSortAdd.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;btnSortAdd.Parent" xml:space="preserve">
-    <value>TabPageReportSort</value>
-  </data>
-  <data name="&gt;&gt;btnSortAdd.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="lstSortColumns.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
-    <value>Top, Bottom, Left</value>
-  </data>
-  <data name="lstSortColumns.LabelText" xml:space="preserve">
-    <value>Columns</value>
-  </data>
-  <data name="lstSortColumns.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 7</value>
-  </data>
-  <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 121</value>
-  </data>
-  <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
+  <data name="&gt;&gt;flowLayoutPanel1.ZOrder" xml:space="preserve">
     <value>0</value>
-  </data>
-  <data name="&gt;&gt;lstSortColumns.Name" xml:space="preserve">
-    <value>lstSortColumns</value>
-  </data>
-  <data name="&gt;&gt;lstSortColumns.Type" xml:space="preserve">
-    <value>Wisej.Web.ListBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;lstSortColumns.Parent" xml:space="preserve">
-    <value>TabPageReportSort</value>
-  </data>
-  <data name="&gt;&gt;lstSortColumns.ZOrder" xml:space="preserve">
-    <value>5</value>
   </data>
   <data name="TabPageReportSort.Hidden" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 109</value>
   </data>
   <data name="TabPageReportSort.Text" xml:space="preserve">
     <value>Report Sorting</value>
@@ -862,10 +964,10 @@
     <value>True</value>
   </data>
   <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 109</value>
   </data>
   <data name="TabPageExport.Text" xml:space="preserve">
     <value>Export</value>
@@ -1015,13 +1117,13 @@
     <value>True</value>
   </data>
   <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 39</value>
+    <value>1, 40</value>
   </data>
   <data name="TabPageDebug.Padding" type="Wisej.Web.Padding, Wisej.Framework">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 139</value>
+    <value>890, 109</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>
@@ -1042,7 +1144,7 @@
     <value>1, 0</value>
   </data>
   <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 178</value>
+    <value>892, 150</value>
   </data>
   <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1058,6 +1160,9 @@
   </data>
   <data name="&gt;&gt;TabControl.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="SplitContainer.Panel2.Text" xml:space="preserve">
+    <value>Report Manager</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel2.Name" xml:space="preserve">
     <value>SplitContainer.Panel2</value>
@@ -1203,7 +1308,7 @@
   <data name="pbEngineLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAXQAAADDCAYAAACS2+oqAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1
-        MAAA6mAAADqYAAAXcJy6UTwAAAAEZ0FNQQAAsY8L/GEFAAAACXBIWXMAAAsSAAALEgHS3X78AABZUklE
+        MAAA6mAAADqYAAAXcJy6UTwAAAAEZ0FNQQAAsY8L/GEFAAAACXBIWXMAAAsMAAALDAE/QCLIAABZUklE
         QVR4Xu2dd1wWRxPHsWKLvcZeY++9xhYsibFGjW+MJSYxltiT2E00xt5i7733XhELgoqKCAiIFOm9N8F5
         97d4cBwLPCgIj9k/vp/nudm98txzNzs7OztrQEQSiUQi+QgQCiUSiUSifwiFEolEItE/hEKJRCKR6B9C
         oUQikUj0D6FQIpFIJPqHUCiRSCQS/UMolEgkEon+IRRKJBKJRP8QCiUSiUSifwiFEolEItE/hEKJRCKR

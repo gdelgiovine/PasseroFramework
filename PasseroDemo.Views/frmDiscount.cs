@@ -11,9 +11,9 @@ namespace PasseroDemo.Views
     {
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public System.Data.IDbConnection DbConnection { get; set; }
-        private Passero.Framework.ViewModel<Models.Discount  > vmDiscount = new Passero.Framework.ViewModel<Models.Discount>();
+        private Passero.Framework.ViewModel<Models.Discount  > vmDiscount = new Passero.Framework.ViewModel<Models.Discount>("Discounts");
         //private Passero.Framework.ViewModel<ModelStub> myViewModelStub = new Passero.Framework.ViewModel<ModelStub>();
-        private Passero.Framework.Controls.QBEForm<Models.Discount > xQBEForm_Discount = new Passero.Framework.Controls.QBEForm<Models.Discount >();
+        private Passero.Framework.Controls.QBEForm<Models.Discount > QBEForm_Discount = new Passero.Framework.Controls.QBEForm<Models.Discount >();
         private Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
 
         public frmDiscount()
@@ -59,7 +59,7 @@ namespace PasseroDemo.Views
             this.vmDiscount.GetAllItems();
             
             this.dataNavigator1.ManageNavigation = true;
-            this.dataNavigator1.ViewModels["Discount"] = new DataNavigatorViewModel(this.vmDiscount);
+            this.dataNavigator1.ViewModels["Discount"] = new DataNavigatorViewModel(this.vmDiscount,"Discount","Discount");
             this.dataNavigator1.SetActiveViewModel("Discount");
 
             
@@ -70,30 +70,30 @@ namespace PasseroDemo.Views
         private void QBE_Discount()
         {
 
-            xQBEForm_Discount = new QBEForm<Models.Discount >(this.DbConnection);
+            QBEForm_Discount = new QBEForm<Models.Discount >(this.DbConnection);
 
             
             
-            xQBEForm_Discount.SetupQBEForm();
+            QBEForm_Discount.SetupQBEForm();
             
             //xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
             //xQBEForm_Discount.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.AllRowsItems;
-            xQBEForm_Discount.QBEResultMode = QBEResultMode.MultipleRowsItems;
-            //xQBEForm_Author.Owner = this;
+            QBEForm_Discount.QBEResultMode = QBEResultMode.MultipleRowsItems;
+            QBEForm_Discount.Owner = this;
             //xQBEForm_Author.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
 
-            xQBEForm_Discount.SetTargetRepository(this.vmDiscount.Repository,() => { this.Reload(); });
+            QBEForm_Discount.SetTargetRepository(this.vmDiscount.Repository,() => { this.Reload(); });
             //xQBEForm_Discount.SetTargetRepository(this.vmDiscount.Repository);
 
 
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
-            xQBEForm_Discount.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
+            QBEForm_Discount.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
 
-
-            xQBEForm_Discount.ShowQBE();
+            QBEForm_Discount.Text = "Search Discount";
+            QBEForm_Discount.ShowQBE();
 
         }
         public void Reload()
@@ -124,7 +124,7 @@ namespace PasseroDemo.Views
             xQBEReport.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_fname), "", "");
             xQBEReport.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_lname), "", "");
             xQBEReport.QBEColumns.AddForReport("REPORT2", nameof(Models.Author.au_id), "", "");
-
+            xQBEReport.Owner = this;
             //xQBEReport.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEReport.CallBackAction = () => { this.Reload(); };
             xQBEReport.ShowQBEReport();
@@ -246,11 +246,6 @@ namespace PasseroDemo.Views
         private void dataNavigator1_eAddNewCompleted()
         {
             MessageBox.Show("AddNew Completed");
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

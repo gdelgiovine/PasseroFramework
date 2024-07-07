@@ -39,6 +39,7 @@ namespace Passero.Framework
         }
         public Wisej.Web.Form OwnerView { get; set; }   
         public string Name { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
+        public string FriendlyName { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
         public DateTime MinDateTime { get; set; } = new DateTime(1753, 1, 1, 0, 0, 0);
         public DateTime MaxDateTime { get; set; } = new DateTime(9999, 12, 31, 23, 59, 59, 999);
         public UseModelData UseModelData { get; set; } = UseModelData.InternalRepository;
@@ -906,25 +907,38 @@ namespace Passero.Framework
         }
 
 
-        public ViewModel()
+        public ViewModel(string Name="", string FriendlyName="")
         {
-            Repository = new Repository<ModelClass>();
-            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
-            DefaultSQLQueryParameters = new DynamicParameters();
+            this.Repository = new Repository<ModelClass>();
+            this.DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            this.DefaultSQLQueryParameters = new DynamicParameters();
+            if (Name != "")
+                this.Name = Name;
+            else
+                this.Name=nameof (ModelClass);
 
-            Repository.ViewModel = this;
-            Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
-            Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
-            Repository.ErrorNotificationMode = this.ErrorNotificationMode;
-            mModelItemShadow = GetEmptyModelItem();
+            if (FriendlyName != "")
+                this.FriendlyName = FriendlyName;
+            else
+                this.FriendlyName = Name;
 
+            this.Repository.ViewModel = this;
+            this.Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
+            this.Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
+            this.Repository.ErrorNotificationMode = this.ErrorNotificationMode;
+            this.mModelItemShadow = GetEmptyModelItem();
+           
 
         }
 
-        public ViewModel(ref Repository<ModelClass> Repository)
+        public ViewModel(ref Repository<ModelClass> Repository, string Name = "", string FriendlyName = "")
         {
-           
-            mModelItemShadow = GetEmptyModel();
+            if (Name != "")
+                this.Name = Name;
+            if (FriendlyName != "")
+                this.FriendlyName = FriendlyName;
+
+            mModelItemShadow = GetEmptyModelItem();
             this.Repository = Repository;
         }
         public void Init(ModelClass Model, string Name, string Description, DataBindingMode DataBindingMode = DataBindingMode.Passero)
@@ -1053,7 +1067,23 @@ namespace Passero.Framework
             //DataNavigatorRaiseEventBoundCompled()
             return ER;
         }
-
+        public void SetBindingSource()
+        {
+            if (mDataBindingMode == DataBindingMode.BindingSource)
+            {
+                switch (UseModelData)
+                {
+                    case UseModelData.External:
+                        mBindingSource.DataSource = ModelItems;
+                        break;
+                    case UseModelData.InternalRepository:
+                        mBindingSource.DataSource = Repository.ModelItems;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.GetAllItems()";

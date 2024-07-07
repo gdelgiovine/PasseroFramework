@@ -1,21 +1,13 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.CompilerServices;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-
-using Dapper.Contrib.Extensions;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 //using Passero.Framework.Base;
-using Passero.Framework;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework.Controls
 {
@@ -56,7 +48,7 @@ namespace Passero.Framework.Controls
         private string _CloseCaption = "Close";
         private string _FindCaption = "Find";
         private string _PrintCaption = "Print";
-      
+
         private int _PrintFKey = (int)Keys.F8;
 
         public void RaiseEventBoundCompleted()
@@ -67,8 +59,8 @@ namespace Passero.Framework.Controls
 
         public string RecordLabelHtmlFormat { get; set; } = "<p style='margin-top:2px;line-height:1.0;text-align:center;'>{0}<br>{1}<br>{2}</p>";
 
-        public Dictionary <string, DataNavigatorViewModel > ViewModels { get; set; } = new Dictionary<string, DataNavigatorViewModel>(StringComparer.InvariantCultureIgnoreCase);
-        
+        public Dictionary<string, DataNavigatorViewModel> ViewModels { get; set; } = new Dictionary<string, DataNavigatorViewModel>(StringComparer.InvariantCultureIgnoreCase);
+
         private DataRepeater __DataRepeater;
         private DataRepeater _DataRepeater
         {
@@ -90,15 +82,16 @@ namespace Passero.Framework.Controls
         {
             get
             {
-                if(_ActiveViewModel ==null)
+                if (_ActiveViewModel == null)
                     return 0;
                 return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
             }
         }
 
-        public  int CurrentModelItemIndex
+        public int CurrentModelItemIndex
         {
-            get {
+            get
+            {
                 if (this._ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
@@ -106,7 +99,8 @@ namespace Passero.Framework.Controls
                 else
                     return -1;
             }
-            set {
+            set
+            {
                 if (DesignMode == false)
                 {
                     if (_ActiveViewModel != null)
@@ -120,10 +114,10 @@ namespace Passero.Framework.Controls
             {
                 if (this._ActiveViewModel != null)
                     return -1;
-                if (DesignMode ==false)
+                if (DesignMode == false)
                     return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");
                 else
-                   return -1;
+                    return -1;
             }
             set
             {
@@ -136,6 +130,7 @@ namespace Passero.Framework.Controls
         }
 
 
+        
 
         public ExecutionResult ViewModel_AddNew(object NewItem = null, bool InsertAtCursor = false)
         {
@@ -241,7 +236,7 @@ namespace Passero.Framework.Controls
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges",false);
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges", false);
                     if (ER.Success)
                     {
                         if (eUndoCompleted != null)
@@ -377,7 +372,7 @@ namespace Passero.Framework.Controls
 
             string ERContext = $"{mClassName}.ViewModel_ReloadItems()"; ;
             ExecutionResult ER = new ExecutionResult(ERContext);
-      
+
             switch (this._ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
@@ -408,8 +403,8 @@ namespace Passero.Framework.Controls
 
         public ExecutionResult ViewModel_UdpateItem(object item = null)
         {
-            string ERContext = $"{mClassName}.ViewModel_UdpateItem()"; 
-            
+            string ERContext = $"{mClassName}.ViewModel_UdpateItem()";
+
             ExecutionResult ER = new ExecutionResult(ERContext);
 
             switch (this._ActiveDataNavigatorViewModel.GridMode)
@@ -434,7 +429,7 @@ namespace Passero.Framework.Controls
 
                     if (_AddNewState)
                     {
-                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem",item);
+                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem", item);
                         if (ER.Success)
                         {
                             this.ViewModel_MoveLastItem();
@@ -459,7 +454,7 @@ namespace Passero.Framework.Controls
             }
             else
             {
-               if (eError != null)
+                if (eError != null)
                     eError("ViewModel_UdpateItem", ER);
             }
 
@@ -507,7 +502,7 @@ namespace Passero.Framework.Controls
                 _ActiveViewModel = viewModel.ViewModel;
                 _ActiveDataNavigatorViewModel = viewModel;
                 _ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
-               try
+                try
                 {
                     _ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
                 }
@@ -516,7 +511,7 @@ namespace Passero.Framework.Controls
                     _ModelItem = _ModelItems.GetType().GetGenericArguments()[0];
                 }
                 _BindingSource = (BindingSource)ReflectionHelper.GetPropertyValue(viewModel.ViewModel, "BindingSource");
-                ReflectionHelper.CallByName( viewModel.ViewModel, "DataNavigator", CallType.Set,this);
+                ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, this);
 
                 switch (this.ActiveDataNavigatorViewModel.GridMode)
                 {
@@ -571,14 +566,18 @@ namespace Passero.Framework.Controls
                         break;
 
                 }
-                Caption = viewModel.FriendlyName;
+
+                if (viewModel.Name != "")
+                   Caption = viewModel.Name;    
+                if (viewModel .FriendlyName !="")
+                    Caption = viewModel.FriendlyName;
 
             }
             else
             {
                 _ActiveViewModel = null;
                 _ActiveDataNavigatorViewModel = null;
-                ReflectionHelper.CallByName (viewModel.ViewModel, "DataNavigator", CallType.Set,null);
+                ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, null);
             }
             if (_ModelItems != null)
             {
@@ -591,20 +590,20 @@ namespace Passero.Framework.Controls
 
         public void SetActiveViewModel(string viewModel)
         {
-            if (this.ViewModels .ContainsKey(viewModel)) 
+            if (this.ViewModels.ContainsKey(viewModel))
             {
                 SetActiveViewModel(this.ViewModels[viewModel]);
             }
         }
 
-        private object  _ActiveViewModel  = null;
+        private object _ActiveViewModel = null;
         public object ActiveViewModel
         {
             get
             {
                 return _ActiveViewModel;
             }
-          
+
         }
         public Type ModelType
         {
@@ -614,9 +613,9 @@ namespace Passero.Framework.Controls
                 {
                     return (Type)ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
                 }
-                return null;    
+                return null;
             }
-            
+
         }
 
 
@@ -667,7 +666,7 @@ namespace Passero.Framework.Controls
         }
 
 
-    
+
 
         public object ModelItemShadow
         {
@@ -688,7 +687,7 @@ namespace Passero.Framework.Controls
             }
         }
 
-        
+
 
         public object ModelItemsShadow
         {
@@ -711,8 +710,8 @@ namespace Passero.Framework.Controls
 
         private DataSet _Dataset;
         private DataTable _DataTable;
-        private Wisej.Web.CurrencyManager _CurrencyManager;
-        private Wisej.Web .BindingSource _BindingSource;
+        private Wisej.Web.CurrencyManager _CurrencyManager = null;
+        private Wisej.Web.BindingSource _BindingSource = new BindingSource();
         private string _DataGridListViewRowIndexColumnName = "$<rowindex>$";
         private int _DataGridListViewRowIndexColumnIndex = 0;
         private DataGridView __DataGrid;
@@ -868,7 +867,7 @@ namespace Passero.Framework.Controls
 
         public event eSaveRequestEventHandler eSaveRequest;
         public delegate void eSaveRequestEventHandler(ref bool Cancel);
-        
+
         public event eMovePreviousRequestEventHandler eMovePreviousRequest;
         public delegate void eMovePreviousRequestEventHandler(ref bool Cancel);
 
@@ -886,7 +885,7 @@ namespace Passero.Framework.Controls
 
         public event eMoveLastCompletedEventHandler eMoveLastCompleted;
         public delegate void eMoveLastCompletedEventHandler();
-        
+
         public event eMoveNextRequestEventHandler eMoveNextRequest;
         public delegate void eMoveNextRequestEventHandler(ref bool Cancel);
 
@@ -1236,7 +1235,10 @@ namespace Passero.Framework.Controls
         {
             get
             {
-                _CurrencyManager = _BindingSource.CurrencyManager;
+                if (_BindingSource != null)
+                {
+                    _CurrencyManager = _BindingSource.CurrencyManager;
+                }
                 return _BindingSource;
             }
             set
@@ -1258,7 +1260,7 @@ namespace Passero.Framework.Controls
                 _DataPanel = value;
             }
         }
-    
+
         public DataGridView DataGridView
         {
             get
@@ -1271,7 +1273,7 @@ namespace Passero.Framework.Controls
             }
         }
 
-        public DataRepeater  DataRepeater
+        public DataRepeater DataRepeater
         {
             get
             {
@@ -1296,7 +1298,7 @@ namespace Passero.Framework.Controls
                 //_DataGridListView.MultiSelect = false;
             }
         }
-        private string _Caption="DataNavigator";
+        private string _Caption = "DataNavigator";
         [Localizable(true)]
         public string Caption
         {
@@ -1374,14 +1376,16 @@ namespace Passero.Framework.Controls
         private void _InitDataNavigator(bool LoadData = false)
         {
             UpdateButtonsCaption();
+            ReflectionHelper.CallByName(this.ActiveViewModel, "SetBindingSource", CallType.Method);
+            
             if (LoadData)
             {
-                ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method );
+                ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
                 //_DbObject.Open(true);
             }
 
             UpdateRecordLabel();
-            if (ModelItems == null)
+            if (ModelItemsCount == 0 )
             {
                 SetButtonForEmptyModelItems();
             }
@@ -1541,7 +1545,7 @@ namespace Passero.Framework.Controls
                     {
                         object item = ((IList)this._ModelItems)[this.NewItemIndex];
                         ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
-                       if (ER.Success)
+                        if (ER.Success)
                         {
                             this._AddNewState = false;
                         }
@@ -1606,7 +1610,7 @@ namespace Passero.Framework.Controls
         {
             string ERContext = $"{mClassName}.DataGrid_AddNew()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            
+
             int ColumnIndex = 0;
             int RowIndex = 0;
             int GridRowIndex = 0;
@@ -1716,13 +1720,13 @@ namespace Passero.Framework.Controls
                     DataGridView.Rows[RowIndex].ReadOnly = false;
                     DataGridView.CurrentCell = DataGridView[ColumnIndex, RowIndex];
                     _DataGridRow = DataGridView.CurrentCell.RowIndex;
-                  
+
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
                     ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -1966,7 +1970,7 @@ namespace Passero.Framework.Controls
             {
                 if (this._DataRepeater != null)
                 {
-                    ER =(ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
@@ -2059,10 +2063,10 @@ namespace Passero.Framework.Controls
 
         public ExecutionResult DataRepeater_AddNew(object Item = null, bool InsertAtCursor = false)
         {
-            
+
             var argDataRepeater = _DataRepeater;
             return DataRepeater_AddNew(ref argDataRepeater, Item, InsertAtCursor);
-            
+
         }
 
         public ExecutionResult DataRepeater_AddNew(ref DataRepeater DataRepeater, object NewItem = null, bool InsertAtCurrentRow = false)
@@ -2119,7 +2123,7 @@ namespace Passero.Framework.Controls
                         DataRepeater.Select();
                         if (ReflectionHelper.IsBindingList(items))
                         {
-                            items =(IList)ReflectionHelper.ConvertBindingListToList(items, T);
+                            items = (IList)ReflectionHelper.ConvertBindingListToList(items, T);
                         }
                         this.ModelItems = items;
                         this.ModelItem = NewItem;
@@ -2170,7 +2174,7 @@ namespace Passero.Framework.Controls
         {
             string ERContext = $"{mClassName}.DataGrid_Undo()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            
+
             if (DataGridView == null)
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
@@ -3169,7 +3173,7 @@ namespace Passero.Framework.Controls
                         int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
                         this.MoveLast();
                         eDeleteCompleted?.Invoke();
-                        
+
                     }
                 }
             }
@@ -3177,7 +3181,7 @@ namespace Passero.Framework.Controls
             {
                 eDelete?.Invoke();
             }
-            this.UpdateRecordLabel ();  
+            this.UpdateRecordLabel();
 
         }
 
@@ -3391,69 +3395,70 @@ namespace Passero.Framework.Controls
             //ShowHeader = _ShowHeader;
         }
 
-  public ExecutionResult AddNew(object item = null, bool OverrideManagedChanges = false)
-    {
-        string ERContext = $"{mClassName}.AddNew()";
-        ExecutionResult ER = new ExecutionResult(ERContext);
-
-        if (this.ActiveViewModel == null)
+        public ExecutionResult AddNew(object item = null, bool OverrideManagedChanges = false)
         {
-            ER.ResultCode = ExecutionResultCodes.Failed;
-            ER.ErrorCode = 1;
-            ER.ResultMessage = "ActiveViewModel is null.";
-            return ER;
-        }
+            string ERContext = $"{mClassName}.AddNew()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
 
-        if (item == null)
-        {
-            try
-            {
-                item = Activator.CreateInstance(this.ModelType);
-            }
-            catch (Exception ex)
+            if (this.ActiveViewModel == null)
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 2;
-                ER.ResultMessage = "ModelType is null.";
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "ActiveViewModel is null.";
                 return ER;
             }
+
+            if (item == null)
+            {
+                try
+                {
+                    item = Activator.CreateInstance(this.ModelType);
+                }
+                catch (Exception ex)
+                {
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 2;
+                    ER.ResultMessage = "ModelType is null.";
+                    return ER;
+                }
+            }
+
+            bool Cancel = false;
+            _DataBoundCompleted = false;
+
+            if (eAddNewRequest != null)
+                eAddNewRequest(ref Cancel);
+
+            if (Cancel)
+            {
+                ER.ResultCode = ExecutionResultCodes.Warning;
+                ER.ErrorCode = 3;
+                ER.ResultMessage = "Operation Cancelled by User.";
+                return ER;
+            }
+
+            int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
+            int newIndex = index;
+
+            if (!OverrideManagedChanges && _ManageChanges)
+            {
+
+                ER = this.ViewModel_AddNew(item);
+                SetButtonsForAddNew();
+
+
+            }
+            else
+            {
+                this._AddNewState = true;
+                ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
+                SetButtonsForAddNew();
+                if (eAddNew != null)
+                    eAddNew();
+            }
+            UpdateRecordLabel();
+            return null;
         }
-
-        bool Cancel = false;
-        _DataBoundCompleted = false;
-
-        if (eAddNewRequest != null)
-            eAddNewRequest(ref Cancel);
-
-        if (Cancel)
-        {
-            ER.ResultCode = ExecutionResultCodes.Warning;
-            ER.ErrorCode = 3;
-            ER.ResultMessage = "Operation Cancelled by User.";
-            return ER;
-        }
-
-        int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
-        int newIndex = index;
-
-        if (!OverrideManagedChanges && _ManageChanges)
-        {
-
-            ER = this.ViewModel_AddNew(item);
-
-        
-        }
-        else
-        {
-            this._AddNewState = true;
-            ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
-            SetButtonsForAddNew();
-            if (eAddNew != null)
-                eAddNew();
-        }
-        UpdateRecordLabel();
-        return null;
-    }
 
         public void UpdateRecordLabel()
         {
@@ -3757,7 +3762,7 @@ namespace Passero.Framework.Controls
 
 
 
-        public  ExecutionResult DataGrid_MoveFirst(bool IgnoreManageNavigation = false)
+        public ExecutionResult DataGrid_MoveFirst(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataGrid_MoveFirst()";
             ExecutionResult ER = new ExecutionResult(ERContenxt);
@@ -3795,7 +3800,7 @@ namespace Passero.Framework.Controls
         }
 
 
-   
+
 
         private void MoveLastDataGridListView()
         {
@@ -3821,7 +3826,7 @@ namespace Passero.Framework.Controls
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
                 this.ViewModel_MoveLastItem();
-                
+
             }
             else
             {
@@ -3953,7 +3958,7 @@ namespace Passero.Framework.Controls
 
                 return false;
             }
-            
+
         }
 
 
@@ -4614,7 +4619,7 @@ namespace Passero.Framework.Controls
             else
             {
                 _DataGridListView.Columns.Clear();
-              
+
                 //foreach (BasicDAL.DbColumn c in DbObject.GetDbColumns())
                 //{
 
@@ -4660,7 +4665,7 @@ namespace Passero.Framework.Controls
             _DataGridListView.Columns[ncolIndex].DataPropertyName = _DataGridListViewRowIndexColumnName;
             _DataGridListView.Columns[ncolIndex].Visible = false;
             _DataGridListView.Columns[ncolIndex].ShowInVisibilityMenu = false;
-           // _DataGridListViewDataTable = _DbObject.DataTable.Copy();
+            // _DataGridListViewDataTable = _DbObject.DataTable.Copy();
             _DataGridListViewDataTable.Columns.Add(_DataGridListViewRowIndexColumnName);
 
             for (int i = 0, loopTo = _DataGridListViewDataTable.Rows.Count - 1; i <= loopTo; i++)

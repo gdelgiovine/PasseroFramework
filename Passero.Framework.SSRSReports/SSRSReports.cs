@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Dapper.Contrib.Extensions;
 using Microsoft.VisualBasic;
 
 #if NET

@@ -2,6 +2,7 @@
 using Wisej.Web;
 
 
+
 namespace PasseroDemo.Application
 {
     public partial class MainPage : Page
@@ -43,17 +44,48 @@ namespace PasseroDemo.Application
             this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
         }
 
-        public  void SetDesktop()
+        public void SetMDIWindow()
         {
-            //this.Desktop.Left = this.PanelNavigationBar.Width;
-            //this.Desktop.Top = 0;
-            //this.Desktop.Width =this.Width -this.PanelNavigationBar .Width;
-            //this.Desktop.Height = this.Height;
-            
-            this.MDIWindow.Left = this.NavigationBar.Width;
-            this.MDIWindow.Top = -0;
-            this.MDIWindow.Width = this.Width - this.NavigationBar.Width;
-            this.MDIWindow.Height = this.Height;
+            MDIWindow.Top = this.ToolBar.Height;
+            MDIWindow.Height = this.Height - this.ToolBar.Height;
+            if (this.Width < 500)
+            {
+                NavigationBar.CompactView = true;
+            }
+            else
+            {
+                NavigationBar.CompactView = false;
+            }
+            if (NavigationBar.Visible)
+            {
+                MDIWindow.Left = NavigationBar.Width;
+                MDIWindow.Width = this.Width - NavigationBar.Width;
+            }
+            else
+            {
+                MDIWindow.Left = 0;
+                MDIWindow.Width = this.Width;
+            }
+        }
+
+
+        public void SetDesktop()
+        {
+            this.NavigationBar.Left = 0;
+            this.NavigationBar.Top= this.ToolBar.Height;
+            this.NavigationBar.Height = this.ClientSize.Height - this.ToolBar.Height;
+            if (this.Width < 500)
+            {
+                NavigationBar.CompactView = true;
+            }
+            else
+            {
+                NavigationBar.CompactView = false;
+            }
+            this.pbAppLogo.Height = this.ToolBar.Height;
+            this.pbAppLogo.Width = this.ToolBar.Height;
+            SetMDIWindow ();
+
         }
 
         
@@ -95,8 +127,14 @@ namespace PasseroDemo.Application
                 frmTitle.ConfigurationManager = this.ConfigurationManager;
                 frmTitle.MdiParent = this.MDIWindow;
                 frmTitle.Show();
+            }
 
-
+            if (ItemName == mnuJobs.Name)
+            {
+                PasseroDemo.Views.frmJobs frmJobs = new Views.frmJobs();
+                frmJobs.ConfigurationManager = this.ConfigurationManager;
+                frmJobs.MdiParent = this.MDIWindow;
+                frmJobs.Show();
             }
 
             if (ItemName == mnuPublishers.Name)
@@ -152,5 +190,28 @@ namespace PasseroDemo.Application
             ManageNavigationBar(e.Item.Name);
         }
 
+        private void ToolBar_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
+        {
+            if (e.Button.Name == this.tbMenuOwerFlow .Name)
+            {
+                if (this.NavigationBar.Visible)
+                {
+                    this.NavigationBar.Visible = false;
+                }
+                else
+                {
+                    this.NavigationBar.Visible = true;
+                }
+
+                SetMDIWindow();
+
+            }
+
+        }
+
+        private void pbGDGLogo_DoubleClick(object sender, EventArgs e)
+        {
+            Wisej.Web.Application.Navigate("https://www.gabrieledelgiovine.it", "_blank");
+        }
     }
 }

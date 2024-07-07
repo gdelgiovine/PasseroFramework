@@ -17,7 +17,7 @@ namespace Passero.Framework.Tester
             var mAuthor = new PasseroDemo.Models.Author (); 
             var rAuthor = new Repository<Author>(SqlConnection);
             var DbObject = new DbObject<Author>(SqlConnection);
-            mAuthor = rAuthor.GetItem("SELECT * FROM AUTHORS WHERE AU_ID=@AU_ID", new { AU_ID = "172-32-1176"});
+            mAuthor = rAuthor.GetItem("SELECT * FROM AUTHORS WHERE AU_ID=@AU_ID", new { AU_ID = "172-32-1176"}).Value ;
             DbObject.GetSchema();
             
 

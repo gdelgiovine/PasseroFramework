@@ -2,15 +2,10 @@
 using FastReport;
 using FastReport.Data;
 using Microsoft.VisualBasic;
-using Passero.Framework;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-
 
 namespace Passero.Framework.FRReports
 {

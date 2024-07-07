@@ -11,6 +11,9 @@ namespace PasseroDemo.Application
         public LoginPage()
         {
             InitializeComponent();
+            panel1.CenterToParent();
+            panel1.Anchor = AnchorStyles.None;
+            panel1.Visible = true;
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -21,6 +24,11 @@ namespace PasseroDemo.Application
             maiPage.SetDesktop();
             maiPage.Show(); 
 
+        }
+
+        private void label1_DoubleClick(object sender, EventArgs e)
+        {
+            Wisej.Web.Application.Navigate("https://www.gabrieledelgiovine.it", "_blank");
         }
     }
 }

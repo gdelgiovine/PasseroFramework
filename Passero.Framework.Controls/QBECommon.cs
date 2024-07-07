@@ -1,17 +1,8 @@
-﻿using Dapper;
-using Microsoft.VisualBasic;
+﻿using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-using Passero.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
@@ -35,11 +26,11 @@ namespace Passero.Framework.Controls
     public class DataNavigatorViewModel
     {
         public string Name { get; set; }
-        public object ViewModel { get; set;}
+        public object ViewModel { get; set; }
         public string FriendlyName { get; set; }
-        public DataGridView DataGridView { get; set;}
+        public DataGridView DataGridView { get; set; }
 
-      
+
         public DataRepeater DataRepeater { get; set; }
         private ViewModelGridModes mGridMode = ViewModelGridModes.NoGridMode;
         public ViewModelGridModes GridMode
@@ -48,10 +39,18 @@ namespace Passero.Framework.Controls
             set { mGridMode = value; }
         }
 
-        public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "ViewModel", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
+        public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
+
+            if (string.IsNullOrEmpty(Name))
+                Name = ReflectionHelper.GetPropertyValue(ViewModel, "Name").ToString ();
+
+            if (string.IsNullOrEmpty(FriendlyName ))
+                FriendlyName = ReflectionHelper.GetPropertyValue(ViewModel, "FriendlyName").ToString();
+
             this.Name = Name;
             this.FriendlyName = FriendlyName;
+
             this.ViewModel = ViewModel;
 
             this.DataRepeater = DataRepeater;
@@ -316,14 +315,14 @@ namespace Passero.Framework.Controls
         private string mDisplayFormat = "";
         private System.Drawing.Color mBackColor;
         private System.Drawing.Color mForeColor;
-        private QBEColumnsTypes mQBEColumnType;
+        private QBEColumnsTypes mQBEColumnType = QBEColumnsTypes.TextBox;
         private int mColumnSize = 0;
         private int mOrdinalPosition = 0;
         private System.Drawing.Font mFont = null;
         private Wisej.Web.DataGridViewContentAlignment mAlignment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
         private System.Drawing.FontStyle mFontStyle = new System.Drawing.FontStyle();
         private string mReportName;
-        public float FontSize { get; set; }  
+        public float FontSize { get; set; }
 
 
         public string ReportName
@@ -552,14 +551,14 @@ namespace Passero.Framework.Controls
         //public XQBEForm QBEForm;
 
 
-        public QBEColumns(): base(StringComparer.InvariantCultureIgnoreCase)
+        public QBEColumns() : base(StringComparer.InvariantCultureIgnoreCase)
         {
         }
 
         public QBEColumn Add(string DbColumn, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, int ColumnWidth = 0)
         {
             var x = new QBEColumn();
-            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox , ColumnWidth);
+            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth);
 
         }
         public QBEColumn Add(string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
@@ -580,7 +579,7 @@ namespace Passero.Framework.Controls
 
         public QBEColumn AddForReport(object Report, string DbColumn, string FriendlyName, object QBEValue = null)
         {
-            return Add( DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
+            return Add(DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
         }
 
         private QBEColumn Add(string ReportName, string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
@@ -599,7 +598,7 @@ namespace Passero.Framework.Controls
             x.QBEColumnType = QBEColumnType;
             x.ColumnSize = ColumnWidth;
             x.Aligment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
-            
+
             //if (DbColumn.IsNumeric() | DbColumn.IsDate())
             //{
             //    x.Aligment = DataGridViewContentAlignment.TopRight;
@@ -666,7 +665,7 @@ namespace Passero.Framework.Controls
     //    public Dictionary<string, QBEReportSortColumn> SortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
     //    public Dictionary<string, QBEReportSortColumn> SelectedSortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
     //    public string SQLQuery = "";
-        
+
     //    private string mReportTitle;
     //    private string mReportFileName;
     //    private string mReportDescription;
@@ -691,7 +690,7 @@ namespace Passero.Framework.Controls
 
     //        ds.Name = Name;
     //        ds.DbConnection = DbConnection; 
-            
+
     //        if (SQLQuery != "")
     //            ds.SQLQuery  = SQLQuery;
     //        if (Parameters != null)
@@ -722,7 +721,7 @@ namespace Passero.Framework.Controls
     //        return s;
     //    }
 
-             
+
     //    public bool ReportUseLike
     //    {
     //        get
@@ -790,11 +789,11 @@ namespace Passero.Framework.Controls
     //}
     //public class QBEReports : Dictionary<string,QBEReport >
     //{
-        
+
     //    public QBEReport Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection=null)
     //    {
     //        var x = new QBEReport();
-            
+
     //        x.ReportDescription = ReportDescription;
     //        x.ReportFileName = ReportFileName;
     //        x.ReportTitle = ReportTitle;
@@ -803,7 +802,7 @@ namespace Passero.Framework.Controls
     //        return x;
     //    }
 
-        
+
     //}
 
 }

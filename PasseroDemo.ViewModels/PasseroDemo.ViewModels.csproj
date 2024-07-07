@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.8" />
+    <PackageReference Include="Wisej-3" Version="3.5.9" />
   </ItemGroup>
 
   <ItemGroup>

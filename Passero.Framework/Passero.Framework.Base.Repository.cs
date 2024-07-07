@@ -271,7 +271,7 @@ namespace Passero.Framework
             }
         }
 
-        private List<ModelClass> _ModelItemsShadow { get; set; }
+        private List<ModelClass> _ModelItemsShadow { get; set; } = new List<ModelClass>();
         public List<ModelClass> ModelItemsShadow
         {
             get
@@ -372,6 +372,7 @@ namespace Passero.Framework
           
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
+            SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
             
 
@@ -382,6 +383,7 @@ namespace Passero.Framework
           
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
+            SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
             
 
@@ -391,6 +393,7 @@ namespace Passero.Framework
         {
            
             _Modeltem = GetEmptyModel();
+            SetModelItemShadow();
             SetModelItemShadow();
             this.DbContext = DbContext;
             DbTransaction = DbContext.SqlTransaction;

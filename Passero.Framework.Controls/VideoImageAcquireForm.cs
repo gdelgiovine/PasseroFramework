@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using System;
 using System.Linq;
-using Microsoft.VisualBasic.CompilerServices;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
@@ -242,7 +242,7 @@ namespace Passero.Framework.Controls
         public byte[] ImageToByteArray()
         {
             return SystemDrawingHelper.imageToByteArray(PictureBoxFile.Image);
-            
+
         }
 
         public System.IO.Stream ImageStream()

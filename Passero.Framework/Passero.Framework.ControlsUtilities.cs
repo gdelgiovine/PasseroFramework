@@ -12,6 +12,12 @@ namespace Passero.Framework
     public static class ControlsUtilities
 
     {
+        public static void CenterOnParentControl(Control control)
+        {
+
+            control.CenterToParent();
+            control.Anchor = AnchorStyles.None; 
+        }
         public static  DataGridViewColumn GetFirstVisibleColumnForDataGridView(DataGridView DataGridView)
         {
             foreach (DataGridViewColumn c in DataGridView.Columns)

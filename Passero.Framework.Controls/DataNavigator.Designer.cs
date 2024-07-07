@@ -38,6 +38,7 @@ namespace Passero.Framework.Controls
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
+            Wisej.Web.ComponentTool componentTool1 = new Wisej.Web.ComponentTool();
             this._ToolBar = new Wisej.Web.ToolBar();
             this.bFirst = new Wisej.Web.ToolBarButton();
             this.bPrev = new Wisej.Web.ToolBarButton();
@@ -81,7 +82,7 @@ namespace Passero.Framework.Controls
             this._ToolBar.Location = new System.Drawing.Point(0, 0);
             this._ToolBar.Margin = new Wisej.Web.Padding(0);
             this._ToolBar.Name = "_ToolBar";
-            this._ToolBar.Size = new System.Drawing.Size(722, 55);
+            this._ToolBar.Size = new System.Drawing.Size(722, 50);
             this._ToolBar.TabIndex = 0;
             this._ToolBar.TabStop = false;
             // 
@@ -204,8 +205,8 @@ namespace Passero.Framework.Controls
             // Panel
             // 
             this.Panel.Controls.Add(this._ToolBar);
-            this.Panel.Font = new System.Drawing.Font("default", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.Panel.HeaderSize = 14;
+            this.Panel.Font = new System.Drawing.Font("@default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.Panel.HeaderSize = 20;
             this.Panel.Location = new System.Drawing.Point(0, 0);
             this.Panel.Margin = new Wisej.Web.Padding(0);
             this.Panel.Name = "Panel";
@@ -214,6 +215,11 @@ namespace Passero.Framework.Controls
             this.Panel.Size = new System.Drawing.Size(763, 70);
             this.Panel.TabIndex = 1;
             this.Panel.Text = "DataNavigator";
+            componentTool1.ImageSource = "table-row-editing";
+            componentTool1.Name = "edit";
+            componentTool1.Position = Wisej.Web.LeftRightAlignment.Left;
+            this.Panel.Tools.AddRange(new Wisej.Web.ComponentTool[] {
+            componentTool1});
             // 
             // DataNavigator
             // 

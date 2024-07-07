@@ -3,7 +3,7 @@ using Wisej.Web;
 
 namespace Passero.Framework.Controls
 {
-    public partial class CameraForm: Form
+    public partial class CameraForm : Form
     {
         public System.Drawing.Image CameraImage { get; set; }
         public System.IO.StreamWriter CameraVideo { get; set; }
@@ -22,7 +22,7 @@ namespace Passero.Framework.Controls
         public string StatusBarCameraRecordingText { get; set; } = "Camera is recording video.";
         public string StatusBarCameraViewModeText { get; set; } = "Camera is view mode.";
 
-        public ToolBarButton  VideoToolBarButton
+        public ToolBarButton VideoToolBarButton
         {
             get { return this.tbVideo; }
             set { this.tbVideo = value; }
@@ -36,19 +36,19 @@ namespace Passero.Framework.Controls
 
         public ToolBarButton CancelToolBarButton
         {
-            get { return this.tbCancel ; }
+            get { return this.tbCancel; }
             set { this.tbCancel = value; }
         }
 
         public ToolBarButton GetFromCameraToolBarButton
         {
-            get { return this.tbGetFromCamera ; }
+            get { return this.tbGetFromCamera; }
             set { this.tbGetFromCamera = value; }
         }
 
         public ToolBarControl FacingToolBarControl
         {
-            get { return this.tbFacing ; }
+            get { return this.tbFacing; }
             set { this.tbFacing = value; }
         }
 
@@ -70,8 +70,8 @@ namespace Passero.Framework.Controls
             set { this.tbMaxRecordTime = value; }
         }
 
-      
-        private bool mCameraRecording = false; 
+
+        private bool mCameraRecording = false;
         private DateTime mStartRecordTime;
         private bool IsOk = false;
         private System.Drawing.Color tbPhotoForeColor;
@@ -125,7 +125,7 @@ namespace Passero.Framework.Controls
 
             CameraImage = await this.Camera.GetImageAsync();
             RealFileName = Application.MapPath(ApplicationTempPath + @"\" + FileName);
-            if (System.IO.Directory .Exists(Application.MapPath(ApplicationTempPath)) == false)
+            if (System.IO.Directory.Exists(Application.MapPath(ApplicationTempPath)) == false)
             {
                 MessageBox.Show(string.Format("ApplicationTempPath {0} not exist!", ApplicationTempPath), this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.AcquiredObjectType = AcquiredObjectTypes.Null;
@@ -154,12 +154,12 @@ namespace Passero.Framework.Controls
                 IsOk = false;
                 this.Close();
             }
-         
+
         }
 
         private void StarRecordingVideo()
         {
-            
+
             mStartRecordTime = DateTime.Now;
             this.Timer.Enabled = true;
             this.Timer.Start();
@@ -168,7 +168,7 @@ namespace Passero.Framework.Controls
 
         private void CameraImagePreview_Load(object sender, EventArgs e)
         {
-            this.Camera.Width = this.Width-this.Camera .Left*2;
+            this.Camera.Width = this.Width - this.Camera.Left * 2;
             this.txt_MaxRecordTime.Text = MaxRecordTime.ToString();
             this.tbFacing.Control = this.cmbFacing;
             this.tbResolution.Control = this.cmbResolution;
@@ -288,7 +288,7 @@ namespace Passero.Framework.Controls
                     this.Camera.StopRecording();
                     this.mCameraRecording = false;
                     this.tbGetFromCamera.Text = StartRecordVideoText;
-                    this.StatusBar.Text = this.StatusBarCameraRecordingText ;
+                    this.StatusBar.Text = this.StatusBarCameraRecordingText;
                     this.Camera.Audio = false;
                     this.Camera.Visible = false;
                     ManageToolBarControls(true);
@@ -318,7 +318,7 @@ namespace Passero.Framework.Controls
             this.tbPhoto.Pushed = true;
             this.tbVideo.Pushed = false;
             this.tbPhoto.ForeColor = System.Drawing.SystemColors.ActiveCaption;
-            this.tbVideo.ForeColor = tbVideoForeColor  ;
+            this.tbVideo.ForeColor = tbVideoForeColor;
             this.tbAudio.Visible = false;
             this.tbMaxRecordTime.Visible = false;
             this.Camera.FacingMode = (Wisej.Web.Ext.Camera.Camera.VideoFacingMode)this.cmbFacing.SelectedIndex;

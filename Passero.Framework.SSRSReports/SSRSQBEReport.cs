@@ -1,32 +1,13 @@
 ﻿
 using Dapper;
-//using Microsoft.Ajax.Utilities;
-//using Microsoft.ReportingServices.ReportProcessing.ExprHostObjectModel;
-//using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-//using Newtonsoft.Json.Linq;
-//using Passero.Framework.Base;
-using Passero.Framework;
-using Passero.Framework.SSRSReports;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-//using System.Data.Common;
-//using System.Data.SqlClient;
-//using System.Globalization;
 using System.IO;
 using System.Linq;
-
-//using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-//using System.Xml.Linq;
 using Wisej.Web;
-//using Wisej.Web.Data;
 
 namespace Passero.Framework.SSRSReports
 {
@@ -798,31 +779,14 @@ namespace Passero.Framework.SSRSReports
 
         private void btnSortAdd_Click(object sender, EventArgs e)
         {
-
-            if (this.lstSortColumns .SelectedItem ==null)
-            {
-                return;
-            }
-
-            QBESSRSReport Report = QBEReports[CurrentReportName];
-            QBEReportSortColumn SortColumn= (QBEReportSortColumn )this.lstSortColumns.SelectedItem;    
-            if(Report .SelectedSortColumns .ContainsKey (SortColumn.Name)==false)
-            {
-                Report.SelectedSortColumns.Add(SortColumn.Name, SortColumn);
-            }
-            this.lstSortColumns.SelectedItem = null;
-            this.dgv_SelectedSortColumns.Rows.Clear();
-            foreach ( QBEReportSortColumn column in Report.SelectedSortColumns.Values  )
-            {
-                this.dgv_SelectedSortColumns.Rows.Add(column.Position, column.Name, column.FriendlyName, column.AscDesc);
-            }
+            SortListAdd();
 
         }
 
-        private void btnSortRemove_Click(object sender, EventArgs e)
+
+        private void SortListRemove()
         {
-    
-            if (this.dgv_SelectedSortColumns.CurrentRow  is null)
+            if (this.dgv_SelectedSortColumns.CurrentRow is null)
             { return; }
             QBESSRSReport Report = QBEReports[CurrentReportName];
             Report.SelectedSortColumns.Remove(this.dgv_SelectedSortColumns.CurrentRow.Cells[this.dgvc_SelectedSortColumns_name].Value.ToString());
@@ -834,35 +798,103 @@ namespace Passero.Framework.SSRSReports
             }
         }
 
-        private void btnSortUp_Click(object sender, EventArgs e)
+        private void SortListAdd()
+        {
+            if (this.lstSortColumns.SelectedItem == null)
+            {
+                return;
+            }
+
+            QBESSRSReport Report = QBEReports[CurrentReportName];
+            QBEReportSortColumn SortColumn = (QBEReportSortColumn)this.lstSortColumns.SelectedItem;
+            if (Report.SelectedSortColumns.ContainsKey(SortColumn.Name) == false)
+            {
+                Report.SelectedSortColumns.Add(SortColumn.Name, SortColumn);
+            }
+            this.lstSortColumns.SelectedItem = null;
+            this.dgv_SelectedSortColumns.Rows.Clear();
+            foreach (QBEReportSortColumn column in Report.SelectedSortColumns.Values)
+            {
+                this.dgv_SelectedSortColumns.Rows.Add(column.Position, column.Name, column.FriendlyName, column.AscDesc);
+            }
+        }
+
+        private void SortListUp()
         {
             Passero.Framework.ControlsUtilities.DataGridRowMoveUp(this.dgv_SelectedSortColumns, this.dgvc_SelectedSortColumns_position);
             this.dgv_SelectedSortColumns.EndEdit();
         }
-
-        private void btnSortDown_Click(object sender, EventArgs e)
+        private void SortListDown()
         {
             Passero.Framework.ControlsUtilities.DataGridRowMoveDown(this.dgv_SelectedSortColumns, this.dgvc_SelectedSortColumns_position);
             this.dgv_SelectedSortColumns.EndEdit();
         }
-
-        private void PanelReportViewer_Resize(object sender, EventArgs e)
+        private void btnSortRemove_Click(object sender, EventArgs e)
         {
-            this.PdfViewer.Top = this.PanelReportInfo .Height + 1;
+
+            SortListRemove();
+        }
+
+        private void btnSortUp_Click(object sender, EventArgs e)
+        {
+            SortListUp();
+        }
+
+        private void btnSortDown_Click(object sender, EventArgs e)
+        {
+            SortListDown();
+        }
+
+        private void SetReportViewer()
+        {
+            this.PdfViewer.Top = this.PanelReportInfo.Height;
             this.PdfViewer.Left = 0;
             this.PdfViewer.Width = this.PanelReportViewer.Width;
-            this.PdfViewer.Height =  this.PanelReportViewer.Height - this.PanelReportInfo.Top - 35;
+            this.PdfViewer.Height = this.PanelReportViewer.Height - this.PanelReportInfo.Top - 35;
             this.txtRenderError.Top = this.PdfViewer.Top;
             this.txtRenderError.Left = 0;
             this.txtRenderError.Width = this.PanelReportViewer.Width;
-            this.txtRenderError .Height =this.PdfViewer .Height;
-
+            this.txtRenderError.Height = this.PdfViewer.Height;
+        }
+        private void PanelReportViewer_Resize(object sender, EventArgs e)
+        {
+            SetReportViewer();
 
         }
 
         private void bClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void lstSortColumns_ToolClick(object sender, ToolClickEventArgs e)
+        {
+            if (e.Tool .Name=="add")
+            {
+                SortListAdd();
+            }
+            if (e.Tool.Name == "remove")
+            {
+                SortListRemove();
+            }
+        }
+
+        private void dgv_SelectedSortColumns_ToolClick(object sender, ToolClickEventArgs e)
+        {
+            if (e.Tool.Name == "moveup")
+            {
+               SortListUp();
+            }
+            if (e.Tool.Name == "movedown")
+            {
+                SortListDown ();    
+            }
+        }
+
+        private void flowLayoutPanel1_Resize(object sender, EventArgs e)
+        {
+            this.lstSortColumns.Height = this.flowLayoutPanel1.ClientSize.Height - 5;
+            this.dgv_SelectedSortColumns.Height = this.flowLayoutPanel1.ClientSize.Height - 5;
         }
     }
 }
