@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -289,7 +290,20 @@ namespace Passero.Framework
             return regex;
         }
 
-     
+
+        public static bool IsNumeric(object expression)
+        {
+            if (expression == null)
+                return false;
+
+            double number;
+            return Double.TryParse(Convert.ToString(expression
+                                                    , CultureInfo.InvariantCulture)
+                                  , System.Globalization.NumberStyles.Any
+                                  , NumberFormatInfo.InvariantInfo
+                                  , out number);
+        }
+
 
         public static bool IsNumericType(Type Type)
         {

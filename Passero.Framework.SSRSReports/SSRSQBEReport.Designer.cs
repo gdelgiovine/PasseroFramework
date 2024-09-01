@@ -33,10 +33,10 @@
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.ComponentTool componentTool4 = new Wisej.Web.ComponentTool();
-            Wisej.Web.ComponentTool componentTool5 = new Wisej.Web.ComponentTool();
             Wisej.Web.ComponentTool componentTool2 = new Wisej.Web.ComponentTool();
             Wisej.Web.ComponentTool componentTool3 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool4 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool5 = new Wisej.Web.ComponentTool();
             this.SplitContainer = new Wisej.Web.SplitContainer();
             this.PanelReportViewer = new Wisej.Web.Panel();
             this.PanelReportInfo = new Wisej.Web.FlowLayoutPanel();
@@ -59,22 +59,27 @@
             this.dgvcQueryColumn = new Wisej.Web.DataGridViewButtonColumn();
             this.chkLikeOperator = new Wisej.Web.CheckBox();
             this.TabPageReportSort = new Wisej.Web.TabPage();
-            this.btnSortDown = new Wisej.Web.Button();
+            this.flowLayoutPanel1 = new Wisej.Web.FlowLayoutPanel();
+            this.lstSortColumns = new Wisej.Web.ListBox();
+            this.panel1 = new Wisej.Web.Panel();
+            this.btnSortRemove = new Wisej.Web.Button();
+            this.btnSortAdd = new Wisej.Web.Button();
+            this.panel2 = new Wisej.Web.Panel();
             this.btnSortUp = new Wisej.Web.Button();
+            this.btnSortDown = new Wisej.Web.Button();
             this.dgv_SelectedSortColumns = new Wisej.Web.DataGridView();
             this.dgvc_SelectedSortColumns_position = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvc_SelectedSortColumns_name = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvc_SelectedSortColumns_friendlyname = new Wisej.Web.DataGridViewTextBoxColumn();
-            this.btnSortRemove = new Wisej.Web.Button();
-            this.btnSortAdd = new Wisej.Web.Button();
-            this.lstSortColumns = new Wisej.Web.ListBox();
+            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             this.TabPageExport = new Wisej.Web.TabPage();
-            this.PanelExport = new Wisej.Web.Panel();
-            this.rbJSON = new Wisej.Web.RadioButton();
-            this.btnExport = new Wisej.Web.Button();
-            this.rbXML = new Wisej.Web.RadioButton();
-            this.rbCSV = new Wisej.Web.RadioButton();
+            this.PanelExport = new Wisej.Web.FlowLayoutPanel();
+            this.rbHTML = new Wisej.Web.RadioButton();
             this.rbExcel = new Wisej.Web.RadioButton();
+            this.rbEXCELXML = new Wisej.Web.RadioButton();
+            this.rbWord = new Wisej.Web.RadioButton();
+            this.rbWORDXML = new Wisej.Web.RadioButton();
+            this.btnExport = new Wisej.Web.Button();
             this.TabPageDebug = new Wisej.Web.TabPage();
             this.Button2 = new Wisej.Web.Button();
             this.txtDebug = new Wisej.Web.TextBox();
@@ -95,10 +100,9 @@
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
-            this.flowLayoutPanel1 = new Wisej.Web.FlowLayoutPanel();
-            this.panel1 = new Wisej.Web.Panel();
-            this.panel2 = new Wisej.Web.Panel();
-            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
+            this.rbMHTML = new Wisej.Web.RadioButton();
+            this.rbIMAGETIFF = new Wisej.Web.RadioButton();
+            this.rbIMAGEEMF = new Wisej.Web.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
@@ -111,14 +115,14 @@
             this.TabPageReportQuery.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).BeginInit();
             this.TabPageReportSort.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_SelectedSortColumns)).BeginInit();
             this.TabPageExport.SuspendLayout();
             this.PanelExport.SuspendLayout();
             this.TabPageDebug.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbEngineLogo)).BeginInit();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // SplitContainer
@@ -314,17 +318,68 @@
             resources.ApplyResources(this.TabPageReportSort, "TabPageReportSort");
             this.TabPageReportSort.Name = "TabPageReportSort";
             // 
-            // btnSortDown
+            // flowLayoutPanel1
             // 
-            resources.ApplyResources(this.btnSortDown, "btnSortDown");
-            this.btnSortDown.Name = "btnSortDown";
-            this.btnSortDown.Click += new System.EventHandler(this.btnSortDown_Click);
+            resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
+            this.flowLayoutPanel1.Controls.Add(this.lstSortColumns);
+            this.flowLayoutPanel1.Controls.Add(this.panel1);
+            this.flowLayoutPanel1.Controls.Add(this.panel2);
+            this.flowLayoutPanel1.Controls.Add(this.dgv_SelectedSortColumns);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Resize += new System.EventHandler(this.flowLayoutPanel1_Resize);
+            // 
+            // lstSortColumns
+            // 
+            this.lstSortColumns.Label.Font = new System.Drawing.Font("default", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.lstSortColumns.Label.Position = Wisej.Web.LabelPosition.Inside;
+            resources.ApplyResources(this.lstSortColumns, "lstSortColumns");
+            this.lstSortColumns.Name = "lstSortColumns";
+            resources.ApplyResources(componentTool2, "componentTool2");
+            componentTool2.Name = "remove";
+            resources.ApplyResources(componentTool3, "componentTool3");
+            componentTool3.Name = "add";
+            this.lstSortColumns.Tools.AddRange(new Wisej.Web.ComponentTool[] {
+            componentTool2,
+            componentTool3});
+            this.lstSortColumns.ToolClick += new Wisej.Web.ToolClickEventHandler(this.lstSortColumns_ToolClick);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.btnSortRemove);
+            this.panel1.Controls.Add(this.btnSortAdd);
+            resources.ApplyResources(this.panel1, "panel1");
+            this.panel1.Name = "panel1";
+            // 
+            // btnSortRemove
+            // 
+            resources.ApplyResources(this.btnSortRemove, "btnSortRemove");
+            this.btnSortRemove.Name = "btnSortRemove";
+            this.btnSortRemove.Click += new System.EventHandler(this.btnSortRemove_Click);
+            // 
+            // btnSortAdd
+            // 
+            resources.ApplyResources(this.btnSortAdd, "btnSortAdd");
+            this.btnSortAdd.Name = "btnSortAdd";
+            this.btnSortAdd.Click += new System.EventHandler(this.btnSortAdd_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.btnSortUp);
+            this.panel2.Controls.Add(this.btnSortDown);
+            resources.ApplyResources(this.panel2, "panel2");
+            this.panel2.Name = "panel2";
             // 
             // btnSortUp
             // 
             resources.ApplyResources(this.btnSortUp, "btnSortUp");
             this.btnSortUp.Name = "btnSortUp";
             this.btnSortUp.Click += new System.EventHandler(this.btnSortUp_Click);
+            // 
+            // btnSortDown
+            // 
+            resources.ApplyResources(this.btnSortDown, "btnSortDown");
+            this.btnSortDown.Name = "btnSortDown";
+            this.btnSortDown.Click += new System.EventHandler(this.btnSortDown_Click);
             // 
             // dgv_SelectedSortColumns
             // 
@@ -377,32 +432,18 @@
             this.dgvc_SelectedSortColumns_friendlyname.Name = "dgvc_SelectedSortColumns_friendlyname";
             this.dgvc_SelectedSortColumns_friendlyname.ReadOnly = true;
             // 
-            // btnSortRemove
+            // dgvc_SelectedSortColumns_ascdesc
             // 
-            resources.ApplyResources(this.btnSortRemove, "btnSortRemove");
-            this.btnSortRemove.Name = "btnSortRemove";
-            this.btnSortRemove.Click += new System.EventHandler(this.btnSortRemove_Click);
-            // 
-            // btnSortAdd
-            // 
-            resources.ApplyResources(this.btnSortAdd, "btnSortAdd");
-            this.btnSortAdd.Name = "btnSortAdd";
-            this.btnSortAdd.Click += new System.EventHandler(this.btnSortAdd_Click);
-            // 
-            // lstSortColumns
-            // 
-            this.lstSortColumns.Label.Font = new System.Drawing.Font("default", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.lstSortColumns.Label.Position = Wisej.Web.LabelPosition.Inside;
-            resources.ApplyResources(this.lstSortColumns, "lstSortColumns");
-            this.lstSortColumns.Name = "lstSortColumns";
-            resources.ApplyResources(componentTool2, "componentTool2");
-            componentTool2.Name = "remove";
-            resources.ApplyResources(componentTool3, "componentTool3");
-            componentTool3.Name = "add";
-            this.lstSortColumns.Tools.AddRange(new Wisej.Web.ComponentTool[] {
-            componentTool2,
-            componentTool3});
-            this.lstSortColumns.ToolClick += new Wisej.Web.ToolClickEventHandler(this.lstSortColumns_ToolClick);
+            this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgvc_SelectedSortColumns_ascdesc.DataPropertyName = "AscDesc";
+            this.dgvc_SelectedSortColumns_ascdesc.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
+            this.dgvc_SelectedSortColumns_ascdesc.FillWeight = 20F;
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_ascdesc, "dgvc_SelectedSortColumns_ascdesc");
+            this.dgvc_SelectedSortColumns_ascdesc.Items.AddRange(new object[] {
+            "ASC",
+            "DESC"});
+            this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
+            this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
             // 
             // TabPageExport
             // 
@@ -412,42 +453,49 @@
             // 
             // PanelExport
             // 
-            this.PanelExport.Controls.Add(this.rbJSON);
-            this.PanelExport.Controls.Add(this.btnExport);
-            this.PanelExport.Controls.Add(this.rbXML);
-            this.PanelExport.Controls.Add(this.rbCSV);
             this.PanelExport.Controls.Add(this.rbExcel);
+            this.PanelExport.Controls.Add(this.rbEXCELXML);
+            this.PanelExport.Controls.Add(this.rbWord);
+            this.PanelExport.Controls.Add(this.rbWORDXML);
+            this.PanelExport.Controls.Add(this.rbHTML);
+            this.PanelExport.Controls.Add(this.rbMHTML);
+            this.PanelExport.Controls.Add(this.rbIMAGEEMF);
+            this.PanelExport.Controls.Add(this.rbIMAGETIFF);
+            this.PanelExport.Controls.Add(this.btnExport);
             resources.ApplyResources(this.PanelExport, "PanelExport");
             this.PanelExport.Name = "PanelExport";
-            this.PanelExport.TabStop = true;
             // 
-            // rbJSON
+            // rbHTML
             // 
-            resources.ApplyResources(this.rbJSON, "rbJSON");
-            this.rbJSON.Name = "rbJSON";
-            // 
-            // btnExport
-            // 
-            resources.ApplyResources(this.btnExport, "btnExport");
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
-            // rbXML
-            // 
-            resources.ApplyResources(this.rbXML, "rbXML");
-            this.rbXML.Name = "rbXML";
-            // 
-            // rbCSV
-            // 
-            resources.ApplyResources(this.rbCSV, "rbCSV");
-            this.rbCSV.Name = "rbCSV";
+            resources.ApplyResources(this.rbHTML, "rbHTML");
+            this.rbHTML.Name = "rbHTML";
             // 
             // rbExcel
             // 
             this.rbExcel.Checked = true;
             resources.ApplyResources(this.rbExcel, "rbExcel");
             this.rbExcel.Name = "rbExcel";
-            this.rbExcel.TabStop = true;
+            // 
+            // rbEXCELXML
+            // 
+            resources.ApplyResources(this.rbEXCELXML, "rbEXCELXML");
+            this.rbEXCELXML.Name = "rbEXCELXML";
+            // 
+            // rbWord
+            // 
+            resources.ApplyResources(this.rbWord, "rbWord");
+            this.rbWord.Name = "rbWord";
+            // 
+            // rbWORDXML
+            // 
+            resources.ApplyResources(this.rbWORDXML, "rbWORDXML");
+            this.rbWORDXML.Name = "rbWORDXML";
+            // 
+            // btnExport
+            // 
+            resources.ApplyResources(this.btnExport, "btnExport");
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // TabPageDebug
             // 
@@ -613,42 +661,21 @@
             resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
             this.pbEngineLogo.Name = "pbEngineLogo";
             // 
-            // flowLayoutPanel1
+            // rbMHTML
             // 
-            resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
-            this.flowLayoutPanel1.Controls.Add(this.lstSortColumns);
-            this.flowLayoutPanel1.Controls.Add(this.panel1);
-            this.flowLayoutPanel1.Controls.Add(this.panel2);
-            this.flowLayoutPanel1.Controls.Add(this.dgv_SelectedSortColumns);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Resize += new System.EventHandler(this.flowLayoutPanel1_Resize);
+            resources.ApplyResources(this.rbMHTML, "rbMHTML");
+            this.rbMHTML.Name = "rbMHTML";
             // 
-            // panel1
+            // rbIMAGETIFF
             // 
-            this.panel1.Controls.Add(this.btnSortRemove);
-            this.panel1.Controls.Add(this.btnSortAdd);
-            resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.Name = "panel1";
+            this.PanelExport.SetFlowBreak(this.rbIMAGETIFF, true);
+            resources.ApplyResources(this.rbIMAGETIFF, "rbIMAGETIFF");
+            this.rbIMAGETIFF.Name = "rbIMAGETIFF";
             // 
-            // panel2
+            // rbIMAGEEMF
             // 
-            this.panel2.Controls.Add(this.btnSortUp);
-            this.panel2.Controls.Add(this.btnSortDown);
-            resources.ApplyResources(this.panel2, "panel2");
-            this.panel2.Name = "panel2";
-            // 
-            // dgvc_SelectedSortColumns_ascdesc
-            // 
-            this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgvc_SelectedSortColumns_ascdesc.DataPropertyName = "AscDesc";
-            this.dgvc_SelectedSortColumns_ascdesc.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
-            this.dgvc_SelectedSortColumns_ascdesc.FillWeight = 20F;
-            resources.ApplyResources(this.dgvc_SelectedSortColumns_ascdesc, "dgvc_SelectedSortColumns_ascdesc");
-            this.dgvc_SelectedSortColumns_ascdesc.Items.AddRange(new object[] {
-            "ASC",
-            "DESC"});
-            this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
-            this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
+            resources.ApplyResources(this.rbIMAGEEMF, "rbIMAGEEMF");
+            this.rbIMAGEEMF.Name = "rbIMAGEEMF";
             // 
             // ReportManager
             // 
@@ -677,6 +704,9 @@
             this.TabPageReportQuery.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).EndInit();
             this.TabPageReportSort.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_SelectedSortColumns)).EndInit();
             this.TabPageExport.ResumeLayout(false);
             this.PanelExport.ResumeLayout(false);
@@ -684,9 +714,6 @@
             this.TabPageDebug.ResumeLayout(false);
             this.TabPageDebug.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbEngineLogo)).EndInit();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -725,10 +752,7 @@
         internal Wisej.Web.Button btnSortAdd;
         internal Wisej.Web.ListBox lstSortColumns;
         internal Wisej.Web.TabPage TabPageExport;
-        internal Wisej.Web.Panel PanelExport;
         internal Wisej.Web.Button btnExport;
-        internal Wisej.Web.RadioButton rbXML;
-        internal Wisej.Web.RadioButton rbCSV;
         internal Wisej.Web.RadioButton rbExcel;
         internal Wisej.Web.TabPage TabPageDebug;
         internal Wisej.Web.Button Button2;
@@ -749,12 +773,19 @@
         internal Wisej.Web.ToolBarButton bSaveQBE;
         internal Wisej.Web.ToolBarButton bLoadQBE;
         internal Wisej.Web.ToolBarButton bClose;
-        internal Wisej.Web.RadioButton rbJSON;
         private Wisej.Web.TextBox txtRenderError;
         private Wisej.Web.PictureBox pbEngineLogo;
         private Wisej.Web.FlowLayoutPanel PanelReportInfo;
         private Wisej.Web.FlowLayoutPanel flowLayoutPanel1;
         private Wisej.Web.Panel panel1;
         private Wisej.Web.Panel panel2;
+        private Wisej.Web.FlowLayoutPanel PanelExport;
+        internal Wisej.Web.RadioButton rbWord;
+        internal Wisej.Web.RadioButton rbEXCELXML;
+        internal Wisej.Web.RadioButton rbWORDXML;
+        internal Wisej.Web.RadioButton rbHTML;
+        internal Wisej.Web.RadioButton rbMHTML;
+        internal Wisej.Web.RadioButton rbIMAGETIFF;
+        internal Wisej.Web.RadioButton rbIMAGEEMF;
     }
 }

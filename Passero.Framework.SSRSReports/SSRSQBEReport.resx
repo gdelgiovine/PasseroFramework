@@ -451,7 +451,7 @@
     <value>24</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>873, 67</value>
+    <value>869, 63</value>
   </data>
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -813,35 +813,203 @@
   <data name="&gt;&gt;TabPageReportSort.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="rbJSON.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 71</value>
+  <data name="rbExcel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
   </data>
-  <data name="rbJSON.Size" type="System.Drawing.Size, System.Drawing">
-    <value>85, 23</value>
+  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 23</value>
   </data>
-  <data name="rbJSON.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
-  <data name="rbJSON.Text" xml:space="preserve">
-    <value>File JSON</value>
+  <data name="rbExcel.Text" xml:space="preserve">
+    <value>Excel  (.xls)</value>
   </data>
-  <data name="&gt;&gt;rbJSON.Name" xml:space="preserve">
-    <value>rbJSON</value>
+  <data name="&gt;&gt;rbExcel.Name" xml:space="preserve">
+    <value>rbExcel</value>
   </data>
-  <data name="&gt;&gt;rbJSON.Type" xml:space="preserve">
+  <data name="&gt;&gt;rbExcel.Type" xml:space="preserve">
     <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;rbJSON.Parent" xml:space="preserve">
+  <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
     <value>PanelExport</value>
   </data>
-  <data name="&gt;&gt;rbJSON.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;rbExcel.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="rbEXCELXML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>100, 3</value>
+  </data>
+  <data name="rbEXCELXML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 23</value>
+  </data>
+  <data name="rbEXCELXML.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="rbEXCELXML.Text" xml:space="preserve">
+    <value>Excel (.xlsx)</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Name" xml:space="preserve">
+    <value>rbEXCELXML</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="rbWord.Location" type="System.Drawing.Point, System.Drawing">
+    <value>200, 3</value>
+  </data>
+  <data name="rbWord.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 23</value>
+  </data>
+  <data name="rbWord.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="rbWord.Text" xml:space="preserve">
+    <value>Word (.doc)</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Name" xml:space="preserve">
+    <value>rbWord</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbWord.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="rbWORDXML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>304, 3</value>
+  </data>
+  <data name="rbWORDXML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>104, 23</value>
+  </data>
+  <data name="rbWORDXML.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="rbWORDXML.Text" xml:space="preserve">
+    <value>Word (.docx)</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Name" xml:space="preserve">
+    <value>rbWORDXML</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="rbHTML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>414, 3</value>
+  </data>
+  <data name="rbHTML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 23</value>
+  </data>
+  <data name="rbHTML.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="rbHTML.Text" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Name" xml:space="preserve">
+    <value>rbHTML</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="rbMHTML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>484, 3</value>
+  </data>
+  <data name="rbMHTML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 23</value>
+  </data>
+  <data name="rbMHTML.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="rbMHTML.Text" xml:space="preserve">
+    <value>MHTML</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Name" xml:space="preserve">
+    <value>rbMHTML</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="rbIMAGEEMF.Location" type="System.Drawing.Point, System.Drawing">
+    <value>566, 3</value>
+  </data>
+  <data name="rbIMAGEEMF.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 23</value>
+  </data>
+  <data name="rbIMAGEEMF.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="rbIMAGEEMF.Text" xml:space="preserve">
+    <value>Image (.emf)</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Name" xml:space="preserve">
+    <value>rbIMAGEEMF</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="rbIMAGETIFF.Location" type="System.Drawing.Point, System.Drawing">
+    <value>675, 3</value>
+  </data>
+  <data name="rbIMAGETIFF.Size" type="System.Drawing.Size, System.Drawing">
+    <value>96, 23</value>
+  </data>
+  <data name="rbIMAGETIFF.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="rbIMAGETIFF.Text" xml:space="preserve">
+    <value>Image (.tiff)</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Name" xml:space="preserve">
+    <value>rbIMAGETIFF</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.ZOrder" xml:space="preserve">
+    <value>7</value>
   </data>
   <data name="btnExport.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Right</value>
   </data>
   <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>100, 9</value>
+    <value>3, 32</value>
   </data>
   <data name="btnExport.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 27</value>
@@ -862,97 +1030,25 @@
     <value>PanelExport</value>
   </data>
   <data name="&gt;&gt;btnExport.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>8</value>
   </data>
-  <data name="rbXML.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 51</value>
-  </data>
-  <data name="rbXML.Size" type="System.Drawing.Size, System.Drawing">
-    <value>79, 23</value>
-  </data>
-  <data name="rbXML.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="rbXML.Text" xml:space="preserve">
-    <value>File XML</value>
-  </data>
-  <data name="&gt;&gt;rbXML.Name" xml:space="preserve">
-    <value>rbXML</value>
-  </data>
-  <data name="&gt;&gt;rbXML.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;rbXML.Parent" xml:space="preserve">
-    <value>PanelExport</value>
-  </data>
-  <data name="&gt;&gt;rbXML.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="rbCSV.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 30</value>
-  </data>
-  <data name="rbCSV.Size" type="System.Drawing.Size, System.Drawing">
-    <value>77, 23</value>
-  </data>
-  <data name="rbCSV.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="rbCSV.Text" xml:space="preserve">
-    <value>File CSV</value>
-  </data>
-  <data name="&gt;&gt;rbCSV.Name" xml:space="preserve">
-    <value>rbCSV</value>
-  </data>
-  <data name="&gt;&gt;rbCSV.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;rbCSV.Parent" xml:space="preserve">
-    <value>PanelExport</value>
-  </data>
-  <data name="&gt;&gt;rbCSV.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="rbExcel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 9</value>
-  </data>
-  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 23</value>
-  </data>
-  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="rbExcel.Text" xml:space="preserve">
-    <value>File Excel</value>
-  </data>
-  <data name="&gt;&gt;rbExcel.Name" xml:space="preserve">
-    <value>rbExcel</value>
-  </data>
-  <data name="&gt;&gt;rbExcel.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
-    <value>PanelExport</value>
-  </data>
-  <data name="&gt;&gt;rbExcel.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="PanelExport.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
   </data>
   <data name="PanelExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>15, 0</value>
+    <value>0, 0</value>
   </data>
   <data name="PanelExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>207, 111</value>
+    <value>888, 107</value>
   </data>
   <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="PanelExport.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
+    <value>7</value>
   </data>
   <data name="&gt;&gt;PanelExport.Name" xml:space="preserve">
     <value>PanelExport</value>
   </data>
   <data name="&gt;&gt;PanelExport.Type" xml:space="preserve">
-    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;PanelExport.Parent" xml:space="preserve">
     <value>TabPageExport</value>
@@ -1790,6 +1886,12 @@
   <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_ascdesc</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
   <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
     <value>bFirst</value>
   </data>
@@ -1867,12 +1969,6 @@
   </data>
   <data name="&gt;&gt;bClose.Type" xml:space="preserve">
     <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
-    <value>dgvc_SelectedSortColumns_ascdesc</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>ReportManager</value>

@@ -640,61 +640,12 @@ namespace Passero.Framework.FRReports
 
 
 
-        private void PrepareReport()
-        {
-
-            MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
-            Report.Dictionary.Connections.Clear();
-            foreach (var dataset in this.DataSets )
-            {
-                if (dataset.Value.DbConnection.GetType()== typeof(System.Data.SqlClient .SqlConnection))
-                {
-                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
-                }
-            }
-            
-            Report.Load(this.ReportPath);
-            bool datasets_validated = true;
-            foreach (var dataset in this.DataSets)
-            {
-                //TableDataSource table = Report.GetDataSource(dataset.Value.Name) as TableDataSource;
-                TableDataSource table = Report.GetDataSource("C") as TableDataSource;
-                if (table != null)
-                {
-                    table.Parameters.Clear();
-                    table.Connection.ConnectionString = dataset.Value.DbConnection.ConnectionString;
-                    table.SelectCommand = dataset.Value.SQLQuery;
-                    foreach (var name in dataset.Value.Parameters.ParameterNames)
-                    {
-                        CommandParameter parameter = new CommandParameter();
-                        parameter.Name = name;
-                        parameter.DefaultValue = "";
-                        parameter.Value = dataset.Value.Parameters.Get<dynamic>(name);
-                        parameter.DataType = (int)SqlDbType.VarChar;
-                        table.Parameters.Add(parameter);
-                    }
-                }
-                else
-                {
-                    datasets_validated =false;
-                    break;
-                }
-            }
-
-            if (datasets_validated == true)
-            {
-                Report.Prepare();
-                FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                pdfExport.Export(Report, @"C:\REPORTS\XREPORT1.pdf");
-            }
-
-        }
-
+      
 
         public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF)
         {
             LastExecutionResult.Reset();
-            LastExecutionResult.Context = $"Passero.Framework.FSReports.FRReport.Render({RenderFormat})";
+            LastExecutionResult.Context = $"FRReport.Render({RenderFormat})";
             byte[] result = null;
             string f = RenderFormat.ToString();
 
@@ -715,21 +666,21 @@ namespace Passero.Framework.FRReports
                 Report.Load(this.ReportPath);
 
 
-                // Invoke OnReportRenderRequest
-                //ReportRenderRequestEventArgs requestargs = new ReportRenderRequestEventArgs();
-                //requestargs.DataSets = new Dictionary<string, DataSet>();
-                //foreach (string DataSetName in this.DataSetNames())
-                //{
-                //    DataSet ds = new DataSet();
-                //    ds.Name = DataSetName;
-                //    requestargs.DataSets.Add(DataSetName, ds);
-                //}
-                //this.OnReportRenderRequest(requestargs);
-                //if (requestargs.Cancel)
-                //{
-                //    LastExecutionResult.ResultMessage = "Cancelled by User";
-                //    return null;
-                //}
+                //Invoke OnReportRenderRequest
+                ReportRenderRequestEventArgs requestargs = new ReportRenderRequestEventArgs();
+                requestargs.DataSets = new Dictionary<string, DataSet>();
+                foreach (string DataSetName in this.DataSetNames())
+                {
+                    DataSet ds = new DataSet();
+                    ds.Name = DataSetName;
+                    requestargs.DataSets.Add(DataSetName, ds);
+                }
+                this.OnReportRenderRequest(requestargs);
+                if (requestargs.Cancel)
+                {
+                    LastExecutionResult.ResultMessage = "Cancelled by User";
+                    return null;
+                }
 
 
 
@@ -786,6 +737,7 @@ namespace Passero.Framework.FRReports
                         case FRRenderFormat.MHTML:
                             break;
                         case FRRenderFormat.EXCEL:
+                            
                             break;
                         case FRRenderFormat.WORD:
                             break;

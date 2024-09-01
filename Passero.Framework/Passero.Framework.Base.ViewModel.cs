@@ -109,6 +109,13 @@ namespace Passero.Framework
             }
         }
 
+        public string ResolvedSQLQuery(string SQLQuery="", DynamicParameters Parameters=null)
+        {
+            if (SQLQuery!=null && Parameters !=null)
+                return Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, Parameters);
+            else
+                return Passero.Framework.DapperHelper.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+        }
 
         public BindingSource BindingSource
         {
@@ -122,17 +129,40 @@ namespace Passero.Framework
             }
         }
 
+        public void SetBindingSource(BindingSource bindingSource, bool setdatabindingmode=true )
+        {
+            this.BindingSource = bindingSource;
+            if (setdatabindingmode == true)
+                this.DataBindingMode = DataBindingMode.BindingSource;
+        }
 
         public Type? ModelType
         {
-            get { return ModelItem.GetType(); }
+            get 
+            {
+
+                return GetEmptyModelItem().GetType ();
+                //return ModelItem.GetType(); 
             
+            }
+            
+        }
+        
+        public void ResetModelItem(bool ResetModelItems=true)
+        {
+            ModelItem = NewModeltem; 
+            if (ResetModelItems==true)
+                ModelItems = new List<ModelClass>();
+        }
+        public void ResetModelItems()
+        {
+            ModelItems =  new List<ModelClass>();
         }
 
 
         public ModelClass? NewModeltem
         {
-            get { return GetEmptyModel(); }
+            get { return GetEmptyModelItem(); }
             set { NewModeltem = value; }
         }
         public ModelClass ModelItem
@@ -870,12 +900,14 @@ namespace Passero.Framework
 
             }
         }
+
+        
         public Repository<ModelClass> Repository { get; set; }
 
-        public ModelClass GetEmptyModel()
-        {
-            return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
-        }
+        //public ModelClass GetEmptyModel()
+        //{
+        //    return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+        //}
 
         private DynamicParameters mDefaultSQLQueryParameters;
         public DynamicParameters DefaultSQLQueryParameters
@@ -906,6 +938,14 @@ namespace Passero.Framework
             }
         }
 
+        public DynamicParameters Parameters
+        {
+            get
+            {
+                return Repository.Parameters;
+                
+            }
+        }
 
         public ViewModel(string Name="", string FriendlyName="")
         {
@@ -954,7 +994,8 @@ namespace Passero.Framework
         public virtual void Init(IDbConnection DbConnection, DataBindingMode DataBindingMode = DataBindingMode.Passero)
         {
             this.mDataBindingMode = DataBindingMode;
-            Repository.DbConnection = DbConnection;
+            this.DbConnection = DbConnection;   
+            this.Repository.DbConnection = DbConnection;
             //Repository.DbObject.DbConnection = Repository.DbConnection;
             //Repository.DbObject.GetSchema();
         }
@@ -996,6 +1037,11 @@ namespace Passero.Framework
                     break;
             }
             ModelItem = ER.Value;
+            //if (ModelItem == null)
+            //{
+            //    ER.ResultCode = ExecutionResultCodes.Failed;
+            //    ER.ResultMessage = $"No data for query\n{Framework .DapperHelper .Utilities .ResolveSQL (SqlQuery,(DynamicParameters)Parameters)}";
+            //}
             DataNavigatorRaiseEventBoundCompled();
             return ER;
         }
@@ -1059,12 +1105,12 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query = {SqlQuery}";
+                ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
                 HandleExeception(ER.ToExecutionResult());
             }
             this.MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
-            //DataNavigatorRaiseEventBoundCompled()
+            //DataNavigatorRaiseEventBoundCompled();
             return ER;
         }
         public void SetBindingSource()

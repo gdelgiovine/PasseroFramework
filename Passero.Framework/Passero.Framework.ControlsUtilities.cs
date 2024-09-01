@@ -3,7 +3,9 @@ using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Reflection;
 using Wisej.Web;
 
@@ -12,6 +14,157 @@ namespace Passero.Framework
     public static class ControlsUtilities
 
     {
+        public static bool DataColumnIsNumeric(DataColumn col)
+        {
+            if (col == null)
+                return false;
+            // Make this const
+            var numericTypes = new[] { typeof(Byte), typeof(Decimal), typeof(Double),
+            typeof(Int16), typeof(Int32), typeof(Int64), typeof(SByte),
+            typeof(Single), typeof(UInt16), typeof(UInt32), typeof(UInt64)};
+            
+            return numericTypes.Contains(col.DataType);
+        }
+
+
+        public static void TreeViewLoad(ref TreeView treeView, object parentId, TreeNode parentNode, DataTable dataTable, string IDColumnName, string parentIDColumnName, string textColumnName, string keyColumName = "", string sort = "")
+        {
+
+            if (dataTable.Rows.Count == 0)
+                return;
+
+            TreeNode childNode;
+            string query = "";
+
+            if (keyColumName == "")
+                keyColumName = IDColumnName;
+
+
+            if (parentId != DBNull.Value)
+            {
+                if (DataColumnIsNumeric(dataTable.Columns[parentIDColumnName]) == true)
+                {
+                    query = parentIDColumnName + "=" + parentId;
+                }
+                else
+                {
+                    query = parentIDColumnName + "='" + parentId + "'";
+                }
+            }
+            else
+            {
+                if (DataColumnIsNumeric(dataTable.Columns[parentIDColumnName]) == true)
+                {
+                    query = parentIDColumnName + " is null or " + parentIDColumnName + "=0";
+                }
+                else
+                {
+                    query = parentIDColumnName + " is null or " + parentIDColumnName + "=''";
+                }
+
+            }
+
+
+            foreach (DataRow dr in dataTable.Select(query, sort))
+            {
+                TreeNode t = new TreeNode();
+                t.Text = dr[keyColumName].ToString() + " - " + dr[textColumnName].ToString();
+                t.Name = dr[IDColumnName].ToString();
+                t.Tag = dataTable.Rows.IndexOf(dr);
+                if (parentNode == null)
+                {
+                    treeView.Nodes.Add(t);
+                    childNode = t;
+                }
+                else
+                {
+                    parentNode.Nodes.Add(t);
+                    childNode = t;
+                }
+
+                TreeViewLoad(ref treeView, Convert.ToInt32(dr[IDColumnName].ToString()), childNode, dataTable, IDColumnName, parentIDColumnName, textColumnName, keyColumName);
+            }
+
+        }
+
+        public static TreeNode GetTreeNodeByName(TreeNodeCollection treeNodes, string nodeName)
+        {
+
+            TreeNode[] aFindResult = treeNodes.Find(nodeName, true);
+            TreeNode tvnRet = null;
+
+            for (int j = 0; j < aFindResult.Length; j++)
+            {
+                if (aFindResult[j].Name == nodeName)
+                {
+                    tvnRet = aFindResult[j];
+                    break;
+                }
+            }
+
+            return tvnRet;
+
+        }
+        public static void TreeViewComboBoxLoad(ref TreeViewComboBox treeView, object parentId, TreeNode parentNode, DataTable dataTable, string IDColumnName, string parentIDColumnName, string textColumnName, string keyColumName = "", string sort = "")
+        {
+            TreeNode childNode;
+            string query = "";
+
+            if (keyColumName == "")
+                keyColumName = IDColumnName;
+
+
+            if (parentId != DBNull.Value)
+            {
+                if (DataColumnIsNumeric(dataTable.Columns[parentIDColumnName]) == true)
+                {
+                    query = parentIDColumnName + "=" + parentId;
+                }
+                else
+                {
+                    query = parentIDColumnName + "='" + parentId + "'";
+                }
+            }
+            else
+            {
+                if (DataColumnIsNumeric(dataTable.Columns[parentIDColumnName]) == true)
+                {
+                    query = parentIDColumnName + " is null or " + parentIDColumnName + "=0";
+                }
+                else
+                {
+                    query = parentIDColumnName + " is null or " + parentIDColumnName + "=''";
+                }
+
+            }
+
+            foreach (DataRow dr in dataTable.Select(query, sort))
+            {
+                TreeNode t = new TreeNode();
+                t.Text = dr[keyColumName].ToString() + " - " + dr[textColumnName].ToString();
+                t.Name = dr[IDColumnName].ToString();
+                t.Tag = dataTable.Rows.IndexOf(dr);
+                if (parentNode == null)
+                {
+                    treeView.Nodes.Add(t);
+                    childNode = t;
+                }
+                else
+                {
+                    parentNode.Nodes.Add(t);
+                    childNode = t;
+                }
+
+                TreeViewComboBoxLoad(ref treeView, Convert.ToInt32(dr[IDColumnName].ToString()), childNode, dataTable, IDColumnName, parentIDColumnName, textColumnName, keyColumName);
+            }
+
+        }
+
+    
+
+
+
+
         public static void CenterOnParentControl(Control control)
         {
 

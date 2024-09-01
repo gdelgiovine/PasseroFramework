@@ -6,45 +6,57 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
 {
+    [DefaultBindingProperty("Value")]
     public partial class DbLookUpTextBox : Wisej.Web.TextBox
     {
         public Dictionary<string, DataBindControl> DataBindControls { get; set; } = new Dictionary<string, DataBindControl>(StringComparer.InvariantCultureIgnoreCase);
 
+        private DynamicParameters parameters = new DynamicParameters();
 
+        public event eLookUpDataEventHandler eLookUp;
+        public delegate void eLookUpDataEventHandler();
 
         #region Initialization
         // Initialization Code 
         public DbLookUpTextBox()
         {
             InitializeComponent();
-            TextChanged += DbLookUpTextBox_TextChanged;
-            KeyPress += DbLookUpTextBox_KeyPress;
+            SetControl();
         }
 
         public DbLookUpTextBox(Type ModelClass = null)
         {
             InitializeComponent();
-            TextChanged += DbLookUpTextBox_TextChanged;
-            KeyPress += DbLookUpTextBox_KeyPress;
+            SetControl();
+            
         }
 
         public DbLookUpTextBox(IContainer container)
         {
             container.Add(this);
             InitializeComponent();
-            TextChanged += DbLookUpTextBox_TextChanged;
-            KeyPress += DbLookUpTextBox_KeyPress;
+            SetControl();
         }
 
-
-
+        private void SetControl()
+        {
+            //TextChanged += DbLookUpTextBox_TextChanged;
+            KeyPress += DbLookUpTextBox_KeyPress;
+            foreach (Binding item in DataBindings)
+            {
+                if (item.PropertyName == "Value")
+                    item.DataSourceUpdateMode = DataSourceUpdateMode.OnPropertyChanged;
+            }
+        }
         private void DbLookUpTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (LookUpMode == LookUpModes.Standard)
+            //e.Handled = true;
+            return;
             {
                 if (Lock == false)
                 {
@@ -55,14 +67,27 @@ namespace Passero.Framework.Controls
 
         private void DbLookUpTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+
             if (mLookUpOnEdit)
             {
                 Lock = true;
                 this.LookUp(true);
                 e.Handled = true;
                 Lock = false;
-
             }
+            else
+            {
+                this.ClearControls(true);
+                if (e.KeyChar == (char)Keys.Tab | e.KeyChar == (char)Keys.Enter)
+                {
+                    Lock = true;
+                    this.LookUp(true);
+                    //e.Handled = true;
+                    Lock = false;
+                }
+                
+            }
+
         }
 
         #endregion
@@ -73,7 +98,7 @@ namespace Passero.Framework.Controls
             Enhanced = 1
         }
 
-        public string BoundPropertyName { get; private set; } = "Text";
+        public string EditPropertyName { get; private set; } = "Value";
         private LookUpModes mLookUpMode = LookUpModes.Standard;
         public LookUpModes LookUpMode
         {
@@ -84,10 +109,6 @@ namespace Passero.Framework.Controls
             set
             {
                 mLookUpMode = value;
-                if (mLookUpMode == LookUpModes.Standard)
-                    this.BoundPropertyName = "Text";
-                else
-                    this.BoundPropertyName = "Value";
             }
         }
         private bool Lock = false;
@@ -137,18 +158,7 @@ namespace Passero.Framework.Controls
                 Tools["clear"].Visible = value;
             }
         }
-        //private bool mLookUpOnDisplayMember = false;
-        //public bool LookUpOnDisplayMember
-        //{
-        //    get
-        //    {
-        //        return mLookUpOnDisplayMember;
-        //    }
-        //    set
-        //    {
-        //        mLookUpOnDisplayMember = value;
-        //    }
-        //}
+        
         private bool mLookUpOnEdit = false;
         public bool LookUpOnEdit
         {
@@ -174,10 +184,11 @@ namespace Passero.Framework.Controls
             set
             {
                 mValueMember = value;
-                if (LookUpMode == LookUpModes.Standard)
-                {
-                    this.mDisplayMember = value;
-                }
+                if (mValueMember.Equals(mDisplayMember, StringComparison.InvariantCultureIgnoreCase))
+                    LookUpMode = LookUpModes.Standard;
+                else
+                    LookUpMode = LookUpModes.Enhanced;
+
                 SetupDefault();
             }
         }
@@ -193,14 +204,16 @@ namespace Passero.Framework.Controls
             set
             {
                 mDisplayMember = value;
-                if (LookUpMode == LookUpModes.Standard)
-                {
-                    this.mValueMember = value;
-                }
+                if (mValueMember.Equals(mDisplayMember, StringComparison.InvariantCultureIgnoreCase))
+                    LookUpMode = LookUpModes.Standard;
+                else
+                    LookUpMode = LookUpModes.Enhanced;
                 SetupDefault();
             }
         }
         private object mValue = null;
+
+        [Bindable(true)]
         public object Value
         {
             get
@@ -215,7 +228,7 @@ namespace Passero.Framework.Controls
                 if (this.DisplayMember.Trim() == "" | this.ValueMember.Trim() == "")
                     return;
 
-                if (value == null)
+                if (value == null | value == System.DBNull.Value  )
                 {
                     this.Text = "";
                     ClearControls();
@@ -229,21 +242,18 @@ namespace Passero.Framework.Controls
                     return;
 
                 mValue = value;
+                this.Text = mValue.ToString();
 
                 // deve cercare nel datasource il relativo DisplayValue
-                if (this.ValueMember.Equals(this.DisplayMember, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    this.SameColumn = true;
-                }
-                else
-                {
-                    this.SameColumn = false;
-                }
-
-                //this.EnsureSQLQueryValueMember();
-                this.LookUp();
-                if (this.ValidLookUp == false)
-                    this.Text = "";
+                //if (this.ValueMember.Equals(this.DisplayMember, StringComparison.InvariantCultureIgnoreCase))
+                //{
+                //    this.SameColumn = true;
+                //}
+                //else
+                //{
+                //    this.SameColumn = false;
+                //}
+                this.LookUp(false);
 
             }
         }
@@ -264,7 +274,8 @@ namespace Passero.Framework.Controls
                 TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(mModelClass);
             }
         }
-        public string SelectClause { get; set; } = "SELECT * ";
+        public string SelectClause { get; set; } = " * ";
+        public string WhereClause { get; set; } = "";
         public void SetupDefault()
         {
 
@@ -283,121 +294,122 @@ namespace Passero.Framework.Controls
                     Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, _value);
                 }
 
-                if (FromEditing == false)
-                    this.Text = "";
+                //if (FromEditing == false)
+                //    this.Text = "";
             }
             catch (Exception ex)
             {
             }
 #pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
         }
-
-
-        private void EnsureSQLQuery()
-        {
-            this.SQLQuery = "";
-            this.DbParameters = new DynamicParameters();
-
-            if (this.ModelClass == null)
-                return;
-
-
-            object _value = Interaction.CallByName(this, this.BoundPropertyName, CallType.Get);
-
-            if (_value.ToString().Trim() == "")
-                return;
-
-            string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
-            this.SQLQuery = $"{this.SelectClause} FROM {TableName} WHERE {this.ValueMember}=@ValueMember";
-            this.DbParameters.Add("@ValueMember", _value);
-
-        }
-
-
         private void EnsureSQLQueryValueMember()
         {
             this.SQLQuery = "";
-            this.DbParameters = new DynamicParameters();
+            this.parameters = new DynamicParameters();
 
             if (this.ModelClass == null)
                 return;
-            if (this.mValue == null)
-                return;
 
-            if (this.mValue.ToString().Trim() == "")
-                return;
+            //if (this.Text == "")
+            //    return;
+
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
-            this.SQLQuery = $"{this.SelectClause} FROM {TableName} WHERE {this.ValueMember}=@ValueMember";
+            this.SQLQuery = $"SELECT {this.SelectClause} FROM {TableName} WHERE {this.ValueMember}=@ValueMember";
 
-            this.DbParameters.Add("@ValueMember", this.mValue);
+
+            if (String.IsNullOrEmpty(WhereClause) == false)
+            {
+                this.SQLQuery = this.SQLQuery + $" AND {WhereClause}";
+            }
+
+            foreach (var par in this.DbParameters.ParameterNames)
+            {
+                parameters.Add(par, 0);
+            }
+            //parameters.Add("@ValueMember", this.mValue);
+            parameters.Add("@ValueMember",this.Text  );
 
         }
 
         private void EnsureSQLQueryDisplayMember()
         {
             this.SQLQuery = "";
-            this.DbParameters = new DynamicParameters();
+            parameters = new DynamicParameters();
             if (this.ModelClass == null)
                 return;
 
-            string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
-            this.SQLQuery = $"{this.SelectClause} FROM {TableName} WHERE {this.DisplayMember}=@DisplayMember";
+            //if (this.Text == "")
+            //    return;
 
-            this.DbParameters.Add("@DisplayMember", this.Text);
+
+            string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
+            this.SQLQuery = $"SELECT {this.SelectClause} FROM {TableName} WHERE {this.DisplayMember}=@DisplayMember";
+
+            if (String.IsNullOrEmpty(WhereClause) == false)
+            {
+                this.SQLQuery = this.SQLQuery + $" AND {WhereClause}";
+            }
+
+            foreach (var par in this.DbParameters.ParameterNames)
+            {
+                parameters.Add(par, 0);
+            }
+
+
+            parameters.Add("@DisplayMember", this.Text);
 
         }
 
-        public void LookUp(bool FromEditing = false)
+        public bool LookUp(bool FromEditing = false)
         {
             ValidLookUp = false;
             this.ClearControls(FromEditing);
 
-            //if (FromEditing)
-            //{
-            //    if (LookUpMode  == LookUpModes.Standard   )
-            //    {
-            //        this.EnsureSQLQueryDisplayMember();
-            //    }
-            //    else
-            //    {
-            //        this.EnsureSQLQueryValueMember();
-            //    }
-            //}
-            //else
-            //{
-            //    this.EnsureSQLQueryValueMember();
-            //}
-
-            this.EnsureSQLQuery();
-
-            string _sqlquery = Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, DbParameters);
+            if (FromEditing)
+            {
+                this.mValue = this.Text;
+                if (LookUpMode  == LookUpModes.Standard   )
+                {
+                    this.EnsureSQLQueryValueMember();
+                }
+                else
+                {
+                    this.EnsureSQLQueryDisplayMember();
+                }
+            }
+            else
+            {
+                this.EnsureSQLQueryValueMember();
+            }
+            string _sqlquery = Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, this.parameters);
             if (SQLQuery == "")
-                return;
+                return ValidLookUp ;
             if (DbConnection == null)
-                return;
+                return ValidLookUp;
             try
             {
-
-                Model = (IDictionary<string, object>)DbConnection.Query(SQLQuery, DbParameters).FirstOrDefault();
+                
+                Model = (IDictionary<string, object>)DbConnection.Query(SQLQuery, this.parameters).FirstOrDefault();
                 if (Model != null)
                 {
                     this.Lock = true;
                     if (LookUpMode == LookUpModes.Standard)
                     {
+
                         this.Text = Model[this.ValueMember].ToString();
+                        this.mValue = Model[this.ValueMember].ToString();
                     }
                     else
                     {
                         this.Text = Model[this.DisplayMember].ToString();
-
                         this.mValue = Model[this.ValueMember];
                     }
+                    ValidLookUp = true;
                     this.Lock = false;
 
                     // DataBindControls
                     foreach (DataBindControl item in this.DataBindControls.Values)
                     {
-
                         if (Model[item.ModelPropertyName] is not null)
                         {
                             Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, Model[item.ModelPropertyName]);
@@ -407,14 +419,9 @@ namespace Passero.Framework.Controls
                             Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, "");
                         }
                     }
-
-                    ValidLookUp = true;
                 }
                 else
                 {
-                    //this.Lock = true;
-                    //this.Text = "";
-                    //this.Lock = false;
 
                 }
 
@@ -424,9 +431,12 @@ namespace Passero.Framework.Controls
                 this.Lock = true;
                 this.Text = "";
                 this.Lock = false;
-                throw;
-            }
 
+            }
+            if (this.eLookUp != null)
+                this.eLookUp();
+
+            return ValidLookUp;
         }
         private string GetBoundControlKey(Control Control, string PropertyName)
         {

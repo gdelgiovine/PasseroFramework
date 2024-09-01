@@ -534,16 +534,27 @@ namespace Passero.Framework.SSRSReports
 
     public enum RenderFormat
     {
-        XML,
-        NULL,
-        CSV,
-        IMAGE,
+
+
+    //HTML4.0 / HTML5 / MHTML
+    //PDF (*)
+    //IMAGE (TIFF/EMF) (*)
+    //EXCEL (Microsoft Excel 97/2003) (*)
+    //EXCELOPENXML (Microsoft Excel Open XML)
+    //WORD (Microsoft Word 97/2003) (*)
+    //WORDOPENXML (Microsoft Word Open XML)
+
+       
+        TIFF,
+        EMF,
         PDF,
         HTML40,
-        HTML32,
+        HTML5,
         MHTML,
         EXCEL,
-        WORD
+        EXCELOPENXML,
+        WORD,
+        WORDOPENXML
     }
     public class ReportDataSet
     {
@@ -655,12 +666,11 @@ namespace Passero.Framework.SSRSReports
             ReportAfterRender?.Invoke(this, e);
         }
 
-        public byte[] Render(RenderFormat RenderFormat = RenderFormat.PDF)
+        public byte[] Render(string Format,string deviceinfo=null)
         {
             LastExecutionResult.Reset();
-            LastExecutionResult.Context = $"Passero.Framework.Reports.SSRSReports.Render({RenderFormat})";
+            LastExecutionResult.Context = $"Passero.Framework.Reports.SSRSReports.Render({Format})";
             byte[] result = null;
-            string f = RenderFormat.ToString();
 
             try
             {
@@ -710,8 +720,9 @@ namespace Passero.Framework.SSRSReports
                    Report.DataSources.Add(ds);
 #endif
                 }
+
+                result = Report.Render(Format,deviceinfo);
                 
-                result = Report.Render(f);
             }
             catch (Exception ex)
             {
@@ -736,7 +747,7 @@ namespace Passero.Framework.SSRSReports
             return result;
         }
 
-    public ExecutionResult RenderAndSaveReport(string FileName, RenderFormat RenderFormat = RenderFormat.PDF)
+    public ExecutionResult RenderAndSaveReport(string FileName, string RenderFormat = "pdf")
         {
             var ER = new ExecutionResult();
             ER.Context = $"Passero.Framework.Reports.SSRSReports.RenderAndSaveReport({FileName},{RenderFormat})";

@@ -41,6 +41,17 @@ namespace Passero.Framework
             }
         }
 
+        public void ResetModelItem(bool ResetModelItems=true)
+        {
+            ModelItem = GetEmptyModelItem();
+            if (ResetModelItems )
+                ModelItems = new List<ModelClass>();
+        }
+        public void ResetModelItems()
+        {
+            ModelItems = new List<ModelClass>();
+        }
+
         protected virtual void OnModelEvents(EventArgs e)
         {
             ModelEvents?.Invoke(this, e);
@@ -241,7 +252,7 @@ namespace Passero.Framework
         }
 
 
-        private ModelClass? _Modeltem { get; set; }
+        private ModelClass? _Modeltem { get; set; } 
         public ModelClass? ModelItem
         {
             get
@@ -462,6 +473,7 @@ namespace Passero.Framework
         public ExecutionResult<ModelClass> GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
+            ER.Value = null;
             try
             {
                 _Modeltem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).SingleOrDefault();
@@ -474,8 +486,6 @@ namespace Passero.Framework
                 mSQLQuery = Query;
                 Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
                 ER.Value = _Modeltem;
-
-                return ER;
             }
             catch (Exception ex)
             {
@@ -486,10 +496,8 @@ namespace Passero.Framework
                 ER.DebugInfo = $"SQLQuery = {Query}";
                 LastExecutionResult = ER.ToExecutionResult();
                 HandleExeception(ER.ToExecutionResult());
-                return null;
-
             }
-
+            return ER;
         }
 
 
@@ -912,10 +920,6 @@ namespace Passero.Framework
                         }
                         affectedrecords += DbConnection.Execute(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
                         _ModelItemsShadow[i] = ModelItems.ElementAt(i);
-                    }
-                    else
-                    {
-                        affectedrecords += 1;
                     }
                 }
 

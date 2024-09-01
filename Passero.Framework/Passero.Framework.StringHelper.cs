@@ -11,6 +11,34 @@ namespace Passero.Framework
     public static class StringHelper
     {
 
+        public static bool StringStartsWith(string inputstring, string[] strings, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase )
+        {
+            if (string.IsNullOrEmpty(inputstring))
+                return false;
+            foreach (string x in strings)
+            {
+                if (inputstring.StartsWith(x,comparison ))
+                {
+                    return true;
+                }
+            }
+            return false;   
+        }
+
+        public static bool StringEndsWith(string inputstring, string[] strings, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase)
+        {
+            if (string.IsNullOrEmpty(inputstring))
+                return false;
+
+            foreach (string x in strings)
+            {
+                if (inputstring.EndsWith(x, comparison))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public static string SequenceFrom(string value)
         {
             char chr;

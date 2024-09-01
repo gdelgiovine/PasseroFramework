@@ -61,7 +61,7 @@ namespace PasseroDemo.Views
             //this.dbLookUpTextBox1.SelectClause = "SELECT *, TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
             this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
             this.dataNavigator1.SetActiveViewModel("Authors");
-            this.dataNavigator1.InitDataNavigator(true);
+            this.dataNavigator1.Init(true);
 
             
         }
@@ -69,7 +69,7 @@ namespace PasseroDemo.Views
         public void Reload()
         {
             //this.vmAuthor.GetAllItems();
-            this.dataNavigator1.InitDataNavigator(true);
+            this.dataNavigator1.Init(true);
 
         }
 

@@ -2,11 +2,14 @@
 using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using System.Xml;
 using Wisej.Web;
 
 namespace Passero.Framework.SSRSReports
@@ -14,6 +17,8 @@ namespace Passero.Framework.SSRSReports
 
     public partial class ReportManager : Form
     {
+        private string RenderError_NoReport = "No Report!";
+        private string RenderError_NoDataSets = "No Report DataSets!";
         private string RenderError = "";
         private string CurrentReportName;
         public bool RaiseReportEvents= false;
@@ -90,98 +95,100 @@ namespace Passero.Framework.SSRSReports
             }
         }
 
-     
+
 
         public void ExportResultGrid()
         {
             string filename = "";
             filename = System.IO.Path.GetTempPath() + @"\" + System.Guid.NewGuid().ToString();
             string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(this.Text);
-            string expofilenameextension = ".xml";
-            System.IO.MemoryStream  Stream = null;
+            string exportfilenameextension = ".xml";
+            System.IO.MemoryStream Stream = null;
             QBESSRSReport Report = this.QBEReports[CurrentReportName];
             RenderFormat format = RenderFormat.EXCEL ;
-            
-            
+            bool NativeRenderFormat = false;
+          
+            if (rbHTML.Checked)
+            {
+                format = RenderFormat.HTML5;
+                exportfilenameextension = ".html";
+                NativeRenderFormat = true;
+            }
+
+            if (rbMHTML.Checked)
+            {
+                format = RenderFormat.MHTML ;
+                exportfilenameextension = ".mhtml";
+                NativeRenderFormat = true;
+            }
+
+            if (rbIMAGETIFF .Checked)
+            {
+                format = RenderFormat.TIFF  ;
+                exportfilenameextension = ".tiff";
+                NativeRenderFormat = true;
+                
+            }
+
+            if (rbIMAGEEMF .Checked)
+            {
+                format = RenderFormat.EMF ;
+                exportfilenameextension = ".emf";
+                NativeRenderFormat = true;
+
+            }
+
+
             if (rbExcel.Checked)
             {
                 format = RenderFormat.EXCEL;
-                expofilenameextension = ".xls";
+                exportfilenameextension = ".xls";
+                NativeRenderFormat = true;
+            }
+            if (rbEXCELXML .Checked)
+            {
+                format = RenderFormat.EXCELOPENXML ;
+                exportfilenameextension = ".xlsx";
+                NativeRenderFormat = true;
             }
 
-            if (rbCSV.Checked)
+                   
+            if (rbWord.Checked)
             {
-                format = RenderFormat.CSV ;
-                expofilenameextension = ".csv";
+                format = RenderFormat.WORD ;
+                exportfilenameextension = ".doc";
+                NativeRenderFormat = true;
             }
-
-            if (rbJSON.Checked)
+            if (rbWORDXML.Checked)
             {
-                
-                expofilenameextension = ".json";
-            }
-            if (rbXML.Checked)
-            {
-                format = RenderFormat.XML;
-                expofilenameextension = ".xml";
+                format = RenderFormat.WORDOPENXML ;
+                exportfilenameextension = ".docx";
+                NativeRenderFormat = true;
             }
 
             BuildQuery3();
-            byte[] ReportBytes = this.RenderReport(Report,format );
+            byte[] ReportBytes = null;
 
-
-            //switch (SSRSReport.ReportFormat)
-            //{
-            //    case SSRSRenderFormat.XML:
-            //        break;
-            //    case SSRSRenderFormat.NULL:
-            //        break;
-            //    case SSRSRenderFormat.CSV:
-            //        break;
-            //    case SSRSRenderFormat.IMAGE:
-            //        break;
-            //    case SSRSRenderFormat.PDF:
-
-            //        //if (this.PdfViewer.Dock != DockStyle.Fill) this.PdfViewer.Dock = DockStyle.Fill;
-            //        //this.PdfViewer.PdfStream = new MemoryStream(ReportBytes);
-            //        //this.PdfViewer.Visible = true;
-            //        break;
-            //    case SSRSRenderFormat.HTML40:
-            //        break;
-            //    case SSRSRenderFormat.HTML32:
-            //        break;
-            //    case SSRSRenderFormat.MHTML:
-            //        break;
-            //    case SSRSRenderFormat.EXCEL:
-            //        break;
-            //    case SSRSRenderFormat.WORD:
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-
-
-            if (ReportBytes!=null && expofilenameextension != "" )
+            if (NativeRenderFormat)
+            {
+                ReportBytes = this.RenderReport(Report, format);
+            }
+            else
             {
                 
+                
+
+            }
+            
+            if (ReportBytes != null && exportfilenameextension != "")
+            {
+
                 Stream = new MemoryStream(ReportBytes);
-               Wisej.Web.Application.Download(Stream, exportfilename + expofilenameextension);
+                Wisej.Web.Application.Download(Stream, exportfilename + exportfilenameextension);
                 Stream.Close();
             }
-            //if (System.IO.File.Exists(filename))
-            //{
-            //    System.IO.File.Delete(filename);
-            //}
 
         }
-
-
-        //private ModelClass GetEmptyModel()
-        //{
-        //    return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
-        //}
-
         public void ShowQBEReport()
         {
             this.SetupQBEReport();
@@ -222,13 +229,9 @@ namespace Passero.Framework.SSRSReports
 
         private void SetupReportViewer()
         {
-
-
             this.PanelReportViewer.Dock = DockStyle.Fill;
             this.PanelReportViewer.Visible = true;
             this.ReportGrid.Visible = true;
-
-
         }
 
 
@@ -258,20 +261,19 @@ namespace Passero.Framework.SSRSReports
 
         private void LoadPDFViewer(string ReportName)
         {
-
             ReportName = ReportName.Trim().ToUpper();
             QBESSRSReport report = this.QBEReports[ReportName];
             if (report==null)
             {
-                this.RenderError = "No Report!";
-                MessageBox.Show("No Report!", this.Text,MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.RenderError =this.RenderError_NoReport ;
+                MessageBox.Show(this.RenderError, this.Text,MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (report.DataSets == null )
             {
-                this.RenderError = "No Report DataSets!";
-                MessageBox.Show("No Report DataSets!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.RenderError = this.RenderError_NoDataSets;
+                MessageBox.Show(this.RenderError, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -284,7 +286,7 @@ namespace Passero.Framework.SSRSReports
                 //if (this.PdfViewer.Dock != DockStyle.Fill) this.PdfViewer.Dock = DockStyle.Fill;
                 this.PdfViewer.PdfStream = new MemoryStream(ReportBytes);
                 this.PdfViewer.Visible = true;
-                Passero.Framework.Utilities.SaveByteArrayToFile(ReportBytes, @"c:\REports\report1.pdf");
+                //Passero.Framework.Utilities.SaveByteArrayToFile(ReportBytes, @"c:\REports\report1.pdf");
                 
             }
             else
@@ -305,15 +307,15 @@ namespace Passero.Framework.SSRSReports
             QBESSRSReport Report = this.QBEReports[ReportName];
             if (Report == null)
             {
-                this.RenderError = "No Report!";
-                MessageBox.Show("No Report!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.RenderError = this.RenderError_NoReport;
+                MessageBox.Show(this.RenderError , this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
             if (Report.DataSets == null)
             {
-                this.RenderError = "No Report DataSets!";
-                MessageBox.Show("No Report DataSets!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.RenderError = this.RenderError_NoDataSets;
+                MessageBox.Show(this.RenderError , this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
@@ -328,17 +330,17 @@ namespace Passero.Framework.SSRSReports
 
             if (Report == null)
             {
-                MessageBox.Show("No Report!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this.RenderError_NoReport , this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
             if (Report.DataSets == null)
             {
-                MessageBox.Show("No Report DataSets!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this.RenderError_NoDataSets , this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
-            //Passero.Framework.Reports.SSRSReport SSRSReport = new Reports.SSRSReport();
+       
             SSRSReport = new SSRSReports.SSRSReport();
             if (RaiseReportEvents)
             {
@@ -348,10 +350,40 @@ namespace Passero.Framework.SSRSReports
             SSRSReport.ReportPath = Report.ReportFileName;
             SSRSReport.ReportFormat = Format;
             SSRSReport.DataSets = Report.DataSets;
+            string DeviceInfo = null;
+            string _Format = Format.ToString();
+            switch (Format)
+            {
 
-         
+                case RenderFormat.TIFF:
+                    _Format = "IMAGE";
+                    DeviceInfo = "<DeviceInfo><OutputFormat>TIFF</OutputFormat><DpiX>300</DpiX><DpiY>300</DpiY></DeviceInfo>";
+                    break;
+                case RenderFormat.EMF:
+                    _Format = "IMAGE";
+                    DeviceInfo = "<DeviceInfo><OutputFormat>EMF</OutputFormat></DeviceInfo>";
+                    break;
+                case RenderFormat.PDF:
+                    break;
+                case RenderFormat.HTML40:
+                    break;
+                case RenderFormat.HTML5:
+                    break;
+                case RenderFormat.MHTML:
+                    break;
+                case RenderFormat.EXCEL:
+                    break;
+                case RenderFormat.EXCELOPENXML:
+                    break;
+                case RenderFormat.WORD:
+                    break;
+                case RenderFormat.WORDOPENXML:
+                    break;
+                default:
+                    break;
+            }
 
-            byte[] ReportBytes = SSRSReport.Render(Format );
+            byte[] ReportBytes = SSRSReport.Render(_Format,DeviceInfo);
             if (SSRSReport.LastExecutionResult.Exception != null)
             {
                 this.RenderError = SSRSReport.LastExecutionResult.ResultMessage + "\n" + SSRSReport.LastExecutionResult.Exception.ToString();
@@ -377,7 +409,7 @@ namespace Passero.Framework.SSRSReports
             if (QBEReport.DataSets.Count == 0)
                 return;
 
-            Passero.Framework.SSRSReports.ReportDataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
+            SSRSReports.ReportDataSet PrimaryDataSet = QBEReport.PrimaryDataSet;
             if (PrimaryDataSet == null)
             {
                 PrimaryDataSet = QBEReport.DataSets.Values.First();
@@ -403,7 +435,7 @@ namespace Passero.Framework.SSRSReports
                     QBEReport.SortColumns.Add(sc.Name, sc);
         
                     Type PropertyType = PrimaryDataSet.ModelProperties[QBEColumn.DbColumn].PropertyType;
-                    Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
+                    Framework.EnumSystemTypeIs PropertyTypeIs = Framework.Utilities.GetSystemTypeIs(PropertyType);
                     //if (Passero.Framework.Utilities.GetSystemTypeIs(PropertyType) == EnumSystemTypeIs.Boolean)
                     if (PropertyTypeIs == EnumSystemTypeIs.Boolean)
                     {

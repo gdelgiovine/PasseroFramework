@@ -360,6 +360,17 @@ namespace Passero.Framework.DapperHelper
             return dataTable;
         }
 
+
+        public static List<IDictionary<string, object>> DapperSelect(IDbConnection dbConnection, string query, object parameters)
+        {
+
+            {
+                var result = dbConnection.Query(query, parameters).ToList();
+
+                return result.Select(x => (IDictionary<string, object>)x).ToList();
+            }
+        }
+
         public static string ResolveSQL(string SQL, Dapper.DynamicParameters  Parameters)
         {
             string _SQL= SQL;
@@ -387,7 +398,7 @@ namespace Passero.Framework.DapperHelper
                     {
                         ParamValue = $"{value.ToString()}";
                     }
-                    _SQL = Regex.Replace(SQL, ParamName, ParamValue, RegexOptions.IgnoreCase);
+                    _SQL = Regex.Replace(_SQL, ParamName, ParamValue, RegexOptions.IgnoreCase);
                 }
             }
      

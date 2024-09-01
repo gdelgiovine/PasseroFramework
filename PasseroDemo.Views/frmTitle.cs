@@ -79,8 +79,8 @@ namespace PasseroDemo.Views
             this.dataNavigator1.ViewModels["TitleAuthor"]= new DataNavigatorViewModel(this.vmTitleAuthor,"TitleAuthoe", "Title Authors", this.dgv_TitleAuthors);
             this.dataNavigator1.SetActiveViewModel (this.dataNavigator1 .ViewModels["Title"]); 
 
-            this.dataNavigator1.ManageNavigation = false;
-            this.dataNavigator1.ManageChanges = false;
+            this.dataNavigator1.ManageNavigation = true;
+            this.dataNavigator1.ManageChanges = true;
 
         }
 
@@ -137,15 +137,15 @@ namespace PasseroDemo.Views
 
             this.dataNavigator1.ViewModel_UdpateItem();
 
-            if (this.dataNavigator1.ActiveViewModel == this.vmTitleAuthor)
-            {
-                this.dataNavigator1.DataGrid_Save();
-            }
-            else
-            {
+            //if (this.dataNavigator1.ActiveViewModel == this.vmTitleAuthor)
+            //{
+            //    this.dataNavigator1.DataGrid_Save();
+            //}
+            //else
+            //{
                 
-                this.vmTitle.UpdateItem();
-            }
+            //    this.vmTitle.UpdateItem();
+            //}
         }
 
         private void dataNavigator1_eAddNew()
@@ -170,15 +170,16 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eUndo()
         {
+            this.dataNavigator1.ViewModel_UndoChanges();
 
-            if (this.dataNavigator1.ActiveViewModel == this.vmTitleAuthor)
-            {
-                this.dataNavigator1.DataGrid_Undo();
-            }
-            else
-            {
-                this.vmTitle.UndoChanges();
-            }
+            //if (this.dataNavigator1.ActiveViewModel == this.vmTitleAuthor)
+            //{
+            //    this.dataNavigator1.DataGrid_Undo();
+            //}
+            //else
+            //{
+            //    this.vmTitle.UndoChanges();
+            //}
         }
 
         private void tabTitle_SelectedIndexChanged(object sender, EventArgs e)
@@ -229,11 +230,12 @@ namespace PasseroDemo.Views
             ExecutionResult < List <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
                                                 $"{Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Titleauthor>()} " +
                                                 $"WHERE title_id=@title_id", new { title_id = this.txt_title_id.Text });
-            
-            
-            this.dgv_TitleAuthors.DataSource = this.vmTitleAuthor.ModelItems;
-            
-            
+
+
+            //this.dgv_TitleAuthors.DataSource = this.vmTitleAuthor.ModelItems;
+            this.dgv_TitleAuthors.DataSource = ER.Value;
+
+
         }
 
         private void cmb_pub_id_ToolClick(object sender, ToolClickEventArgs e)

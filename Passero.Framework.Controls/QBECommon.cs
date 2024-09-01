@@ -216,12 +216,12 @@ namespace Passero.Framework.Controls
     #endregion
 
 
-    [Serializable]
-    public enum QBEMode
-    {
-        Query = 0,
-        Report = 1
-    }
+    //[Serializable]
+    //public enum QBEMode
+    //{
+    //    Query = 0,
+    //    Report = 1
+    //}
 
     [Serializable]
     public enum ReportViewerMode
@@ -308,8 +308,9 @@ namespace Passero.Framework.Controls
     {
         //public XQBEForm QBEForm = null;
         private string mDbColumn;
-        private bool mUseInQBE;
+        private bool mUseInQBE = false;
         private bool mDisplayInQBEResult = true;
+        private bool mDisplayInQBE = true;
         private string mFriendlyName = "";
         private string mQBEValue;
         private string mDisplayFormat = "";
@@ -324,7 +325,7 @@ namespace Passero.Framework.Controls
         private string mReportName;
         public float FontSize { get; set; }
 
-
+        public object QBEInitialValue { get; set; }
         public string ReportName
         {
             get
@@ -502,6 +503,21 @@ namespace Passero.Framework.Controls
                 mUseInQBE = value;
             }
         }
+
+   
+        public bool DisplayInQBE
+        {
+            get
+            {
+                return mDisplayInQBE;
+            }
+            set
+            {
+                mDisplayInQBE = value;
+            }
+        }
+
+
         public string DbColumn
         {
             get
@@ -598,6 +614,7 @@ namespace Passero.Framework.Controls
             x.QBEColumnType = QBEColumnType;
             x.ColumnSize = ColumnWidth;
             x.Aligment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
+            x.QBEInitialValue = QBEValue;
 
             //if (DbColumn.IsNumeric() | DbColumn.IsDate())
             //{

@@ -189,9 +189,9 @@ namespace Passero.Framework.Controls
             this.TabPageReportQuery.Controls.Add(this.QueryGrid);
             this.TabPageReportQuery.Controls.Add(this.chkLikeOperator);
             this.TabPageReportQuery.Hidden = true;
-            this.TabPageReportQuery.Location = new System.Drawing.Point(1, 30);
+            this.TabPageReportQuery.Location = new System.Drawing.Point(0, 29);
             this.TabPageReportQuery.Name = "TabPageReportQuery";
-            this.TabPageReportQuery.Size = new System.Drawing.Size(896, 127);
+            this.TabPageReportQuery.Size = new System.Drawing.Size(898, 129);
             this.TabPageReportQuery.Text = "Query Criteria";
             // 
             // QueryGrid
@@ -217,6 +217,7 @@ namespace Passero.Framework.Controls
             this.QueryGrid.RowHeadersWidth = 24;
             this.QueryGrid.Size = new System.Drawing.Size(890, 89);
             this.QueryGrid.TabIndex = 3;
+            this.QueryGrid.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.QueryGrid_CellDoubleClick);
             // 
             // dgvcNomeCampo
             // 
@@ -254,9 +255,9 @@ namespace Passero.Framework.Controls
             // 
             this.TabPageExport.Controls.Add(this.PanelExport);
             this.TabPageExport.Hidden = true;
-            this.TabPageExport.Location = new System.Drawing.Point(1, 30);
+            this.TabPageExport.Location = new System.Drawing.Point(0, 29);
             this.TabPageExport.Name = "TabPageExport";
-            this.TabPageExport.Size = new System.Drawing.Size(896, 127);
+            this.TabPageExport.Size = new System.Drawing.Size(898, 129);
             this.TabPageExport.Text = "Export";
             // 
             // PanelExport
@@ -324,10 +325,10 @@ namespace Passero.Framework.Controls
             this.TabPageDebug.Controls.Add(this.Button1);
             this.TabPageDebug.Controls.Add(this.cmbRecords);
             this.TabPageDebug.Hidden = true;
-            this.TabPageDebug.Location = new System.Drawing.Point(1, 30);
+            this.TabPageDebug.Location = new System.Drawing.Point(0, 29);
             this.TabPageDebug.Name = "TabPageDebug";
             this.TabPageDebug.Padding = new Wisej.Web.Padding(3);
-            this.TabPageDebug.Size = new System.Drawing.Size(896, 127);
+            this.TabPageDebug.Size = new System.Drawing.Size(898, 129);
             this.TabPageDebug.Text = "Debug";
             // 
             // Button2

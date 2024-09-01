@@ -8,6 +8,7 @@ using System.Text;
 using Wisej.Web;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using FastReport;
 
 namespace Passero.Framework.FRReports
 {
@@ -128,39 +129,35 @@ namespace Passero.Framework.FRReports
             }
 
             BuildQuery3();
-            byte[] ReportBytes = null;// this.RenderReport(Report,format );
+            byte[] ReportBytes =  this.RenderReport(Report,format );
 
 
-            //switch (SSRSReport.ReportFormat)
-            //{
-            //    case SSRSRenderFormat.XML:
-            //        break;
-            //    case SSRSRenderFormat.NULL:
-            //        break;
-            //    case SSRSRenderFormat.CSV:
-            //        break;
-            //    case SSRSRenderFormat.IMAGE:
-            //        break;
-            //    case SSRSRenderFormat.PDF:
-
-            //        //if (this.PdfViewer.Dock != DockStyle.Fill) this.PdfViewer.Dock = DockStyle.Fill;
-            //        //this.PdfViewer.PdfStream = new MemoryStream(ReportBytes);
-            //        //this.PdfViewer.Visible = true;
-            //        break;
-            //    case SSRSRenderFormat.HTML40:
-            //        break;
-            //    case SSRSRenderFormat.HTML32:
-            //        break;
-            //    case SSRSRenderFormat.MHTML:
-            //        break;
-            //    case SSRSRenderFormat.EXCEL:
-            //        break;
-            //    case SSRSRenderFormat.WORD:
-            //        break;
-            //    default:
-            //        break;
-            //}
-
+            switch (format)
+            {
+                case FRRenderFormat.XML:
+                    break;
+                case FRRenderFormat.NULL:
+                    break;
+                case FRRenderFormat.CSV:
+                    break;
+                case FRRenderFormat.IMAGE:
+                    break;
+                case FRRenderFormat.PDF:
+                    break;
+                case FRRenderFormat.HTML40:
+                    break;
+                case FRRenderFormat.HTML32:
+                    break;
+                case FRRenderFormat.MHTML:
+                    break;
+                case FRRenderFormat.EXCEL:
+                    
+                    break;
+                case FRRenderFormat.WORD:
+                    break;
+                default:
+                    break;
+            }
 
 
             if (ReportBytes!=null && expofilenameextension != "" )
@@ -170,18 +167,10 @@ namespace Passero.Framework.FRReports
                Wisej.Web.Application.Download(Stream, exportfilename + expofilenameextension);
                 Stream.Close();
             }
-            //if (System.IO.File.Exists(filename))
-            //{
-            //    System.IO.File.Delete(filename);
-            //}
 
         }
 
 
-        //private ModelClass GetEmptyModel()
-        //{
-        //    return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
-        //}
 
         public void ShowQBEReport()
         {
