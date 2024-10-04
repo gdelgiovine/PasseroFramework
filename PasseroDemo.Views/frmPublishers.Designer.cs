@@ -88,7 +88,6 @@
             this.dataNavigator1.eUndo += new Passero.Framework.Controls.DataNavigator.eUndoEventHandler(this.dataNavigator1_eUndo);
             this.dataNavigator1.eUndoCompleted += new Passero.Framework.Controls.DataNavigator.eUndoCompletedEventHandler(this.dataNavigator1_eUndoCompleted);
             this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
-            this.dataNavigator1.eAfterAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAfterAddNewEventHandler(this.dataNavigator1_eAfterAddNewRequest);
             this.dataNavigator1.eDeleteRequest += new Passero.Framework.Controls.DataNavigator.eDeleteRequestEventHandler(this.dataNavigator1_eDeleteRequest);
             this.dataNavigator1.eSaveRequest += new Passero.Framework.Controls.DataNavigator.eSaveRequestEventHandler(this.dataNavigator1_eSaveRequest);
             this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);

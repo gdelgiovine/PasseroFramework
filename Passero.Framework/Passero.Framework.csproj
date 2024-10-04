@@ -52,7 +52,7 @@
 		<PackageReference Include="MiniExcel" Version="1.34.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
-		<PackageReference Include="Wisej-3" Version="3.5.11" />
+		<PackageReference Include="Wisej-3" Version="3.5.12" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
 	</ItemGroup>
 

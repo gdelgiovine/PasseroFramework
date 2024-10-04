@@ -80,7 +80,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.SetActiveViewModel (this.dataNavigator1 .ViewModels["Title"]); 
 
             this.dataNavigator1.ManageNavigation = true;
-            this.dataNavigator1.ManageChanges = true;
+            this.dataNavigator1.ManageChanges = false;
 
         }
 

@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasseroDemo.Repositories", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.SSRSReports", "Passero.Framework.SSRSReports\Passero.Framework.SSRSReports.csproj", "{AF63CBAD-7C9E-42B3-B0CE-2B214B19D149}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passero.Framework.FRReports", "Passero.Framework.FRReports\Passero.Framework.FRReports.csproj", "{5B4B1BF3-AB73-4F7B-AA65-BE9DDC08B696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.FRReports", "Passero.Framework.FRReports\Passero.Framework.FRReports.csproj", "{5B4B1BF3-AB73-4F7B-AA65-BE9DDC08B696}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

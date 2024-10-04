@@ -66,17 +66,23 @@ namespace PasseroDemo.Views
             //xQBEForm_Author.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.AllRowsItems;
             //xQBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsItems;
+
+
             QBE.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
             QBE.Owner = this;
             QBE.SetFocusControlAfterClose = this.txt_Publishers_pub_id ;    
+
+
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
+
             QBE.SetTargetRepository(this.vmPublishers.Repository, () => { this.Reload(); });
             //xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository);
-
-
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
+
             QBE.QBEModelPropertiesMapping.Add(nameof(Models.Publisher.pub_id ), nameof(Models.Publisher .pub_id));
+
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
+
             QBE.AutoLoadData = true;
             
             QBE.ShowQBE();
@@ -84,8 +90,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eMoveNextCompleted()
         {
-            MessageBox.Show("a");
-           
+                    
         }
 
         private void dataNavigator1_eFind()
