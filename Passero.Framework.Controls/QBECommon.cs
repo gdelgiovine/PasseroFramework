@@ -26,7 +26,7 @@ namespace Passero.Framework.Controls
     public class DataNavigatorViewModel
     {
         public string Name { get; set; }
-        public object ViewModel { get; set; }
+        public dynamic  ViewModel { get; set; }
         public string FriendlyName { get; set; }
         public DataGridView DataGridView { get; set; }
 

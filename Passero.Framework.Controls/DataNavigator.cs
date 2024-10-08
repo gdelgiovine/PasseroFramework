@@ -8,6 +8,7 @@ using System.Data;
 using System.Runtime.CompilerServices;
 //using Passero.Framework.Base;
 using Wisej.Web;
+using Wisej.Web.Data;
 
 namespace Passero.Framework.Controls
 {
@@ -86,7 +87,8 @@ namespace Passero.Framework.Controls
             {
                 if (_ActiveViewModel == null)
                     return 0;
-                return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
+                //return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
+                return (int)this._ActiveViewModel.ModelItemsCount;
             }
         }
 
@@ -97,7 +99,8 @@ namespace Passero.Framework.Controls
                 if (this._ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
-                    return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
+                    //return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
+                    return (int)this._ActiveViewModel.CurrentModelItemIndex;
                 else
                     return -1;
             }
@@ -106,7 +109,8 @@ namespace Passero.Framework.Controls
                 if (DesignMode == false)
                 {
                     if (_ActiveViewModel != null)
-                        ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "CurrentModelItemIndex", value);
+                        //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "CurrentModelItemIndex", value);
+                        this._ActiveViewModel.CurrentModelItemIndex = value;
                 }
             }
         }
@@ -114,10 +118,12 @@ namespace Passero.Framework.Controls
         {
             get
             {
+               
                 if (this._ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
-                    return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");
+                    //return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");
+                    return (int)this._ActiveViewModel.AddNewCurrentModelItemIndex;
                 else
                     return -1;
             }
@@ -126,7 +132,8 @@ namespace Passero.Framework.Controls
                 if (DesignMode == false)
                 {
                     if (_ActiveViewModel != null)
-                        ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewCurrentModelItemIndex", value);
+                        //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewCurrentModelItemIndex", value);
+                        this._ActiveViewModel.AddNewCurrentModelItemIndex = value;
                 }
             }
         }
@@ -148,7 +155,8 @@ namespace Passero.Framework.Controls
                     ER = this.DataRepeater_AddNew(NewItem, InsertAtCursor);
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "AddNew", Microsoft.VisualBasic.CallType.Method, NewItem);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "AddNew", Microsoft.VisualBasic.CallType.Method, NewItem);
+                    ER = (ExecutionResult)this.ActiveViewModel.AddNew( NewItem);
                     break;
             }
 
@@ -192,7 +200,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, null);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, null);
+                    ER = (ExecutionResult)this.ActiveViewModel.DeleteItem(null);
                     break;
             }
             ER.Context = ERContext;
@@ -206,7 +215,8 @@ namespace Passero.Framework.Controls
         {
             string ERContext = $"{mClassName}.ViewModel_DeleteItems()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItems", Microsoft.VisualBasic.CallType.Method, null);
+            //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItems", Microsoft.VisualBasic.CallType.Method, null);
+            ER = (ExecutionResult)this.ActiveViewModel.DeleteItems(null);
             ER.Context = ERContext;
             return ER;
         }
@@ -238,7 +248,8 @@ namespace Passero.Framework.Controls
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges", false);
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges", false);
+                    ER = (ExecutionResult)this._ActiveViewModel.UndoChanges(false);
                     if (ER.Success)
                     {
                         if (eUndoCompleted != null)
@@ -272,7 +283,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)this.ActiveViewModel.MoveFirstItem();
                     break;
             }
 
@@ -301,7 +313,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveLastItem", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveLastItem", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)this.ActiveViewModel.MoveLastItem();
                     break;
             }
             ER.Context = ERContext;
@@ -330,7 +343,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MovePreviousItem", Microsoft.VisualBasic.CallType.Method);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MovePreviousItem", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)this.ActiveViewModel.MovePreviousItem();
                     break;
             }
 
@@ -360,8 +374,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method);
-                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethod(ref this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method, null);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)this._ActiveViewModel.MoveNextItem();
                     break;
             }
             ER.Context = ERContext;
@@ -393,8 +407,9 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
-                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethod2(ref this._ActiveViewModel, "ReloadItems", null);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
+                    ER = (ExecutionResult)this.ActiveViewModel.ReloadItems();
+                    
 
                     break;
             }
@@ -403,7 +418,7 @@ namespace Passero.Framework.Controls
         }
 
 
-        public ExecutionResult ViewModel_UdpateItem(object item = null)
+        public ExecutionResult ViewModel_UdpateItem(dynamic  item = null)
         {
             string ERContext = $"{mClassName}.ViewModel_UdpateItem()";
 
@@ -431,7 +446,8 @@ namespace Passero.Framework.Controls
 
                     if (_AddNewState)
                     {
-                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem", item);
+                        //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem", item);
+                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
                         if (ER.Success)
                         {
                             this.ViewModel_MoveLastItem();
@@ -441,9 +457,11 @@ namespace Passero.Framework.Controls
                     else
                     {
                         if (this.UseUpdateEx )
-                            ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItem", item);
+                            //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItem", item);
+                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItem(item);
                         else
-                            ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItemEx", item);
+                            //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItemEx", item);
+                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItemEx( item);
                     }
                     break;
 
@@ -489,7 +507,8 @@ namespace Passero.Framework.Controls
                     }
                     break;
                 default:
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, null);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, null);
+                    ER = (ExecutionResult)this.ActiveViewModel.UpdateItems(null);
                     break;
             }
 
@@ -506,17 +525,21 @@ namespace Passero.Framework.Controls
             {
                 _ActiveViewModel = viewModel.ViewModel;
                 _ActiveDataNavigatorViewModel = viewModel;
-                _ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+                //_ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+                _ModelItems = viewModel.ViewModel.ModelItems;
                 try
                 {
-                    _ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
+                    //_ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
+                    _ModelItem = viewModel.ViewModel.ModelItem;
                 }
                 catch (Exception __unusedException1__)
                 {
                     _ModelItem = _ModelItems.GetType().GetGenericArguments()[0];
                 }
-                _BindingSource = (BindingSource)ReflectionHelper.GetPropertyValue(viewModel.ViewModel, "BindingSource");
-                ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, this);
+                //_BindingSource = (BindingSource)ReflectionHelper.GetPropertyValue(viewModel.ViewModel, "BindingSource");
+                //ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, this);
+                _BindingSource = viewModel.ViewModel.BindingSource;
+                viewModel.ViewModel.DataNavigator = this;
 
                 switch (this.ActiveDataNavigatorViewModel.GridMode)
                 {
@@ -592,7 +615,8 @@ namespace Passero.Framework.Controls
             {
                 _ActiveViewModel = null;
                 _ActiveDataNavigatorViewModel = null;
-                ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, null);
+                //ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, null);
+                viewModel.ViewModel.DataNavigator = null;
             }
             if (_ModelItems != null)
             {
@@ -634,8 +658,11 @@ namespace Passero.Framework.Controls
             }
         }
 
-        private object _ActiveViewModel = null;
-        public object ActiveViewModel
+
+     
+
+        private dynamic  _ActiveViewModel = null;
+        public dynamic ActiveViewModel
         {
             get
             {
@@ -649,7 +676,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._ActiveViewModel != null)
                 {
-                    return (Type)ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
+                    //return (Type)ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
+                    return this._ActiveViewModel.ModelType;
                 }
                 return null;
             }
@@ -664,7 +692,8 @@ namespace Passero.Framework.Controls
             {
                 if (_ActiveViewModel != null)
                 {
-                    _ModelItem = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
+                    //_ModelItem = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
+                    _ModelItem = this._ActiveViewModel.ModelItem;
                     return _ModelItem;
                 }
                 return null;
@@ -673,22 +702,24 @@ namespace Passero.Framework.Controls
             {
                 if (_ActiveViewModel != null)
                 {
-                    ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Set, value);
-                    _ModelItem = value;
+                    //ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Set, value);
+                    this._ActiveViewModel.ModelItem = value;
+                    this._ModelItem = value;
                 }
             }
         }
 
 
-        private object _ModelItems = null;
+        private dynamic  _ModelItems = null;
 
-        public object ModelItems
+        public dynamic ModelItems
         {
             get
             {
                 if (_ActiveViewModel != null)
                 {
-                    _ModelItems = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+                    //_ModelItems = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
+                    _ModelItems = this._ActiveViewModel.ModelItems;
                     return _ModelItems;
                 }
                 return null;
@@ -697,7 +728,8 @@ namespace Passero.Framework.Controls
             {
                 if (_ActiveViewModel != null)
                 {
-                    ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Set, value);
+                    //ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Set, value);
+                    this._ActiveViewModel.ModelItems = value;
                     _ModelItems = value;
                 }
             }
@@ -706,13 +738,14 @@ namespace Passero.Framework.Controls
 
 
 
-        public object ModelItemShadow
+        public dynamic ModelItemShadow
         {
             get
             {
                 if (this._ActiveViewModel != null)
                 {
-                    return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Get, null);
+                    //return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Get, null);
+                    return this._ActiveViewModel.ModelItemShadow;
                 }
                 return null;
             }
@@ -720,20 +753,22 @@ namespace Passero.Framework.Controls
             {
                 if (this._ActiveViewModel != null)
                 {
-                    ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Set, value);
+                    //ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Set, value);
+                    this._ActiveViewModel.ModelItemShadow = value;
                 }
             }
         }
 
 
 
-        public object ModelItemsShadow
+        public dynamic  ModelItemsShadow
         {
             get
             {
                 if (this._ActiveViewModel != null)
                 {
-                    return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Get, null);
+                    //return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Get, null);
+                    return this._ActiveViewModel.ModelItemsShadow;
                 }
                 return null;
             }
@@ -741,7 +776,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._ActiveViewModel != null)
                 {
-                    ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Set, value);
+                    //ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Set, value);
+                    this._ActiveViewModel.ModelItemsShadow = value;
                 }
             }
         }
@@ -1267,7 +1303,8 @@ namespace Passero.Framework.Controls
 
         public DataBindingMode DataBindingMode()
         {
-            return (DataBindingMode)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "DataBindingMode");
+            //return (DataBindingMode)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "DataBindingMode");
+            return this._ActiveViewModel.DataBindingMode;
         }
         public BindingSource BindingSource
         {
@@ -1424,11 +1461,13 @@ namespace Passero.Framework.Controls
         private void _InitDataNavigator(bool LoadData = false)
         {
             UpdateButtonsCaption();
-            ReflectionHelper.CallByName(this.ActiveViewModel, "SetBindingSource", CallType.Method);
-            
+            //ReflectionHelper.CallByName(this.ActiveViewModel, "SetBindingSource", CallType.Method);
+            this.ActiveViewModel.SetBindingSource();
+
             if (LoadData)
             {
-                ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
+                //ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
+                this.ActiveViewModel.GetAllItems();
                 //_DbObject.Open(true);
             }
 
@@ -1524,8 +1563,10 @@ namespace Passero.Framework.Controls
 
                     if (this._AddNewState == true)
                     {
-                        object item = ((IList)this._ModelItems)[this.NewItemIndex];
-                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                        dynamic item = ((IList)this._ModelItems)[this.NewItemIndex];
+                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
+
                         if (ER.Success)
                         {
                             this._AddNewState = false;
@@ -1534,9 +1575,11 @@ namespace Passero.Framework.Controls
                     else
                     {
                         if (this.UseUpdateEx==false )
-                            ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItems(this._ModelItems);
                         else
-                            ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItemsEx(this._ModelItems);
                     }
                     
                 }
@@ -1601,8 +1644,9 @@ namespace Passero.Framework.Controls
 
                     if (this._AddNewState == true)
                     {
-                        object item = ((IList)this._ModelItems)[this.NewItemIndex];
-                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                        dynamic  item = ((IList)this._ModelItems)[this.NewItemIndex];
+                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
+                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
                         if (ER.Success)
                         {
                             this._AddNewState = false;
@@ -1610,7 +1654,8 @@ namespace Passero.Framework.Controls
                     }
                     else
                     {
-                        ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                        ER = (ExecutionResult)this._ActiveViewModel.UpdateItems(this._ModelItems);
                     }
                 }
               
@@ -1775,7 +1820,8 @@ namespace Passero.Framework.Controls
 
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
-                    ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    this._ActiveViewModel.AddNewState=true;
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
 
@@ -1974,7 +2020,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._DataRepeater != null)
                 {
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
+                    ER = (ExecutionResult)this._ActiveViewModel.MoveNextItem();
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
@@ -1999,7 +2046,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._DataRepeater != null)
                 {
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveLastItem");
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveLastItem");
+                    ER = (ExecutionResult)this._ActiveViewModel.MoveLastItem();
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
@@ -2023,7 +2071,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._DataRepeater != null)
                 {
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                    ER = (ExecutionResult)this._ActiveViewModel.MovePreviousItem();
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
@@ -2050,7 +2099,8 @@ namespace Passero.Framework.Controls
             {
                 if (this._DataRepeater != null)
                 {
-                    Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
+                    //Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
+                    this._ActiveViewModel.MoveFirstItem();
                     this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
@@ -2093,7 +2143,8 @@ namespace Passero.Framework.Controls
             {
                 if (DataRepeater.DataSource != null)
                 {
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    ER = (ExecutionResult)this._ActiveViewModel.UndoChanges(true);
                     DataRepeater.DataSource = this.ModelItems;
                 }
 
@@ -2199,7 +2250,8 @@ namespace Passero.Framework.Controls
                     }
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
-                    ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
+                    this._ActiveViewModel.AddNewState = true;
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
 
@@ -2251,7 +2303,8 @@ namespace Passero.Framework.Controls
                 {
                     DataGridView.CancelEdit();
                     DataGridView.DataSource = null;
-                    ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
+                    ER = (ExecutionResult)_ActiveViewModel.UndoChanges(true);
                     DataGridView.DataSource = this.ModelItems;
                     //DataGridView.DataSource = this.ModelItemsShadow;
                     DataGridViewColumn c = Framework.ControlsUtilities.GetFirstVisibleColumnForDataGridView(DataGridView);
@@ -3223,8 +3276,10 @@ namespace Passero.Framework.Controls
                     }
                     else
                     {
-                        Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "DeleteItem");
-                        int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
+                        //Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "DeleteItem");
+                        this._ActiveViewModel.DeleteItem();
+                        //int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
+                        int index = this.ActiveViewModel.CurrentModelItemIndex;
                         this.MoveLast();
                         eDeleteCompleted?.Invoke();
 
@@ -3499,7 +3554,8 @@ namespace Passero.Framework.Controls
                 return ER;
             }
 
-            int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
+            //int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
+            int index = this._ActiveViewModel.CurrentModelItemIndex;
             int newIndex = index;
 
             if (!OverrideManagedChanges && _ManageChanges)
@@ -3510,7 +3566,8 @@ namespace Passero.Framework.Controls
             else
             {
                 this._AddNewState = true;
-                ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
+                //ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
+                this._ActiveViewModel.AddNewCurrentModelItemIndex = index;
                 SetButtonsForAddNew();
                 if (eAddNew != null)
                     eAddNew();
@@ -3531,8 +3588,10 @@ namespace Passero.Framework.Controls
                 return;
             }
             var itemscount = 0;
-            int index = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "CurrentModelItemIndex");
-            itemscount = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "ModelItemsCount");
+            //int index = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "CurrentModelItemIndex");
+            //itemscount = (int)ReflectionHelper.GetPropertyValue(ActiveViewModel, "ModelItemsCount");
+            int index = ActiveViewModel.CurrentModelItemIndex;
+            itemscount = ActiveViewModel.ModelItemsCount;
             RecordLabel.Text = string.Format(RecordLabelHtmlFormat, index + 1, RecordLabelSeparator, itemscount);
             if (itemscount == 0 && AddNewState == false)
             {
@@ -3593,7 +3652,8 @@ namespace Passero.Framework.Controls
                 if (_DataGridView.CurrentRow.Index > 0)
                 {
                     _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                    ER = (ExecutionResult)this._ActiveViewModel.MovePreviousItem();
                 }
             }
 
@@ -3627,7 +3687,8 @@ namespace Passero.Framework.Controls
             }
             else
             {
-                Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                //Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
+                this._ActiveViewModel.MovePreviousItem();
                 MovePreviousDataGridListView();
             }
             UpdateRecordLabel();
@@ -3714,8 +3775,8 @@ namespace Passero.Framework.Controls
                     if (_DataGridView.CurrentRow.Index < _DataGridView.Rows.Count - 1)
                     {
                         _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index + 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
-                        ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
-                    }
+                        //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
+                        ER = this._ActiveViewModel.MoveNextItem();                    }
                 }
             }
 
@@ -3771,7 +3832,8 @@ namespace Passero.Framework.Controls
                 }
                 else
                 {
-                    ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", ItemIndex);
+                    //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", ItemIndex);
+                    ER = this._ActiveViewModel.MoveAtItem();
                     MoveAtItemDataGridListView(ItemIndex);
                     if (eUndoCompleted != null)
                         eUndoCompleted();
@@ -3834,7 +3896,8 @@ namespace Passero.Framework.Controls
             if (_DataGridActive && _DataGridView != null && _DataGridView.CurrentRow != null)
             {
                 _DataGridView.CurrentCell = _DataGridView.Rows[0].Cells[_DataGridView.CurrentCell.ColumnIndex];
-                ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
+                //ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
+                this._ActiveViewModel.MoveFirstItem();
             }
             ER.Context = ERContenxt;
             return ER;
@@ -3852,7 +3915,8 @@ namespace Passero.Framework.Controls
             if (_DataGridActive == true && _DataGridView != null && _DataGridView.CurrentRow != null)
             {
                 _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.Rows.Count - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
-                ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", _DataGridView.CurrentRow.Index);
+                //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", _DataGridView.CurrentRow.Index);
+                ER = this._ActiveViewModel.MoveAtItem(_DataGridView.CurrentRow.Index);
             }
             ER.Context = ERContenxt;
             return ER;
@@ -3941,7 +4005,8 @@ namespace Passero.Framework.Controls
                         }
                         break;
                     default:
-                        ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
+                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
+                        ER = (ExecutionResult)this.ActiveViewModel.ReloadItems();
                         break;
                 }
 
