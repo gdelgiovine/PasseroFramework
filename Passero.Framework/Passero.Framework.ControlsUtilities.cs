@@ -11,9 +11,17 @@ using Wisej.Web;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ControlsUtilities
 
     {
+        /// <summary>
+        /// Datas the column is numeric.
+        /// </summary>
+        /// <param name="col">The col.</param>
+        /// <returns></returns>
         public static bool DataColumnIsNumeric(DataColumn col)
         {
             if (col == null)
@@ -27,6 +35,18 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// TreeViews the load.
+        /// </summary>
+        /// <param name="treeView">The tree view.</param>
+        /// <param name="parentId">The parent identifier.</param>
+        /// <param name="parentNode">The parent node.</param>
+        /// <param name="dataTable">The data table.</param>
+        /// <param name="IDColumnName">Name of the identifier column.</param>
+        /// <param name="parentIDColumnName">Name of the parent identifier column.</param>
+        /// <param name="textColumnName">Name of the text column.</param>
+        /// <param name="keyColumName">Name of the key colum.</param>
+        /// <param name="sort">The sort.</param>
         public static void TreeViewLoad(ref TreeView treeView, object parentId, TreeNode parentNode, DataTable dataTable, string IDColumnName, string parentIDColumnName, string textColumnName, string keyColumName = "", string sort = "")
         {
 
@@ -87,6 +107,12 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets the name of the tree node by.
+        /// </summary>
+        /// <param name="treeNodes">The tree nodes.</param>
+        /// <param name="nodeName">Name of the node.</param>
+        /// <returns></returns>
         public static TreeNode GetTreeNodeByName(TreeNodeCollection treeNodes, string nodeName)
         {
 
@@ -105,6 +131,18 @@ namespace Passero.Framework
             return tvnRet;
 
         }
+        /// <summary>
+        /// TreeViews the ComboBox load.
+        /// </summary>
+        /// <param name="treeView">The tree view.</param>
+        /// <param name="parentId">The parent identifier.</param>
+        /// <param name="parentNode">The parent node.</param>
+        /// <param name="dataTable">The data table.</param>
+        /// <param name="IDColumnName">Name of the identifier column.</param>
+        /// <param name="parentIDColumnName">Name of the parent identifier column.</param>
+        /// <param name="textColumnName">Name of the text column.</param>
+        /// <param name="keyColumName">Name of the key colum.</param>
+        /// <param name="sort">The sort.</param>
         public static void TreeViewComboBoxLoad(ref TreeViewComboBox treeView, object parentId, TreeNode parentNode, DataTable dataTable, string IDColumnName, string parentIDColumnName, string textColumnName, string keyColumName = "", string sort = "")
         {
             TreeNode childNode;
@@ -160,17 +198,26 @@ namespace Passero.Framework
 
         }
 
-    
 
 
 
 
+
+        /// <summary>
+        /// Centers the on parent control.
+        /// </summary>
+        /// <param name="control">The control.</param>
         public static void CenterOnParentControl(Control control)
         {
 
             control.CenterToParent();
             control.Anchor = AnchorStyles.None; 
         }
+        /// <summary>
+        /// Gets the first visible column for data grid view.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public static  DataGridViewColumn GetFirstVisibleColumnForDataGridView(DataGridView DataGridView)
         {
             foreach (DataGridViewColumn c in DataGridView.Columns)
@@ -183,6 +230,11 @@ namespace Passero.Framework
             return null;
         }
 
+        /// <summary>
+        /// Gets the first visible column for data grid view row.
+        /// </summary>
+        /// <param name="DataGridViewRow">The data grid view row.</param>
+        /// <returns></returns>
         public static DataGridViewColumn GetFirstVisibleColumnForDataGridViewRow(DataGridViewRow DataGridViewRow)
         {
             foreach (DataGridViewCell c in DataGridViewRow.Cells)
@@ -195,6 +247,11 @@ namespace Passero.Framework
             return null;
         }
 
+        /// <summary>
+        /// Gets the first editable column for data grid view.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public static DataGridViewColumn GetFirstEditableColumnForDataGridView(DataGridView DataGridView)
         {
             foreach (DataGridViewColumn c in DataGridView.Columns)
@@ -206,6 +263,11 @@ namespace Passero.Framework
             }
             return null;
         }
+        /// <summary>
+        /// Gets the first editable column for data grid view row.
+        /// </summary>
+        /// <param name="DataGridViewRow">The data grid view row.</param>
+        /// <returns></returns>
         public static DataGridViewColumn GetFirstEditableColumnForDataGridViewRow(DataGridViewRow DataGridViewRow)
         {
             foreach (DataGridViewCell c in DataGridViewRow.Cells)
@@ -218,6 +280,12 @@ namespace Passero.Framework
             return null;
         }
 
+        /// <summary>
+        /// Gets the data repeater item control.
+        /// </summary>
+        /// <param name="DataRepeaterItem">The data repeater item.</param>
+        /// <param name="TemplateControl">The template control.</param>
+        /// <returns></returns>
         public static Control GetDataRepeaterItemControl(DataRepeaterItem DataRepeaterItem, Control TemplateControl)
         {
             if (DataRepeaterItem.Controls.ContainsKey(TemplateControl.Name))
@@ -230,6 +298,12 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the data repeater current item control.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <param name="TemplateControl">The template control.</param>
+        /// <returns></returns>
         public static Control GetDataRepeaterCurrentItemControl(DataRepeater DataRepeater, Control TemplateControl)
         {
             if (DataRepeater.CurrentItem.Controls.ContainsKey(TemplateControl.Name))
@@ -241,6 +315,13 @@ namespace Passero.Framework
                 return null;
             }
         }
+        /// <summary>
+        /// Gets the data repeater item control property.
+        /// </summary>
+        /// <param name="DataRepeaterItem">The data repeater item.</param>
+        /// <param name="TemplateControl">The template control.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         public static object GetDataRepeaterItemControlProperty(DataRepeaterItem DataRepeaterItem, Control TemplateControl, string PropertyName)
         {
             object Value = null;
@@ -251,6 +332,14 @@ namespace Passero.Framework
             return Value;
         }
 
+        /// <summary>
+        /// Sets the data repeater item control property.
+        /// </summary>
+        /// <param name="DataRepeaterItem">The data repeater item.</param>
+        /// <param name="TemplateControl">The template control.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <param name="Value">The value.</param>
+        /// <returns></returns>
         public static bool SetDataRepeaterItemControlProperty(DataRepeaterItem DataRepeaterItem, Control TemplateControl, string PropertyName, object Value)
         {
             bool esito = false;
@@ -262,6 +351,13 @@ namespace Passero.Framework
             }
             return esito;
         }
+        /// <summary>
+        /// Gets the data repeater control.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <param name="TemplateControl">The template control.</param>
+        /// <param name="Index">The index.</param>
+        /// <returns></returns>
         public static   Control GetDataRepeaterControl(DataRepeater DataRepeater, Control TemplateControl, int Index = -1)
         {
             if (Index == -1)
@@ -289,6 +385,12 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Creates the passero binding from binding source.
+        /// </summary>
+        /// <param name="Form">The form.</param>
+        /// <param name="BindingSource">The binding source.</param>
+        /// <returns></returns>
         public static Dictionary<string, DataBindControl> CreatePasseroBindingFromBindingSource(Form Form, BindingSource BindingSource)
         {
             
@@ -329,6 +431,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Bindings the source controls.
+        /// </summary>
+        /// <param name="Form">The form.</param>
+        /// <param name="BindingSource">The binding source.</param>
+        /// <returns></returns>
         public static Dictionary<string, Control> BindingSourceControls(Form Form, BindingSource BindingSource = null)
         {
             
@@ -359,6 +467,13 @@ namespace Passero.Framework
             return ctls;    
 
         }
+        /// <summary>
+        /// Clears the binding source controls.
+        /// </summary>
+        /// <param name="Form">The form.</param>
+        /// <param name="BindingSource">The binding source.</param>
+        /// <param name="T">The t.</param>
+        /// <returns></returns>
         public static int ClearBindingSourceControls(Wisej.Web.Form Form, BindingSource BindingSource, Type T = null )
         {
             int writedproperties = 0;
@@ -424,6 +539,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Shows the form.
+        /// </summary>
+        /// <param name="FormCollection">The form collection.</param>
+        /// <param name="FormName">Name of the form.</param>
         public static void ShowForm(Application.FormCollection FormCollection, string FormName)
         {
 
@@ -449,6 +569,12 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the existing form.
+        /// </summary>
+        /// <param name="FormCollection">The form collection.</param>
+        /// <param name="FormName">Name of the form.</param>
+        /// <returns></returns>
         public static Form GetExistingForm(Application.FormCollection FormCollection, string FormName)
         {
 
@@ -456,6 +582,12 @@ namespace Passero.Framework
             return form;
 
         }
+        /// <summary>
+        /// Gets the existing page.
+        /// </summary>
+        /// <param name="PageCollection">The page collection.</param>
+        /// <param name="PageName">Name of the page.</param>
+        /// <returns></returns>
         public static Page GetExistingPage(Application.PageCollection PageCollection, string PageName)
         {
 
@@ -464,6 +596,13 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Forms the exist.
+        /// </summary>
+        /// <param name="FormCollection">The form collection.</param>
+        /// <param name="FormName">Name of the form.</param>
+        /// <param name="ShowIfExist">if set to <c>true</c> [show if exist].</param>
+        /// <returns></returns>
         public static bool FormExist(Application.FormCollection FormCollection, string FormName, bool ShowIfExist = true)
         {
 
@@ -485,6 +624,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Datas the grid row move up.
+        /// </summary>
+        /// <param name="dgv">The DGV.</param>
+        /// <param name="dgvc">The DGVC.</param>
         public static void DataGridRowMoveUp(DataGridView dgv, DataGridViewColumn dgvc)
         {
             if (dgv.RowCount <= 0)
@@ -511,6 +655,11 @@ namespace Passero.Framework
                 dgv.Rows[i][dgvc].Value = i + 1;
         }
 
+        /// <summary>
+        /// Datas the grid row move down.
+        /// </summary>
+        /// <param name="dgv">The DGV.</param>
+        /// <param name="dgvc">The DGVC.</param>
         public static void DataGridRowMoveDown(DataGridView dgv, DataGridViewColumn dgvc)
         {
             if (dgv.RowCount <= 0)
@@ -537,6 +686,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the ComboBox selected item data.
+        /// </summary>
+        /// <typeparam name="Model">The type of the odel.</typeparam>
+        /// <param name="ComboBox">The ComboBox.</param>
+        /// <returns></returns>
         public static Model GetComboBoxSelectedItemData<Model>(ComboBox ComboBox) where Model : class
         {
 
@@ -554,6 +709,14 @@ namespace Passero.Framework
 
 
         }
+        /// <summary>
+        /// Gets the ComboBox selected item data property.
+        /// </summary>
+        /// <typeparam name="Model">The type of the odel.</typeparam>
+        /// <param name="ComboBox">The ComboBox.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <param name="DefaultValue">The default value.</param>
+        /// <returns></returns>
         public static object GetComboBoxSelectedItemDataProperty<Model>(ComboBox ComboBox, string PropertyName, object DefaultValue = null) where Model : class
         {
 
@@ -582,6 +745,10 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Centers the control to parent.
+        /// </summary>
+        /// <param name="Control">The control.</param>
         public static void CenterControlToParent(Control Control)
         {
 
@@ -601,6 +768,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Centers the control to form.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="Form">The form.</param>
         public static void CenterControlToForm(Control Control, Form Form)
         {
 
@@ -619,6 +791,11 @@ namespace Passero.Framework
 
 
         }
+        /// <summary>
+        /// Fits the control to parent.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="Margins">The margins.</param>
         public static void FitControlToParent(Control Control, Margins Margins = null)
         {
 
@@ -654,6 +831,17 @@ namespace Passero.Framework
             Control.Height = Control.Parent.ClientSize.Height - HeaderSize - Margins.Top - Margins.Bottom;
 
         }
+        /// <summary>
+        /// Sets the controls location.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ReferenceControl">The reference control.</param>
+        /// <param name="MinHeight">The minimum height.</param>
+        /// <param name="MaxHeight">The maximum height.</param>
+        /// <param name="MinWidth">The minimum width.</param>
+        /// <param name="MaxWidth">The maximum width.</param>
+        /// <param name="Offset">The offset.</param>
+        /// <param name="Parent">The parent.</param>
         public static void SetControlsLocation(Control Control, Control ReferenceControl, int MinHeight, int MaxHeight, int MinWidth, int MaxWidth, int Offset, Control Parent)
         {
 
@@ -691,26 +879,47 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Invokes the on resize.
+        /// </summary>
+        /// <param name="Control">The control.</param>
         public static void InvokeOnResize(Control Control)
         {
             typeof(Control).GetMethod("OnResize", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Control, new object[] { EventArgs.Empty });
         }
 
+        /// <summary>
+        /// Invokes the on resize.
+        /// </summary>
+        /// <param name="Page">The page.</param>
         public static void InvokeOnResize(Page Page)
         {
             typeof(Page).GetMethod("OnResize", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Page, new object[] { EventArgs.Empty });
         }
 
+        /// <summary>
+        /// Invokes the on resize.
+        /// </summary>
+        /// <param name="Form">The form.</param>
         public static void InvokeOnResize(Form Form)
         {
             typeof(Form).GetMethod("OnResize", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Form, new object[] { EventArgs.Empty });
         }
 
+        /// <summary>
+        /// Invokes the on resize.
+        /// </summary>
+        /// <param name="Desktop">The desktop.</param>
         public static void InvokeOnResize(Desktop Desktop)
         {
             typeof(Desktop).GetMethod("OnResize", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Desktop, new object[] { EventArgs.Empty });
         }
 
+        /// <summary>
+        /// Gets the height of the table rows.
+        /// </summary>
+        /// <param name="Table">The table.</param>
+        /// <returns></returns>
         public static int GetTableRowsHeight(TableLayoutPanel Table)
         {
 
@@ -723,6 +932,16 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Sets the panel position.
+        /// </summary>
+        /// <param name="Panel">The panel.</param>
+        /// <param name="MinWidth">The minimum width.</param>
+        /// <param name="MaxWidth">The maximum width.</param>
+        /// <param name="ReferenceControl">The reference control.</param>
+        /// <param name="HeightReferenceControl">The height reference control.</param>
+        /// <param name="LocationOffset">The location offset.</param>
+        /// <param name="HeightOffset">The height offset.</param>
         public static void SetPanelPosition(ref FlowLayoutPanel Panel, int MinWidth, int MaxWidth, Control ReferenceControl, Control HeightReferenceControl = null, int LocationOffset = 5, int HeightOffset = 5)
         {
 
@@ -793,6 +1012,16 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Sets the table position.
+        /// </summary>
+        /// <param name="Table">The table.</param>
+        /// <param name="MinWidth">The minimum width.</param>
+        /// <param name="MaxWidth">The maximum width.</param>
+        /// <param name="ReferenceControl">The reference control.</param>
+        /// <param name="HeightReferenceControl">The height reference control.</param>
+        /// <param name="LocationOffset">The location offset.</param>
+        /// <param name="HeightOffset">The height offset.</param>
         public static void SetTablePosition(ref TableLayoutPanel Table, int MinWidth, int MaxWidth, Control ReferenceControl, Control HeightReferenceControl = null, int LocationOffset = 5, int HeightOffset = 5)
         {
 
@@ -858,6 +1087,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Sets the height of the panel.
+        /// </summary>
+        /// <param name="Panel">The panel.</param>
+        /// <param name="ReferenceControl">The reference control.</param>
+        /// <param name="Offset">The offset.</param>
         public static void SetPanelHeight(ref FlowLayoutPanel Panel, Control ReferenceControl, int Offset = 5)
         {
             Panel.Height = ReferenceControl.Top + ReferenceControl.Height + Panel.HeaderSize + Offset;

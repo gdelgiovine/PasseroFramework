@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,50 +7,149 @@ using System.Data;
 using System.Runtime.CompilerServices;
 //using Passero.Framework.Base;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework.Controls
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="Wisej.Web.UserControl" />
     public partial class DataNavigator
     {
+        /// <summary>
+        /// The m class name
+        /// </summary>
         private const string mClassName = "Passero.Framework.Controls.DataNavigator";
 
+        /// <summary>
+        ///   <br />
+        /// </summary>
         public enum EventType
         {
+            /// <summary>
+            /// The move
+            /// </summary>
             Move,
+            /// <summary>
+            /// The move first
+            /// </summary>
             MoveFirst,
+            /// <summary>
+            /// The move last
+            /// </summary>
             MoveLast,
+            /// <summary>
+            /// The move next
+            /// </summary>
             MoveNext,
+            /// <summary>
+            /// The move previous
+            /// </summary>
             MovePrevious,
+            /// <summary>
+            /// The add new
+            /// </summary>
             AddNew,
+            /// <summary>
+            /// The delete
+            /// </summary>
             Delete,
+            /// <summary>
+            /// The save
+            /// </summary>
             Save,
+            /// <summary>
+            /// The close
+            /// </summary>
             Close,
+            /// <summary>
+            /// The undo
+            /// </summary>
             Undo,
+            /// <summary>
+            /// The print
+            /// </summary>
             Print,
+            /// <summary>
+            /// The find
+            /// </summary>
             Find,
+            /// <summary>
+            /// The refresh
+            /// </summary>
             Refresh
         }
 
+        /// <summary>
+        /// The ListView columns
+        /// </summary>
         public ListViewColumns ListViewColumns = new ListViewColumns();
+        /// <summary>
+        /// The data grid ListView data table
+        /// </summary>
         private DataTable _DataGridListViewDataTable;
+        /// <summary>
+        /// The data grid ListView default row height
+        /// </summary>
         private int _DataGridListViewDefaultRowHeight = 24;
+        /// <summary>
+        /// The move previous caption
+        /// </summary>
         private string _MovePreviousCaption = "Prev.";
+        /// <summary>
+        /// The move next caption
+        /// </summary>
         private string _MoveNextCaption = "Next";
+        /// <summary>
+        /// The move first caption
+        /// </summary>
         private string _MoveFirstCaption = "First";
+        /// <summary>
+        /// The move last caption
+        /// </summary>
         private string _MoveLastCaption = "Last";
+        /// <summary>
+        /// The add new caption
+        /// </summary>
         private string _AddNewCaption = "New";
+        /// <summary>
+        /// The delete caption
+        /// </summary>
         private string _DeleteCaption = "Delete";
+        /// <summary>
+        /// The save caption
+        /// </summary>
         private string _SaveCaption = "Save";
+        /// <summary>
+        /// The refresh caption
+        /// </summary>
         private string _RefreshCaption = "Refresh";
+        /// <summary>
+        /// The undo caption
+        /// </summary>
         private string _UndoCaption = "Undo";
+        /// <summary>
+        /// The close caption
+        /// </summary>
         private string _CloseCaption = "Close";
+        /// <summary>
+        /// The find caption
+        /// </summary>
         private string _FindCaption = "Find";
+        /// <summary>
+        /// The print caption
+        /// </summary>
         private string _PrintCaption = "Print";
 
+        /// <summary>
+        /// The print f key
+        /// </summary>
         private int _PrintFKey = (int)Keys.F8;
 
+        /// <summary>
+        /// Raises the event bound completed.
+        /// </summary>
         public void RaiseEventBoundCompleted()
         {
             eBoundCompleted?.Invoke();
@@ -60,11 +158,32 @@ namespace Passero.Framework.Controls
             //    eBoundCompleted();
         }
 
+        /// <summary>
+        /// Gets or sets the record label HTML format.
+        /// </summary>
+        /// <value>
+        /// The record label HTML format.
+        /// </value>
         public string RecordLabelHtmlFormat { get; set; } = "<p style='margin-top:2px;line-height:1.0;text-align:center;'>{0}<br>{1}<br>{2}</p>";
 
+        /// <summary>
+        /// Gets or sets the view models.
+        /// </summary>
+        /// <value>
+        /// The view models.
+        /// </value>
         public Dictionary<string, DataNavigatorViewModel> ViewModels { get; set; } = new Dictionary<string, DataNavigatorViewModel>(StringComparer.InvariantCultureIgnoreCase);
 
+        /// <summary>
+        /// The data repeater
+        /// </summary>
         private DataRepeater __DataRepeater;
+        /// <summary>
+        /// Gets or sets the data repeater.
+        /// </summary>
+        /// <value>
+        /// The data repeater.
+        /// </value>
         private DataRepeater _DataRepeater
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
@@ -80,7 +199,19 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [use update ex].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [use update ex]; otherwise, <c>false</c>.
+        /// </value>
         public bool UseUpdateEx { get; set; } = false;
+        /// <summary>
+        /// Gets the model items count.
+        /// </summary>
+        /// <value>
+        /// The model items count.
+        /// </value>
         public int ModelItemsCount
         {
             get
@@ -88,19 +219,25 @@ namespace Passero.Framework.Controls
                 if (_ActiveViewModel == null)
                     return 0;
                 //return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "ModelItemsCount");
-                return (int)this._ActiveViewModel.ModelItemsCount;
+                return (int)_ActiveViewModel.ModelItemsCount;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the index of the current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the current model item.
+        /// </value>
         public int CurrentModelItemIndex
         {
             get
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
                     //return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
-                    return (int)this._ActiveViewModel.CurrentModelItemIndex;
+                    return (int)_ActiveViewModel.CurrentModelItemIndex;
                 else
                     return -1;
             }
@@ -110,20 +247,26 @@ namespace Passero.Framework.Controls
                 {
                     if (_ActiveViewModel != null)
                         //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "CurrentModelItemIndex", value);
-                        this._ActiveViewModel.CurrentModelItemIndex = value;
+                        _ActiveViewModel.CurrentModelItemIndex = value;
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the index of the add new current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the add new current model item.
+        /// </value>
         public int AddNewCurrentModelItemIndex
         {
             get
             {
-               
-                if (this._ActiveViewModel != null)
+
+                if (_ActiveViewModel != null)
                     return -1;
                 if (DesignMode == false)
                     //return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");
-                    return (int)this._ActiveViewModel.AddNewCurrentModelItemIndex;
+                    return (int)_ActiveViewModel.AddNewCurrentModelItemIndex;
                 else
                     return -1;
             }
@@ -133,37 +276,43 @@ namespace Passero.Framework.Controls
                 {
                     if (_ActiveViewModel != null)
                         //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewCurrentModelItemIndex", value);
-                        this._ActiveViewModel.AddNewCurrentModelItemIndex = value;
+                        _ActiveViewModel.AddNewCurrentModelItemIndex = value;
                 }
             }
         }
 
 
-        
 
+
+        /// <summary>
+        /// Views the model add new.
+        /// </summary>
+        /// <param name="NewItem">The new item.</param>
+        /// <param name="InsertAtCursor">if set to <c>true</c> [insert at cursor].</param>
+        /// <returns></returns>
         public ExecutionResult ViewModel_AddNew(object NewItem = null, bool InsertAtCursor = false)
         {
             string ERContext = $"{mClassName}ViewModel_AddNew()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    ER = this.DataGrid_AddNew(NewItem, InsertAtCursor);
+                    ER = DataGrid_AddNew(NewItem, InsertAtCursor);
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    ER = this.DataRepeater_AddNew(NewItem, InsertAtCursor);
+                    ER = DataRepeater_AddNew(NewItem, InsertAtCursor);
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "AddNew", Microsoft.VisualBasic.CallType.Method, NewItem);
-                    ER = (ExecutionResult)this.ActiveViewModel.AddNew( NewItem);
+                    ER = (ExecutionResult)ActiveViewModel.AddNew(NewItem);
                     break;
             }
 
 
             if (ER.Success)
             {
-                this._AddNewState = true;
+                _AddNewState = true;
                 SetButtonsForAddNew();
                 if (eAddNewCompleted != null)
                     eAddNewCompleted();
@@ -180,28 +329,32 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Views the model delete item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_DeleteItem()
         {
             string ERContext = $"{mClassName}.ViewModel_DeleteItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_Delete();
+                        ER = DataGrid_Delete();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        ER = this.DataRepeater_Delete();
+                        ER = DataRepeater_Delete();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, null);
-                    ER = (ExecutionResult)this.ActiveViewModel.DeleteItem(null);
+                    ER = (ExecutionResult)ActiveViewModel.DeleteItem(null);
                     break;
             }
             ER.Context = ERContext;
@@ -211,37 +364,45 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Views the model delete items.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_DeleteItems()
         {
             string ERContext = $"{mClassName}.ViewModel_DeleteItems()";
             ExecutionResult ER = new ExecutionResult(ERContext);
             //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "DeleteItems", Microsoft.VisualBasic.CallType.Method, null);
-            ER = (ExecutionResult)this.ActiveViewModel.DeleteItems(null);
+            ER = (ExecutionResult)ActiveViewModel.DeleteItems(null);
             ER.Context = ERContext;
             return ER;
         }
 
 
 
+        /// <summary>
+        /// Views the model undo changes.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_UndoChanges()
         {
             string ERContext = $"{mClassName}.ViewModel_UndoChanges()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_Undo();
+                        ER = DataGrid_Undo();
                         if (eUndoCompleted != null)
                             eUndoCompleted();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        this.DataRepeater_Undo();
+                        DataRepeater_Undo();
                         if (eUndoCompleted != null)
                             eUndoCompleted();
                     }
@@ -249,7 +410,7 @@ namespace Passero.Framework.Controls
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method);
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref this._ActiveViewModel, "UndoChanges", false);
-                    ER = (ExecutionResult)this._ActiveViewModel.UndoChanges(false);
+                    ER = (ExecutionResult)_ActiveViewModel.UndoChanges(false);
                     if (ER.Success)
                     {
                         if (eUndoCompleted != null)
@@ -263,28 +424,32 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Views the model move first item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_MoveFirstItem()
         {
 
             string ERContext = $"{mClassName}.ViewModel_MoveFirstItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_MoveFirst();
+                        ER = DataGrid_MoveFirst();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        ER = this.DataRepeater_MoveFirst();
+                        ER = DataRepeater_MoveFirst();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveFirstItem", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)this.ActiveViewModel.MoveFirstItem();
+                    ER = (ExecutionResult)ActiveViewModel.MoveFirstItem();
                     break;
             }
 
@@ -292,29 +457,33 @@ namespace Passero.Framework.Controls
             return ER;
         }
 
+        /// <summary>
+        /// Views the model move last item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_MoveLastItem()
         {
 
             string ERContext = $"{mClassName}.ViewModel_MoveLastItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_MoveLast();
+                        ER = DataGrid_MoveLast();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        ER = this.DataRepeater_MoveLast();
+                        ER = DataRepeater_MoveLast();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MoveLastItem", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)this.ActiveViewModel.MoveLastItem();
+                    ER = (ExecutionResult)ActiveViewModel.MoveLastItem();
                     break;
             }
             ER.Context = ERContext;
@@ -324,27 +493,31 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Views the model move previous item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_MovePreviousItem()
         {
             string ERContext = $"{mClassName}.ViewModel_MovePreviousItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_MovePrevious();
+                        ER = DataGrid_MovePrevious();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        ER = this.DataRepeater_MovePrevious();
+                        ER = DataRepeater_MovePrevious();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "MovePreviousItem", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)this.ActiveViewModel.MovePreviousItem();
+                    ER = (ExecutionResult)ActiveViewModel.MovePreviousItem();
                     break;
             }
 
@@ -354,28 +527,32 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Views the model move next item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_MoveNextItem()
         {
             string ERContext = $"{mClassName}.ViewModel_MoveNextItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        ER = this.DataGrid_MoveNext();
+                        ER = DataGrid_MoveNext();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        ER = this.DataRepeater_MoveNext();
+                        ER = DataRepeater_MoveNext();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "MoveNextItem", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)this._ActiveViewModel.MoveNextItem();
+                    ER = (ExecutionResult)_ActiveViewModel.MoveNextItem();
                     break;
             }
             ER.Context = ERContext;
@@ -383,33 +560,37 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Views the model reload items.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_ReloadItems()
         {
 
             string ERContext = $"{mClassName}.ViewModel_ReloadItems()"; ;
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        this._DataGridView.DataSource = this.ModelItems;
-                        ER = this.DataGrid_MoveFirst();
+                        _DataGridView.DataSource = ModelItems;
+                        ER = DataGrid_MoveFirst();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        this._DataRepeater.DataSource = this.ModelItems;
+                        _DataRepeater.DataSource = ModelItems;
                         //Me._DataRepeater.Refresh()
-                        ER = this.DataRepeater_MoveFirst();
+                        ER = DataRepeater_MoveFirst();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
-                    ER = (ExecutionResult)this.ActiveViewModel.ReloadItems();
-                    
+                    ER = (ExecutionResult)ActiveViewModel.ReloadItems();
+
 
                     break;
             }
@@ -418,24 +599,29 @@ namespace Passero.Framework.Controls
         }
 
 
-        public ExecutionResult ViewModel_UdpateItem(dynamic  item = null)
+        /// <summary>
+        /// Views the model udpate item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns></returns>
+        public ExecutionResult ViewModel_UdpateItem(dynamic item = null)
         {
             string ERContext = $"{mClassName}.ViewModel_UdpateItem()";
 
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        this.DataGrid_Save();
+                        DataGrid_Save();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        this.DataRepeater_Save();
+                        DataRepeater_Save();
                     }
                     break;
                 default:
@@ -447,21 +633,21 @@ namespace Passero.Framework.Controls
                     if (_AddNewState)
                     {
                         //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "InsertItem", item);
-                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
+                        ER = (ExecutionResult)_ActiveViewModel.InsertItem(item);
                         if (ER.Success)
                         {
-                            this.ViewModel_MoveLastItem();
+                            ViewModel_MoveLastItem();
                             _AddNewState = false;
                         }
                     }
                     else
                     {
-                        if (this.UseUpdateEx )
+                        if (UseUpdateEx)
                             //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItem", item);
-                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItem(item);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItem(item);
                         else
                             //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItemEx", item);
-                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItemEx( item);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItemEx(item);
                     }
                     break;
 
@@ -486,29 +672,33 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Views the model udpate items.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ViewModel_UdpateItems()
         {
 
             string ERContext = $"{mClassName}.ViewModel_UdpateItems()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            switch (this._ActiveDataNavigatorViewModel.GridMode)
+            switch (_ActiveDataNavigatorViewModel.GridMode)
             {
                 case ViewModelGridModes.DataGridView:
-                    if (this._DataGridView != null && this.DataGridActive)
+                    if (_DataGridView != null && DataGridActive)
                     {
-                        this.DataGrid_Save();
+                        DataGrid_Save();
                     }
                     break;
                 case ViewModelGridModes.DataRepeater:
-                    if (this._DataRepeater != null && this.DataGridActive)
+                    if (_DataRepeater != null && DataGridActive)
                     {
-                        this.DataRepeater_Save();
+                        DataRepeater_Save();
                     }
                     break;
                 default:
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, null);
-                    ER = (ExecutionResult)this.ActiveViewModel.UpdateItems(null);
+                    ER = (ExecutionResult)ActiveViewModel.UpdateItems(null);
                     break;
             }
 
@@ -518,6 +708,10 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Sets the active view model.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
         public void SetActiveViewModel(DataNavigatorViewModel viewModel)
         {
             var typename = typeof(ViewModel<>).Name; // "ViewModel`1";
@@ -532,7 +726,7 @@ namespace Passero.Framework.Controls
                     //_ModelItem = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
                     _ModelItem = viewModel.ViewModel.ModelItem;
                 }
-                catch (Exception __unusedException1__)
+                catch (Exception)
                 {
                     _ModelItem = _ModelItems.GetType().GetGenericArguments()[0];
                 }
@@ -541,7 +735,7 @@ namespace Passero.Framework.Controls
                 _BindingSource = viewModel.ViewModel.BindingSource;
                 viewModel.ViewModel.DataNavigator = this;
 
-                switch (this.ActiveDataNavigatorViewModel.GridMode)
+                switch (ActiveDataNavigatorViewModel.GridMode)
                 {
                     case ViewModelGridModes.DataGridView:
                         if (_DataGridView != null)
@@ -575,7 +769,7 @@ namespace Passero.Framework.Controls
 
                     case ViewModelGridModes.DataRepeater:
 
-                        if (this._DataRepeater != null)
+                        if (_DataRepeater != null)
                         {
                             _DataRepeater.Enabled = false;
                         }
@@ -606,8 +800,8 @@ namespace Passero.Framework.Controls
                 }
 
                 if (viewModel.Name != "")
-                   Caption = viewModel.Name;    
-                if (viewModel .FriendlyName !="")
+                    Caption = viewModel.Name;
+                if (viewModel.FriendlyName != "")
                     Caption = viewModel.FriendlyName;
 
             }
@@ -625,13 +819,23 @@ namespace Passero.Framework.Controls
             UpdateRecordLabel();
         }
 
+        /// <summary>
+        /// Handles the SelectionChanged event of the _DataGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void _DataGridView_SelectionChanged(object sender, EventArgs e)
         {
 
-            this.CurrentModelItemIndex = this.DataGridView.CurrentRow.Index;
+            CurrentModelItemIndex = DataGridView.CurrentRow.Index;
             UpdateRecordLabel();
         }
 
+        /// <summary>
+        /// Handles the RowStateChanged event of the _DataGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewRowStateChangedEventArgs"/> instance containing the event data.</param>
         private void _DataGridView_RowStateChanged(object sender, DataGridViewRowStateChangedEventArgs e)
         {
             //if (e.StateChanged == DataGridViewElementStates.Selected)
@@ -641,6 +845,11 @@ namespace Passero.Framework.Controls
             //}
         }
 
+        /// <summary>
+        /// Handles the Click event of the DataRepeater control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void DataRepeater_Click(object sender, EventArgs e)
         {
             //if (this.DataRepeater.CurrentRow != null)
@@ -650,18 +859,31 @@ namespace Passero.Framework.Controls
             //}
         }
 
+        /// <summary>
+        /// Sets the active view model.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
         public void SetActiveViewModel(string viewModel)
         {
-            if (this.ViewModels.ContainsKey(viewModel))
+            if (ViewModels.ContainsKey(viewModel))
             {
-                SetActiveViewModel(this.ViewModels[viewModel]);
+                SetActiveViewModel(ViewModels[viewModel]);
             }
         }
 
 
-     
 
-        private dynamic  _ActiveViewModel = null;
+
+        /// <summary>
+        /// The active view model
+        /// </summary>
+        private dynamic _ActiveViewModel = null;
+        /// <summary>
+        /// Gets the active view model.
+        /// </summary>
+        /// <value>
+        /// The active view model.
+        /// </value>
         public dynamic ActiveViewModel
         {
             get
@@ -670,14 +892,20 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Gets the type of the model.
+        /// </summary>
+        /// <value>
+        /// The type of the model.
+        /// </value>
         public Type ModelType
         {
             get
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
                     //return (Type)ReflectionHelper.CallByName(this._ActiveViewModel, "ModelType", CallType.Get, null);
-                    return this._ActiveViewModel.ModelType;
+                    return _ActiveViewModel.ModelType;
                 }
                 return null;
             }
@@ -685,7 +913,16 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// The model item
+        /// </summary>
         private object _ModelItem = null;
+        /// <summary>
+        /// Gets or sets the model item.
+        /// </summary>
+        /// <value>
+        /// The model item.
+        /// </value>
         public object ModelItem
         {
             get
@@ -693,7 +930,7 @@ namespace Passero.Framework.Controls
                 if (_ActiveViewModel != null)
                 {
                     //_ModelItem = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Get, null);
-                    _ModelItem = this._ActiveViewModel.ModelItem;
+                    _ModelItem = _ActiveViewModel.ModelItem;
                     return _ModelItem;
                 }
                 return null;
@@ -703,15 +940,24 @@ namespace Passero.Framework.Controls
                 if (_ActiveViewModel != null)
                 {
                     //ReflectionHelper.CallByName(_ActiveViewModel, "ModelItem", Microsoft.VisualBasic.CallType.Set, value);
-                    this._ActiveViewModel.ModelItem = value;
-                    this._ModelItem = value;
+                    _ActiveViewModel.ModelItem = value;
+                    _ModelItem = value;
                 }
             }
         }
 
 
-        private dynamic  _ModelItems = null;
+        /// <summary>
+        /// The model items
+        /// </summary>
+        private dynamic _ModelItems = null;
 
+        /// <summary>
+        /// Gets or sets the model items.
+        /// </summary>
+        /// <value>
+        /// The model items.
+        /// </value>
         public dynamic ModelItems
         {
             get
@@ -719,7 +965,7 @@ namespace Passero.Framework.Controls
                 if (_ActiveViewModel != null)
                 {
                     //_ModelItems = ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
-                    _ModelItems = this._ActiveViewModel.ModelItems;
+                    _ModelItems = _ActiveViewModel.ModelItems;
                     return _ModelItems;
                 }
                 return null;
@@ -729,7 +975,7 @@ namespace Passero.Framework.Controls
                 if (_ActiveViewModel != null)
                 {
                     //ReflectionHelper.CallByName(_ActiveViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Set, value);
-                    this._ActiveViewModel.ModelItems = value;
+                    _ActiveViewModel.ModelItems = value;
                     _ModelItems = value;
                 }
             }
@@ -738,58 +984,97 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Gets or sets the model item shadow.
+        /// </summary>
+        /// <value>
+        /// The model item shadow.
+        /// </value>
         public dynamic ModelItemShadow
         {
             get
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
                     //return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Get, null);
-                    return this._ActiveViewModel.ModelItemShadow;
+                    return _ActiveViewModel.ModelItemShadow;
                 }
                 return null;
             }
             set
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
                     //ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemShadow", CallType.Set, value);
-                    this._ActiveViewModel.ModelItemShadow = value;
+                    _ActiveViewModel.ModelItemShadow = value;
                 }
             }
         }
 
 
 
-        public dynamic  ModelItemsShadow
+        /// <summary>
+        /// Gets or sets the model items shadow.
+        /// </summary>
+        /// <value>
+        /// The model items shadow.
+        /// </value>
+        public dynamic ModelItemsShadow
         {
             get
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
                     //return ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Get, null);
-                    return this._ActiveViewModel.ModelItemsShadow;
+                    return _ActiveViewModel.ModelItemsShadow;
                 }
                 return null;
             }
             set
             {
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
                     //ReflectionHelper.CallByName(this._ActiveViewModel, "ModelItemsShadow", CallType.Set, value);
-                    this._ActiveViewModel.ModelItemsShadow = value;
+                    _ActiveViewModel.ModelItemsShadow = value;
                 }
             }
         }
 
+        /// <summary>
+        /// The dataset
+        /// </summary>
         private DataSet _Dataset;
+        /// <summary>
+        /// The data table
+        /// </summary>
         private DataTable _DataTable;
+        /// <summary>
+        /// The currency manager
+        /// </summary>
         private Wisej.Web.CurrencyManager _CurrencyManager = null;
+        /// <summary>
+        /// The binding source
+        /// </summary>
         private Wisej.Web.BindingSource _BindingSource = new BindingSource();
+        /// <summary>
+        /// The data grid ListView row index column name
+        /// </summary>
         private string _DataGridListViewRowIndexColumnName = "$<rowindex>$";
+        /// <summary>
+        /// The data grid ListView row index column index
+        /// </summary>
         private int _DataGridListViewRowIndexColumnIndex = 0;
+        /// <summary>
+        /// The data grid
+        /// </summary>
         private DataGridView __DataGrid;
 
+        /// <summary>
+        /// Gets or sets the data grid view.
+        /// </summary>
+        /// <value>
+        /// The data grid view.
+        /// </value>
         private DataGridView _DataGridView
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
@@ -804,7 +1089,16 @@ namespace Passero.Framework.Controls
                 __DataGrid = value;
             }
         }
+        /// <summary>
+        /// The data grid ListView
+        /// </summary>
         private DataGridView __DataGridListView;
+        /// <summary>
+        /// Gets or sets the data grid ListView.
+        /// </summary>
+        /// <value>
+        /// The data grid ListView.
+        /// </value>
         private DataGridView _DataGridListView
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
@@ -831,183 +1125,571 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// The delete message
+        /// </summary>
         private string _DeleteMessage = "Confirm delete data?";
+        /// <summary>
+        /// The save message
+        /// </summary>
         private string _SaveMessage = "Confirm save data?";
+        /// <summary>
+        /// The add new message
+        /// </summary>
         private string _AddNewMessage = "Confirm new data insert?";
 
+        /// <summary>
+        /// The manage navigation
+        /// </summary>
         private bool _ManageNavigation = true;
+        /// <summary>
+        /// The manage changes
+        /// </summary>
         private bool _ManageChanges = true;
+        /// <summary>
+        /// The data grid active
+        /// </summary>
         private bool _DataGridActive = false;
+        /// <summary>
+        /// The data grid ListView active
+        /// </summary>
         private bool _DataGridListViewActive = false;
 
+        /// <summary>
+        /// The data panel
+        /// </summary>
         private Panel _DataPanel;
 
+        /// <summary>
+        /// Occurs when [e add new].
+        /// </summary>
         public event eAddNewEventHandler eAddNew;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAddNewEventHandler();
 
+        /// <summary>
+        /// Occurs when [e add new completed].
+        /// </summary>
         public event eAddNewCompletedEventHandler eAddNewCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAddNewCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e print].
+        /// </summary>
         public event ePrintEventHandler ePrint;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void ePrintEventHandler();
 
         //public event ePrintCompletedEventHandler ePrintCompleted;
         //public delegate void ePrintCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e delete].
+        /// </summary>
         public event eDeleteEventHandler eDelete;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eDeleteEventHandler();
 
+        /// <summary>
+        /// Occurs when [e delete completed].
+        /// </summary>
         public event eDeleteCompletedEventHandler eDeleteCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eDeleteCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e refresh].
+        /// </summary>
         public event eRefreshEventHandler eRefresh;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eRefreshEventHandler();
 
+        /// <summary>
+        /// Occurs when [e refresh completed].
+        /// </summary>
         public event eRefreshCompletedEventHandler eRefreshCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eRefreshCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e close].
+        /// </summary>
         public event eCloseEventHandler eClose;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eCloseEventHandler();
 
+        /// <summary>
+        /// Occurs when [e find].
+        /// </summary>
         public event eFindEventHandler eFind;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eFindEventHandler();
 
+        /// <summary>
+        /// Occurs when [e save].
+        /// </summary>
         public event eSaveEventHandler eSave;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eSaveEventHandler();
 
+        /// <summary>
+        /// Occurs when [e save completed].
+        /// </summary>
         public event eSaveCompletedEventHandler eSaveCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eSaveCompletedEventHandler();
 
 
+        /// <summary>
+        /// Occurs when [e move previous].
+        /// </summary>
         public event eMovePreviousEventHandler eMovePrevious;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMovePreviousEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move first].
+        /// </summary>
         public event eMoveFirstEventHandler eMoveFirst;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveFirstEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move last].
+        /// </summary>
         public event eMoveLastEventHandler eMoveLast;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveLastEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move next].
+        /// </summary>
         public event eMoveNextEventHandler eMoveNext;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveNextEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move at item].
+        /// </summary>
         public event eMoveAtItemEventHandler eMoveAtItem;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveAtItemEventHandler();
 
+        /// <summary>
+        /// Occurs when [e undo].
+        /// </summary>
         public event eUndoEventHandler eUndo;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eUndoEventHandler();
+        /// <summary>
+        /// Occurs when [e undo completed].
+        /// </summary>
         public event eUndoCompletedEventHandler eUndoCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eUndoCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e bound completed].
+        /// </summary>
         public event eBoundCompletedEventHandler eBoundCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eBoundCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e add new request].
+        /// </summary>
         public event eAddNewRequestEventHandler eAddNewRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eAddNewRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e after add new request].
+        /// </summary>
         public event eAfterAddNewEventHandler eAfterAddNewRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eAfterAddNewEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e print request].
+        /// </summary>
         public event ePrintRequestEventHandler ePrintRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void ePrintRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e after print].
+        /// </summary>
         public event eAfterPrintEventHandler eAfterPrint;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAfterPrintEventHandler();
 
+        /// <summary>
+        /// Occurs when [e delete request].
+        /// </summary>
         public event eDeleteRequestEventHandler eDeleteRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eDeleteRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e after delete].
+        /// </summary>
         public event eAfterDeleteEventHandler eAfterDelete;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAfterDeleteEventHandler();
 
+        /// <summary>
+        /// Occurs when [e refresh request].
+        /// </summary>
         public event eRefreshRequestEventHandler eRefreshRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eRefreshRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e after refresh].
+        /// </summary>
         public event eAfterRefreshEventHandler eAfterRefresh;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAfterRefreshEventHandler();
 
+        /// <summary>
+        /// Occurs when [e close request].
+        /// </summary>
         public event eCloseRequestEventHandler eCloseRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eCloseRequestEventHandler(ref bool Cancel);
 
 
+        /// <summary>
+        /// Occurs when [e after close].
+        /// </summary>
         public event eAfterCloseEventHandler eAfterClose;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAfterCloseEventHandler();
 
+        /// <summary>
+        /// Occurs when [e find request].
+        /// </summary>
         public event eFindRequestEventHandler eFindRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eFindRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e after find].
+        /// </summary>
         public event eAfterFindEventHandler eAfterFind;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eAfterFindEventHandler();
 
+        /// <summary>
+        /// Occurs when [e save request].
+        /// </summary>
         public event eSaveRequestEventHandler eSaveRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eSaveRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move previous request].
+        /// </summary>
         public event eMovePreviousRequestEventHandler eMovePreviousRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eMovePreviousRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move previous completed].
+        /// </summary>
         public event eMovePreviousCompletedEventHandler eMovePreviousCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMovePreviousCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move first request].
+        /// </summary>
         public event eMoveFirstRequestEventHandler eMoveFirstRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eMoveFirstRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move first completed].
+        /// </summary>
         public event eMoveFirstCompletedEventHandler eMoveFirstCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveFirstCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move last request].
+        /// </summary>
         public event eMoveLastRequestEventHandler eMoveLastRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eMoveLastRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move last completed].
+        /// </summary>
         public event eMoveLastCompletedEventHandler eMoveLastCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveLastCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move next request].
+        /// </summary>
         public event eMoveNextRequestEventHandler eMoveNextRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eMoveNextRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move next completed].
+        /// </summary>
         public event eMoveNextCompletedEventHandler eMoveNextCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveNextCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e move at item request].
+        /// </summary>
         public event eMoveAtItemRequestEventHandler eMoveAtItemRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eMoveAtItemRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e move at item completed].
+        /// </summary>
         public event eMoveAtItemCompletedEventHandler eMoveAtItemCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void eMoveAtItemCompletedEventHandler();
 
+        /// <summary>
+        /// Occurs when [e undo request].
+        /// </summary>
         public event eUndoRequestEventHandler eUndoRequest;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Cancel">if set to <c>true</c> [cancel].</param>
         public delegate void eUndoRequestEventHandler(ref bool Cancel);
 
+        /// <summary>
+        /// Occurs when [e error].
+        /// </summary>
         public event eErrorEventHandler eError;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Operation">The operation.</param>
+        /// <param name="ExecutionResult">The execution result.</param>
         public delegate void eErrorEventHandler(string Operation, ExecutionResult ExecutionResult);
 
+        /// <summary>
+        /// The read only mode
+        /// </summary>
         private bool _ReadOnlyMode = false;
+        /// <summary>
+        /// The add new state
+        /// </summary>
         private bool _AddNewState = false;
+        /// <summary>
+        /// The new item index
+        /// </summary>
         private int _NewItemIndex = -1;
+        /// <summary>
+        /// The delete pending
+        /// </summary>
         private bool _DeletePending = false;
+        /// <summary>
+        /// The save pending
+        /// </summary>
         private bool _SavePending = false;
+        /// <summary>
+        /// The print pending
+        /// </summary>
         private bool _PrintPending = false;
+        /// <summary>
+        /// The find pending
+        /// </summary>
         private bool _FindPending = false;
+        /// <summary>
+        /// The undo pending
+        /// </summary>
         private bool _UndoPending = false;
+        /// <summary>
+        /// The navigation enabled
+        /// </summary>
         private bool _NavigationEnabled = true;
+        /// <summary>
+        /// The data grid row
+        /// </summary>
         private int _DataGridRow = -1;
+        /// <summary>
+        /// The compact mode
+        /// </summary>
         private bool _CompactMode = false;
 
 
+        /// <summary>
+        /// The move previous f key
+        /// </summary>
         private Keys _MovePreviousFKey = Keys.F6;
+        /// <summary>
+        /// The move next f key
+        /// </summary>
         private Keys _MoveNextFKey = Keys.F7;
+        /// <summary>
+        /// The move first f key
+        /// </summary>
         private Keys _MoveFirstFKey = (Keys)((int)Keys.Shift + (int)Keys.F6);
+        /// <summary>
+        /// The move last f key
+        /// </summary>
         private Keys _MoveLastFKey = (Keys)((int)Keys.Shift + (int)Keys.F7);
+        /// <summary>
+        /// The add new f key
+        /// </summary>
         private Keys _AddNewFKey = Keys.F2;
+        /// <summary>
+        /// The delete f key
+        /// </summary>
         private Keys _DeleteFKey = Keys.F3;
+        /// <summary>
+        /// The save f key
+        /// </summary>
         private Keys _SaveFKey = Keys.F10;
+        /// <summary>
+        /// The refresh f key
+        /// </summary>
         private Keys _RefreshFKey = Keys.F5;
+        /// <summary>
+        /// The undo f key
+        /// </summary>
         private Keys _UndoFKey = Keys.F9;
+        /// <summary>
+        /// The close f key
+        /// </summary>
         private Keys _CloseFKey = Keys.F12;
+        /// <summary>
+        /// The find key
+        /// </summary>
         private Keys _FindKey = Keys.F4;
 
+        /// <summary>
+        /// The f key enabled
+        /// </summary>
         private bool _FKeyEnabled = false;
 
+        /// <summary>
+        /// The record label separator
+        /// </summary>
         private string _RecordLabelSeparator = "of";
+        /// <summary>
+        /// The record label new row
+        /// </summary>
         private string _RecordLabelNewRow = "New Row";
+        /// <summary>
+        /// The data bound completed
+        /// </summary>
         private bool _DataBoundCompleted = false;
+        /// <summary>
+        /// Gets or sets a value indicating whether [data bound completed].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [data bound completed]; otherwise, <c>false</c>.
+        /// </value>
         public bool DataBoundCompleted
         {
             get
@@ -1021,7 +1703,16 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// The language
+        /// </summary>
         private string _Language = "it-IT";
+        /// <summary>
+        /// Gets or sets the language.
+        /// </summary>
+        /// <value>
+        /// The language.
+        /// </value>
         public string Language
         {
             get
@@ -1036,6 +1727,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the record label separator.
+        /// </summary>
+        /// <value>
+        /// The record label separator.
+        /// </value>
         [Localizable(true)]
         public string RecordLabelSeparator
         {
@@ -1051,6 +1748,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [f key enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [f key enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool FKeyEnabled
         {
             get
@@ -1065,6 +1768,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the find key.
+        /// </summary>
+        /// <value>
+        /// The find key.
+        /// </value>
         public Keys FindKey
         {
             get
@@ -1077,6 +1786,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the close f key.
+        /// </summary>
+        /// <value>
+        /// The close f key.
+        /// </value>
         public Keys CloseFKey
         {
             get
@@ -1090,6 +1805,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the undo f key.
+        /// </summary>
+        /// <value>
+        /// The undo f key.
+        /// </value>
         public Keys UndoFKey
         {
             get
@@ -1103,6 +1824,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the refresh f key.
+        /// </summary>
+        /// <value>
+        /// The refresh f key.
+        /// </value>
         public Keys RefreshFKey
         {
             get
@@ -1115,6 +1842,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the save f key.
+        /// </summary>
+        /// <value>
+        /// The save f key.
+        /// </value>
         public Keys SaveFKey
         {
             get
@@ -1129,6 +1862,12 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Gets or sets the delete f key.
+        /// </summary>
+        /// <value>
+        /// The delete f key.
+        /// </value>
         public Keys DeleteFKey
         {
             get
@@ -1142,6 +1881,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the add new f key.
+        /// </summary>
+        /// <value>
+        /// The add new f key.
+        /// </value>
         public Keys AddNewFKey
         {
             get
@@ -1155,6 +1900,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the move previous f key.
+        /// </summary>
+        /// <value>
+        /// The move previous f key.
+        /// </value>
         public Keys MovePreviousFKey
         {
             get
@@ -1167,6 +1918,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the move next f key.
+        /// </summary>
+        /// <value>
+        /// The move next f key.
+        /// </value>
         public Keys MoveNextFKey
         {
             get
@@ -1179,6 +1936,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the move first f key.
+        /// </summary>
+        /// <value>
+        /// The move first f key.
+        /// </value>
         public Keys MoveFirstFKey
         {
             get
@@ -1191,6 +1954,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the move last f key.
+        /// </summary>
+        /// <value>
+        /// The move last f key.
+        /// </value>
         public Keys MoveLastFKey
         {
             get
@@ -1203,6 +1972,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [read only mode].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [read only mode]; otherwise, <c>false</c>.
+        /// </value>
         public bool ReadOnlyMode
         {
             get
@@ -1216,6 +1991,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [compact mode].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [compact mode]; otherwise, <c>false</c>.
+        /// </value>
         public bool CompactMode
         {
             get
@@ -1286,6 +2067,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the height of the data grid ListView default row.
+        /// </summary>
+        /// <value>
+        /// The height of the data grid ListView default row.
+        /// </value>
         public int DataGridListViewDefaultRowHeight
         {
             get
@@ -1301,11 +2088,21 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Datas the binding mode.
+        /// </summary>
+        /// <returns></returns>
         public DataBindingMode DataBindingMode()
         {
             //return (DataBindingMode)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "DataBindingMode");
-            return this._ActiveViewModel.DataBindingMode;
+            return _ActiveViewModel.DataBindingMode;
         }
+        /// <summary>
+        /// Gets or sets the binding source.
+        /// </summary>
+        /// <value>
+        /// The binding source.
+        /// </value>
         public BindingSource BindingSource
         {
             get
@@ -1322,6 +2119,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the data panel.
+        /// </summary>
+        /// <value>
+        /// The data panel.
+        /// </value>
         public Panel DataPanel
         {
             get
@@ -1336,7 +2139,13 @@ namespace Passero.Framework.Controls
             }
         }
 
-        
+
+        /// <summary>
+        /// Gets or sets the data grid view.
+        /// </summary>
+        /// <value>
+        /// The data grid view.
+        /// </value>
         public DataGridView DataGridView
         {
             get
@@ -1357,6 +2166,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the data repeater.
+        /// </summary>
+        /// <value>
+        /// The data repeater.
+        /// </value>
         public DataRepeater DataRepeater
         {
             get
@@ -1369,6 +2184,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the data grid ListView.
+        /// </summary>
+        /// <value>
+        /// The data grid ListView.
+        /// </value>
         public DataGridView DataGridListView
         {
             get
@@ -1382,7 +2203,16 @@ namespace Passero.Framework.Controls
                 //_DataGridListView.MultiSelect = false;
             }
         }
+        /// <summary>
+        /// The caption
+        /// </summary>
         private string _Caption = "DataNavigator";
+        /// <summary>
+        /// Gets or sets the caption.
+        /// </summary>
+        /// <value>
+        /// The caption.
+        /// </value>
         [Localizable(true)]
         public string Caption
         {
@@ -1399,6 +2229,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [record label visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [record label visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool RecordLabelVisible
         {
             get
@@ -1413,6 +2249,12 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [navigation enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [navigation enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool NavigationEnabled
         {
             get
@@ -1441,12 +2283,19 @@ namespace Passero.Framework.Controls
             }
         }
 
-        
+
+        /// <summary>
+        /// Loads the data.
+        /// </summary>
         public void LoadData()
         {
             _InitDataNavigator(true);
         }
 
+        /// <summary>
+        /// Initializes the specified load data.
+        /// </summary>
+        /// <param name="LoadData">if set to <c>true</c> [load data].</param>
         public void Init(bool LoadData = false)
         {
             _InitDataNavigator(LoadData);
@@ -1458,21 +2307,25 @@ namespace Passero.Framework.Controls
         //}
 
 
+        /// <summary>
+        /// Initializes the data navigator.
+        /// </summary>
+        /// <param name="LoadData">if set to <c>true</c> [load data].</param>
         private void _InitDataNavigator(bool LoadData = false)
         {
             UpdateButtonsCaption();
             //ReflectionHelper.CallByName(this.ActiveViewModel, "SetBindingSource", CallType.Method);
-            this.ActiveViewModel.SetBindingSource();
+            ActiveViewModel.SetBindingSource();
 
             if (LoadData)
             {
                 //ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
-                this.ActiveViewModel.GetAllItems();
+                ActiveViewModel.GetAllItems();
                 //_DbObject.Open(true);
             }
 
             UpdateRecordLabel();
-            if (ModelItemsCount == 0 )
+            if (ModelItemsCount == 0)
             {
                 SetButtonForEmptyModelItems();
             }
@@ -1491,51 +2344,75 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Datas the grid save.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Save()
         {
             var ERContext = $"{mClassName}.DataGrid_Save()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            int i = 0;
             var argDataGridView = _DataGridView;
-            ER = this.DataGrid_Update(ref argDataGridView);
+            ER = DataGrid_Update(ref argDataGridView);
             _DataGridView = argDataGridView;
             return ER;
         }
 
+        /// <summary>
+        /// Datas the repeater save.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Save()
         {
             var ERContext = $"{mClassName}.DataRepeater_Save()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            int i = 0;
             var argDataRepeater = _DataRepeater;
-            ER = this.DataRepeater_Update(ref argDataRepeater);
+            ER = DataRepeater_Update(ref argDataRepeater);
             _DataRepeater = argDataRepeater;
             return ER;
         }
 
 
+        /// <summary>
+        /// Datas the grid save.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Save(DataGridView DataGridView)
         {
-            return this.DataGrid_Update(ref DataGridView);
+            return DataGrid_Update(ref DataGridView);
         }
 
+        /// <summary>
+        /// Datas the repeater save.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Save(DataRepeater DataRepeater)
         {
-            return this.DataRepeater_Update(ref DataRepeater);
+            return DataRepeater_Update(ref DataRepeater);
         }
 
+        /// <summary>
+        /// Datas the grid update.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Update()
         {
             var ERContext = $"{mClassName}.DataGrid_Update()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-            int i = 0;
             var argDataGridView = _DataGridView;
-            ER = this.DataGrid_Update(ref argDataGridView);
+            ER = DataGrid_Update(ref argDataGridView);
             _DataGridView = argDataGridView;
             return ER;
 
         }
 
+        /// <summary>
+        /// Datas the grid update.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Update(ref Wisej.Web.DataGridView DataGridView)
         {
             var ERContext = $"{mClassName}.DataGrid_Update()";
@@ -1552,75 +2429,82 @@ namespace Passero.Framework.Controls
                 bool allowAdd = DataGridView.AllowUserToAddRows;
                 CurrentRowIndex = DataGridView.CurrentRow.Index;
                 CurrentCellIndex = DataGridView.CurrentCell.ColumnIndex;
-                
+
                 DataGridView.EndEdit();
-                if (this._ActiveViewModel != null)
+                if (_ActiveViewModel != null)
                 {
 
 
-                    this.ModelItems = this.DataGridView.DataSource;
+                    ModelItems = this.DataGridView.DataSource;
 
 
-                    if (this._AddNewState == true)
+                    if (_AddNewState == true)
                     {
-                        dynamic item = ((IList)this._ModelItems)[this.NewItemIndex];
+                        dynamic item = ((IList)_ModelItems)[NewItemIndex];
                         //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
-                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
+                        ER = (ExecutionResult)_ActiveViewModel.InsertItem(item);
 
                         if (ER.Success)
                         {
-                            this._AddNewState = false;
+                            _AddNewState = false;
                         }
                     }
                     else
                     {
-                        if (this.UseUpdateEx==false )
+                        if (UseUpdateEx == false)
                             //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
-                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItems(this._ModelItems);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItems(_ModelItems);
                         else
                             //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
-                            ER = (ExecutionResult)this._ActiveViewModel.UpdateItemsEx(this._ModelItems);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItemsEx(_ModelItems);
                     }
-                    
+
                 }
                 try
                 {
                     DataGridView.CurrentCell = DataGridView[CurrentCellIndex, CurrentRowIndex];
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
-                this._DataGridRow = DataGridView.CurrentRow.Index;
+                _DataGridRow = DataGridView.CurrentRow.Index;
                 DataGridView.AllowUserToAddRows = allowAdd;
             }
-            if (this._AddNewState == false)
+            if (_AddNewState == false)
             {
                 foreach (Wisej.Web.DataGridViewRow _row in DataGridView.Rows)
                 {
                     _row.ReadOnly = false;
                 }
-                this.SetDataNavigator();
+                SetDataNavigator();
             }
             else
             {
-                this.SetButtonsForAddNew();
+                SetButtonsForAddNew();
             }
             ER.Value = AffectedRecords;
             return ER;
         }
 
+        /// <summary>
+        /// Datas the repeater update.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Update()
         {
             var ERContext = $"{mClassName}.DataRepeater_Update()";
             ExecutionResult ER = new ExecutionResult(ERContext);
-
-            int i = 0;
             var argDataRepeater = _DataRepeater;
-            ER = this.DataRepeater_Update(ref argDataRepeater);
+            ER = DataRepeater_Update(ref argDataRepeater);
             _DataRepeater = argDataRepeater;
             return ER;
         }
 
+        /// <summary>
+        /// Datas the repeater update.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Update(ref Wisej.Web.DataRepeater DataRepeater)
         {
             var ERContext = $"{mClassName}.DataRepeater_Update()";
@@ -1637,43 +2521,48 @@ namespace Passero.Framework.Controls
             {
                 bool allowAdd = DataRepeater.AllowUserToAddItems;
                 CurrentRowIndex = DataRepeater.CurrentItemIndex;
-                
-                if (this._ActiveViewModel != null)
-                {
-                    this.ModelItems = this.DataRepeater.DataSource;
 
-                    if (this._AddNewState == true)
+                if (_ActiveViewModel != null)
+                {
+                    ModelItems = this.DataRepeater.DataSource;
+
+                    if (_AddNewState == true)
                     {
-                        dynamic  item = ((IList)this._ModelItems)[this.NewItemIndex];
+                        dynamic item = ((IList)_ModelItems)[NewItemIndex];
                         //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
-                        ER = (ExecutionResult)this._ActiveViewModel.InsertItem(item);
+                        ER = (ExecutionResult)_ActiveViewModel.InsertItem(item);
                         if (ER.Success)
                         {
-                            this._AddNewState = false;
+                            _AddNewState = false;
                         }
                     }
                     else
                     {
                         //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
-                        ER = (ExecutionResult)this._ActiveViewModel.UpdateItems(this._ModelItems);
+                        ER = (ExecutionResult)_ActiveViewModel.UpdateItems(_ModelItems);
                     }
                 }
-              
+
 
                 DataRepeater.AllowUserToAddItems = allowAdd;
             }
-            if (this._AddNewState == false)
+            if (_AddNewState == false)
             {
-                this.SetDataNavigator();
+                SetDataNavigator();
             }
             else
             {
-                this.SetButtonsForAddNew();
+                SetButtonsForAddNew();
             }
             return ER;
         }
 
 
+        /// <summary>
+        /// Finds the first editable column.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         private int FindFirstEditableColumn(DataGridView DataGridView)
         {
 
@@ -1691,11 +2580,20 @@ namespace Passero.Framework.Controls
 
             return -1;
         }
+        /// <summary>
+        /// Datas the grid enable row change.
+        /// </summary>
         public void DataGrid_EnableRowChange()
         {
             _DataGridRow = -1;
         }
 
+        /// <summary>
+        /// Datas the grid add new.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="InsertAtCursor">if set to <c>true</c> [insert at cursor].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_AddNew(object Item = null, bool InsertAtCursor = false)
         {
             var argDataGridView = _DataGridView;
@@ -1703,6 +2601,13 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Datas the grid add new.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <param name="Item">The item.</param>
+        /// <param name="InsertAtCurrentRow">if set to <c>true</c> [insert at current row].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_AddNew(ref DataGridView DataGridView, object Item = null, bool InsertAtCurrentRow = false)
         {
             string ERContext = $"{mClassName}.DataGrid_AddNew()";
@@ -1821,7 +2726,7 @@ namespace Passero.Framework.Controls
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
                     //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
-                    this._ActiveViewModel.AddNewState=true;
+                    _ActiveViewModel.AddNewState = true;
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
 
@@ -1839,12 +2744,21 @@ namespace Passero.Framework.Controls
             return ER;
         }
 
+        /// <summary>
+        /// Datas the grid delete.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Delete()
         {
-            return this.DataGrid_Delete(_DataGridView);
+            return DataGrid_Delete(_DataGridView);
 
         }
 
+        /// <summary>
+        /// Datas the grid delete.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Delete(DataGridView DataGridView)
         {
             string ERContext = $"{mClassName}.DataGrid_Delete()";
@@ -1868,12 +2782,12 @@ namespace Passero.Framework.Controls
                     RowIndex = DataGridView.CurrentRow.Index;
                     if (!DataGridView.CurrentRow.IsNewRow)
                     {
-                        if (this._ActiveViewModel != null)
+                        if (_ActiveViewModel != null)
                         {
-                            object item = ((IList)this._ModelItems)[RowIndex];
-                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
+                            object item = ((IList)_ModelItems)[RowIndex];
+                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(_ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
                             DataGridView.DataSource = null;
-                            DataGridView.DataSource = this._ModelItems;
+                            DataGridView.DataSource = _ModelItems;
                         }
                     }
                 }
@@ -1917,11 +2831,20 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Datas the repeater delete.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Delete()
         {
-            return this.DataRepeater_Delete(_DataRepeater);
+            return DataRepeater_Delete(_DataRepeater);
         }
 
+        /// <summary>
+        /// Datas the repeater delete.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Delete(DataRepeater DataRepeater)
         {
 
@@ -1944,11 +2867,11 @@ namespace Passero.Framework.Controls
                     RowIndex = DataRepeater.CurrentItemIndex;
                     if (_AddNewState == false)
                     {
-                        if (this._ActiveViewModel != null)
+                        if (_ActiveViewModel != null)
                         {
-                            object item = ((IList)this._ModelItems)[RowIndex];
+                            object item = ((IList)_ModelItems)[RowIndex];
 
-                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
+                            ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(_ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
                             DataRepeater.Refresh();
                             if (RowIndex < DataRepeater.ItemCount)
                             {
@@ -1993,8 +2916,17 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// The active data navigator view model
+        /// </summary>
         private DataNavigatorViewModel _ActiveDataNavigatorViewModel = null;
 
+        /// <summary>
+        /// Gets the active data navigator view model.
+        /// </summary>
+        /// <value>
+        /// The active data navigator view model.
+        /// </value>
         public DataNavigatorViewModel ActiveDataNavigatorViewModel
         {
             get
@@ -2004,6 +2936,11 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Datas the repeater move next.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         private ExecutionResult DataRepeater_MoveNext(bool IgnoreManageNavigation = false)
         {
 
@@ -2018,11 +2955,11 @@ namespace Passero.Framework.Controls
 
             if (DataGridActive)
             {
-                if (this._DataRepeater != null)
+                if (_DataRepeater != null)
                 {
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
-                    ER = (ExecutionResult)this._ActiveViewModel.MoveNextItem();
-                    this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
+                    ER = (ExecutionResult)_ActiveViewModel.MoveNextItem();
+                    _DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
 
@@ -2033,6 +2970,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Datas the repeater move last.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         private ExecutionResult DataRepeater_MoveLast(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataRepeater_MoveLast()";
@@ -2044,11 +2986,11 @@ namespace Passero.Framework.Controls
 
             if (DataGridActive)
             {
-                if (this._DataRepeater != null)
+                if (_DataRepeater != null)
                 {
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveLastItem");
-                    ER = (ExecutionResult)this._ActiveViewModel.MoveLastItem();
-                    this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
+                    ER = (ExecutionResult)_ActiveViewModel.MoveLastItem();
+                    _DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
             ER.Context = ERContenxt;
@@ -2057,6 +2999,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Datas the repeater move previous.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         private ExecutionResult DataRepeater_MovePrevious(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataRepeater_MovePrevious()";
@@ -2069,11 +3016,11 @@ namespace Passero.Framework.Controls
 
             if (DataGridActive)
             {
-                if (this._DataRepeater != null)
+                if (_DataRepeater != null)
                 {
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
-                    ER = (ExecutionResult)this._ActiveViewModel.MovePreviousItem();
-                    this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
+                    ER = (ExecutionResult)_ActiveViewModel.MovePreviousItem();
+                    _DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
 
@@ -2085,6 +3032,11 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Datas the repeater move first.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         private ExecutionResult DataRepeater_MoveFirst(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataRepeater_MoveFirst()";
@@ -2097,11 +3049,11 @@ namespace Passero.Framework.Controls
 
             if (DataGridActive)
             {
-                if (this._DataRepeater != null)
+                if (_DataRepeater != null)
                 {
                     //Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
-                    this._ActiveViewModel.MoveFirstItem();
-                    this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
+                    _ActiveViewModel.MoveFirstItem();
+                    _DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                 }
             }
 
@@ -2113,11 +3065,20 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Datas the repeater undo.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Undo()
         {
-            return DataRepeater_Undo(this._DataRepeater);
+            return DataRepeater_Undo(_DataRepeater);
         }
 
+        /// <summary>
+        /// Datas the repeater undo.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_Undo(DataRepeater DataRepeater)
         {
             var ERContext = $"{mClassName}.DataGrid_Undo()";
@@ -2144,8 +3105,8 @@ namespace Passero.Framework.Controls
                 if (DataRepeater.DataSource != null)
                 {
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
-                    ER = (ExecutionResult)this._ActiveViewModel.UndoChanges(true);
-                    DataRepeater.DataSource = this.ModelItems;
+                    ER = (ExecutionResult)_ActiveViewModel.UndoChanges(true);
+                    DataRepeater.DataSource = ModelItems;
                 }
 
             }
@@ -2165,6 +3126,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Datas the repeater add new.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="InsertAtCursor">if set to <c>true</c> [insert at cursor].</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_AddNew(object Item = null, bool InsertAtCursor = false)
         {
 
@@ -2173,12 +3140,19 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Datas the repeater add new.
+        /// </summary>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <param name="NewItem">The new item.</param>
+        /// <param name="InsertAtCurrentRow">if set to <c>true</c> [insert at current row].</param>
+        /// <returns></returns>
         public ExecutionResult DataRepeater_AddNew(ref DataRepeater DataRepeater, object NewItem = null, bool InsertAtCurrentRow = false)
         {
             string ERContext = $"{mClassName}.DataRepeater_AddNew()";
             ExecutionResult ER = new ExecutionResult(ERContext);
             int NewRowIndex = -1;
-            if (this.ActiveViewModel == null)
+            if (ActiveViewModel == null)
             {
                 ER.ResultMessage = "ActiveViewModel is null";
                 ER.ResultCode = ExecutionResultCodes.Failed;
@@ -2229,8 +3203,8 @@ namespace Passero.Framework.Controls
                         {
                             items = (IList)ReflectionHelper.ConvertBindingListToList(items, T);
                         }
-                        this.ModelItems = items;
-                        this.ModelItem = NewItem;
+                        ModelItems = items;
+                        ModelItem = NewItem;
                     }
                     else
                     {
@@ -2251,7 +3225,7 @@ namespace Passero.Framework.Controls
                     _AddNewState = true;
                     _NewItemIndex = NewRowIndex;
                     //ReflectionHelper.SetPropertyValue(ref this._ActiveViewModel, "AddNewState", true);
-                    this._ActiveViewModel.AddNewState = true;
+                    _ActiveViewModel.AddNewState = true;
                     UpdateRecordLabel();
                     SetButtonsForAddNew();
 
@@ -2271,10 +3245,19 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Datas the grid undo.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Undo()
         {
-            return this.DataGrid_Undo(_DataGridView);
+            return DataGrid_Undo(_DataGridView);
         }
+        /// <summary>
+        /// Datas the grid undo.
+        /// </summary>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_Undo(DataGridView DataGridView)
         {
             string ERContext = $"{mClassName}.DataGrid_Undo()";
@@ -2305,12 +3288,12 @@ namespace Passero.Framework.Controls
                     DataGridView.DataSource = null;
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
                     ER = (ExecutionResult)_ActiveViewModel.UndoChanges(true);
-                    DataGridView.DataSource = this.ModelItems;
+                    DataGridView.DataSource = ModelItems;
                     //DataGridView.DataSource = this.ModelItemsShadow;
                     DataGridViewColumn c = Framework.ControlsUtilities.GetFirstVisibleColumnForDataGridView(DataGridView);
                     if (c != null)
                     {
-                        DataGridView.SetCurrentCell(c.Index, this.CurrentModelItemIndex);
+                        DataGridView.SetCurrentCell(c.Index, CurrentModelItemIndex);
                     }
                 }
                 foreach (DataGridViewRow _row in DataGridView.Rows)
@@ -2338,33 +3321,57 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Cancels the find.
+        /// </summary>
         public void CancelFind()
         {
             _FindPending = false;
         }
+        /// <summary>
+        /// Cancels the print.
+        /// </summary>
         public void CancelPrint()
         {
             _PrintPending = false;
         }
+        /// <summary>
+        /// Cancels the save.
+        /// </summary>
         public void CancelSave()
         {
             _SavePending = false;
         }
+        /// <summary>
+        /// Cancels the add new.
+        /// </summary>
         public void CancelAddNew()
         {
             // _AddNewPending = False
             //_DbObject.UndoChanges();
         }
 
+        /// <summary>
+        /// Cancels the undo.
+        /// </summary>
         public void CancelUndo()
         {
             _UndoPending = false;
 
         }
+        /// <summary>
+        /// Cancels the delete.
+        /// </summary>
         public void CancelDelete()
         {
             _DeletePending = false;
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [undo pending].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [undo pending]; otherwise, <c>false</c>.
+        /// </value>
         public bool UndoPending
         {
             get
@@ -2378,6 +3385,12 @@ namespace Passero.Framework.Controls
                 _UndoPending = UndoPending;
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [find pending].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [find pending]; otherwise, <c>false</c>.
+        /// </value>
         public bool FindPending
         {
             get
@@ -2391,6 +3404,12 @@ namespace Passero.Framework.Controls
                 _FindPending = value;
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [print pending].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [print pending]; otherwise, <c>false</c>.
+        /// </value>
         public bool PrintPending
         {
             get
@@ -2405,6 +3424,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [save pending].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [save pending]; otherwise, <c>false</c>.
+        /// </value>
         public bool SavePending
         {
             get
@@ -2419,11 +3444,23 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Creates new itemindex.
+        /// </summary>
+        /// <value>
+        /// The new index of the item.
+        /// </value>
         public int NewItemIndex
         {
             get { return _NewItemIndex; }
             set { _NewItemIndex = value; }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [add new state].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [add new state]; otherwise, <c>false</c>.
+        /// </value>
         public bool AddNewState
         {
             get
@@ -2466,6 +3503,12 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [delete pending].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [delete pending]; otherwise, <c>false</c>.
+        /// </value>
         public bool DeletePending
         {
             get
@@ -2480,6 +3523,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the delete message.
+        /// </summary>
+        /// <value>
+        /// The delete message.
+        /// </value>
         [Localizable(true)]
         public string DeleteMessage
         {
@@ -2498,6 +3547,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the add new message.
+        /// </summary>
+        /// <value>
+        /// The add new message.
+        /// </value>
         [Localizable(true)]
         public string AddNewMessage
         {
@@ -2515,6 +3570,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the save message.
+        /// </summary>
+        /// <value>
+        /// The save message.
+        /// </value>
         [Localizable(true)]
         public string SaveMessage
         {
@@ -2531,6 +3592,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets the data set.
+        /// </summary>
+        /// <value>
+        /// The data set.
+        /// </value>
         public DataSet DataSet
         {
             get
@@ -2546,6 +3613,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [data grid active].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [data grid active]; otherwise, <c>false</c>.
+        /// </value>
         public bool DataGridActive
         {
             get
@@ -2565,6 +3638,12 @@ namespace Passero.Framework.Controls
                 UpdateRecordLabel();
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [data grid ListView active].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [data grid ListView active]; otherwise, <c>false</c>.
+        /// </value>
         public bool DataGridListViewActive
         {
             get
@@ -2584,6 +3663,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [save visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [save visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool SaveVisible
         {
             get
@@ -2598,6 +3683,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [save enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [save enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool SaveEnabled
         {
             get
@@ -2612,6 +3703,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [undo visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [undo visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool UndoVisible
         {
             get
@@ -2626,6 +3723,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [undo enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [undo enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool UndoEnabled
         {
             get
@@ -2643,6 +3746,12 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [find visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [find visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool FindVisible
         {
             get
@@ -2657,6 +3766,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [find enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [find enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool FindEnabled
         {
             get
@@ -2671,6 +3786,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [delete enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [delete enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool DeleteEnabled
         {
             get
@@ -2685,6 +3806,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [print visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [print visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool PrintVisible
         {
             get
@@ -2699,6 +3826,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [print enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [print enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool PrintEnabled
         {
             get
@@ -2712,6 +3845,12 @@ namespace Passero.Framework.Controls
                 bPrint.Enabled = value;
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [add new visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [add new visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool AddNewVisible
         {
             get
@@ -2726,6 +3865,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [close visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [close visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool CloseVisible
         {
             get
@@ -2740,6 +3885,12 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [close enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [close enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool CloseEnabled
         {
             get
@@ -2754,6 +3905,9 @@ namespace Passero.Framework.Controls
 
             }
         }
+        /// <summary>
+        /// Shows all buttons.
+        /// </summary>
         public void ShowAllButtons()
         {
             CloseVisible = true;
@@ -2768,6 +3922,9 @@ namespace Passero.Framework.Controls
             RecordLabelVisible = true;
 
         }
+        /// <summary>
+        /// Hides all buttons.
+        /// </summary>
         public void HideAllButtons()
         {
             CloseVisible = false;
@@ -2782,6 +3939,12 @@ namespace Passero.Framework.Controls
             RecordLabelVisible = false;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [show header].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [show header]; otherwise, <c>false</c>.
+        /// </value>
         public bool ShowHeader
         {
             get
@@ -2793,6 +3956,12 @@ namespace Passero.Framework.Controls
                 Panel.ShowHeader = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the color of the header back.
+        /// </summary>
+        /// <value>
+        /// The color of the header back.
+        /// </value>
         public System.Drawing.Color HeaderBackColor
         {
             get
@@ -2805,6 +3974,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the header alignment.
+        /// </summary>
+        /// <value>
+        /// The header alignment.
+        /// </value>
         public HorizontalAlignment HeaderAlignment
         {
             get
@@ -2816,6 +3991,12 @@ namespace Passero.Framework.Controls
                 Panel.HeaderAlignment = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the color of the header fore.
+        /// </summary>
+        /// <value>
+        /// The color of the header fore.
+        /// </value>
         public System.Drawing.Color HeaderForeColor
         {
             get
@@ -2828,6 +4009,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the header position.
+        /// </summary>
+        /// <value>
+        /// The header position.
+        /// </value>
         public HeaderPosition HeaderPosition
         {
             get
@@ -2839,6 +4026,12 @@ namespace Passero.Framework.Controls
                 Panel.HeaderPosition = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the size of the header.
+        /// </summary>
+        /// <value>
+        /// The size of the header.
+        /// </value>
         public int HeaderSize
         {
             get
@@ -2851,6 +4044,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [delete visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [delete visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool DeleteVisible
         {
             get
@@ -2864,6 +4063,12 @@ namespace Passero.Framework.Controls
                 bDelete.Visible = value;
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [add new enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [add new enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool AddNewEnabled
         {
             get
@@ -2880,6 +4085,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [manage navigation].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [manage navigation]; otherwise, <c>false</c>.
+        /// </value>
         public bool ManageNavigation
         {
             get
@@ -2893,6 +4104,12 @@ namespace Passero.Framework.Controls
                 _ManageNavigation = value;
             }
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether [manage changes].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [manage changes]; otherwise, <c>false</c>.
+        /// </value>
         public bool ManageChanges
         {
             get
@@ -2934,6 +4151,12 @@ namespace Passero.Framework.Controls
         //    }
         //}
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [delegate currency manager].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [delegate currency manager]; otherwise, <c>false</c>.
+        /// </value>
         public bool DelegateCurrencyManager
         {
             get
@@ -2949,6 +4172,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the add new caption.
+        /// </summary>
+        /// <value>
+        /// The add new caption.
+        /// </value>
         [Localizable(true)]
         public string AddNewCaption
         {
@@ -2966,6 +4195,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the find caption.
+        /// </summary>
+        /// <value>
+        /// The find caption.
+        /// </value>
         [Localizable(true)]
         public string FindCaption
         {
@@ -2982,6 +4217,12 @@ namespace Passero.Framework.Controls
                 bFind.Text = Conversions.ToString(ButtonCaption(value, _FindKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the close caption.
+        /// </summary>
+        /// <value>
+        /// The close caption.
+        /// </value>
         [Localizable(true)]
         public string CloseCaption
         {
@@ -2998,6 +4239,12 @@ namespace Passero.Framework.Controls
                 bClose.Text = Conversions.ToString(ButtonCaption(value, _CloseFKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the print caption.
+        /// </summary>
+        /// <value>
+        /// The print caption.
+        /// </value>
         [Localizable(true)]
         public string PrintCaption
         {
@@ -3016,6 +4263,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets the delete caption.
+        /// </summary>
+        /// <value>
+        /// The delete caption.
+        /// </value>
         [Localizable(true)]
         public string DeleteCaption
         {
@@ -3032,6 +4285,12 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Gets or sets the save caption.
+        /// </summary>
+        /// <value>
+        /// The save caption.
+        /// </value>
         [Localizable(true)]
         public string SaveCaption
         {
@@ -3049,6 +4308,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [refresh enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [refresh enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool RefreshEnabled
         {
             get
@@ -3065,6 +4330,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [refresh visible].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [refresh visible]; otherwise, <c>false</c>.
+        /// </value>
         public bool RefreshVisible
         {
             get
@@ -3078,6 +4349,12 @@ namespace Passero.Framework.Controls
                 bRefresh.Visible = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the refresh caption.
+        /// </summary>
+        /// <value>
+        /// The refresh caption.
+        /// </value>
         [Localizable(true)]
         public string RefreshCaption
         {
@@ -3095,6 +4372,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the undo caption.
+        /// </summary>
+        /// <value>
+        /// The undo caption.
+        /// </value>
         [Localizable(true)]
         public string UndoCaption
         {
@@ -3111,6 +4394,12 @@ namespace Passero.Framework.Controls
                 bUndo.Text = Conversions.ToString(ButtonCaption(value, _UndoFKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the move previous caption.
+        /// </summary>
+        /// <value>
+        /// The move previous caption.
+        /// </value>
         [Localizable(true)]
         public string MovePreviousCaption
         {
@@ -3126,6 +4415,12 @@ namespace Passero.Framework.Controls
                 bPrev.Text = Conversions.ToString(ButtonCaption(value, _MovePreviousFKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the move next caption.
+        /// </summary>
+        /// <value>
+        /// The move next caption.
+        /// </value>
         [Localizable(true)]
         public string MoveNextCaption
         {
@@ -3141,6 +4436,12 @@ namespace Passero.Framework.Controls
                 bNext.Text = Conversions.ToString(ButtonCaption(value, _MoveNextFKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the move last caption.
+        /// </summary>
+        /// <value>
+        /// The move last caption.
+        /// </value>
         public string MoveLastCaption
         {
             get
@@ -3155,6 +4456,12 @@ namespace Passero.Framework.Controls
                 bLast.Text = Conversions.ToString(ButtonCaption(value, _MoveLastFKey));
             }
         }
+        /// <summary>
+        /// Gets or sets the move first caption.
+        /// </summary>
+        /// <value>
+        /// The move first caption.
+        /// </value>
         public string MoveFirstCaption
         {
             get
@@ -3171,6 +4478,10 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Locks the parent form update.
+        /// </summary>
+        /// <param name="TrueFalse">if set to <c>true</c> [true false].</param>
         public void LockParentFormUpdate(bool TrueFalse)
         {
             // LockWindow(Me.ParentForm.Handle, TrueFalse)
@@ -3231,6 +4542,10 @@ namespace Passero.Framework.Controls
 
 
         // End Sub
+        /// <summary>
+        /// Navigations the visible.
+        /// </summary>
+        /// <param name="Visible">if set to <c>true</c> [visible].</param>
         public void NavigationVisible(bool Visible)
         {
             bPrev.Visible = Visible;
@@ -3239,6 +4554,9 @@ namespace Passero.Framework.Controls
             bNext.Visible = Visible;
             RecordLabel.Visible = Visible;
         }
+        /// <summary>
+        /// Checks the data change.
+        /// </summary>
         private void CheckDataChange()
         {
             //if (_ManageNavigation == true & _DbObject is not null)
@@ -3251,6 +4569,10 @@ namespace Passero.Framework.Controls
             //}
         }
 
+        /// <summary>
+        /// Deletes the specified override managed changes.
+        /// </summary>
+        /// <param name="OverrideManagedChanges">if set to <c>true</c> [override managed changes].</param>
         public void Delete(bool OverrideManagedChanges = false)
         {
 
@@ -3277,10 +4599,10 @@ namespace Passero.Framework.Controls
                     else
                     {
                         //Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "DeleteItem");
-                        this._ActiveViewModel.DeleteItem();
+                        _ActiveViewModel.DeleteItem();
                         //int index = (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "CurrentModelItemIndex");
-                        int index = this.ActiveViewModel.CurrentModelItemIndex;
-                        this.MoveLast();
+                        int index = ActiveViewModel.CurrentModelItemIndex;
+                        MoveLast();
                         eDeleteCompleted?.Invoke();
 
                     }
@@ -3290,11 +4612,15 @@ namespace Passero.Framework.Controls
             {
                 eDelete?.Invoke();
             }
-            this.UpdateRecordLabel();
+            UpdateRecordLabel();
 
         }
 
 
+        /// <summary>
+        /// Saves the specified override managed changes.
+        /// </summary>
+        /// <param name="OverrideManagedChanges">if set to <c>true</c> [override managed changes].</param>
         public void Save(bool OverrideManagedChanges = false)
         {
             var ERContext = $"{mClassName}.DataNavigator.Save()";
@@ -3315,15 +4641,15 @@ namespace Passero.Framework.Controls
                 //DataGridListView.DataSource = _DbObject.DataTable
             }
 
-            
+
             //this.ModelItems = this.DataGridView.DataSource;
 
             if (OverrideManagedChanges == false && _ManageChanges == true)
             {
                 if (MessageBox.Show(_SaveMessage, ParentForm.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    
-                    ER = this.ViewModel_UdpateItem();
+
+                    ER = ViewModel_UdpateItem();
                 }
             }
             else
@@ -3332,11 +4658,14 @@ namespace Passero.Framework.Controls
                 if (eSave != null)
                     eSave();
             }
-            this.UpdateRecordLabel();
+            UpdateRecordLabel();
         }
 
 
 
+        /// <summary>
+        /// Checks the data panel.
+        /// </summary>
         public void CheckDataPanel()
         {
 
@@ -3378,21 +4707,41 @@ namespace Passero.Framework.Controls
                 //}
             }
         }
+        /// <summary>
+        /// Handles the Click event of the bFirst control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bFirst_Click(object sender, EventArgs e)
         {
             MoveFirst();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bPrev control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bPrev_Click(object sender, EventArgs e)
         {
             MovePrevious();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bNext control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bNext_Click(object sender, EventArgs e)
         {
             MoveNext();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bLast control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bLast_Click(object sender, EventArgs e)
         {
 
@@ -3400,31 +4749,61 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Handles the Click event of the bRefresh control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bRefresh_Click(object sender, EventArgs e)
         {
             RefreshData();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bNew control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bNew_Click(object sender, EventArgs e)
         {
             AddNew();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bDelete control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bDelete_Click(object sender, EventArgs e)
         {
             Delete();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bUndo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bUndo_Click(object sender, EventArgs e)
         {
             Undo();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bSave control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bSave_Click(object sender, EventArgs e)
         {
             Save();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bFind control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bFind_Click(object sender, EventArgs e)
         {
 
@@ -3437,6 +4816,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Handles the Click event of the bPrint control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bPrint_Click(object sender, EventArgs e)
         {
             bool Cancel = false;
@@ -3446,6 +4830,11 @@ namespace Passero.Framework.Controls
             ePrint?.Invoke();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bClose control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bClose_Click(object sender, EventArgs e)
         {
             bool Cancel = false;
@@ -3455,6 +4844,9 @@ namespace Passero.Framework.Controls
             eClose?.Invoke();
         }
 
+        /// <summary>
+        /// Datas the grid row change.
+        /// </summary>
         public void DataGrid_RowChange()
         {
 
@@ -3472,6 +4864,9 @@ namespace Passero.Framework.Controls
 
 
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataNavigator"/> class.
+        /// </summary>
         public DataNavigator()
         {
 
@@ -3482,7 +4877,7 @@ namespace Passero.Framework.Controls
             ToolBar.Dock = DockStyle.Fill;
             // Add any initialization after the InitializeComponent() call.
 
-           
+
 
             CompactMode = false;
             bLast.Visible = true;
@@ -3503,21 +4898,32 @@ namespace Passero.Framework.Controls
             //ShowHeader = _ShowHeader;
         }
 
+        /// <summary>
+        /// Handles the Click event of the DataGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void DataGridView_Click(object sender, EventArgs e)
         {
-            if (this._DataGridView .CurrentRow !=null)
+            if (_DataGridView.CurrentRow != null)
             {
-                this.CurrentModelItemIndex = this._DataGridView .CurrentRow.Index;
-                this.UpdateRecordLabel();
+                CurrentModelItemIndex = _DataGridView.CurrentRow.Index;
+                UpdateRecordLabel();
             }
         }
 
+        /// <summary>
+        /// Adds the new.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="OverrideManagedChanges">if set to <c>true</c> [override managed changes].</param>
+        /// <returns></returns>
         public ExecutionResult AddNew(object item = null, bool OverrideManagedChanges = false)
         {
             string ERContext = $"{mClassName}.AddNew()";
             ExecutionResult ER = new ExecutionResult(ERContext);
 
-            if (this.ActiveViewModel == null)
+            if (ActiveViewModel == null)
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.ErrorCode = 1;
@@ -3529,9 +4935,9 @@ namespace Passero.Framework.Controls
             {
                 try
                 {
-                    item = Activator.CreateInstance(this.ModelType);
+                    item = Activator.CreateInstance(ModelType);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     ER.ResultCode = ExecutionResultCodes.Failed;
                     ER.ErrorCode = 2;
@@ -3555,19 +4961,19 @@ namespace Passero.Framework.Controls
             }
 
             //int index = Convert.ToInt32(Microsoft.VisualBasic.Interaction.CallByName(this._ActiveViewModel, "CurrentModelItemIndex", Microsoft.VisualBasic.CallType.Get));
-            int index = this._ActiveViewModel.CurrentModelItemIndex;
+            int index = _ActiveViewModel.CurrentModelItemIndex;
             int newIndex = index;
 
             if (!OverrideManagedChanges && _ManageChanges)
             {
-                ER = this.ViewModel_AddNew(item);
+                ER = ViewModel_AddNew(item);
                 SetButtonsForAddNew();
             }
             else
             {
-                this._AddNewState = true;
+                _AddNewState = true;
                 //ReflectionHelper.CallByName(this._ActiveViewModel, "AddNewCurrentModelItemIndex", Microsoft.VisualBasic.CallType.Set, index);
-                this._ActiveViewModel.AddNewCurrentModelItemIndex = index;
+                _ActiveViewModel.AddNewCurrentModelItemIndex = index;
                 SetButtonsForAddNew();
                 if (eAddNew != null)
                     eAddNew();
@@ -3581,6 +4987,9 @@ namespace Passero.Framework.Controls
             return null;
         }
 
+        /// <summary>
+        /// Updates the record label.
+        /// </summary>
         public void UpdateRecordLabel()
         {
             if (ActiveViewModel == null)
@@ -3602,6 +5011,11 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Moves the first.
+        /// </summary>
+        /// <param name="OverrideManagedNavigation">if set to <c>true</c> [override managed navigation].</param>
+        /// <returns></returns>
         public ExecutionResult MoveFirst(bool OverrideManagedNavigation = false)
         {
             var ERContenxt = $"{mClassName}.MoveFirst()";
@@ -3617,7 +5031,7 @@ namespace Passero.Framework.Controls
             }
             if (!OverrideManagedNavigation && _ManageNavigation)
             {
-                this.ViewModel_MoveFirstItem();
+                ViewModel_MoveFirstItem();
             }
             else
             {
@@ -3632,6 +5046,9 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Moves the first data grid ListView.
+        /// </summary>
         private void MoveFirstDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3642,6 +5059,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Datas the grid move previous.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_MovePrevious(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataGrid_MovePrevious()";
@@ -3653,7 +5075,7 @@ namespace Passero.Framework.Controls
                 {
                     _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
-                    ER = (ExecutionResult)this._ActiveViewModel.MovePreviousItem();
+                    ER = (ExecutionResult)_ActiveViewModel.MovePreviousItem();
                 }
             }
 
@@ -3665,6 +5087,9 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Moves the previous data grid ListView.
+        /// </summary>
         private void MovePreviousDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3676,6 +5101,9 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Itemses the move previous.
+        /// </summary>
         public void ItemsMovePrevious()
         {
             if (_DataGridActive == true & _DataGridView is not null)
@@ -3688,17 +5116,20 @@ namespace Passero.Framework.Controls
             else
             {
                 //Passero.Framework.ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MovePreviousItem");
-                this._ActiveViewModel.MovePreviousItem();
+                _ActiveViewModel.MovePreviousItem();
                 MovePreviousDataGridListView();
             }
             UpdateRecordLabel();
         }
 
+        /// <summary>
+        /// Updates the grid position.
+        /// </summary>
         private void UpdateGridPosition()
         {
             if (_DataGridActive)
             {
-                switch (this._ActiveDataNavigatorViewModel.GridMode)
+                switch (_ActiveDataNavigatorViewModel.GridMode)
                 {
                     case ViewModelGridModes.DataGridView:
                         if (_DataGridView != null)
@@ -3715,7 +5146,7 @@ namespace Passero.Framework.Controls
                         {
                             if (CurrentModelItemIndex > -1)
                             {
-                                this._DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
+                                _DataRepeater.CurrentItemIndex = CurrentModelItemIndex;
                             }
                         }
                         break;
@@ -3728,6 +5159,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Moves the previous.
+        /// </summary>
+        /// <param name="OverrideManagedNavigation">if set to <c>true</c> [override managed navigation].</param>
+        /// <returns></returns>
         public ExecutionResult MovePrevious(bool OverrideManagedNavigation = false)
         {
             var ERContenxt = $"{mClassName}.MovePrevious()";
@@ -3758,6 +5194,11 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Datas the grid move next.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_MoveNext(bool IgnoreManageNavigation = false)
         {
             string ERContenxt = $"{mClassName}.DataGrid_MoveNext()";
@@ -3776,7 +5217,8 @@ namespace Passero.Framework.Controls
                     {
                         _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.CurrentRow.Index + 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
                         //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveNextItem");
-                        ER = this._ActiveViewModel.MoveNextItem();                    }
+                        ER = _ActiveViewModel.MoveNextItem();
+                    }
                 }
             }
 
@@ -3786,6 +5228,9 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Moves the next data grid ListView.
+        /// </summary>
         private void MoveNextDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3797,6 +5242,10 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Moves at item data grid ListView.
+        /// </summary>
+        /// <param name="ItemIndex">Index of the item.</param>
         private void MoveAtItemDataGridListView(int ItemIndex)
         {
             if (_DataGridListView is not null)
@@ -3808,6 +5257,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Moves at item.
+        /// </summary>
+        /// <param name="ItemIndex">Index of the item.</param>
+        /// <param name="OverrideManagedNavigation">if set to <c>true</c> [override managed navigation].</param>
+        /// <returns></returns>
         private ExecutionResult MoveAtItem(int ItemIndex, bool OverrideManagedNavigation = false)
         {
             var ERContenxt = $"{mClassName}.MoveAtItem()";
@@ -3833,7 +5288,7 @@ namespace Passero.Framework.Controls
                 else
                 {
                     //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", ItemIndex);
-                    ER = this._ActiveViewModel.MoveAtItem();
+                    ER = _ActiveViewModel.MoveAtItem();
                     MoveAtItemDataGridListView(ItemIndex);
                     if (eUndoCompleted != null)
                         eUndoCompleted();
@@ -3853,6 +5308,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Moves the next.
+        /// </summary>
+        /// <param name="OverrideManagedNavigation">if set to <c>true</c> [override managed navigation].</param>
+        /// <returns></returns>
         public ExecutionResult MoveNext(bool OverrideManagedNavigation = false)
         {
             var ERContenxt = $"{mClassName}.MoveNext()";
@@ -3868,7 +5328,7 @@ namespace Passero.Framework.Controls
             }
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                this.ViewModel_MoveNextItem();
+                ViewModel_MoveNextItem();
             }
             else
             {
@@ -3884,6 +5344,11 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Datas the grid move first.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_MoveFirst(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataGrid_MoveFirst()";
@@ -3897,13 +5362,18 @@ namespace Passero.Framework.Controls
             {
                 _DataGridView.CurrentCell = _DataGridView.Rows[0].Cells[_DataGridView.CurrentCell.ColumnIndex];
                 //ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveFirstItem");
-                this._ActiveViewModel.MoveFirstItem();
+                _ActiveViewModel.MoveFirstItem();
             }
             ER.Context = ERContenxt;
             return ER;
 
         }
 
+        /// <summary>
+        /// Datas the grid move last.
+        /// </summary>
+        /// <param name="IgnoreManageNavigation">if set to <c>true</c> [ignore manage navigation].</param>
+        /// <returns></returns>
         public ExecutionResult DataGrid_MoveLast(bool IgnoreManageNavigation = false)
         {
             var ERContenxt = $"{mClassName}.DataGrid_MoveLast()";
@@ -3916,7 +5386,7 @@ namespace Passero.Framework.Controls
             {
                 _DataGridView.CurrentCell = _DataGridView.Rows[_DataGridView.Rows.Count - 1].Cells[_DataGridView.CurrentCell.ColumnIndex];
                 //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "MoveAtItem", _DataGridView.CurrentRow.Index);
-                ER = this._ActiveViewModel.MoveAtItem(_DataGridView.CurrentRow.Index);
+                ER = _ActiveViewModel.MoveAtItem(_DataGridView.CurrentRow.Index);
             }
             ER.Context = ERContenxt;
             return ER;
@@ -3926,6 +5396,9 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Moves the last data grid ListView.
+        /// </summary>
         private void MoveLastDataGridListView()
         {
             if (_DataGridListView is not null)
@@ -3934,6 +5407,11 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Moves the last.
+        /// </summary>
+        /// <param name="OverrideManagedNavigation">if set to <c>true</c> [override managed navigation].</param>
+        /// <returns></returns>
         public ExecutionResult MoveLast(bool OverrideManagedNavigation = false)
         {
             var ERContenxt = $"{mClassName}.MoveLast()";
@@ -3949,7 +5427,7 @@ namespace Passero.Framework.Controls
             }
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
-                this.ViewModel_MoveLastItem();
+                ViewModel_MoveLastItem();
 
             }
             else
@@ -3967,6 +5445,10 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Refreshes the data.
+        /// </summary>
+        /// <returns></returns>
         private ExecutionResult RefreshData()
         {
 
@@ -3990,23 +5472,23 @@ namespace Passero.Framework.Controls
 
             if (_ManageNavigation)
             {
-                switch (this._ActiveDataNavigatorViewModel.GridMode)
+                switch (_ActiveDataNavigatorViewModel.GridMode)
                 {
                     case ViewModelGridModes.DataGridView:
-                        if (this._DataGridView != null && this.DataGridActive)
+                        if (_DataGridView != null && DataGridActive)
                         {
 
                         }
                         break;
                     case ViewModelGridModes.DataRepeater:
-                        if (this._DataRepeater != null && this.DataGridActive)
+                        if (_DataRepeater != null && DataGridActive)
                         {
 
                         }
                         break;
                     default:
                         //ER = (ExecutionResult)ReflectionHelper.CallByName(this.ActiveViewModel, "ReloadItems", Microsoft.VisualBasic.CallType.Method);
-                        ER = (ExecutionResult)this.ActiveViewModel.ReloadItems();
+                        ER = (ExecutionResult)ActiveViewModel.ReloadItems();
                         break;
                 }
 
@@ -4029,6 +5511,11 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Undoes the specified override managed changes.
+        /// </summary>
+        /// <param name="OverrideManagedChanges">if set to <c>true</c> [override managed changes].</param>
+        /// <returns></returns>
         public ExecutionResult Undo(bool OverrideManagedChanges = false)
         {
             var ERContenxt = $"{mClassName}.Undo()";
@@ -4050,7 +5537,7 @@ namespace Passero.Framework.Controls
             if (!OverrideManagedChanges && _ManageChanges)
             {
 
-                ER = this.ViewModel_UndoChanges();
+                ER = ViewModel_UndoChanges();
 
             }
             else
@@ -4068,6 +5555,15 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Adds the view model.
+        /// </summary>
+        /// <param name="Name">The name.</param>
+        /// <param name="ViewModel">The view model.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <returns></returns>
         public bool AddViewModel(string Name, object ViewModel, string FriendlyName = "DataNavigator", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
 
@@ -4075,7 +5571,7 @@ namespace Passero.Framework.Controls
             try
             {
                 DataNavigatorViewModel = new DataNavigatorViewModel(ViewModel, Name, FriendlyName, DataGridView, DataRepeater);
-                this.ViewModels[Name] = DataNavigatorViewModel;
+                ViewModels[Name] = DataNavigatorViewModel;
                 return true;
             }
             catch (Exception)
@@ -4087,6 +5583,12 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Buttons the caption.
+        /// </summary>
+        /// <param name="ButtonText">The button text.</param>
+        /// <param name="FKey">The f key.</param>
+        /// <returns></returns>
         private object ButtonCaption(string ButtonText, Keys FKey)
         {
             if (_FKeyEnabled)
@@ -4103,6 +5605,11 @@ namespace Passero.Framework.Controls
                 return ButtonText;
             }
         }
+        /// <summary>
+        /// Handles the user input.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
         public void HandleUserInput(object sender, object e)
         {
 
@@ -4205,6 +5712,9 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Sets the button for empty model items.
+        /// </summary>
         public void SetButtonForEmptyModelItems()
         {
             DisableNavigation();
@@ -4224,6 +5734,9 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Sets the buttons for read write.
+        /// </summary>
         public void SetButtonsForReadWrite()
         {
             bUndo.Enabled = true;
@@ -4232,6 +5745,9 @@ namespace Passero.Framework.Controls
             bDelete.Enabled = true;
         }
 
+        /// <summary>
+        /// Sets the buttons for read only.
+        /// </summary>
         public void SetButtonsForReadOnly()
         {
             bUndo.Enabled = false;
@@ -4239,6 +5755,9 @@ namespace Passero.Framework.Controls
             bNew.Enabled = false;
             bDelete.Enabled = false;
         }
+        /// <summary>
+        /// Sets the buttons for add new.
+        /// </summary>
         public void SetButtonsForAddNew()
         {
 
@@ -4268,6 +5787,10 @@ namespace Passero.Framework.Controls
             _AddNewState = true;
         }
 
+        /// <summary>
+        /// Datas the grid start edit.
+        /// </summary>
+        /// <param name="CurrentRow">The current row.</param>
         public void DataGrid_StartEdit(int CurrentRow)
         {
 
@@ -4275,6 +5798,9 @@ namespace Passero.Framework.Controls
             SetButtonForEdit();
         }
 
+        /// <summary>
+        /// Datas the grid start edit.
+        /// </summary>
         public void DataGrid_StartEdit()
         {
             if (_DataGridView is not null)
@@ -4285,6 +5811,9 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Sets the button for edit.
+        /// </summary>
         public void SetButtonForEdit()
         {
 
@@ -4311,6 +5840,9 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Sets the button for save.
+        /// </summary>
         public void SetButtonForSave()
         {
 
@@ -4329,6 +5861,9 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Sets the button for undo.
+        /// </summary>
         private void SetButtonForUndo()
         {
 
@@ -4348,6 +5883,9 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Disables the navigation.
+        /// </summary>
         public void DisableNavigation()
         {
             bFirst.Enabled = false;
@@ -4356,6 +5894,9 @@ namespace Passero.Framework.Controls
             bLast.Enabled = false;
             _NavigationEnabled = false;
         }
+        /// <summary>
+        /// Enables the navigation.
+        /// </summary>
         public void EnableNavigation()
         {
             bFirst.Enabled = true;
@@ -4365,65 +5906,107 @@ namespace Passero.Framework.Controls
             _NavigationEnabled = true;
         }
 
+        /// <summary>
+        /// Disables the refresh.
+        /// </summary>
         public void DisableRefresh()
         {
             bRefresh.Enabled = false;
 
         }
+        /// <summary>
+        /// Enables the refresh.
+        /// </summary>
         public void EnableRefresh()
         {
             bRefresh.Enabled = true;
         }
+        /// <summary>
+        /// Disables the delete.
+        /// </summary>
         public void DisableDelete()
         {
             bDelete.Enabled = false;
         }
 
+        /// <summary>
+        /// Disables the new.
+        /// </summary>
         public void DisableNew()
         {
             bNew.Enabled = false;
         }
 
+        /// <summary>
+        /// Enables the delete.
+        /// </summary>
         public void EnableDelete()
         {
             bDelete.Enabled = true;
         }
 
+        /// <summary>
+        /// Disables the save.
+        /// </summary>
         public void DisableSave()
         {
             bSave.Enabled = false;
         }
+        /// <summary>
+        /// Disables the undo.
+        /// </summary>
         public void DisableUndo()
         {
             bUndo.Enabled = false;
         }
+        /// <summary>
+        /// Enables the undo.
+        /// </summary>
         public void EnableUndo()
         {
             bUndo.Enabled = true;
         }
 
+        /// <summary>
+        /// Enables the save.
+        /// </summary>
         public void EnableSave()
         {
             bSave.Enabled = true;
         }
+        /// <summary>
+        /// Disables the find.
+        /// </summary>
         public void DisableFind()
         {
             bFind.Enabled = false;
         }
+        /// <summary>
+        /// Enables the find.
+        /// </summary>
         public void EnableFind()
         {
             bFind.Enabled = true;
         }
 
+        /// <summary>
+        /// Disables the print.
+        /// </summary>
         public void DisablePrint()
         {
             bPrint.Enabled = false;
         }
+        /// <summary>
+        /// Enables the print.
+        /// </summary>
         public void EnablePrint()
         {
             bPrint.Enabled = true;
         }
 
+        /// <summary>
+        /// Enables all buttons.
+        /// </summary>
         public void EnableAllButtons()
         {
 
@@ -4447,13 +6030,16 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Sets the data navigator.
+        /// </summary>
         public void SetDataNavigator()
         {
             Accelerators = new Keys[] { _MoveFirstFKey, _MoveLastFKey, _MoveNextFKey, _MovePreviousFKey, _AddNewFKey, _DeleteFKey, _RefreshFKey, _FindKey, _UndoFKey, _SaveFKey, _CloseFKey };
             bool RowExist = false;
             if (DataGridActive)
             {
-                switch (this._ActiveDataNavigatorViewModel.GridMode)
+                switch (_ActiveDataNavigatorViewModel.GridMode)
                 {
                     case ViewModelGridModes.DataGridView:
                         if (_DataGridView != null)
@@ -4532,6 +6118,9 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Updates the buttons caption.
+        /// </summary>
         public void UpdateButtonsCaption()
         {
             MoveFirstCaption = _MoveFirstCaption;
@@ -4548,6 +6137,9 @@ namespace Passero.Framework.Controls
             UndoCaption = _UndoCaption;
         }
 
+        /// <summary>
+        /// Databases the object bound completed.
+        /// </summary>
         private void _DbObject_BoundCompleted()
         {
 
@@ -4557,6 +6149,11 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Handles the RowEnter event of the _DataGridListView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
         private void _DataGridListView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -4578,6 +6175,10 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Sets the language.
+        /// </summary>
+        /// <param name="Language">The language.</param>
         public void SetLanguage(string Language)
         {
             switch (Language.ToLower().Trim() ?? "")
@@ -4632,6 +6233,9 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Datas the grid ListView initialize.
+        /// </summary>
         public void DataGridListViewInit()
         {
 
@@ -4802,6 +6406,11 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Handles the Accelerator event of the DataNavigator control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="AcceleratorEventArgs"/> instance containing the event data.</param>
         private void DataNavigator_Accelerator(object sender, AcceleratorEventArgs e)
         {
 
@@ -4809,13 +6418,34 @@ namespace Passero.Framework.Controls
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ListViewColumn
     {
         //private BasicDAL.DbColumn mDBColumn;
+        /// <summary>
+        /// The m friendly name
+        /// </summary>
         private string mFriendlyName;
+        /// <summary>
+        /// The m display format
+        /// </summary>
         private string mDisplayFormat;
+        /// <summary>
+        /// The m column type
+        /// </summary>
         private DataGridListViewColumnType mColumnType;
+        /// <summary>
+        /// The m width
+        /// </summary>
         private int mWidth = 100;
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
         public int Width
         {
             get
@@ -4830,6 +6460,12 @@ namespace Passero.Framework.Controls
                 mWidth = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the display format.
+        /// </summary>
+        /// <value>
+        /// The display format.
+        /// </value>
         public string DisplayFormat
         {
             get
@@ -4845,6 +6481,12 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the friendly.
+        /// </summary>
+        /// <value>
+        /// The name of the friendly.
+        /// </value>
         public string FriendlyName
         {
             get
@@ -4871,6 +6513,12 @@ namespace Passero.Framework.Controls
         //        mDBColumn = value;
         //    }
         //}
+        /// <summary>
+        /// Gets or sets the type of the column.
+        /// </summary>
+        /// <value>
+        /// The type of the column.
+        /// </value>
         public DataGridListViewColumnType ColumnType
         {
             get
@@ -4887,14 +6535,36 @@ namespace Passero.Framework.Controls
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum DataGridListViewColumnType : int
     {
+        /// <summary>
+        /// The undefined
+        /// </summary>
         Undefined = 0,
+        /// <summary>
+        /// The text box
+        /// </summary>
         TextBox = 1,
+        /// <summary>
+        /// The CheckBox
+        /// </summary>
         CheckBox = 2,
+        /// <summary>
+        /// The image
+        /// </summary>
         Image = 3,
+        /// <summary>
+        /// The link
+        /// </summary>
         Link = 4
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.Collections.CollectionBase" />
     public class ListViewColumns : CollectionBase
     {
 
@@ -4918,6 +6588,11 @@ namespace Passero.Framework.Controls
         //}
 
 
+        /// <summary>
+        /// Gets the item.
+        /// </summary>
+        /// <param name="Index">The index.</param>
+        /// <returns></returns>
         public ListViewColumn get_Item(int Index)
         {
             ListViewColumn ItemRet = default;
@@ -4925,6 +6600,11 @@ namespace Passero.Framework.Controls
             return ItemRet;
         }
 
+        /// <summary>
+        /// Sets the item.
+        /// </summary>
+        /// <param name="Index">The index.</param>
+        /// <param name="value">The value.</param>
         public void set_Item(int Index, ListViewColumn value)
         {
             List[Index] = value;

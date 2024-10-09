@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SystemDrawingHelper
     {
 
+        /// <summary>
+        /// Safes the image from file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public static System.Drawing.Image SafeImageFromFile(string path)
         {
             byte[] bytesArr = null;
@@ -24,6 +27,12 @@ namespace Passero.Framework
             return img;
         }
 
+        /// <summary>
+        /// Images to byte array.
+        /// </summary>
+        /// <param name="imageIn">The image in.</param>
+        /// <param name="Format">The format.</param>
+        /// <returns></returns>
         public static byte[] imageToByteArray(System.Drawing.Image imageIn, System.Drawing.Imaging.ImageFormat Format = null)
         {
             if (imageIn is object)
@@ -43,6 +52,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Bytes the array to image.
+        /// </summary>
+        /// <param name="byteArrayIn">The byte array in.</param>
+        /// <returns></returns>
         public static System.Drawing.Image byteArrayToImage(byte[] byteArrayIn)
         {
             System.Drawing.Image returnImage = null;

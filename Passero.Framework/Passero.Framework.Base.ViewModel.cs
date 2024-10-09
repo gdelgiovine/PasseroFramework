@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Wisej.Web;
 
@@ -14,11 +13,18 @@ using Wisej.Web;
 //namespace Passero.Framework.Base
 namespace Passero.Framework
 {
-   
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
     public class ViewModel<ModelClass> where ModelClass : class
     {
 
+        /// <summary>
+        /// The m class name
+        /// </summary>
         private const string mClassName = "Passero.Framework.Base.ViewModel";
         //public event EventHandler WriteControlsCompleted;
         //protected virtual void OnWriteControlsdCompleted(EventArgs e)
@@ -31,45 +37,158 @@ namespace Passero.Framework
         //{
         //    ReadControlsCompleted?.Invoke(this, e);
         //}
-        private object mDataNavigator = null;
-        public object DataNavigator
+        /// <summary>
+        /// The m data navigator
+        /// </summary>
+        private dynamic mDataNavigator = null;
+        /// <summary>
+        /// Gets or sets the data navigator.
+        /// </summary>
+        /// <value>
+        /// The data navigator.
+        /// </value>
+        public dynamic DataNavigator
         {
             get { return mDataNavigator; }
             set { mDataNavigator = value; }
         }
-        public Wisej.Web.Form OwnerView { get; set; }   
+        /// <summary>
+        /// Gets or sets the owner view.
+        /// </summary>
+        /// <value>
+        /// The owner view.
+        /// </value>
+        public Wisej.Web.Form OwnerView { get; set; }
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         public string Name { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
+        /// <summary>
+        /// Gets or sets the name of the friendly.
+        /// </summary>
+        /// <value>
+        /// The name of the friendly.
+        /// </value>
         public string FriendlyName { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
+        /// <summary>
+        /// Gets or sets the minimum date time.
+        /// </summary>
+        /// <value>
+        /// The minimum date time.
+        /// </value>
         public DateTime MinDateTime { get; set; } = new DateTime(1753, 1, 1, 0, 0, 0);
+        /// <summary>
+        /// Gets or sets the maximum date time.
+        /// </summary>
+        /// <value>
+        /// The maximum date time.
+        /// </value>
         public DateTime MaxDateTime { get; set; } = new DateTime(9999, 12, 31, 23, 59, 59, 999);
+        /// <summary>
+        /// Gets or sets the use model data.
+        /// </summary>
+        /// <value>
+        /// The use model data.
+        /// </value>
         public UseModelData UseModelData { get; set; } = UseModelData.InternalRepository;
-        public BindingBehaviour bindingBehaviour { get; set; }=BindingBehaviour.SelectInsertUpdate;
-        private ErrorNotificationMessageBox mErrorNotificationMessageBox = new ErrorNotificationMessageBox();   
+        /// <summary>
+        /// Gets or sets the binding behaviour.
+        /// </summary>
+        /// <value>
+        /// The binding behaviour.
+        /// </value>
+        public BindingBehaviour bindingBehaviour { get; set; } = BindingBehaviour.SelectInsertUpdate;
+        /// <summary>
+        /// The m error notification message box
+        /// </summary>
+        private ErrorNotificationMessageBox mErrorNotificationMessageBox = new ErrorNotificationMessageBox();
+        /// <summary>
+        /// The m error notification mode
+        /// </summary>
         private ErrorNotificationModes mErrorNotificationMode = ErrorNotificationModes.ThrowException;
+        /// <summary>
+        /// The m model item shadow
+        /// </summary>
         private ModelClass mModelItemShadow;
+        /// <summary>
+        /// The external model shadow
+        /// </summary>
         private ModelClass ExternalModelShadow;
+        /// <summary>
+        /// The m add new current model item index
+        /// </summary>
         private int mAddNewCurrentModelItemIndex = -1;
-        private int mCurrentModelItemIndex=-1;
+        /// <summary>
+        /// The m current model item index
+        /// </summary>
+        private int mCurrentModelItemIndex = -1;
+        /// <summary>
+        /// The m model items
+        /// </summary>
         private List<ModelClass> mModelItems;
+        /// <summary>
+        /// The m model items shadow
+        /// </summary>
         private List<ModelClass> mModelItemsShadow;
+        /// <summary>
+        /// The m binding source
+        /// </summary>
         private BindingSource mBindingSource;
+        /// <summary>
+        /// The binding source controls
+        /// </summary>
         private Dictionary<string, Wisej.Web.Control> BindingSourceControls = new Dictionary<string, Control>();
+        /// <summary>
+        /// The m data binding mode
+        /// </summary>
         private DataBindingMode mDataBindingMode = DataBindingMode.Passero;
-        
-        
+
+
+        /// <summary>
+        /// Gets or sets the last execution result.
+        /// </summary>
+        /// <value>
+        /// The last execution result.
+        /// </value>
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult(mClassName);
-        public ErrorNotificationModes  ErrorNotificationMode
+        /// <summary>
+        /// Gets or sets the error notification mode.
+        /// </summary>
+        /// <value>
+        /// The error notification mode.
+        /// </value>
+        public ErrorNotificationModes ErrorNotificationMode
         {
             get { return mErrorNotificationMode; }
-            set { mErrorNotificationMode = value; 
-                this.Repository.ErrorNotificationMode = value; }
+            set
+            {
+                mErrorNotificationMode = value;
+                Repository.ErrorNotificationMode = value;
+            }
         }
-        public ErrorNotificationMessageBox ErrorNotificationMessageBox        {
+        /// <summary>
+        /// Gets or sets the error notification message box.
+        /// </summary>
+        /// <value>
+        /// The error notification message box.
+        /// </value>
+        public ErrorNotificationMessageBox ErrorNotificationMessageBox
+        {
             get { return mErrorNotificationMessageBox; }
-            set { this.mErrorNotificationMessageBox = value; 
-                this.Repository.ErrorNotificationMessageBox = value; }
+            set
+            {
+                mErrorNotificationMessageBox = value;
+                Repository.ErrorNotificationMessageBox = value;
+            }
         }
 
+        /// <summary>
+        /// Handles the exeception.
+        /// </summary>
+        /// <param name="executionResult">The execution result.</param>
         public void HandleExeception(ExecutionResult executionResult)
         {
             if (executionResult == null)
@@ -77,7 +196,7 @@ namespace Passero.Framework
                 return;
             }
 
-            switch (this.ErrorNotificationMode)
+            switch (ErrorNotificationMode)
             {
                 case ErrorNotificationModes.ShowDialog:
                     StringBuilder msg = new StringBuilder();
@@ -93,8 +212,17 @@ namespace Passero.Framework
             }
 
         }
+        /// <summary>
+        /// The m SQL query
+        /// </summary>
         private string mSQLQuery;
 
+        /// <summary>
+        /// Gets or sets the SQL query.
+        /// </summary>
+        /// <value>
+        /// The SQL query.
+        /// </value>
         public string SQLQuery
         {
             get
@@ -109,62 +237,104 @@ namespace Passero.Framework
             }
         }
 
-        public string ResolvedSQLQuery(string SQLQuery="", DynamicParameters Parameters=null)
+        /// <summary>
+        /// Resolveds the SQL query.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <returns></returns>
+        public string ResolvedSQLQuery(string SQLQuery = "", DynamicParameters Parameters = null)
         {
-            if (SQLQuery!=null && Parameters !=null)
+            if (SQLQuery != null && Parameters != null)
                 return Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, Parameters);
             else
                 return Passero.Framework.DapperHelper.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
         }
 
+        /// <summary>
+        /// Gets or sets the binding source.
+        /// </summary>
+        /// <value>
+        /// The binding source.
+        /// </value>
         public BindingSource BindingSource
         {
             get
             {
-                return mBindingSource;  
+                return mBindingSource;
             }
             set
             {
-                this.mBindingSource = value;
+                mBindingSource = value;
             }
         }
 
-        public void SetBindingSource(BindingSource bindingSource, bool setdatabindingmode=true )
+        /// <summary>
+        /// Sets the binding source.
+        /// </summary>
+        /// <param name="bindingSource">The binding source.</param>
+        /// <param name="setdatabindingmode">if set to <c>true</c> [setdatabindingmode].</param>
+        public void SetBindingSource(BindingSource bindingSource, bool setdatabindingmode = true)
         {
-            this.BindingSource = bindingSource;
+            BindingSource = bindingSource;
             if (setdatabindingmode == true)
-                this.DataBindingMode = DataBindingMode.BindingSource;
+                DataBindingMode = DataBindingMode.BindingSource;
         }
 
+        /// <summary>
+        /// Gets the type of the model.
+        /// </summary>
+        /// <value>
+        /// The type of the model.
+        /// </value>
         public Type? ModelType
         {
-            get 
+            get
             {
 
-                return GetEmptyModelItem().GetType ();
+                return GetEmptyModelItem().GetType();
                 //return ModelItem.GetType(); 
-            
+
             }
-            
+
         }
-        
-        public void ResetModelItem(bool ResetModelItems=true)
+
+        /// <summary>
+        /// Resets the model item.
+        /// </summary>
+        /// <param name="ResetModelItems">if set to <c>true</c> [reset model items].</param>
+        public void ResetModelItem(bool ResetModelItems = true)
         {
-            ModelItem = NewModeltem; 
-            if (ResetModelItems==true)
+            ModelItem = NewModeltem;
+            if (ResetModelItems == true)
                 ModelItems = new List<ModelClass>();
         }
+        /// <summary>
+        /// Resets the model items.
+        /// </summary>
         public void ResetModelItems()
         {
-            ModelItems =  new List<ModelClass>();
+            ModelItems = new List<ModelClass>();
         }
 
 
+        /// <summary>
+        /// Creates new modeltem.
+        /// </summary>
+        /// <value>
+        /// The new modeltem.
+        /// </value>
         public ModelClass? NewModeltem
         {
             get { return GetEmptyModelItem(); }
             set { NewModeltem = value; }
         }
+        /// <summary>
+        /// Gets or sets the model item.
+        /// </summary>
+        /// <value>
+        /// The model item.
+        /// </value>
         public ModelClass ModelItem
         {
             get
@@ -195,6 +365,12 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets or sets the model items.
+        /// </summary>
+        /// <value>
+        /// The model items.
+        /// </value>
         public List<ModelClass> ModelItems
         {
             get
@@ -219,15 +395,21 @@ namespace Passero.Framework
                         Repository.ModelItems = value;
                         break;
                 }
-                
+
                 if (mBindingSource != null)
                 {
                     mBindingSource.DataSource = value;
                 }
-                
+
             }
         }
 
+        /// <summary>
+        /// Gets or sets the model items shadow.
+        /// </summary>
+        /// <value>
+        /// The model items shadow.
+        /// </value>
         public List<ModelClass> ModelItemsShadow
         {
             get
@@ -257,6 +439,12 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Gets the model items count.
+        /// </summary>
+        /// <value>
+        /// The model items count.
+        /// </value>
         public int ModelItemsCount
         {
             get
@@ -271,6 +459,12 @@ namespace Passero.Framework
                 }
             }
         }
+        /// <summary>
+        /// Gets or sets the index of the current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the current model item.
+        /// </value>
         public int CurrentModelItemIndex
         {
             get
@@ -299,6 +493,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets or sets the index of the add new current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the add new current model item.
+        /// </value>
         public int AddNewCurrentModelItemIndex
         {
             get
@@ -328,24 +528,30 @@ namespace Passero.Framework
         }
 
 
-        public int CreatePasseroBindingFromBindingSource(Form Form=null, BindingSource BindingSource =null)
+        /// <summary>
+        /// Creates the passero binding from binding source.
+        /// </summary>
+        /// <param name="Form">The form.</param>
+        /// <param name="BindingSource">The binding source.</param>
+        /// <returns></returns>
+        public int CreatePasseroBindingFromBindingSource(Form Form = null, BindingSource BindingSource = null)
         {
             //if (this.DataBindingMode == DataBindingMode.BindingSource)
             //    return 0;
 
-            if (Form == null )
-                Form = this.OwnerView;
-            
+            if (Form == null)
+                Form = OwnerView;
+
             if (Form == null)
                 return 0;
 
             if (BindingSource == null)
                 BindingSource = this.BindingSource;
-            
+
             if (BindingSource == null)
                 return 0;
 
-            this.DataBindControls.Clear();
+            DataBindControls.Clear();
 
             foreach (Control item in Form.Controls)
             {
@@ -355,15 +561,20 @@ namespace Passero.Framework
                     {
                         if (binding.DataSource == BindingSource)
                         {
-                            this.AddControl(item, binding.PropertyName, binding.BindingMemberInfo.BindingField, this.bindingBehaviour);
+                            AddControl(item, binding.PropertyName, binding.BindingMemberInfo.BindingField, bindingBehaviour);
                         }
                     }
                 }
             }
 
-            return this.DataBindControls.Count();
+            return DataBindControls.Count();
         }
 
+        /// <summary>
+        /// Externals the get model items at.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         private ExecutionResult<ModelClass> ExternalGetModelItemsAt(int index)
         {
 
@@ -385,6 +596,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the model items at.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         public ExecutionResult<ModelClass> GetModelItemsAt(int index)
         {
             var ERContext = $"{mClassName}.GetModelItemsAt()";
@@ -405,13 +621,19 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets or sets the model item shadow.
+        /// </summary>
+        /// <value>
+        /// The model item shadow.
+        /// </value>
         public ModelClass ModelItemShadow
         {
             get
             {
                 if (UseModelData == UseModelData.External)
                 {
-                    return this.ExternalModelShadow;
+                    return ExternalModelShadow;
                 }
                 else
                 {
@@ -422,7 +644,7 @@ namespace Passero.Framework
             {
                 if (UseModelData == UseModelData.External)
                 {
-                    this.ExternalModelShadow = value;
+                    ExternalModelShadow = value;
                 }
                 else
                 {
@@ -431,6 +653,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Externals the model data changed.
+        /// </summary>
+        /// <param name="ModelShadow">The model shadow.</param>
+        /// <returns></returns>
         private bool ExternalModelDataChanged(ModelClass ModelShadow = null)
         {
             if (ModelShadow is null)
@@ -440,6 +667,13 @@ namespace Passero.Framework
             return !Utilities.ObjectsEquals(mModelItemShadow, ModelShadow);
         }
 
+        /// <summary>
+        /// Determines whether [is model data changed] [the specified model shadow].
+        /// </summary>
+        /// <param name="ModelShadow">The model shadow.</param>
+        /// <returns>
+        ///   <c>true</c> if [is model data changed] [the specified model shadow]; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsModelDataChanged(ModelClass ModelShadow = null)
         {
             if (UseModelData == UseModelData.InternalRepository)
@@ -448,18 +682,29 @@ namespace Passero.Framework
                 return ExternalModelDataChanged(ModelShadow);
         }
 
+        /// <summary>
+        /// Datas the navigator raise event bound compled.
+        /// </summary>
         public void DataNavigatorRaiseEventBoundCompled()
         {
             if (mDataNavigator != null)
             {
-                ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "RaiseEventBoundCompleted");
+                //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "RaiseEventBoundCompleted");
+                mDataNavigator.RaiseEventBoundCompleted();
             }
         }
+        /// <summary>
+        /// Sets the model item shadow.
+        /// </summary>
         public void SetModelItemShadow()
         {
             ModelItemShadow = Utilities.Clone(ModelItem);
         }
 
+        /// <summary>
+        /// Moves the first item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveFirstItem()
         {
             var ERContext = $"{mClassName}.MoveFirstItem()";
@@ -492,7 +737,7 @@ namespace Passero.Framework
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -512,6 +757,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the last item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveLastItem()
         {
             var ERContext = $"{mClassName}.MoveLastItem()";
@@ -547,7 +796,7 @@ namespace Passero.Framework
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -566,6 +815,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the previous item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MovePreviousItem()
         {
             var ERContext = $"{mClassName}.MovePreviousItem()";
@@ -603,7 +856,7 @@ namespace Passero.Framework
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -623,6 +876,10 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Moves the next item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveNextItem()
         {
             var ERContext = $"{mClassName}.MoveNextItem()";
@@ -658,7 +915,7 @@ namespace Passero.Framework
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -675,6 +932,11 @@ namespace Passero.Framework
             return ER;
         }
 
+        /// <summary>
+        /// Moves at item.
+        /// </summary>
+        /// <param name="Index">The index.</param>
+        /// <returns></returns>
         public ExecutionResult MoveAtItem(int Index)
         {
             var ERContext = $"{mClassName}.MoveAtItem()";
@@ -712,7 +974,7 @@ namespace Passero.Framework
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -730,7 +992,16 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// The m add new state
+        /// </summary>
         private bool mAddNewState;
+        /// <summary>
+        /// Gets or sets a value indicating whether [add new state].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [add new state]; otherwise, <c>false</c>.
+        /// </value>
         public bool AddNewState
         {
             get
@@ -740,11 +1011,16 @@ namespace Passero.Framework
 
             set
             {
-                mAddNewState = value;   
+                mAddNewState = value;
             }
 
-         
+
         }
+        /// <summary>
+        /// Adds the new.
+        /// </summary>
+        /// <param name="newItem">The new item.</param>
+        /// <returns></returns>
         public ExecutionResult AddNew(object newItem = null)
         {
             var ER = new ExecutionResult($"{mClassName}.AddNew()");
@@ -774,7 +1050,8 @@ namespace Passero.Framework
                             ModelItems[mBindingSource.CurrencyManager.Position] = ModelItem;
                             mBindingSource.CurrencyManager.UpdateBindings();
                             CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
-                            ReflectionHelper.CallByName( mDataNavigator, "UpdateRecordLabel", CallType.Method);
+                            //ReflectionHelper.CallByName( mDataNavigator, "UpdateRecordLabel", CallType.Method);
+                            mDataNavigator.UpdateRecordLabel();
                             break;
                         default:
                             break;
@@ -796,8 +1073,20 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
         public string Description { get; set; }
 
+        /// <summary>
+        /// Gets or sets the data binding mode.
+        /// </summary>
+        /// <value>
+        /// The data binding mode.
+        /// </value>
         public DataBindingMode DataBindingMode
         {
             get
@@ -805,27 +1094,45 @@ namespace Passero.Framework
                 return mDataBindingMode;
             }
 
-            set 
+            set
             {
-                this.mDataBindingMode = value; 
-                if (this.mDataBindingMode == DataBindingMode.BindingSource )
+                mDataBindingMode = value;
+                if (mDataBindingMode == DataBindingMode.BindingSource)
                 {
-                    if (this.mBindingSource == null)
+                    if (mBindingSource == null)
                     {
-                        this.mBindingSource =new BindingSource();
-                        this.mBindingSource.DataSource = this.ModelItem;
+                        mBindingSource = new BindingSource();
+                        mBindingSource.DataSource = ModelItem;
                     }
                 }
-            } 
+            }
         }
 
-        public IDbConnection DbConnection 
-        { 
-            get { return this.Repository.DbConnection; } 
-            set { this.Repository.DbConnection = value; }
+        /// <summary>
+        /// Gets or sets the database connection.
+        /// </summary>
+        /// <value>
+        /// The database connection.
+        /// </value>
+        public IDbConnection DbConnection
+        {
+            get { return Repository.DbConnection; }
+            set { Repository.DbConnection = value; }
         }
+        /// <summary>
+        /// Gets or sets the data bind controls.
+        /// </summary>
+        /// <value>
+        /// The data bind controls.
+        /// </value>
         public Dictionary<string, DataBindControl> DataBindControls { get; set; } = new Dictionary<string, DataBindControl>(StringComparer.InvariantCultureIgnoreCase);
 
+        /// <summary>
+        /// Gets or sets the database transaction.
+        /// </summary>
+        /// <value>
+        /// The database transaction.
+        /// </value>
         public IDbTransaction DbTransaction
         {
             get
@@ -837,6 +1144,12 @@ namespace Passero.Framework
                 Repository.DbTransaction = value;
             }
         }
+        /// <summary>
+        /// Gets or sets the database command timeout.
+        /// </summary>
+        /// <value>
+        /// The database command timeout.
+        /// </value>
         public int DbCommandTimeout
         {
             get
@@ -849,15 +1162,40 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the empty model item.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass GetEmptyModelItem()
         {
             return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         }
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [automatic write controls].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [automatic write controls]; otherwise, <c>false</c>.
+        /// </value>
         public bool AutoWriteControls { get; set; } = false;
+        /// <summary>
+        /// Gets or sets a value indicating whether [automatic read controls].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [automatic read controls]; otherwise, <c>false</c>.
+        /// </value>
         public bool AutoReadControls { get; set; } = false;
+        /// <summary>
+        /// The m data bind controls automatic set maximum lenght
+        /// </summary>
         private bool mDataBindControlsAutoSetMaxLenght = true;
+        /// <summary>
+        /// Gets or sets a value indicating whether [data bind controls automatic set maximum lenght].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [data bind controls automatic set maximum lenght]; otherwise, <c>false</c>.
+        /// </value>
         public bool DataBindControlsAutoSetMaxLenght
         {
             get
@@ -879,7 +1217,16 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// The m automatic fit columns lenght
+        /// </summary>
         private bool mAutoFitColumnsLenght = false;
+        /// <summary>
+        /// Gets or sets a value indicating whether [automatic fit columns lenght].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [automatic fit columns lenght]; otherwise, <c>false</c>.
+        /// </value>
         public bool AutoFitColumnsLenght
         {
             get
@@ -901,7 +1248,13 @@ namespace Passero.Framework
             }
         }
 
-        
+
+        /// <summary>
+        /// Gets or sets the repository.
+        /// </summary>
+        /// <value>
+        /// The repository.
+        /// </value>
         public Repository<ModelClass> Repository { get; set; }
 
         //public ModelClass GetEmptyModel()
@@ -909,7 +1262,16 @@ namespace Passero.Framework
         //    return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         //}
 
+        /// <summary>
+        /// The m default SQL query parameters
+        /// </summary>
         private DynamicParameters mDefaultSQLQueryParameters;
+        /// <summary>
+        /// Gets or sets the default SQL query parameters.
+        /// </summary>
+        /// <value>
+        /// The default SQL query parameters.
+        /// </value>
         public DynamicParameters DefaultSQLQueryParameters
         {
             get
@@ -923,8 +1285,17 @@ namespace Passero.Framework
                 Repository.DefaultSQLQueryParameters = value;
             }
         }
+        /// <summary>
+        /// The m default SQL query
+        /// </summary>
         private string mDefaultSQLQuery;
-        public  string DefaultSQLQuery
+        /// <summary>
+        /// Gets or sets the default SQL query.
+        /// </summary>
+        /// <value>
+        /// The default SQL query.
+        /// </value>
+        public string DefaultSQLQuery
         {
             get
             {
@@ -938,39 +1309,56 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
         public DynamicParameters Parameters
         {
             get
             {
                 return Repository.Parameters;
-                
+
             }
         }
 
-        public ViewModel(string Name="", string FriendlyName="")
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewModel{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="Name">The name.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
+        public ViewModel(string Name = "", string FriendlyName = "")
         {
-            this.Repository = new Repository<ModelClass>();
-            this.DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
-            this.DefaultSQLQueryParameters = new DynamicParameters();
+            Repository = new Repository<ModelClass>();
+            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            DefaultSQLQueryParameters = new DynamicParameters();
             if (Name != "")
                 this.Name = Name;
             else
-                this.Name=nameof (ModelClass);
+                this.Name = nameof(ModelClass);
 
             if (FriendlyName != "")
                 this.FriendlyName = FriendlyName;
             else
                 this.FriendlyName = Name;
 
-            this.Repository.ViewModel = this;
-            this.Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
-            this.Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
-            this.Repository.ErrorNotificationMode = this.ErrorNotificationMode;
-            this.mModelItemShadow = GetEmptyModelItem();
-           
+            Repository.ViewModel = this;
+            Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
+            Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+            Repository.ErrorNotificationMode = ErrorNotificationMode;
+            mModelItemShadow = GetEmptyModelItem();
+
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewModel{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="Repository">The repository.</param>
+        /// <param name="Name">The name.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
         public ViewModel(ref Repository<ModelClass> Repository, string Name = "", string FriendlyName = "")
         {
             if (Name != "")
@@ -981,32 +1369,52 @@ namespace Passero.Framework
             mModelItemShadow = GetEmptyModelItem();
             this.Repository = Repository;
         }
+        /// <summary>
+        /// Initializes the specified model.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Name">The name.</param>
+        /// <param name="Description">The description.</param>
+        /// <param name="DataBindingMode">The data binding mode.</param>
         public void Init(ModelClass Model, string Name, string Description, DataBindingMode DataBindingMode = DataBindingMode.Passero)
         {
             this.Name = Name;
             this.Description = Description;
-            this.mDataBindingMode = DataBindingMode;
+            mDataBindingMode = DataBindingMode;
             //Repository.DbObject.DbConnection = Repository.DbConnection;
             //Repository.DbObject.GetSchema();
         }
 
 
+        /// <summary>
+        /// Initializes the specified database connection.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
+        /// <param name="DataBindingMode">The data binding mode.</param>
         public virtual void Init(IDbConnection DbConnection, DataBindingMode DataBindingMode = DataBindingMode.Passero)
         {
-            this.mDataBindingMode = DataBindingMode;
-            this.DbConnection = DbConnection;   
-            this.Repository.DbConnection = DbConnection;
+            mDataBindingMode = DataBindingMode;
+            this.DbConnection = DbConnection;
+            Repository.DbConnection = DbConnection;
             //Repository.DbObject.DbConnection = Repository.DbConnection;
             //Repository.DbObject.GetSchema();
         }
 
+        /// <summary>
+        /// Initializes the specified data binding mode.
+        /// </summary>
+        /// <param name="DataBindingMode">The data binding mode.</param>
         public void Init(DataBindingMode DataBindingMode = DataBindingMode.Passero)
         {
 
-            this.mDataBindingMode = DataBindingMode;
+            mDataBindingMode = DataBindingMode;
 
         }
 
+        /// <summary>
+        /// Reloads the items.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult ReloadItems()
         {
             var ERContenxt = $"{mClassName}.ReloadItems()";
@@ -1017,6 +1425,15 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the item.
+        /// </summary>
+        /// <param name="SqlQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<ModelClass> GetItem(string SqlQuery, object Parameters, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.GetItems()";
@@ -1047,6 +1464,15 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the items.
+        /// </summary>
+        /// <param name="SqlQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<List<ModelClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             string ERContenxt = $"{mClassName}.GetItems()";
@@ -1056,20 +1482,20 @@ namespace Passero.Framework
             List<ModelClass> x = null;
             try
             {
-                this.mCurrentModelItemIndex = -1;
-                this.Repository.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
-                this.Repository.ErrorNotificationMode = this.ErrorNotificationMode;
+                mCurrentModelItemIndex = -1;
+                Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+                Repository.ErrorNotificationMode = ErrorNotificationMode;
 
-                this.Repository.SQLQuery = SqlQuery;
+                Repository.SQLQuery = SqlQuery;
 
                 //this.Repository.Parameters = (DynamicParameters)Parameters;
-                this.Repository.Parameters = DapperHelper.Utilities .GetDynamicParameters (Parameters);
+                Repository.Parameters = DapperHelper.Utilities.GetDynamicParameters(Parameters);
                 ER = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
 
                 if (ER.Success)
                 {
                     x = ER.Value;
-                    this.mCurrentModelItemIndex = 0;
+                    mCurrentModelItemIndex = 0;
                     switch (UseModelData)
                     {
                         case UseModelData.External:
@@ -1108,11 +1534,14 @@ namespace Passero.Framework
                 ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
                 HandleExeception(ER.ToExecutionResult());
             }
-            this.MoveFirstItem();
+            MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
             //DataNavigatorRaiseEventBoundCompled();
             return ER;
         }
+        /// <summary>
+        /// Sets the binding source.
+        /// </summary>
         public void SetBindingSource()
         {
             if (mDataBindingMode == DataBindingMode.BindingSource)
@@ -1130,6 +1559,13 @@ namespace Passero.Framework
                 }
             }
         }
+        /// <summary>
+        /// Gets all items.
+        /// </summary>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.GetAllItems()";
@@ -1182,7 +1618,7 @@ namespace Passero.Framework
             //    ReflectionHelper.CallByName(this.DataNavigator, "InitDataNavigator", Microsoft.VisualBasic.CallType.Method, null);
             //}
 
-            this.MoveFirstItem();
+            MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
             //DataNavigatorRaiseEventBoundCompled()
             return ER;
@@ -1190,39 +1626,43 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Undoes the changes.
+        /// </summary>
+        /// <param name="AllItems">if set to <c>true</c> [all items].</param>
+        /// <returns></returns>
         public ExecutionResult UndoChanges(bool AllItems = false)
         {
             var ERContenxt = $"{mClassName}.UndoChanges()";
             var ER = new ExecutionResult(ERContenxt);
-            var result = false;
             try
             {
-                if (this.AddNewState == false)
+                if (AddNewState == false)
                 {
-                    this.ModelItem = Utilities.Clone<ModelClass>(this.ModelItemShadow);
-                    if (this.ModelItems.Count >= this.CurrentModelItemIndex)
+                    ModelItem = Utilities.Clone<ModelClass>(ModelItemShadow);
+                    if (ModelItems.Count >= CurrentModelItemIndex)
                     {
-                        this.ModelItems[this.CurrentModelItemIndex] =Utilities.Clone<ModelClass>(this.ModelItemShadow);
+                        ModelItems[CurrentModelItemIndex] = Utilities.Clone<ModelClass>(ModelItemShadow);
                     }
                 }
                 else
                 {
-                    if (this.ModelItemsCount > 0)
+                    if (ModelItemsCount > 0)
                     {
-                        this.ModelItems.RemoveAt(this.ModelItemsCount - 1);
+                        ModelItems.RemoveAt(ModelItemsCount - 1);
                     }
                 }
 
 
                 //If AllItems And AutoUpdateModelItemsShadows = True Then
-                this.ModelItems = Utilities.Clone<List<ModelClass>>(this.ModelItemsShadow);
+                ModelItems = Utilities.Clone<List<ModelClass>>(ModelItemsShadow);
                 //End If
 
                 switch (mDataBindingMode)
                 {
                     case DataBindingMode.None:
                         break;
-                    case DataBindingMode.Passero :
+                    case DataBindingMode.Passero:
                         if (AutoWriteControls)
                         {
                             WriteControls();
@@ -1235,7 +1675,8 @@ namespace Passero.Framework
                             MoveAtItem(AddNewCurrentModelItemIndex);
                             if (mDataNavigator != null)
                             {
-                                ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "UpdateRecordLabel");
+                                //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "UpdateRecordLabel");
+                                mDataNavigator.UpdateRecordLabel();
                             }
                         }
                         else
@@ -1268,6 +1709,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Inserts the item.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult InsertItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERContext = $"{mClassName}.InsertItem()";
@@ -1287,14 +1735,12 @@ namespace Passero.Framework
                 DbCommandTimeout = this.DbCommandTimeout;
             }
 
-            long x = 0;
-
 
             switch (mDataBindingMode)
             {
                 case DataBindingMode.None:
                     break;
-                case DataBindingMode.Passero :
+                case DataBindingMode.Passero:
                     if (AutoReadControls == true)
                     {
                         ReadControls();
@@ -1318,7 +1764,7 @@ namespace Passero.Framework
 
             if (ER.Success)
             {
-                this.mAddNewState = false;
+                mAddNewState = false;
 
             }
 
@@ -1330,10 +1776,17 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Inserts the items.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult InsertItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.InsertItems()";
-            var ER = new ExecutionResult(ERContenxt );
+            var ER = new ExecutionResult(ERContenxt);
             if (ModelItem == null)
             {
                 ModelItem = ModelItem;
@@ -1359,7 +1812,7 @@ namespace Passero.Framework
                 CurrentModelItemIndex = 0;
             }
             LastExecutionResult = ER;
-            this.AddNewState = false;
+            AddNewState = false;
 
             return ER;
         }
@@ -1368,11 +1821,17 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Updates the item.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERcontext = $"{mClassName}.UpdateItem()";
             var ER = new ExecutionResult(ERcontext);
-            var x = false;
             if (mAddNewState == true)
             {
                 //long r= this.Repository.InsertItem(Item);
@@ -1430,13 +1889,20 @@ namespace Passero.Framework
 
         }
 
-       
 
+
+        /// <summary>
+        /// Updates the item ex.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="ItemShadow">The item shadow.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItemEx(ModelClass Item = null, ModelClass ItemShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERcontext = $"{mClassName}.UpdateItemEx()";
             var ER = new ExecutionResult();
-            var x = false;
 
 
             if (mAddNewState == true)
@@ -1473,7 +1939,7 @@ namespace Passero.Framework
             {
                 case DataBindingMode.None:
                     break;
-                case DataBindingMode.Passero :
+                case DataBindingMode.Passero:
                     if (AutoReadControls == true)
                     {
                         ReadControls();
@@ -1499,6 +1965,13 @@ namespace Passero.Framework
             return ER;
 
         }
+        /// <summary>
+        /// Updates the items.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
@@ -1534,6 +2007,14 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Updates the items ex.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="ItemsShadow">The items shadow.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItemsEx(List<ModelClass> Items = null, List<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
@@ -1574,6 +2055,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Deletes the item.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult DeleteItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
@@ -1597,7 +2085,7 @@ namespace Passero.Framework
                 case DataBindingMode.None:
                     ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
                     break;
-                case DataBindingMode.Passero :
+                case DataBindingMode.Passero:
                     ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
 
                     if (Convert.ToBoolean(ER.Value))
@@ -1614,7 +2102,7 @@ namespace Passero.Framework
                     mBindingSource.Remove(Item);
                     mBindingSource.EndEdit();
                     ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
-                    this.CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
+                    CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
                     break;
                 default:
                     break;
@@ -1627,11 +2115,17 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Deletes the items.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult DeleteItems(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
             string Context = ER.Context;
-            var x = false;
 
             if (DbTransaction == null)
             {
@@ -1664,13 +2158,27 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Gets the bound control key.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         private string GetBoundControlKey(Control Control, string PropertyName)
         {
-            string objname = Conversions.ToString(Microsoft.VisualBasic.Interaction.CallByName(Control, "Name", CallType.Get, (object[])null));
+            string objname = Conversions.ToString(Microsoft.VisualBasic.Interaction.CallByName(Control, "Name", CallType.Get, null));
             return (objname + "|" + PropertyName.Trim()).ToLower();
         }
 
 
+        /// <summary>
+        /// Adds the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <param name="ModelPropertyName">Name of the model property.</param>
+        /// <param name="BindingBehaviour">The binding behaviour.</param>
+        /// <returns></returns>
         public bool AddControl(Control Control, string ControlPropertyName, string ModelPropertyName, BindingBehaviour BindingBehaviour = (BindingBehaviour)((int)BindingBehaviour.Insert + (int)BindingBehaviour.Update + (int)BindingBehaviour.Select))
         {
             string Key = GetBoundControlKey(Control, ControlPropertyName);
@@ -1706,12 +2214,23 @@ namespace Passero.Framework
             // End If
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int RemoveControl(Control Control, string ControlPropertyName)
         {
             string Key = GetBoundControlKey(Control, ControlPropertyName);
             return RemoveControl(Key);
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Key">The key.</param>
+        /// <returns></returns>
         public int RemoveControl(string Key)
         {
             if (DataBindControls.ContainsKey(Key) == true)
@@ -1730,13 +2249,23 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <returns></returns>
         public int RemoveControl(Control Control)
         {
-            string objname = Conversions.ToString(Interaction.CallByName(Control, "Name", CallType.Get, (object[])null));
+            string objname = Conversions.ToString(Interaction.CallByName(Control, "Name", CallType.Get, null));
             string keytofind = (objname + "|").ToLower();
             return _RemoveControl(keytofind);
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="keytofind">The keytofind.</param>
+        /// <returns></returns>
         private int _RemoveControl(string keytofind)
         {
             int removedobjects = 0;
@@ -1760,10 +2289,17 @@ namespace Passero.Framework
         }
 
 
-    
+
 
 
         // Scrive il valore della proprietà del Model nella proprietà del controllo
+        /// <summary>
+        /// Writes the control.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int WriteControl(ModelClass Model, Control Control, string ControlPropertyName = "")
         {
             //if (mDataBindingMode == DataBindingMode.BindingSource | mDataBindingMode == DataBindingMode.None)
@@ -1785,7 +2321,7 @@ namespace Passero.Framework
                 foreach (string key in keys)
                 {
                     var DataBindControl = DataBindControls[key];
-                    var Value = Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Get, (object[])null);
+                    var Value = Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Get, null);
                     if (Value is not null)
                     {
                         Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Set, Value);
@@ -1804,13 +2340,18 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Writes the controls.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <returns></returns>
         public int WriteControls(ModelClass Model = null)
         {
             int _writedcontrols = 0;
 
             if (Model is null)
             {
-                Model = this.ModelItem;
+                Model = ModelItem;
             }
 
             switch (mDataBindingMode)
@@ -1837,6 +2378,13 @@ namespace Passero.Framework
         }
 
         // Scrive il valore della proprietà del Controllo nella proprietà del Model
+        /// <summary>
+        /// Reads the control.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int ReadControl(ModelClass Model, Control Control, string ControlPropertyName = "")
         {
 
@@ -1864,14 +2412,14 @@ namespace Passero.Framework
                     {
                         if (AddNewState == false)
                         {
-                            var Value = Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Get, (object[])null);
+                            var Value = Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Get, null);
                             Value = CheckControlValue(Value, DataBindControl.ModelPropertyName);
                             Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Set, Value);
                             _readedcontrols += 1;
                         }
                         else if ((int)(DataBindControl.BindingBehaviour & BindingBehaviour.Insert) > 0)
                         {
-                            var Value = Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Get, (object[])null);
+                            var Value = Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Get, null);
                             Value = CheckControlValue(Value, DataBindControl.ModelPropertyName);
                             Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Set, Value);
                             _readedcontrols += 1;
@@ -1883,6 +2431,12 @@ namespace Passero.Framework
             return _readedcontrols;
 
         }
+        /// <summary>
+        /// Checks the control value.
+        /// </summary>
+        /// <param name="Value">The value.</param>
+        /// <param name="ModelPropertyName">Name of the model property.</param>
+        /// <returns></returns>
         private object CheckControlValue(object Value, string ModelPropertyName)
         {
             if (Value is not null)
@@ -1933,19 +2487,32 @@ namespace Passero.Framework
         //    return Repository.SetModelShadow();
         //}
 
+        /// <summary>
+        /// Sets the model shadow.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass SetModelShadow()
         {
-            this.ModelItemShadow = Utilities.Clone(this.ModelItem);
-            
+            ModelItemShadow = Utilities.Clone(ModelItem);
+
             return ModelItemShadow;
         }
 
+        /// <summary>
+        /// Sets the model items shadow.
+        /// </summary>
+        /// <returns></returns>
         public List<ModelClass> SetModelItemsShadow()
         {
             mModelItemsShadow = Utilities.Clone(mModelItems);
-            
+
             return mModelItemsShadow;
         }
+        /// <summary>
+        /// Reads the controls.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <returns></returns>
         public int ReadControls(ModelClass Model = null)
         {
 
@@ -1956,7 +2523,7 @@ namespace Passero.Framework
 
             if (Model is null)
             {
-                Model = this.ModelItem;
+                Model = ModelItem;
             }
 
             int _readedcontrols = 0;
@@ -1966,6 +2533,12 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Clears the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int ClearControl(Control Control, string ControlPropertyName = "")
         {
 
@@ -1992,7 +2565,11 @@ namespace Passero.Framework
             return writedproperties;
 
         }
-        
+
+        /// <summary>
+        /// Clears the controls.
+        /// </summary>
+        /// <returns></returns>
         public int ClearControls()
         {
             int writedproperties = 0;
@@ -2004,11 +2581,11 @@ namespace Passero.Framework
 
 
 
-        
+
     }
 
 
 
 
-  
+
 }

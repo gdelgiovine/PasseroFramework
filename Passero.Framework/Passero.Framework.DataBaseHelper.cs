@@ -11,9 +11,18 @@ using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class DataBaseHelper
     {
 
+        /// <summary>
+        /// Lists to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
         public static DataTable ListToDataTable<T>(IList<T> data)
         {
             PropertyDescriptorCollection properties =
@@ -32,6 +41,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Lists to data table.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
         public static DataTable ListToDataTable(object data)
         {
             Type type = Passero.Framework.ReflectionHelper.GetListType(data);
@@ -55,6 +69,11 @@ namespace Passero.Framework
             return table;
         }
 
+        /// <summary>
+        /// Datas the column is numeric.
+        /// </summary>
+        /// <param name="col">The col.</param>
+        /// <returns></returns>
         public static bool DataColumnIsNumeric(DataColumn col)
         {
             if (col is null)
@@ -63,6 +82,11 @@ namespace Passero.Framework
             Type[] numericTypes = new[] { typeof(byte), typeof(decimal), typeof(double), typeof(short), typeof(int), typeof(long), typeof(sbyte), typeof(float), typeof(ushort), typeof(uint), typeof(ulong) };
             return numericTypes.Contains(col.DataType);
         }
+        /// <summary>
+        /// Pings the database.
+        /// </summary>
+        /// <param name="DBConnection">The database connection.</param>
+        /// <returns></returns>
         public static Framework.ExecutionResult PingDB(System.Data.SqlClient.SqlConnection DBConnection)
         {
 
@@ -89,6 +113,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the update SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
         public static string GetUpdateSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
         {
 
@@ -98,9 +128,15 @@ namespace Passero.Framework
 
         }
 
-      
 
 
+
+        /// <summary>
+        /// Gets the insert SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
         public static string GetInsertSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
         {
 
@@ -111,6 +147,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the delete SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
         public static string GetDeleteSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
         {
 

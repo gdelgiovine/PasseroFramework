@@ -1,41 +1,120 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
 
 namespace Passero.Framework
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum ConfigurationSyntax
     {
+        /// <summary>
+        /// The ini
+        /// </summary>
         INI = 0,
+        /// <summary>
+        /// The json
+        /// </summary>
         JSON = 1,
+        /// <summary>
+        /// The XML
+        /// </summary>
         XML = 2
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConfigurationDictionary
     {
+        /// <summary>
+        /// Gets or sets the items.
+        /// </summary>
+        /// <value>
+        /// The items.
+        /// </value>
         public Dictionary<string, Dictionary<string, string>> Items { get; set; } = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConfigurationManager
     {
+        /// <summary>
+        /// Gets or sets the syntax.
+        /// </summary>
+        /// <value>
+        /// The syntax.
+        /// </value>
         public ConfigurationSyntax Syntax { get; set; } = ConfigurationSyntax.INI;
+        /// <summary>
+        /// Gets or sets the name of the file.
+        /// </summary>
+        /// <value>
+        /// The name of the file.
+        /// </value>
         public string FileName { get; set; }
+        /// <summary>
+        /// Gets or sets the json configuration string.
+        /// </summary>
+        /// <value>
+        /// The json configuration string.
+        /// </value>
         public string JsonConfigurationString { get; set; }
+        /// <summary>
+        /// Gets or sets the XML configuration string.
+        /// </summary>
+        /// <value>
+        /// The XML configuration string.
+        /// </value>
         public string XMLConfigurationString { get; set; }
 
+        /// <summary>
+        /// Gets or sets the database connections.
+        /// </summary>
+        /// <value>
+        /// The database connections.
+        /// </value>
         public Dictionary<string, System.Data.Common.DbConnection> DBConnections { get; set; } = new Dictionary<string, System.Data.Common.DbConnection>(StringComparer.InvariantCultureIgnoreCase);
+        /// <summary>
+        /// Gets or sets the configuration dictionary.
+        /// </summary>
+        /// <value>
+        /// The configuration dictionary.
+        /// </value>
         private Dictionary<string, Dictionary<string, string>> ConfigurationDictionary { get; set; } = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
         // Public Property SessionConfigurationDictionary As Dictionary(Of String, Object) = New Dictionary(Of String, Object)(StringComparer.InvariantCultureIgnoreCase)
+        /// <summary>
+        /// Gets or sets the session configuration dictionary.
+        /// </summary>
+        /// <value>
+        /// The session configuration dictionary.
+        /// </value>
         private Dictionary<string, Dictionary<string, string>> SessionConfigurationDictionary { get; set; } = new Dictionary<string, Dictionary<string, string>>(StringComparer.InvariantCultureIgnoreCase);
 
 
+        /// <summary>
+        /// Gets or sets the last execution result.
+        /// </summary>
+        /// <value>
+        /// The last execution result.
+        /// </value>
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        /// </summary>
         public ConfigurationManager()
         {
 
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        /// </summary>
+        /// <param name="FileName">Name of the file.</param>
         public ConfigurationManager(string FileName = "")
         {
 
@@ -43,27 +122,47 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets the configuration dictionary.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, Dictionary<string, string>> GetConfigurationDictionary()
         {
             return ConfigurationDictionary;
         }
 
+        /// <summary>
+        /// Sets the configuration dictionary.
+        /// </summary>
+        /// <param name="ConfigurationDictionary">The configuration dictionary.</param>
         public void SetConfigurationDictionary(Dictionary<string, Dictionary<string, string>> ConfigurationDictionary)
         {
             this.ConfigurationDictionary = ConfigurationDictionary;
         }
 
+        /// <summary>
+        /// Gets the session configuration dictionary.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, Dictionary<string, string>> GetSessionConfigurationDictionary()
         {
             return SessionConfigurationDictionary;
         }
 
+        /// <summary>
+        /// Gets the session configuration dictionary.
+        /// </summary>
+        /// <param name="SessionConfigurationDictionary">The session configuration dictionary.</param>
         public void GetSessionConfigurationDictionary(Dictionary<string, Dictionary<string, string>> SessionConfigurationDictionary)
         {
             this.SessionConfigurationDictionary = SessionConfigurationDictionary;
         }
 
 
+        /// <summary>
+        /// Reads the json configuration file.
+        /// </summary>
+        /// <returns></returns>
         public string ReadJsonConfigurationFile()
         {
 
@@ -105,6 +204,11 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Writes the json configuration file.
+        /// </summary>
+        /// <param name="AsFileName">Name of as file.</param>
+        /// <returns></returns>
         public bool WriteJsonConfigurationFile(string AsFileName = "")
         {
 
@@ -143,11 +247,23 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Assigns the specified target.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target">The target.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static T __Assign<T>(ref T target, T value)
         {
             target = value;
             return value;
         }
+        /// <summary>
+        /// Reads the configuration.
+        /// </summary>
+        /// <param name="FileName">Name of the file.</param>
+        /// <returns></returns>
         public bool ReadConfiguration(string FileName = "")
         {
 
@@ -216,6 +332,12 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets the configuration key value.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <param name="Key">The key.</param>
+        /// <returns></returns>
         public string GetConfigurationKeyValue(string Section, string Key)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.GetConfigurationValue({Section},{Key}");
@@ -254,7 +376,7 @@ namespace Passero.Framework
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.Exception = ex;
-                LastExecutionResult.ResultCode =    ExecutionResultCodes.Failed;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
                 LastExecutionResult.ResultMessage = $"Errore durante la lettura del file {FileName}{Constants.vbCrLf}{ex.Message}";
             }
 
@@ -262,6 +384,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the session configuration key value.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <param name="Key">The key.</param>
+        /// <returns></returns>
         public string GetSessionConfigurationKeyValue(string Section, string Key)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.GetSessionConfigurationValue({Section},{Key}");
@@ -309,6 +437,11 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Adds the session configuration section.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <returns></returns>
         public bool AddSessionConfigurationSection(string Section)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.AddSessionConfigurationSection({Section}");
@@ -336,6 +469,11 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Removes the session configuration section.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <returns></returns>
         public bool RemoveSessionConfigurationSection(string Section)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.AddSessionConfigurationSection({Section}");
@@ -364,6 +502,14 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Sets the session configuration key value.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <param name="Key">The key.</param>
+        /// <param name="Value">The value.</param>
+        /// <param name="AutoCreation">if set to <c>true</c> [automatic creation].</param>
+        /// <returns></returns>
         public bool SetSessionConfigurationKeyValue(string Section, string Key, object Value, bool AutoCreation = true)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.SetSessionConfigurationKeyValue({Section},{Key}");
@@ -423,6 +569,13 @@ namespace Passero.Framework
             return ok;
         }
 
+        /// <summary>
+        /// Adds the session configuration key value.
+        /// </summary>
+        /// <param name="Section">The section.</param>
+        /// <param name="Key">The key.</param>
+        /// <param name="Value">The value.</param>
+        /// <returns></returns>
         public bool AddSessionConfigurationKeyValue(string Section, string Key, object Value)
         {
             LastExecutionResult = new ExecutionResult($"Passero.Common.ConfigurationManager.AddSessionConfigurationKeyValue({Section},{Key}");

@@ -11,35 +11,107 @@ using Wisej.Web;
 namespace Passero.Framework.Controls
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
+    /// <seealso cref="Wisej.Web.Form" />
     public partial class QBEForm<ModelClass> : Wisej.Web.Form where ModelClass : class
     {
+        /// <summary>
+        /// Gets or sets the top rows.
+        /// </summary>
+        /// <value>
+        /// The top rows.
+        /// </value>
         public int TopRows { get; set; } = 500;
+        /// <summary>
+        /// Gets or sets the record label separator.
+        /// </summary>
+        /// <value>
+        /// The record label separator.
+        /// </value>
         public string RecordLabelSeparator { get; set; } = "of";
+        /// <summary>
+        /// Gets or sets the record label HTML format.
+        /// </summary>
+        /// <value>
+        /// The record label HTML format.
+        /// </value>
         public string RecordLabelHtmlFormat { get; set; } = "<p style='margin-top:2px;line-height:1.0;text-align:center;'>{0}<br>{1}<br>{2}</p>";
+        /// <summary>
+        /// The model properties
+        /// </summary>
         private Dictionary<string, System.Reflection.PropertyInfo> ModelProperties;
+        /// <summary>
+        /// The m repository
+        /// </summary>
         private Repository<ModelClass> mRepository = new Repository<ModelClass>();
+        /// <summary>
+        /// The SQL query parameters
+        /// </summary>
         public DynamicParameters SQLQueryParameters = new DynamicParameters();
+        /// <summary>
+        /// The SQL query
+        /// </summary>
         public string SQLQuery = "";
+        /// <summary>
+        /// The order by
+        /// </summary>
         public string OrderBy = "";
+        /// <summary>
+        /// Gets or sets the base SQL query.
+        /// </summary>
+        /// <value>
+        /// The base SQL query.
+        /// </value>
         public string BaseSQLQuery { get; set; } = "";
-        public DynamicParameters  BaseDbParameteres { get; set; }= new DynamicParameters();
+        /// <summary>
+        /// Gets or sets the base database parameteres.
+        /// </summary>
+        /// <value>
+        /// The base database parameteres.
+        /// </value>
+        public DynamicParameters BaseDbParameteres { get; set; } = new DynamicParameters();
 
+        /// <summary>
+        /// Gets or sets the qbe model.
+        /// </summary>
+        /// <value>
+        /// The qbe model.
+        /// </value>
         public ModelClass QBEModel
         {
-            get { return this.Repository.ModelItem; }
-            set { this.Repository.ModelItem = value; }
+            get { return Repository.ModelItem; }
+            set { Repository.ModelItem = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the qbe model items.
+        /// </summary>
+        /// <value>
+        /// The qbe model items.
+        /// </value>
         public List<ModelClass> QBEModelItems
         {
-            get { return this.Repository.ModelItems; }
-            set { this.Repository.ModelItems = value; }
+            get { return Repository.ModelItems; }
+            set { Repository.ModelItems = value; }
         }
 
+        /// <summary>
+        /// SQLs the query resolved.
+        /// </summary>
+        /// <returns></returns>
         public string SQLQueryResolved()
         {
-            return Passero.Framework.DapperHelper.Utilities.ResolveSQL(this.SQLQuery, this.SQLQueryParameters);
+            return Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
+        /// <summary>
+        /// Gets or sets the repository.
+        /// </summary>
+        /// <value>
+        /// The repository.
+        /// </value>
         private Repository<ModelClass> Repository
         {
             get
@@ -52,60 +124,136 @@ namespace Passero.Framework.Controls
 
                 mRepository = value;
                 var ModelPropertiesInfo = mRepository.GetProperties();
-                this.ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
+                ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
                 foreach (var item in ModelPropertiesInfo)
                 {
-                    this.ModelProperties.Add(item.Name, item);
+                    ModelProperties.Add(item.Name, item);
                 }
             }
         }
 
+        /// <summary>
+        /// Gets or sets the qbe bound controls.
+        /// </summary>
+        /// <value>
+        /// The qbe bound controls.
+        /// </value>
         public QBEBoundControls QBEBoundControls { get; set; } = new QBEBoundControls();
+        /// <summary>
+        /// Gets or sets the qbe result mode.
+        /// </summary>
+        /// <value>
+        /// The qbe result mode.
+        /// </value>
         public QBEResultMode QBEResultMode { get; set; }
+        /// <summary>
+        /// Gets or sets the database connection.
+        /// </summary>
+        /// <value>
+        /// The database connection.
+        /// </value>
         public IDbConnection DbConnection { get; set; }
+        /// <summary>
+        /// The qbe columns
+        /// </summary>
         public QBEColumns QBEColumns = new QBEColumns();
 
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [use like operator].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [use like operator]; otherwise, <c>false</c>.
+        /// </value>
         public bool UseLikeOperator
         {
-            get { return this.chkLikeOperator.Checked; }
-            set { this.chkLikeOperator.Checked = value; }
+            get { return chkLikeOperator.Checked; }
+            set { chkLikeOperator.Checked = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the qbe model properties mapping.
+        /// </summary>
+        /// <value>
+        /// The qbe model properties mapping.
+        /// </value>
         public ModelPropertiesMapping QBEModelPropertiesMapping { get; set; } = new ModelPropertiesMapping();
+        /// <summary>
+        /// The target repository
+        /// </summary>
         public object TargetRepository;
+        /// <summary>
+        /// Gets or sets the call back action.
+        /// </summary>
+        /// <value>
+        /// The call back action.
+        /// </value>
         public Action CallBackAction { get; set; }
+        /// <summary>
+        /// Gets or sets the result grid model items call back action.
+        /// </summary>
+        /// <value>
+        /// The result grid model items call back action.
+        /// </value>
         public Action ResultGridModelItemsCallBackAction { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [automatic load data].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [automatic load data]; otherwise, <c>false</c>.
+        /// </value>
         public bool AutoLoadData { get; set; } = true;
 
+        /// <summary>
+        /// The result grid model items
+        /// </summary>
         public TargetModelItems<ModelClass> ResultGridModelItems = null;
 
+        /// <summary>
+        /// Gets or sets the set focus control after close.
+        /// </summary>
+        /// <value>
+        /// The set focus control after close.
+        /// </value>
         public Wisej.Web.Control SetFocusControlAfterClose { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QBEForm{ModelClass}"/> class.
+        /// </summary>
         public QBEForm()
         {
             InitializeComponent();
-            this.TabPageDebug.Hidden = true;
-            this.TabPageExport.Hidden = true;
-            this.TabPageReportQuery.Hidden = true;
-            this.RecordLabel.Text = this.RecordLabelHtmlFormat;
-            this.bSaveQBE.Visible = false;
-            this.bLoadQBE.Visible = false;
-            this.bPrint.Visible = false;
+            TabPageDebug.Hidden = true;
+            TabPageExport.Hidden = true;
+            TabPageReportQuery.Hidden = true;
+            RecordLabel.Text = RecordLabelHtmlFormat;
+            bSaveQBE.Visible = false;
+            bLoadQBE.Visible = false;
+            bPrint.Visible = false;
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QBEForm{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
         public QBEForm(IDbConnection DbConnection)
         {
-            this.Repository = new Repository<ModelClass>();
-            this.Repository.DbConnection = DbConnection;
+            Repository = new Repository<ModelClass>();
+            Repository.DbConnection = DbConnection;
             InitializeComponent();
-            this.bSaveQBE.Visible = false;
-            this.bLoadQBE.Visible = false;
-            this.bPrint.Visible = false;
+            bSaveQBE.Visible = false;
+            bLoadQBE.Visible = false;
+            bPrint.Visible = false;
         }
 
+        /// <summary>
+        /// Sets the target repository.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="targetRepository">The target repository.</param>
+        /// <param name="CallBackAction">The call back action.</param>
         public void SetTargetRepository<T>(T targetRepository, Action CallBackAction = null) where T : class
         {
             TargetRepository = targetRepository;
@@ -121,37 +269,40 @@ namespace Passero.Framework.Controls
 
 
 
+        /// <summary>
+        /// Exports the result grid.
+        /// </summary>
         public void ExportResultGrid()
         {
 
             string filename = "";
             filename = System.IO.Path.GetTempPath() + @"\" + System.Guid.NewGuid().ToString();
-            string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(this.Text);
+            string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(Text);
             string expofilenameextension = "";
             System.IO.FileStream Stream = null;
 
             if (rbExcel.Checked)
             {
-                MiniExcelLibs.MiniExcel.SaveAs(filename, this.Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.XLSX);
+                MiniExcelLibs.MiniExcel.SaveAs(filename, Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.XLSX);
                 expofilenameextension = ".xlsx";
             }
 
             if (rbCSV.Checked)
             {
-                MiniExcelLibs.MiniExcel.SaveAs(filename, this.Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.CSV);
+                MiniExcelLibs.MiniExcel.SaveAs(filename, Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.CSV);
                 expofilenameextension = ".csv";
             }
 
             if (rbJSON.Checked)
             {
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(this.Repository.ModelItems, Newtonsoft.Json.Formatting.Indented);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(Repository.ModelItems, Newtonsoft.Json.Formatting.Indented);
                 System.IO.File.WriteAllText(filename, json);
                 expofilenameextension = ".json";
             }
             if (rbXML.Checked)
             {
                 DataTable dt;
-                dt = Passero.Framework.DataBaseHelper.ListToDataTable(this.Repository.ModelItems);
+                dt = Passero.Framework.DataBaseHelper.ListToDataTable(Repository.ModelItems);
                 dt.TableName = "Row";
                 dt.WriteXml(filename, XmlWriteMode.WriteSchema, true);
                 dt.Dispose();
@@ -171,80 +322,101 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Gets the empty model.
+        /// </summary>
+        /// <returns></returns>
         private ModelClass GetEmptyModel()
         {
             return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         }
 
 
+        /// <summary>
+        /// Shows the qbe wait.
+        /// </summary>
         public void ShowQBEWait()
         {
-            this.ShowQBE(true);
+            ShowQBE(true);
         }
+        /// <summary>
+        /// Shows the qbe.
+        /// </summary>
+        /// <param name="Wait">if set to <c>true</c> [wait].</param>
         public void ShowQBE(bool Wait = false)
         {
-            this.SetupQBEForm();
+            SetupQBEForm();
 
-            if (this.AutoLoadData)
-                this.LoadData();
+            if (AutoLoadData)
+                LoadData();
 
             if (Wait == true)
             {
-                this.MdiParent = null;
-                this.ShowDialog();
+                MdiParent = null;
+                ShowDialog();
             }
             else
             {
-                this.Show();
+                Show();
             }
         }
 
 
+        /// <summary>
+        /// Setups the qbe form.
+        /// </summary>
+        /// <param name="OverrideResultGridDefinition">if set to <c>true</c> [override result grid definition].</param>
         public void SetupQBEForm(bool OverrideResultGridDefinition = false)
         {
 
-            this.TabPageReportQuery.Hidden = false;
-            this.TabPageExport.Hidden = false;
-            this.TabPageDebug.Hidden = true;
-            this.PanelExport.Visible = true;
+            TabPageReportQuery.Hidden = false;
+            TabPageExport.Hidden = false;
+            TabPageDebug.Hidden = true;
+            PanelExport.Visible = true;
 
-            this.CheckQBEColumns();
-            this.SetupQueryGrid();
-            this.SetupResultGrid(OverrideResultGridDefinition);
+            CheckQBEColumns();
+            SetupQueryGrid();
+            SetupResultGrid(OverrideResultGridDefinition);
 
-            this.ResultGrid.Dock = DockStyle.Fill;
+            ResultGrid.Dock = DockStyle.Fill;
             //this.ResultGrid.Visible = true;
-            this.QueryGrid.Visible = true;
+            QueryGrid.Visible = true;
 
-            if (this.Owner == null && this.SetFocusControlAfterClose != null)
-                this.Owner = Passero.Framework.Utilities.GetParentOfType<Form>(this.SetFocusControlAfterClose);
+            if (Owner == null && SetFocusControlAfterClose != null)
+                Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
 
-            if (this.Owner != null && this.Owner.MdiParent != null)
-                this.MdiParent = this.Owner.MdiParent;
+            if (Owner != null && Owner.MdiParent != null)
+                MdiParent = Owner.MdiParent;
         }
 
+        /// <summary>
+        /// Checks the qbe columns.
+        /// </summary>
         public void CheckQBEColumns()
         {
-            if (this.QBEColumns.Count == 0)
+            if (QBEColumns.Count == 0)
             {
 
-                foreach (var item in this.ModelProperties.Values)
+                foreach (var item in ModelProperties.Values)
                 {
                     QBEColumn column = new QBEColumn();
                     column.DbColumn = item.Name;
                     column.FriendlyName = item.Name;
                     column.UseInQBE = true;
-                    this.QBEColumns.Add(column.DbColumn, column);
+                    QBEColumns.Add(column.DbColumn, column);
                 }
 
             }
         }
 
 
+        /// <summary>
+        /// Setups the query grid.
+        /// </summary>
         public void SetupQueryGrid()
         {
 
-            this.QueryGrid.Rows.Clear();
+            QueryGrid.Rows.Clear();
 
             if (QBEColumns.Count == 0)
             {
@@ -262,13 +434,13 @@ namespace Passero.Framework.Controls
             }
 
 
-            foreach (var QBEColumn in this.QBEColumns.Values)
+            foreach (var QBEColumn in QBEColumns.Values)
             {
                 if (QBEColumn.UseInQBE)
                 {
                     int i;
-                    i = this.QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
-                    if (Passero.Framework.Utilities.GetSystemTypeIs(this.ModelProperties[QBEColumn.DbColumn].PropertyType) == EnumSystemTypeIs.Boolean)
+                    i = QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
+                    if (Passero.Framework.Utilities.GetSystemTypeIs(ModelProperties[QBEColumn.DbColumn].PropertyType) == EnumSystemTypeIs.Boolean)
                     {
                         DataGridViewCheckBoxCell ncell = new DataGridViewCheckBoxCell();
                         ncell.ThreeState = true;
@@ -290,10 +462,10 @@ namespace Passero.Framework.Controls
                         {
                             ncell.Value = ncell.IndeterminateValue;
                         }
-                        this.QueryGrid.Rows[i].Cells[1] = ncell;
-                        this.QueryGrid.Rows[i].Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                        QueryGrid.Rows[i].Cells[1] = ncell;
+                        QueryGrid.Rows[i].Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
                     }
-                    this.QueryGrid.Rows[i].Tag = QBEColumn.DbColumn;
+                    QueryGrid.Rows[i].Tag = QBEColumn.DbColumn;
 
                     if (QBEColumn.QBEValue != null)
                     {
@@ -306,7 +478,7 @@ namespace Passero.Framework.Controls
                     {
                         QueryGrid.Rows[i].Visible = false;
                     }
-                    
+
 
 
                 }
@@ -314,35 +486,39 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Setups the result grid.
+        /// </summary>
+        /// <param name="OverrideColumns">if set to <c>true</c> [override columns].</param>
         public void SetupResultGrid(bool OverrideColumns = false)
         {
 
 
-            switch (this.QBEResultMode)
+            switch (QBEResultMode)
             {
                 case QBEResultMode.BoundControls:
-                    this.ResultGrid.MultiSelect = false;    
+                    ResultGrid.MultiSelect = false;
                     break;
                 case QBEResultMode.AllRowsSQLQuery:
                     break;
                 case QBEResultMode.SingleRowSQLQuery:
-                    this.ResultGrid.MultiSelect = false;
+                    ResultGrid.MultiSelect = false;
                     break;
                 case QBEResultMode.MultipleRowsSQLQuery:
                     break;
                 case QBEResultMode.MultipleRowsItems:
                     break;
                 case QBEResultMode.SingleRowItem:
-                    this.ResultGrid.MultiSelect = false;
+                    ResultGrid.MultiSelect = false;
                     break;
                 case QBEResultMode.AllRowsItems:
                     break;
                 default:
                     break;
             }
-            
+
             QBEColumns ResultColumns = new QBEColumns();
-            foreach (var QBEColumn in this.QBEColumns.Values)
+            foreach (var QBEColumn in QBEColumns.Values)
             {
                 //if (QBEColumn.DisplayInQBEResult)
                 {
@@ -355,22 +531,22 @@ namespace Passero.Framework.Controls
             {
                 if (OverrideColumns == true)
                 {
-                    this.ResultGrid.Columns.Clear();
+                    ResultGrid.Columns.Clear();
                 }
-                this.ResultGrid.AutoGenerateColumns = false;
+                ResultGrid.AutoGenerateColumns = false;
 
                 foreach (QBEColumn column in ResultColumns.Values)
                 {
                     DataGridViewColumn nc;
                     bool newcolumn = false;
-                    if (this.ResultGrid.Columns[column.DbColumn] == null)
+                    if (ResultGrid.Columns[column.DbColumn] == null)
                     {
                         nc = new DataGridViewColumn();
                         newcolumn = true;
                     }
                     else
                     {
-                        nc = this.ResultGrid.Columns[column.DbColumn];
+                        nc = ResultGrid.Columns[column.DbColumn];
                     }
 
                     switch (column.QBEColumnType)
@@ -381,7 +557,7 @@ namespace Passero.Framework.Controls
                             nccheck.IndeterminateValue = "";
                             nccheck.TrueValue = true;
                             nccheck.FalseValue = false;
-                            nc = (DataGridViewColumn)nccheck;
+                            nc = nccheck;
                             break;
                         case QBEColumnsTypes.ComboBox:
 
@@ -418,9 +594,9 @@ namespace Passero.Framework.Controls
                         }
                         else
                         {
-                            nc.DefaultCellStyle.Font = this.ResultGrid.DefaultCellStyle.Font;
+                            nc.DefaultCellStyle.Font = ResultGrid.DefaultCellStyle.Font;
                             if (nc.DefaultCellStyle.Font == null)
-                                nc.DefaultCellStyle.Font = this.ResultGrid.Font;
+                                nc.DefaultCellStyle.Font = ResultGrid.Font;
                         }
                         nc.DefaultCellStyle.Font = nc.DefaultCellStyle.Font.Change(column.FontStyle);
                         if (column.FontSize > 0)
@@ -453,7 +629,7 @@ namespace Passero.Framework.Controls
 
                     if (newcolumn)
                     {
-                        this.ResultGrid.Columns.Add(nc);
+                        ResultGrid.Columns.Add(nc);
                     }
 
                 }
@@ -466,19 +642,28 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Loads the data.
+        /// </summary>
         public void LoadData()
         {
-            this.DoQuery();
+            DoQuery();
         }
 
+        /// <summary>
+        /// Does the query.
+        /// </summary>
         public void DoQuery()
         {
             BuildQuery3();
-            this.ResultGrid.DataSource = this.mRepository.GetItems(this.SQLQuery, this.SQLQueryParameters).Value;
-            this.ResultGrid.Visible = true;
+            ResultGrid.DataSource = mRepository.GetItems(SQLQuery, SQLQueryParameters).Value;
+            ResultGrid.Visible = true;
 
         }
 
+        /// <summary>
+        /// Moves the previous.
+        /// </summary>
         private void MovePrevious()
         {
 
@@ -494,6 +679,9 @@ namespace Passero.Framework.Controls
             // SendKeys.Send("{UP}")
 
         }
+        /// <summary>
+        /// Moves the next.
+        /// </summary>
         private void MoveNext()
         {
 
@@ -507,6 +695,9 @@ namespace Passero.Framework.Controls
 
 
         }
+        /// <summary>
+        /// Moves the first.
+        /// </summary>
         private void MoveFirst()
         {
 
@@ -518,6 +709,9 @@ namespace Passero.Framework.Controls
 
 
         }
+        /// <summary>
+        /// Moves the last.
+        /// </summary>
         private void MoveLast()
         {
 
@@ -531,17 +725,20 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Builds the query3.
+        /// </summary>
         private void BuildQuery3()
         {
 
             StringBuilder sqlwhere = new StringBuilder();
             string _WhereAND = "";
-            this.OrderBy = this.OrderBy.Trim();
-            this.QueryGrid.EndEdit();
+            OrderBy = OrderBy.Trim();
+            QueryGrid.EndEdit();
             DynamicParameters parameters = new DynamicParameters();
 
 
-            foreach (var item in this.QueryGrid.Rows)
+            foreach (var item in QueryGrid.Rows)
             {
                 StringBuilder sqlwhereitem = new StringBuilder();
                 string Value = "";
@@ -550,7 +747,7 @@ namespace Passero.Framework.Controls
 
                 string _WhereItemOR = "";
                 string[] Values;
-                Type PropertyType = this.ModelProperties[item.Tag.ToString()].PropertyType;
+                Type PropertyType = ModelProperties[item.Tag.ToString()].PropertyType;
                 Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
                 if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
                 {
@@ -571,11 +768,11 @@ namespace Passero.Framework.Controls
                     foreach (var _Value in Values)
                     {
                         string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                        if (this.chkLikeOperator.Checked)
+                        if (chkLikeOperator.Checked)
                         {
 
                             // controlla il tipo di dato della colonna
-                            if (Passero.Framework .Utilities .IsNumericType(this.ModelProperties[item.Tag.ToString()].GetMethod .ReturnType)) 
+                            if (Passero.Framework.Utilities.IsNumericType(ModelProperties[item.Tag.ToString()].GetMethod.ReturnType))
                             {
                                 sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
                                 parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
@@ -612,35 +809,40 @@ namespace Passero.Framework.Controls
 
             string sTopRows = "";
 
-            if (this.TopRows > 0)
+            if (TopRows > 0)
             {
-                sTopRows = $"TOP ({this.TopRows})";
+                sTopRows = $"TOP ({TopRows})";
             }
 
-            if (string .IsNullOrEmpty(this.BaseSQLQuery) ==true)
+            if (string.IsNullOrEmpty(BaseSQLQuery) == true)
             {
-                this.SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<ModelClass>()}";
             }
             else
             {
-                this.SQLQuery = $"SELECT {sTopRows} * FROM ({this.BaseSQLQuery.Trim()}) _b ";
+                SQLQuery = $"SELECT {sTopRows} * FROM ({BaseSQLQuery.Trim()}) _b ";
             }
-            
-            if (sqlwhere.ToString().Trim() != "")
-                this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
-            if (string.IsNullOrEmpty(this.OrderBy)==false)
-                this.SQLQuery = this.SQLQuery + $" ORDER BY {this.OrderBy}";
-            this.SQLQueryParameters = parameters;
 
-            foreach (var p in this.BaseDbParameteres.ParameterNames  )
+            if (sqlwhere.ToString().Trim() != "")
+                SQLQuery = SQLQuery + $" WHERE {sqlwhere.ToString()}";
+            if (string.IsNullOrEmpty(OrderBy) == false)
+                SQLQuery = SQLQuery + $" ORDER BY {OrderBy}";
+            SQLQueryParameters = parameters;
+
+            foreach (var p in BaseDbParameteres.ParameterNames)
             {
-                this.SQLQueryParameters.Add(p, ((SqlMapper.IParameterLookup)BaseDbParameteres)[p]);
+                SQLQueryParameters.Add(p, ((SqlMapper.IParameterLookup)BaseDbParameteres)[p]);
             }
-            
-            string rSQL=Framework.DapperHelper .Utilities .ResolveSQL (this.SQLQuery , this.SQLQueryParameters);    
+
+            string rSQL = Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
 
 
+        /// <summary>
+        /// Gets the comparision operator.
+        /// </summary>
+        /// <param name="Value">The value.</param>
+        /// <returns></returns>
         private string GetComparisionOperator(string Value)
         {
 
@@ -667,6 +869,11 @@ namespace Passero.Framework.Controls
 
             return _operator;
         }
+        /// <summary>
+        /// Removes the comparision operator.
+        /// </summary>
+        /// <param name="Value">The value.</param>
+        /// <returns></returns>
         private string RemoveComparisionOperator(string Value)
         {
             string op = GetComparisionOperator(Value).Trim();
@@ -676,47 +883,85 @@ namespace Passero.Framework.Controls
             return Value.Substring(op.Length).Trim();
         }
 
+        /// <summary>
+        /// Handles the Load event of the XQBEForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void XQBEForm_Load(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// Handles the Click event of the bPrev control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bPrev_Click(object sender, EventArgs e)
         {
-            this.MovePrevious();
+            MovePrevious();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bFirst control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bFirst_Click(object sender, EventArgs e)
         {
-            this.MoveFirst();
+            MoveFirst();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bNext control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bNext_Click(object sender, EventArgs e)
         {
-            this.MoveNext();
+            MoveNext();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bLast control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bLast_Click(object sender, EventArgs e)
         {
-            this.MoveLast();
+            MoveLast();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bRefresh control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bRefresh_Click(object sender, EventArgs e)
         {
-            this.DoQuery();
+            DoQuery();
         }
 
+        /// <summary>
+        /// Handles the Click event of the bDelete control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bDelete_Click(object sender, EventArgs e)
         {
             ClearFilters();
         }
 
+        /// <summary>
+        /// Clears the filters.
+        /// </summary>
         public void ClearFilters()
         {
             foreach (DataGridViewRow row in QueryGrid.Rows)
             {
 
-                QBEColumn column = QBEColumns[row.Tag.ToString ()];
+                QBEColumn column = QBEColumns[row.Tag.ToString()];
                 if (column != null)
                 {
                     if (column.DisplayInQBE == true)
@@ -728,7 +973,7 @@ namespace Passero.Framework.Controls
                         else
                         {
                             row[1].Value = column.QBEInitialValue.ToString();
-                          
+
                         }
                     }
                 }
@@ -736,14 +981,22 @@ namespace Passero.Framework.Controls
             }
 
         }
+        /// <summary>
+        /// Handles the Click event of the bSave control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bSave_Click(object sender, EventArgs e)
         {
             SaveQueryResult();
         }
 
+        /// <summary>
+        /// Saves the query result.
+        /// </summary>
         public void SaveQueryResult()
         {
-            switch (this.QBEResultMode)
+            switch (QBEResultMode)
             {
                 case QBEResultMode.BoundControls:
                     QBEResultMode_BoundControls();
@@ -770,19 +1023,23 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Closes the qbe form.
+        /// </summary>
+        /// <param name="IgnoreCallBack">if set to <c>true</c> [ignore call back].</param>
         private void CloseQBEForm(bool IgnoreCallBack = false)
         {
-            if (this.Owner == null && this.SetFocusControlAfterClose != null)
-                this.Owner = Passero.Framework.Utilities.GetParentOfType<Form>(this.SetFocusControlAfterClose);
+            if (Owner == null && SetFocusControlAfterClose != null)
+                Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
 
 
             if (IgnoreCallBack == false)
             {
-                if (this.Owner != null && this.CallBackAction != null)
+                if (Owner != null && CallBackAction != null)
                 {
                     try
                     {
-                        this.CallBackAction.Invoke();
+                        CallBackAction.Invoke();
                     }
                     catch (Exception)
                     {
@@ -791,11 +1048,11 @@ namespace Passero.Framework.Controls
                 }
 
 
-                if (this.Owner != null && this.ResultGridModelItemsCallBackAction != null)
+                if (Owner != null && ResultGridModelItemsCallBackAction != null)
                 {
                     try
                     {
-                        this.ResultGridModelItemsCallBackAction.Invoke();
+                        ResultGridModelItemsCallBackAction.Invoke();
                     }
                     catch (Exception)
                     {
@@ -804,20 +1061,23 @@ namespace Passero.Framework.Controls
                 }
             }
 
-            if (this.SetFocusControlAfterClose != null && this.SetFocusControlAfterClose.Focusable)
+            if (SetFocusControlAfterClose != null && SetFocusControlAfterClose.Focusable)
             {
-                this.SetFocusControlAfterClose.Focus();
+                SetFocusControlAfterClose.Focus();
             }
-            this.Close();
-            this.Dispose();
+            Close();
+            Dispose();
         }
+        /// <summary>
+        /// Qbes the result mode all rows items.
+        /// </summary>
         private void QBEResultMode_AllRowsItems()
         {
             {
                 try
                 {
                     ResultGridModelItems = new TargetModelItems<ModelClass>();
-                    this.ResultGridModelItems.Items = this.mRepository.ModelItems;
+                    ResultGridModelItems.Items = mRepository.ModelItems;
                     //Passero.Framework.ReflectionHelper.SetPropertyValue(ref TargetModelItems, "Items",this.mRepository .ModelItems );
                 }
                 catch (Exception)
@@ -829,10 +1089,13 @@ namespace Passero.Framework.Controls
             }
 
 
-            this.CloseQBEForm();
+            CloseQBEForm();
         }
 
 
+        /// <summary>
+        /// Qbes the result mode multiple rows items.
+        /// </summary>
         private void QBEResultMode_MultipleRowsItems()
         {
             {
@@ -841,12 +1104,12 @@ namespace Passero.Framework.Controls
 
                     ResultGridModelItems = new TargetModelItems<ModelClass>();
 
-                    foreach (DataGridViewRow row in this.ResultGrid.SelectedRows)
+                    foreach (DataGridViewRow row in ResultGrid.SelectedRows)
                     {
                         ResultGridModelItems.Items.Add((ModelClass)row.DataBoundItem);
                     }
 
-                    Passero.Framework.ReflectionHelper.SetPropertyValue(ref ResultGridModelItems, "Items", this.ResultGridModelItems.Items);
+                    Passero.Framework.ReflectionHelper.SetPropertyValue(ref ResultGridModelItems, "Items", ResultGridModelItems.Items);
                 }
                 catch (Exception)
                 {
@@ -857,7 +1120,7 @@ namespace Passero.Framework.Controls
             }
 
 
-            this.CloseQBEForm();
+            CloseQBEForm();
 
             //Microsoft.Reporting.WebForms.ReportViewer x = new Microsoft.Reporting.WebForms.ReportViewer();
             //x.BackColor = System.Drawing.Color.White;   
@@ -865,15 +1128,18 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Qbes the result mode bound controls.
+        /// </summary>
         private void QBEResultMode_BoundControls()
         {
-            if (this.ResultGrid.CurrentRow == null)
+            if (ResultGrid.CurrentRow == null)
                 return;
 
-            ModelClass currentrowmodel = (ModelClass)this.ResultGrid.CurrentRow.DataBoundItem;
-            foreach (QBEBoundControl item in this.QBEBoundControls)
+            ModelClass currentrowmodel = (ModelClass)ResultGrid.CurrentRow.DataBoundItem;
+            foreach (QBEBoundControl item in QBEBoundControls)
             {
-                var Value = Interaction.CallByName(currentrowmodel, item.ModelPropertyName, CallType.Get, (object[])null);
+                var Value = Interaction.CallByName(currentrowmodel, item.ModelPropertyName, CallType.Get, null);
                 if (Value is not null)
                 {
                     Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, Value);
@@ -883,15 +1149,18 @@ namespace Passero.Framework.Controls
                     Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, "");
                 }
             }
-            this.CloseQBEForm();
+            CloseQBEForm();
         }
 
 
+        /// <summary>
+        /// Qbes the result mode selected rows.
+        /// </summary>
         private void QBEResultMode_SelectedRows()
         {
             if (ResultGrid.SelectedRows.Count == 0)
                 return;
-            if (this.QBEModelPropertiesMapping.Count == 0)
+            if (QBEModelPropertiesMapping.Count == 0)
                 return;
 
             object TargetModel = Passero.Framework.ReflectionHelper.GetPropertyValue(TargetRepository, "ModelItem");
@@ -920,7 +1189,7 @@ namespace Passero.Framework.Controls
             {
                 StringBuilder sqlwhererow = new StringBuilder();
                 _AND = "";
-                foreach (ModelPropertyMapping Mapping in this.QBEModelPropertiesMapping)
+                foreach (ModelPropertyMapping Mapping in QBEModelPropertiesMapping)
                 {
                     propertyvalue = row[Mapping.QBEModelProperty].Value;
                     propertyname = Mapping.TargetModelProperty;
@@ -941,7 +1210,7 @@ namespace Passero.Framework.Controls
             if (sqlwhere.ToString() != "")
                 sqlquery = sqlquery + " WHERE " + sqlwhere.ToString();
 
-            if (this.TargetRepository != null)
+            if (TargetRepository != null)
             {
                 try
                 {
@@ -955,11 +1224,16 @@ namespace Passero.Framework.Controls
 
             }
 
-            this.CloseQBEForm();
+            CloseQBEForm();
         }
 
 
 
+        /// <summary>
+        /// Copies the data row.
+        /// </summary>
+        /// <param name="oSourceRow">The o source row.</param>
+        /// <param name="oTargetRow">The o target row.</param>
         private void CopyDataRow(DataRow oSourceRow, DataRow oTargetRow)
         {
             int nIndex = 0;
@@ -971,38 +1245,58 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Handles the Shown event of the XQBEForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void XQBEForm_Shown(object sender, EventArgs e)
         {
-            this.SetupQBEForm();
-            this.ResultGrid.Dock = DockStyle.Fill;
+            SetupQBEForm();
+            ResultGrid.Dock = DockStyle.Fill;
             //this.ResultGrid.Visible = true;
             //if (this.AutoLoadData)
             //    this.LoadData();
-            this.Show();
-            this.Focus();
+            Show();
+            Focus();
 
         }
 
+        /// <summary>
+        /// Handles the FormClosed event of the XQBEForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="FormClosedEventArgs"/> instance containing the event data.</param>
         private void XQBEForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Dispose();
+            Dispose();
             GC.Collect();
         }
 
+        /// <summary>
+        /// Handles the Click event of the btnExport control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void btnExport_Click(object sender, EventArgs e)
         {
-            this.ExportResultGrid();
+            ExportResultGrid();
         }
 
+        /// <summary>
+        /// Handles the CellDoubleClick event of the ResultGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
         private void ResultGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
 
 
-            if (this.ResultGrid.CurrentRow == null)
+            if (ResultGrid.CurrentRow == null)
                 return;
 
 
-            switch (this.QBEResultMode)
+            switch (QBEResultMode)
             {
                 case QBEResultMode.BoundControls:
                     QBEResultMode_BoundControls();
@@ -1028,20 +1322,30 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Handles the MenuItemClicked event of the ContextMenuRecords control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MenuItemEventArgs"/> instance containing the event data.</param>
         private void ContextMenuRecords_MenuItemClicked(object sender, MenuItemEventArgs e)
         {
-            this.TopRows = (int)e.MenuItem.Tag;
-            this.Records.Text = e.MenuItem.Text;
+            TopRows = (int)e.MenuItem.Tag;
+            Records.Text = e.MenuItem.Text;
         }
 
 
+        /// <summary>
+        /// Handles the RowEnter event of the ResultGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
         private void ResultGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (this.ResultGrid.CurrentCell == null)
+            if (ResultGrid.CurrentCell == null)
                 return;
             try
             {
-                this.RecordLabel.Text = String.Format(this.RecordLabelHtmlFormat, this.ResultGrid.CurrentCell.RowIndex + 1, this.RecordLabelSeparator, this.ResultGrid.Rows.Count);
+                RecordLabel.Text = String.Format(RecordLabelHtmlFormat, ResultGrid.CurrentCell.RowIndex + 1, RecordLabelSeparator, ResultGrid.Rows.Count);
             }
             catch (Exception)
             {
@@ -1049,33 +1353,47 @@ namespace Passero.Framework.Controls
 
         }
 
+        /// <summary>
+        /// Handles the Click event of the bClose control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void bClose_Click(object sender, EventArgs e)
         {
-            this.CloseQBEForm(true);
+            CloseQBEForm(true);
 
         }
 
 
 
+        /// <summary>
+        /// Handles the Appear event of the ResultGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ResultGrid_Appear(object sender, EventArgs e)
         {
             //this.ResultGrid.Visible = true;
         }
 
 
+        /// <summary>
+        /// Manages the tools click.
+        /// </summary>
+        /// <param name="Tool">The tool.</param>
         private void ManageToolsClick(ComponentTool Tool)
         {
             if (Tool.Name == "selectrows")
             {
                 if (Tool.Pushed == false)
                 {
-                    this.ResultGrid.SelectAllRows();
+                    ResultGrid.SelectAllRows();
                     Tool.Pushed = true;
                 }
 
                 else
                 {
-                    this.ResultGrid.ClearSelection();
+                    ResultGrid.ClearSelection();
                     Tool.Pushed = false;
                 }
             }
@@ -1098,24 +1416,34 @@ namespace Passero.Framework.Controls
             }
             if (Tool.Name == "autosize")
             {
-                this.ResultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                foreach (DataGridViewColumn column in this.ResultGrid.Columns)
+                ResultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                foreach (DataGridViewColumn column in ResultGrid.Columns)
                 {
                     if (column.Visible)
                         column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 }
             }
         }
+        /// <summary>
+        /// Handles the ToolClick event of the SplitContainer_Panel1 control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ToolClickEventArgs"/> instance containing the event data.</param>
         private void SplitContainer_Panel1_ToolClick(object sender, ToolClickEventArgs e)
         {
             ManageToolsClick(e.Tool);
-         }
+        }
 
+        /// <summary>
+        /// Handles the CellDoubleClick event of the QueryGrid control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
         private void QueryGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex ==1)
+            if (e.ColumnIndex == 1)
             {
-                this.QueryGrid.CurrentCell.ReadOnly = false;
+                QueryGrid.CurrentCell.ReadOnly = false;
             }
         }
     }

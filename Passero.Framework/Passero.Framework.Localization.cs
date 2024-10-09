@@ -1,39 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Passero.Framework.Localization
 {
     /// <summary>
-    /// Defines a type converter for enum values that converts enum values to 
+    /// Defines a type converter for enum values that converts enum values to
     /// and from string representations using resources
     /// </summary>
+    /// <seealso cref="System.ComponentModel.EnumConverter" />
     /// <remarks>
     /// This class makes localization of display values for enums in a project easy.  Simply
-    /// derive a class from this class and pass the ResourceManagerin the constructor.  
-    /// 
-    /// <code lang="C#" escaped="true" >
+    /// derive a class from this class and pass the ResourceManagerin the constructor.
+    /// <code lang="C#" escaped="true">
     /// class LocalizedEnumConverter : ResourceEnumConverter
     /// {
-    ///    public LocalizedEnumConverter(Type type)
-    ///        : base(type, Properties.Resources.ResourceManager)
-    ///    {
-    ///    }
-    /// }    
-    /// </code>
-    /// 
-    /// <code lang="Visual Basic" escaped="true" >
+    /// public LocalizedEnumConverter(Type type)
+    /// : base(type, Properties.Resources.ResourceManager)
+    /// {
+    /// }
+    /// }
+    /// </code><code lang="Visual Basic" escaped="true">
     /// Public Class LocalizedEnumConverter
-    /// 
-    ///    Inherits ResourceEnumConverter
-    ///    Public Sub New(ByVal sType as Type)
-    ///        MyBase.New(sType, My.Resources.ResourceManager)
-    ///    End Sub
-    /// End Class    
+    /// Inherits ResourceEnumConverter
+    /// Public Sub New(ByVal sType as Type)
+    /// MyBase.New(sType, My.Resources.ResourceManager)
+    /// End Sub
+    /// End Class
     /// </code>
-    /// 
     /// Then define the enum values in the resource editor.   The names of
     /// the resources are simply the enum value prefixed by the enum type name with an
     /// underscore separator eg MyEnum_MyValue.  You can then use the TypeConverter attribute
@@ -42,16 +37,32 @@ namespace Passero.Framework.Localization
     /// </remarks>
     public class ResourceEnumConverter : System.ComponentModel.EnumConverter
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <seealso cref="System.Collections.Generic.Dictionary&lt;System.String, System.Object&gt;" />
         private class LookupTable : Dictionary<string, object> { }
+        /// <summary>
+        /// The lookup tables
+        /// </summary>
         private Dictionary<CultureInfo, LookupTable> _lookupTables = new Dictionary<CultureInfo, LookupTable>();
+        /// <summary>
+        /// The resource manager
+        /// </summary>
         private System.Resources.ResourceManager _resourceManager;
+        /// <summary>
+        /// The is flag enum
+        /// </summary>
         private bool _isFlagEnum = false;
+        /// <summary>
+        /// The flag values
+        /// </summary>
         private Array _flagValues;
 
         /// <summary>
         /// Get the lookup table for the given culture (creating if necessary)
         /// </summary>
-        /// <param name="culture"></param>
+        /// <param name="culture">The culture.</param>
         /// <returns></returns>
         private LookupTable GetLookupTable(CultureInfo culture)
         {
@@ -80,7 +91,9 @@ namespace Passero.Framework.Localization
         /// </summary>
         /// <param name="culture">The culture to get the text for</param>
         /// <param name="value">The enum value to get the text for</param>
-        /// <returns>The localized text</returns>
+        /// <returns>
+        /// The localized text
+        /// </returns>
         private string GetValueText(CultureInfo culture, object value)
         {
             Type type = value.GetType();
@@ -94,8 +107,10 @@ namespace Passero.Framework.Localization
         /// <summary>
         /// Return true if the given value is can be represented using a single bit
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if [is single bit value] [the specified value]; otherwise, <c>false</c>.
+        /// </returns>
         private bool IsSingleBitValue(ulong value)
         {
             switch (value)
@@ -113,7 +128,9 @@ namespace Passero.Framework.Localization
         /// </summary>
         /// <param name="culture">The culture to get the text for</param>
         /// <param name="value">The flag enum value to get the text for</param>
-        /// <returns>The localized text</returns>
+        /// <returns>
+        /// The localized text
+        /// </returns>
         private string GetFlagValueText(CultureInfo culture, object value)
         {
             // if there is a standard value then use it
@@ -155,7 +172,9 @@ namespace Passero.Framework.Localization
         /// </summary>
         /// <param name="culture">The culture to convert using</param>
         /// <param name="text">The text to convert</param>
-        /// <returns>The enum value</returns>
+        /// <returns>
+        /// The enum value
+        /// </returns>
         private object GetValue(CultureInfo culture, string text)
         {
             LookupTable lookupTable = GetLookupTable(culture);
@@ -169,7 +188,9 @@ namespace Passero.Framework.Localization
         /// </summary>
         /// <param name="culture">The culture to convert using</param>
         /// <param name="text">The text to convert</param>
-        /// <returns>The enum value</returns>
+        /// <returns>
+        /// The enum value
+        /// </returns>
         private object GetFlagValue(CultureInfo culture, string text)
         {
             LookupTable lookupTable = GetLookupTable(culture);
@@ -191,8 +212,8 @@ namespace Passero.Framework.Localization
         /// <summary>
         /// Create a new instance of the converter using translations from the given resource manager
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="resourceManager"></param>
+        /// <param name="type">The type.</param>
+        /// <param name="resourceManager">The resource manager.</param>
         public ResourceEnumConverter(Type type, System.Resources.ResourceManager resourceManager)
             : base(type)
         {
@@ -208,10 +229,12 @@ namespace Passero.Framework.Localization
         /// <summary>
         /// Convert string values to enum values
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="culture"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="context">Oggetto <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> che fornisce un contesto di formato.</param>
+        /// <param name="culture">Oggetto <see cref="T:System.Globalization.CultureInfo" /> facoltativo. Se non vengono specificate impostazioni cultura, vengono utilizzate quelle correnti.</param>
+        /// <param name="value">Oggetto <see cref="T:System.Object" /> da convertire.</param>
+        /// <returns>
+        /// Oggetto <see cref="T:System.Object" /> che rappresenta la conversione di <paramref name="value" />.
+        /// </returns>
         public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
         {
             if (value is string)
@@ -233,11 +256,13 @@ namespace Passero.Framework.Localization
         /// <summary>
         /// Convert the enum value to a string
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="culture"></param>
-        /// <param name="value"></param>
-        /// <param name="destinationType"></param>
-        /// <returns></returns>
+        /// <param name="context">Oggetto <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> che fornisce un contesto di formato.</param>
+        /// <param name="culture">Oggetto <see cref="T:System.Globalization.CultureInfo" /> facoltativo. Se non vengono specificate impostazioni cultura, vengono utilizzate quelle correnti.</param>
+        /// <param name="value">Oggetto <see cref="T:System.Object" /> da convertire.</param>
+        /// <param name="destinationType">Tipo <see cref="T:System.Type" /> in cui convertire il valore.</param>
+        /// <returns>
+        /// Oggetto <see cref="T:System.Object" /> che rappresenta la conversione di <paramref name="value" />.
+        /// </returns>
         public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
         {
             if (value != null && destinationType == typeof(string))
@@ -256,7 +281,9 @@ namespace Passero.Framework.Localization
         /// Convert the given enum value to string using the registered type converter
         /// </summary>
         /// <param name="value">The enum value to convert to string</param>
-        /// <returns>The localized string value for the enum</returns>
+        /// <returns>
+        /// The localized string value for the enum
+        /// </returns>
         static public string ConvertToString(Enum value)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(value.GetType());
@@ -272,10 +299,10 @@ namespace Passero.Framework.Localization
         /// A list of KeyValuePairs where the key is the enum value and the value is the text to display
         /// </returns>
         /// <remarks>
-        /// This method can be used to provide localized binding to enums in ASP.NET applications.   Unlike 
+        /// This method can be used to provide localized binding to enums in ASP.NET applications.   Unlike
         /// windows forms the standard ASP.NET controls do not use TypeConverters to convert from enum values
         /// to the displayed text.   You can bind an ASP.NET control to the list returned by this method by setting
-        /// the DataValueField to "Key" and theDataTextField to "Value". 
+        /// the DataValueField to "Key" and theDataTextField to "Value".
         /// </remarks>
         static public List<KeyValuePair<Enum, string>> GetValues(Type enumType, CultureInfo culture)
         {
@@ -297,10 +324,10 @@ namespace Passero.Framework.Localization
         /// A list of KeyValuePairs where the key is the enum value and the value is the text to display
         /// </returns>
         /// <remarks>
-        /// This method can be used to provide localized binding to enums in ASP.NET applications.   Unlike 
+        /// This method can be used to provide localized binding to enums in ASP.NET applications.   Unlike
         /// windows forms the standard ASP.NET controls do not use TypeConverters to convert from enum values
         /// to the displayed text.   You can bind an ASP.NET control to the list returned by this method by setting
-        /// the DataValueField to "Key" and theDataTextField to "Value". 
+        /// the DataValueField to "Key" and theDataTextField to "Value".
         /// </remarks>
         static public List<KeyValuePair<Enum, string>> GetValues(Type enumType)
         {

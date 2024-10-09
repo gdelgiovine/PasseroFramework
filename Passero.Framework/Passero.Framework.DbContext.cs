@@ -5,18 +5,53 @@ using System.Data.SqlClient;
 namespace Passero.Framework
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class DbContext
     {
 
+        /// <summary>
+        /// The m class name
+        /// </summary>
         private const string mClassName = "Passero.Framework.DbContext";
+        /// <summary>
+        /// Gets or sets the m SQL connection.
+        /// </summary>
+        /// <value>
+        /// The m SQL connection.
+        /// </value>
         private SqlConnection mSqlConnection { get; set; }
+        /// <summary>
+        /// Gets or sets the m SQL transaction.
+        /// </summary>
+        /// <value>
+        /// The m SQL transaction.
+        /// </value>
         private SqlTransaction mSqlTransaction { get; set; }
 
+        /// <summary>
+        /// Gets or sets the view models.
+        /// </summary>
+        /// <value>
+        /// The view models.
+        /// </value>
         public Dictionary<string, ViewModel<object>> ViewModels { get; set; } = new Dictionary<string, ViewModel<object>>();
 
+        /// <summary>
+        /// Gets or sets the connection string.
+        /// </summary>
+        /// <value>
+        /// The connection string.
+        /// </value>
         public string ConnectionString { get; set; }
 
 
+        /// <summary>
+        /// Initializes the specified connection string.
+        /// </summary>
+        /// <param name="ConnectionString">The connection string.</param>
+        /// <returns></returns>
         public ExecutionResult Init(string ConnectionString = "")
         {
 
@@ -46,6 +81,9 @@ namespace Passero.Framework
             return ER;
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         public void Dispose()
         {
             mSqlTransaction.Dispose();
@@ -54,6 +92,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets or sets the SQL connection.
+        /// </summary>
+        /// <value>
+        /// The SQL connection.
+        /// </value>
         public SqlConnection SqlConnection
         {
             get
@@ -69,6 +113,12 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets or sets the SQL transaction.
+        /// </summary>
+        /// <value>
+        /// The SQL transaction.
+        /// </value>
         public SqlTransaction SqlTransaction
         {
             get
@@ -84,6 +134,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Pings the specified connection string.
+        /// </summary>
+        /// <param name="ConnectionString">The connection string.</param>
+        /// <returns></returns>
         public ExecutionResult Ping(string ConnectionString = "")
         {
 
@@ -117,6 +172,11 @@ namespace Passero.Framework
             return ER;
         }
 
+        /// <summary>
+        /// Adds the view model.
+        /// </summary>
+        /// <param name="ViewModel">The view model.</param>
+        /// <returns></returns>
         public bool AddViewModel(ViewModel<object> ViewModel)
         {
             if (ViewModels.ContainsKey(ViewModel.Name) == false)
@@ -132,6 +192,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Removes the view model.
+        /// </summary>
+        /// <param name="ViewModel">The view model.</param>
+        /// <returns></returns>
         public bool RemoveViewModel(ViewModel<object> ViewModel)
         {
             if (ViewModels.ContainsKey(ViewModel.Name))
@@ -146,6 +211,11 @@ namespace Passero.Framework
         }
 
         // Public Function BeginTransaction(ByVal TransactionName As String, Optional ByVal IsolationLevel As IsolationLevel = IsolationLevel.ReadCommitted) As ExecutionResult
+        /// <summary>
+        /// Begins the transaction.
+        /// </summary>
+        /// <param name="TransactionName">Name of the transaction.</param>
+        /// <returns></returns>
         public ExecutionResult BeginTransaction(string TransactionName)
         {
 
@@ -169,6 +239,10 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Commits the transaction.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult CommitTransaction()
         {
 
@@ -195,6 +269,10 @@ namespace Passero.Framework
             return ER;
 
         }
+        /// <summary>
+        /// Rolls the back transaction.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult RollBackTransaction()
         {
 

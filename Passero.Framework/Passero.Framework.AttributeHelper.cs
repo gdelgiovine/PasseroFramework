@@ -1,16 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Passero.Framework
 {
+    /// <summary>
+    ///   <br />
+    /// </summary>
     public static class AttributeHelper
     {
 
+        /// <summary>Gets the property attribute value.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TOut">The type of the out.</typeparam>
+        /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="propertyExpression">The property expression.</param>
+        /// <param name="valueSelector">The value selector.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
+        /// <exception cref="System.MissingMemberException"></exception>
         public static TValue GetPropertyAttributeValue<T, TOut, TAttribute, TValue>(Expression<Func<T, TOut>> propertyExpression, Func<TAttribute, TValue> valueSelector) where TAttribute : Attribute
         {
             var expression = (MemberExpression)propertyExpression.Body;

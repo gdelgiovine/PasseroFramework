@@ -1,34 +1,94 @@
-﻿using System;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
+using Microsoft.Ajax.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dapper;
-using Dapper.Contrib.Extensions ;
-using Microsoft.Ajax.Utilities;
 namespace Passero.Framework
 
 {
-  
 
 
+
+    /// <summary></summary>
+    /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ModelClass"></typeparam>
+    /// <remarks></remarks>
     [Serializable]
     public class Repository<ModelClass> where ModelClass : class
     {
+        /// <summary>
+        /// The m class name
+        /// </summary>
         private const string mClassName = "Passero.Framework.Base.Repository";
+        /// <summary>
+        /// The model properties
+        /// </summary>
         private Dictionary<string, System.Reflection.PropertyInfo> ModelProperties;
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         public string Name { get; set; } = $"Repository<{typeof(ModelClass).FullName}>";
+        /// <summary>
+        /// Gets or sets the last execution result.
+        /// </summary>
+        /// <value>
+        /// The last execution result.
+        /// </value>
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult(mClassName);
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
+        /// <value>
+        /// The view model.
+        /// </value>
         public ViewModel<ModelClass> ViewModel { get; set; }
+        /// <summary>
+        /// Gets or sets the error notification mode.
+        /// </summary>
+        /// <value>
+        /// The error notification mode.
+        /// </value>
         public ErrorNotificationModes ErrorNotificationMode { get; set; } = ErrorNotificationModes.ThrowException;
-        
+
+        /// <summary>
+        /// Gets or sets the error notification message box.
+        /// </summary>
+        /// <value>
+        /// The error notification message box.
+        /// </value>
         public ErrorNotificationMessageBox ErrorNotificationMessageBox { get; set; }
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
         public DynamicParameters Parameters { get; set; }
-        
+
+        /// <summary>
+        /// Occurs when [model events].
+        /// </summary>
         public event EventHandler ModelEvents;
+        /// <summary>
+        /// The m SQL query
+        /// </summary>
         private string mSQLQuery = "";
+        /// <summary>
+        /// Gets or sets the SQL query.
+        /// </summary>
+        /// <value>
+        /// The SQL query.
+        /// </value>
         public string SQLQuery
         {
             get
@@ -41,24 +101,44 @@ namespace Passero.Framework
             }
         }
 
-        public void ResetModelItem(bool ResetModelItems=true)
+        /// <summary>
+        /// Resets the model item.
+        /// </summary>
+        /// <param name="ResetModelItems">if set to <c>true</c> [reset model items].</param>
+        public void ResetModelItem(bool ResetModelItems = true)
         {
             ModelItem = GetEmptyModelItem();
-            if (ResetModelItems )
+            if (ResetModelItems)
                 ModelItems = new List<ModelClass>();
         }
+        /// <summary>
+        /// Resets the model items.
+        /// </summary>
         public void ResetModelItems()
         {
             ModelItems = new List<ModelClass>();
         }
 
+        /// <summary>
+        /// Raises the <see cref="E:ModelEvents" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected virtual void OnModelEvents(EventArgs e)
         {
             ModelEvents?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// The add new current model item index
+        /// </summary>
         private int _AddNewCurrentModelItemIndex = -1;
 
+        /// <summary>
+        /// Gets or sets the index of the add new current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the add new current model item.
+        /// </value>
         public int AddNewCurrentModelItemIndex
         {
             get
@@ -72,8 +152,17 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// The current model item index
+        /// </summary>
         private int _CurrentModelItemIndex = -1;
 
+        /// <summary>
+        /// Gets or sets the index of the current model item.
+        /// </summary>
+        /// <value>
+        /// The index of the current model item.
+        /// </value>
         public int CurrentModelItemIndex
         {
             get
@@ -98,6 +187,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the model items at.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
         public ExecutionResult<ModelClass> GetModelItemsAt(int index)
         {
             var ERContext = $"{mClassName}.GetModelItemsAt()";
@@ -118,6 +212,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the first item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveFirstItem()
         {
             var ERContext = $"{mClassName}.MoveFirstItem()";
@@ -140,6 +238,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the last item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveLastItem()
         {
             var ERContext = $"{mClassName}.MoveLastItem()";
@@ -162,6 +264,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the previous item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MovePreviousItem()
         {
             var ERContext = $"{mClassName}.MovePreviousItem()";
@@ -187,6 +293,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Moves the next item.
+        /// </summary>
+        /// <returns></returns>
         public ExecutionResult MoveNextItem()
         {
             var ERContext = $"{mClassName}.MoveNextItem()";
@@ -213,6 +323,11 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Moves at item.
+        /// </summary>
+        /// <param name="Index">The index.</param>
+        /// <returns></returns>
         public ExecutionResult MoveAtItem(int Index)
         {
             var ERContext = $"{mClassName}.MoveAtItem()";
@@ -238,7 +353,19 @@ namespace Passero.Framework
         }
 
 
-        private List <ModelClass>? _ModelItems { get; set; }= new List<ModelClass> ();  
+        /// <summary>
+        /// Gets or sets the model items.
+        /// </summary>
+        /// <value>
+        /// The model items.
+        /// </value>
+        private List<ModelClass>? _ModelItems { get; set; } = new List<ModelClass>();
+        /// <summary>
+        /// Gets or sets the model items.
+        /// </summary>
+        /// <value>
+        /// The model items.
+        /// </value>
         public List<ModelClass>? ModelItems
         {
             get
@@ -252,7 +379,19 @@ namespace Passero.Framework
         }
 
 
-        private ModelClass? _Modeltem { get; set; } 
+        /// <summary>
+        /// Gets or sets the modeltem.
+        /// </summary>
+        /// <value>
+        /// The modeltem.
+        /// </value>
+        private ModelClass? _Modeltem { get; set; }
+        /// <summary>
+        /// Gets or sets the model item.
+        /// </summary>
+        /// <value>
+        /// The model item.
+        /// </value>
         public ModelClass? ModelItem
         {
             get
@@ -266,9 +405,21 @@ namespace Passero.Framework
         }
 
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        /// <summary>
+        /// Gets or sets the model item shadow.
+        /// </summary>
+        /// <value>
+        /// The model item shadow.
+        /// </value>
         private ModelClass? _ModelItemShadow { get; set; }
 #pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        /// <summary>
+        /// Gets or sets the model item shadow.
+        /// </summary>
+        /// <value>
+        /// The model item shadow.
+        /// </value>
         public ModelClass? ModelItemShadow
 #pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
@@ -282,7 +433,19 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets or sets the model items shadow.
+        /// </summary>
+        /// <value>
+        /// The model items shadow.
+        /// </value>
         private List<ModelClass> _ModelItemsShadow { get; set; } = new List<ModelClass>();
+        /// <summary>
+        /// Gets or sets the model items shadow.
+        /// </summary>
+        /// <value>
+        /// The model items shadow.
+        /// </value>
         public List<ModelClass> ModelItemsShadow
         {
             get
@@ -295,7 +458,19 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [m add new state].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [m add new state]; otherwise, <c>false</c>.
+        /// </value>
         private bool mAddNewState { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [add new state].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [add new state]; otherwise, <c>false</c>.
+        /// </value>
         public bool AddNewState
         {
             get
@@ -308,35 +483,85 @@ namespace Passero.Framework
                 mAddNewState = value;
             }
         }
-         public void AddNew()
+        /// <summary>
+        /// Adds the new.
+        /// </summary>
+        public void AddNew()
         {
-            if (this.AddNewState == false) 
+            if (AddNewState == false)
             {
-                AddNewState = true; 
+                AddNewState = true;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
         public string Description { get; set; }
         //public SqlConnection SqlConnection { get; set; }
+        /// <summary>
+        /// Gets or sets the database connection.
+        /// </summary>
+        /// <value>
+        /// The database connection.
+        /// </value>
         public IDbConnection DbConnection { get; set; }
         //public SqlTransaction SqlTransaction { get; set; }
+        /// <summary>
+        /// Gets or sets the database transaction.
+        /// </summary>
+        /// <value>
+        /// The database transaction.
+        /// </value>
         public IDbTransaction DbTransaction { get; set; }
+        /// <summary>
+        /// Gets or sets the database command timeout.
+        /// </summary>
+        /// <value>
+        /// The database command timeout.
+        /// </value>
         public int DbCommandTimeout { get; set; } = 30;
 
+        /// <summary>
+        /// Gets or sets the database context.
+        /// </summary>
+        /// <value>
+        /// The database context.
+        /// </value>
         public DbContext DbContext { get; set; }
+        /// <summary>
+        /// Gets or sets the database object.
+        /// </summary>
+        /// <value>
+        /// The database object.
+        /// </value>
         public DbObject<ModelClass> DbObject { get; set; }
 
+        /// <summary>
+        /// Gets the model item clone.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass GetModelItemClone()
         {
             return Utilities.Clone(_Modeltem);
         }
 
+        /// <summary>
+        /// Gets the model items clone.
+        /// </summary>
+        /// <returns></returns>
         public List<ModelClass> GetModelItemsClone()
         {
             return Utilities.Clone(_ModelItems);
         }
 
 
+        /// <summary>
+        /// Sets the model item shadow.
+        /// </summary>
         public void SetModelItemShadow()
         {
             _ModelItemShadow = Utilities.Clone(_Modeltem);
@@ -347,62 +572,88 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Sets the model items shadow.
+        /// </summary>
         public void SetModelItemsShadow()
         {
             _ModelItemsShadow = Utilities.Clone(_ModelItems);
-            if (this.ViewModel != null)
+            if (ViewModel != null)
             {
-                this.ViewModel.ModelItemShadow = _ModelItemShadow;
+                ViewModel.ModelItemShadow = _ModelItemShadow;
             }
         }
 
+        /// <summary>
+        /// Gets the empty model.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass GetEmptyModel()
         {
             return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         }
 
-                
+
+        /// <summary>
+        /// Creates the database object.
+        /// </summary>
         private void CreateDbObject()
         {
             DbObject = new DbObject<ModelClass>(DbConnection);
         }
-              
-        public Repository(IDbConnection  SqlConnection, IDbTransaction SqlTransaction = null)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repository{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <param name="SqlTransaction">The SQL transaction.</param>
+        public Repository(IDbConnection SqlConnection, IDbTransaction SqlTransaction = null)
         {
-           
+
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
-            this.DbTransaction = SqlTransaction;
-            this.DbConnection = SqlConnection;
-            DbObject = new DbObject<ModelClass>(this.DbConnection);
-            
+            DbTransaction = SqlTransaction;
+            DbConnection = SqlConnection;
+            DbObject = new DbObject<ModelClass>(DbConnection);
+
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repository{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="Model">The model.</param>
         public Repository(ModelClass Model)
         {
-          
+
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
-            
+
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repository{ModelClass}"/> class.
+        /// </summary>
         public Repository()
         {
-          
+
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
-            
+
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Repository{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="DbContext">The database context.</param>
         public Repository(DbContext DbContext)
         {
-           
+
             _Modeltem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemShadow();
@@ -410,11 +661,18 @@ namespace Passero.Framework
             DbTransaction = DbContext.SqlTransaction;
             DbConnection = DbContext.SqlConnection;
             DbObject = new DbObject<ModelClass>(DbConnection);
-            
+
 
         }
 
 
+        /// <summary>
+        /// Determines whether [is model data changed] [the specified model shadow].
+        /// </summary>
+        /// <param name="ModelShadow">The model shadow.</param>
+        /// <returns>
+        ///   <c>true</c> if [is model data changed] [the specified model shadow]; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsModelDataChanged(ModelClass ModelShadow = null)
         {
 
@@ -428,6 +686,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Handles the exeception.
+        /// </summary>
+        /// <param name="ER">The er.</param>
         public void HandleExeception(ExecutionResult ER)
         {
 
@@ -460,16 +722,30 @@ namespace Passero.Framework
         }
 
 
-        public void SetSQLQuery(string SQLQuery, DynamicParameters parameters )
+        /// <summary>
+        /// Sets the SQL query.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="parameters">The parameters.</param>
+        public void SetSQLQuery(string SQLQuery, DynamicParameters parameters)
         {
             this.SQLQuery = SQLQuery;
-            this.Parameters = parameters;   
+            Parameters = parameters;
 
         }
 
-      
 
 
+
+        /// <summary>
+        /// Gets the item.
+        /// </summary>
+        /// <param name="Query">The query.</param>
+        /// <param name="Params">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<ModelClass> GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
@@ -502,21 +778,41 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Gets the current item.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass GetCurrentItem()
         {
-            if (this._ModelItems != null && this._CurrentModelItemIndex > -1)
+            if (_ModelItems != null && _CurrentModelItemIndex > -1)
             {
-                return this._ModelItems[_CurrentModelItemIndex];
+                return _ModelItems[_CurrentModelItemIndex];
             }
-            return null;    
+            return null;
         }
 
+        /// <summary>
+        /// Gets all items.
+        /// </summary>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            return GetItems(this.mSQLQuery, this.Parameters, Transaction, Buffered, CommandTimeout);
+            return GetItems(mSQLQuery, Parameters, Transaction, Buffered, CommandTimeout);
         }
 
 
+        /// <summary>
+        /// Gets the items.
+        /// </summary>
+        /// <param name="Query">The query.</param>
+        /// <param name="Params">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult<List<ModelClass>> GetItems(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult<List<ModelClass>>($"{mClassName}.GetItems()");
@@ -525,7 +821,7 @@ namespace Passero.Framework
                 Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
                 Parameters = new DynamicParameters();
             }
-            this._CurrentModelItemIndex = -1;
+            _CurrentModelItemIndex = -1;
             try
             {
                 _ModelItemsShadow = new List<ModelClass>();
@@ -546,7 +842,7 @@ namespace Passero.Framework
                     ViewModel.MoveFirstItem();
                     _CurrentModelItemIndex = 0;
                 }
-                this.SQLQuery = Query;
+                SQLQuery = Query;
                 Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
                 ER.Value = _ModelItems;
             }
@@ -564,14 +860,20 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Reloads the items.
+        /// </summary>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult ReloadItems(bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.ReloadItems()");
             try
             {
-                if (this.mSQLQuery.IsNullOrWhiteSpace() == false)
+                if (mSQLQuery.IsNullOrWhiteSpace() == false)
                 {
-                    _ModelItems = DbConnection.Query<ModelClass>(mSQLQuery, Parameters, DbTransaction , Buffered, CommandTimeout).ToList();
+                    _ModelItems = DbConnection.Query<ModelClass>(mSQLQuery, Parameters, DbTransaction, Buffered, CommandTimeout).ToList();
                 }
 
                 if (_ModelItems.Count() > 0)
@@ -595,7 +897,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query = {this.mSQLQuery}";
+                ER.DebugInfo = $"Query = {mSQLQuery}";
                 HandleExeception(ER);
             }
 
@@ -604,18 +906,29 @@ namespace Passero.Framework
 
         }
 
-        
 
-       
-       
-        public Repository <ModelClass> Clone()
+
+
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns></returns>
+        public Repository<ModelClass> Clone()
         {
             Repository<ModelClass> newrepository = new Repository<ModelClass>();
-            newrepository .DbConnection = this.DbConnection;    
-            newrepository.DbContext = this.DbContext;   
-            return newrepository;   
+            newrepository.DbConnection = DbConnection;
+            newrepository.DbContext = DbContext;
+            return newrepository;
         }
 
+        /// <summary>
+        /// Inserts the item.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult InsertItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
 
@@ -627,11 +940,11 @@ namespace Passero.Framework
             }
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
             try
@@ -672,6 +985,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Inserts the items.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult InsertItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItems()");
@@ -684,11 +1004,11 @@ namespace Passero.Framework
 
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
             try
             {
@@ -716,6 +1036,10 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Undoes the changes.
+        /// </summary>
+        /// <returns></returns>
         public bool UndoChanges()
         {
             //var ER = new ExecutionResult($"{mClassName}.UndoChanges()");
@@ -728,6 +1052,13 @@ namespace Passero.Framework
             return result;
         }
 
+        /// <summary>
+        /// Updates the item.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItem()");
@@ -739,11 +1070,11 @@ namespace Passero.Framework
             }
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
             try
@@ -769,9 +1100,23 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// The entity properties
+        /// </summary>
         public List<PropertyInfo> EntityProperties = DapperHelper.Utilities.GetPropertiesInfo(typeof(ModelClass), true);
+        /// <summary>
+        /// The entity primary keys
+        /// </summary>
         public List<PropertyInfo> EntityPrimaryKeys = DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(typeof(ModelClass));
+        /// <summary>
+        /// The m SQL update command
+        /// </summary>
         private string mSqlUpdateCommand = DapperHelper.Utilities.GetUpdateSqlCommand(typeof(ModelClass));
+        /// <summary>
+        /// SQLs the update command.
+        /// </summary>
+        /// <param name="Refresh">if set to <c>true</c> [refresh].</param>
+        /// <returns></returns>
         public string SqlUpdateCommand(bool Refresh = false)
         {
             if (Refresh)
@@ -783,6 +1128,14 @@ namespace Passero.Framework
             return mSqlUpdateCommand;
         }
 
+        /// <summary>
+        /// Updates the item ex.
+        /// </summary>
+        /// <param name="ModelItem">The model item.</param>
+        /// <param name="ModelItemShadow">The model item shadow.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemEx()");
@@ -798,23 +1151,23 @@ namespace Passero.Framework
             }
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
-            try 
-            { 
+            try
+            {
                 if (ReflectionHelper.Compare<ModelClass>(ModelItem, ModelItemShadow) == false)
                 {
                     DynamicParameters @params = new DynamicParameters();
-                    foreach (PropertyInfo k in this.EntityProperties)
+                    foreach (PropertyInfo k in EntityProperties)
                     {
                         @params.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItem, k.Name));
                     }
-                    foreach (PropertyInfo k in this.EntityPrimaryKeys)
+                    foreach (PropertyInfo k in EntityPrimaryKeys)
                     {
                         @params.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemShadow, k.Name));
                     }
@@ -841,6 +1194,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Updates the items.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
@@ -852,11 +1212,11 @@ namespace Passero.Framework
             }
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
             try
@@ -877,6 +1237,14 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Updates the items ex.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItemsShadow">The model items shadow.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
@@ -894,11 +1262,11 @@ namespace Passero.Framework
 
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
 
@@ -910,11 +1278,11 @@ namespace Passero.Framework
                     parameters = new DynamicParameters();
                     if (!ReflectionHelper.Compare<ModelClass>(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
                     {
-                        foreach (var k in this.EntityProperties)
+                        foreach (var k in EntityProperties)
                         {
                             parameters.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItems.ElementAt(i), k.Name));
                         }
-                        foreach (var k in this.EntityPrimaryKeys)
+                        foreach (var k in EntityPrimaryKeys)
                         {
                             parameters.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemsShadow.ElementAt(i), k.Name));
                         }
@@ -937,11 +1305,22 @@ namespace Passero.Framework
             return ER;
         }
 
+        /// <summary>
+        /// Gets the empty model item.
+        /// </summary>
+        /// <returns></returns>
         public ModelClass GetEmptyModelItem()
         {
             return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
         }
 
+        /// <summary>
+        /// Deletes the item.
+        /// </summary>
+        /// <param name="ModelItem">The model item.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult DeleteItem(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
@@ -954,11 +1333,11 @@ namespace Passero.Framework
             }
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
             try
@@ -993,6 +1372,13 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Deletes the items.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
         public ExecutionResult DeleteItems(IEnumerable<ModelClass> ModelItems, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
@@ -1000,11 +1386,11 @@ namespace Passero.Framework
 
             if (Transaction == null)
             {
-                Transaction = this.DbTransaction;
+                Transaction = DbTransaction;
             }
             if (CommandTimeout == null)
             {
-                CommandTimeout = this.DbCommandTimeout;
+                CommandTimeout = DbCommandTimeout;
             }
 
             try
@@ -1027,8 +1413,23 @@ namespace Passero.Framework
             return ER;
 
         }
+        /// <summary>
+        /// Gets or sets the default SQL query.
+        /// </summary>
+        /// <value>
+        /// The default SQL query.
+        /// </value>
         public string DefaultSQLQuery { get; set; } = "";
+        /// <summary>
+        /// The m default SQL query parameters
+        /// </summary>
         private DynamicParameters mDefaultSQLQueryParameters;
+        /// <summary>
+        /// Gets or sets the default SQL query parameters.
+        /// </summary>
+        /// <value>
+        /// The default SQL query parameters.
+        /// </value>
         public DynamicParameters DefaultSQLQueryParameters
         {
             get
@@ -1044,11 +1445,15 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <returns></returns>
         public string GetTableName()
         {
             string tableName = "";
             var type = typeof(ModelClass);
-            var tableAttr = type.GetCustomAttribute<Dapper .Contrib .Extensions .TableAttribute>();
+            var tableAttr = type.GetCustomAttribute<Dapper.Contrib.Extensions.TableAttribute>();
 
             if (tableAttr is not null)
             {
@@ -1059,6 +1464,11 @@ namespace Passero.Framework
             return type.Name; // & "s"
         }
 
+        /// <summary>
+        /// Sets the name of the table.
+        /// </summary>
+        /// <param name="TableName">Name of the table.</param>
+        /// <returns></returns>
         public bool SetTableName(string TableName)
         {
 
@@ -1074,6 +1484,10 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets the name of the key column.
+        /// </summary>
+        /// <returns></returns>
         public string GetKeyColumnName()
         {
             PropertyInfo[] properties = typeof(ModelClass).GetProperties();
@@ -1102,6 +1516,11 @@ namespace Passero.Framework
             return null;
         }
 
+        /// <summary>
+        /// Gets the columns.
+        /// </summary>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
         public string GetColumns(bool excludeKey = false)
         {
             var type = typeof(ModelClass);
@@ -1113,12 +1532,17 @@ namespace Passero.Framework
 
             string columns = string.Join(", ", type.GetProperties().Where(p => !excludeKey || !p.IsDefined(typeof(System.ComponentModel.DataAnnotations.KeyAttribute))).Select(p =>
 {
-var columnAttr = p.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>();
-return columnAttr is not null ? columnAttr.Name : p.Name;
+    var columnAttr = p.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>();
+    return columnAttr is not null ? columnAttr.Name : p.Name;
 }));
             return columns;
         }
 
+        /// <summary>
+        /// Gets the property names.
+        /// </summary>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
         public string GetPropertyNames(bool excludeKey = false)
         {
             // Dim properties = GetType(ModelClass).GetProperties().Where(Function(p) Not excludeKey OrElse p.GetCustomAttribute(Of Dapper.Contrib.Extensions.KeyAttribute)() Is Nothing)
@@ -1127,6 +1551,11 @@ return columnAttr is not null ? columnAttr.Name : p.Name;
             return values;
         }
 
+        /// <summary>
+        /// Gets the properties.
+        /// </summary>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
         public IEnumerable<PropertyInfo> GetProperties(bool excludeKey = false)
         {
             // Dim properties = GetType(ModelClass).GetProperties().Where(Function(p) Not excludeKey OrElse p.GetCustomAttribute(Of Dapper.Contrib.Extensions.KeyAttribute)() Is Nothing)
@@ -1134,6 +1563,10 @@ return columnAttr is not null ? columnAttr.Name : p.Name;
             return properties;
         }
 
+        /// <summary>
+        /// Gets the name of the key property.
+        /// </summary>
+        /// <returns></returns>
         public string GetKeyPropertyName()
         {
             // Dim properties = GetType(ModelClass).GetProperties().Where(Function(p) p.GetCustomAttribute(Of Dapper.Contrib.Extensions.KeyAttribute)() IsNot Nothing)

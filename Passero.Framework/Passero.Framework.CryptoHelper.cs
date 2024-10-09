@@ -6,15 +6,39 @@ using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CryptoHelper
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public enum HashProviders
         {
+            /// <summary>
+            /// The m d5
+            /// </summary>
             MD5 = 0,
+            /// <summary>
+            /// The sh a256
+            /// </summary>
             SHA256 = 1,
+            /// <summary>
+            /// The sh a384
+            /// </summary>
             SHA384 = 2,
+            /// <summary>
+            /// The sh a512
+            /// </summary>
             SHA512 = 3
         }
+        /// <summary>
+        /// Gets the hash value.
+        /// </summary>
+        /// <param name="SourceText">The source text.</param>
+        /// <param name="HashProvider">The hash provider.</param>
+        /// <returns></returns>
         public static string GetHashValue(string SourceText, HashProviders HashProvider = HashProviders.MD5)
         {
             var Ue = new UnicodeEncoding();

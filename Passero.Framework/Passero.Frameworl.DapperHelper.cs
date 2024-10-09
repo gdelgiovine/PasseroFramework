@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,9 +18,18 @@ using System.Text.RegularExpressions;
 namespace Passero.Framework.DapperHelper
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class Utilities
     {
 
+        /// <summary>
+        /// Gets the properties information.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="ExcludeComputed">if set to <c>true</c> [exclude computed].</param>
+        /// <returns></returns>
         public static List<PropertyInfo> GetPropertiesInfo(Type ModelClass, bool ExcludeComputed = false)
         {
             var properties = ModelClass.GetProperties();
@@ -44,6 +52,11 @@ namespace Passero.Framework.DapperHelper
             return x;
         }
 
+        /// <summary>
+        /// Gets the primary keys properties information.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
         public static List<PropertyInfo> GetPrimaryKeysPropertiesInfo(Type ModelClass)
         {
             var properties = ModelClass.GetProperties();
@@ -59,6 +72,11 @@ namespace Passero.Framework.DapperHelper
         }
 
 
+        /// <summary>
+        /// Gets the primary key names.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
         public static string GetPrimaryKeyNames(Type ModelClass)
         {
             var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
@@ -67,6 +85,11 @@ namespace Passero.Framework.DapperHelper
             return values;
 
         }
+        /// <summary>
+        /// Gets the primary key names list.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
         public static List<string> GetPrimaryKeyNamesList(Type ModelClass)
         {
             List<string> x = new List<string>();
@@ -81,6 +104,11 @@ namespace Passero.Framework.DapperHelper
 
 
 
+        /// <summary>
+        /// Properties the is writeable.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
         public static bool PropertyIsWriteable(PropertyInfo pi)
         {
 
@@ -93,6 +121,11 @@ namespace Passero.Framework.DapperHelper
             return writeAttribute.Write;
         }
 
+        /// <summary>
+        /// Properties the is explicit key.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
         public static bool PropertyIsExplicitKey(PropertyInfo pi)
         {
             var attributes = pi.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).AsList();
@@ -105,6 +138,11 @@ namespace Passero.Framework.DapperHelper
                 return true;
             }
         }
+        /// <summary>
+        /// Properties the is identity key.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
         public static bool PropertyIsIdentityKey(PropertyInfo pi)
         {
             var attributes = pi.GetCustomAttributes(typeof(KeyAttribute), false).AsList();
@@ -117,6 +155,12 @@ namespace Passero.Framework.DapperHelper
                 return true;
             }
         }
+        /// <summary>
+        /// Properties the is explicit key.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         public static bool PropertyIsExplicitKey(Type ModelClass, string PropertyName)
         {
             if (string.IsNullOrEmpty(PropertyName.Trim()))
@@ -137,6 +181,12 @@ namespace Passero.Framework.DapperHelper
             }
             return true;
         }
+        /// <summary>
+        /// Properties the is identity key.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         public static bool PropertyIsIdentityKey(Type ModelClass, string PropertyName)
         {
             if (string.IsNullOrEmpty(PropertyName.Trim()))
@@ -159,10 +209,15 @@ namespace Passero.Framework.DapperHelper
         }
 
 
+        /// <summary>
+        /// Gets the dynamic parameters.
+        /// </summary>
+        /// <param name="Params">The parameters.</param>
+        /// <returns></returns>
         public static DynamicParameters GetDynamicParameters(object Params)
         {
-            if (Params == null) 
-                return null;    
+            if (Params == null)
+                return null;
 
             switch (Params.GetType().Name)
             {
@@ -175,6 +230,11 @@ namespace Passero.Framework.DapperHelper
             return null;
         }
 
+        /// <summary>
+        /// Gets the update SQL command.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
         public static string GetUpdateSqlCommand(Type ModelClass)
         {
             List<PropertyInfo> properties;
@@ -213,6 +273,12 @@ namespace Passero.Framework.DapperHelper
 
 
 
+        /// <summary>
+        /// Gets the insert SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
         public static string GetInsertSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
         {
 
@@ -223,6 +289,12 @@ namespace Passero.Framework.DapperHelper
         }
 
 
+        /// <summary>
+        /// Gets the delete SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
         public static string GetDeleteSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
         {
 
@@ -234,27 +306,48 @@ namespace Passero.Framework.DapperHelper
 
 
 
-        public static string GetPropertyNames(Type  ModelClass, bool excludeKey = false)
+        /// <summary>
+        /// Gets the property names.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
+        public static string GetPropertyNames(Type ModelClass, bool excludeKey = false)
         {
-            
+
             var properties = ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
             string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
             return values;
         }
 
+        /// <summary>
+        /// Gets the properties info2.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
         public static IEnumerable<PropertyInfo> GetPropertiesInfo2(Type ModelClass, bool excludeKey = false)
         {
-            var properties =ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
+            var properties = ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
             return properties;
         }
 
-        public static bool IListToCSVFile<T>(IList<T> data, string filename, bool PrintHeader = true, string SheetName="")
+        /// <summary>
+        /// is the list to CSV file.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <param name="filename">The filename.</param>
+        /// <param name="PrintHeader">if set to <c>true</c> [print header].</param>
+        /// <param name="SheetName">Name of the sheet.</param>
+        /// <returns></returns>
+        public static bool IListToCSVFile<T>(IList<T> data, string filename, bool PrintHeader = true, string SheetName = "")
         {
-            bool save=false;
+            bool save = false;
             try
             {
-                MiniExcel.SaveAs(filename, data, PrintHeader ,SheetName,  ExcelType.CSV);
-                save=true;  
+                MiniExcel.SaveAs(filename, data, PrintHeader, SheetName, ExcelType.CSV);
+                save = true;
             }
             catch (Exception)
             {
@@ -266,11 +359,16 @@ namespace Passero.Framework.DapperHelper
 
         }
 
+        /// <summary>
+        /// Objects the list to data table.
+        /// </summary>
+        /// <param name="ObjectList">The object list.</param>
+        /// <returns></returns>
         public static DataTable ObjectListToDataTable(object ObjectList)
         {
 
             IList collection = (IList)ObjectList;
-            Type T= Passero.Framework.ReflectionHelper.GetListType(ObjectList);
+            Type T = Passero.Framework.ReflectionHelper.GetListType(ObjectList);
 
             DataTable dataTable = new DataTable(T.Name);
             //Get all the properties
@@ -280,7 +378,7 @@ namespace Passero.Framework.DapperHelper
                 //Setting column names as Property names
                 dataTable.Columns.Add(prop.Name);
             }
-            foreach (var item in collection )
+            foreach (var item in collection)
             {
                 var values = new object[Props.Length];
                 for (int i = 0; i < Props.Length; i++)
@@ -293,6 +391,12 @@ namespace Passero.Framework.DapperHelper
             //put a breakpoint here and check datatable
             return dataTable;
         }
+        /// <summary>
+        /// Lists to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
         public static DataTable ListToDataTable<T>(List<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
@@ -317,7 +421,13 @@ namespace Passero.Framework.DapperHelper
             return dataTable;
         }
 
-        public static DataTable IListToDataTable<T>( IList<T> data)
+        /// <summary>
+        /// is the list to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        public static DataTable IListToDataTable<T>(IList<T> data)
         {
             PropertyDescriptorCollection properties =
                 TypeDescriptor.GetProperties(typeof(T));
@@ -334,6 +444,12 @@ namespace Passero.Framework.DapperHelper
             return table;
         }
 
+        /// <summary>
+        /// Gets the name of the column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
         public static string GetColumnName<T>(string ColumnName)
         {
             var pInfo = typeof(T).GetProperty(ColumnName).GetCustomAttribute<Dapper.ColumnMapper.ColumnMappingAttribute>();
@@ -341,6 +457,12 @@ namespace Passero.Framework.DapperHelper
             return _ColumnName;
         }
 
+        /// <summary>
+        /// Gets the name of the column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         public static string GetColumnName<T>(object PropertyName)
         {
             string ColumnName = nameof(PropertyName);
@@ -350,6 +472,13 @@ namespace Passero.Framework.DapperHelper
         }
 
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        /// <summary>
+        /// Gets the data table from dapper query.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <returns></returns>
         public static DataTable GetDataTableFromDapperQuery(IDbConnection DbConnection, string SQLQuery, DynamicParameters? Parameters = null)
 #pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
         {
@@ -361,6 +490,13 @@ namespace Passero.Framework.DapperHelper
         }
 
 
+        /// <summary>
+        /// Dappers the select.
+        /// </summary>
+        /// <param name="dbConnection">The database connection.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
         public static List<IDictionary<string, object>> DapperSelect(IDbConnection dbConnection, string query, object parameters)
         {
 
@@ -371,11 +507,17 @@ namespace Passero.Framework.DapperHelper
             }
         }
 
-        public static string ResolveSQL(string SQL, Dapper.DynamicParameters  Parameters)
+        /// <summary>
+        /// Resolves the SQL.
+        /// </summary>
+        /// <param name="SQL">The SQL.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <returns></returns>
+        public static string ResolveSQL(string SQL, Dapper.DynamicParameters Parameters)
         {
-            string _SQL= SQL;
-           
-            if (_SQL.Trim ()=="" | _SQL==null)
+            string _SQL = SQL;
+
+            if (_SQL.Trim() == "" | _SQL == null)
                 return "";
 
             if (Parameters == null)
@@ -401,11 +543,17 @@ namespace Passero.Framework.DapperHelper
                     _SQL = Regex.Replace(_SQL, ParamName, ParamValue, RegexOptions.IgnoreCase);
                 }
             }
-     
+
             return _SQL;
         }
 
-      
+
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
         public static string GetTableName<T>()
         {
             // Check if we've already set our custom table mapper to TableNameMapper.
@@ -427,6 +575,12 @@ namespace Passero.Framework.DapperHelper
 
 
         }
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
         public static string GetTableName(Type ModelClass)
         {
             // Check if we've already set our custom table mapper to TableNameMapper.
@@ -443,7 +597,7 @@ namespace Passero.Framework.DapperHelper
                 throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
 
 #pragma warning disable CS8603 // Possibile restituzione di riferimento Null.
-            return getTableNameMethod.Invoke(null, new object[] { ModelClass  }) as string;
+            return getTableNameMethod.Invoke(null, new object[] { ModelClass }) as string;
 #pragma warning restore CS8603 // Possibile restituzione di riferimento Null.
 
 
@@ -452,6 +606,12 @@ namespace Passero.Framework.DapperHelper
 
 
 
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
         public static string GetTableName(object Model)
         {
             // Check if we've already set our custom table mapper to TableNameMapper.
@@ -468,16 +628,24 @@ namespace Passero.Framework.DapperHelper
                 throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
 
 #pragma warning disable CS8603 // Possibile restituzione di riferimento Null.
-            return getTableNameMethod.Invoke(null, new object[] { Model.GetType()  }) as string;
+            return getTableNameMethod.Invoke(null, new object[] { Model.GetType() }) as string;
 #pragma warning restore CS8603 // Possibile restituzione di riferimento Null.
 
 
         }
 
 
-        public static string SetTableName<T>(T Model,string TableName)
+        /// <summary>
+        /// Sets the name of the table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Model">The model.</param>
+        /// <param name="TableName">Name of the table.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{setTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
+        public static string SetTableName<T>(T Model, string TableName)
         {
-            
+
             // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
             string setTableName = "SetTableName";
 #pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
@@ -497,14 +665,48 @@ namespace Passero.Framework.DapperHelper
 
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class QueryFilterItem
     {
+        /// <summary>
+        /// Gets or sets the name of the column.
+        /// </summary>
+        /// <value>
+        /// The name of the column.
+        /// </value>
         public string ColumnName { get; set; }
+        /// <summary>
+        /// Gets or sets the comparision operator.
+        /// </summary>
+        /// <value>
+        /// The comparision operator.
+        /// </value>
         public ComparisionOperator ComparisionOperator { get; set; }
+        /// <summary>
+        /// Gets or sets the values.
+        /// </summary>
+        /// <value>
+        /// The values.
+        /// </value>
         public object Values { get; set; }
+        /// <summary>
+        /// Gets or sets the logical operator.
+        /// </summary>
+        /// <value>
+        /// The logical operator.
+        /// </value>
         public LogicOperator LogicalOperator { get; set; } = LogicOperator.And;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueryFilterItem"/> class.
+        /// </summary>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <param name="ComparisionOperatore">The comparision operatore.</param>
+        /// <param name="LogicalOperator">The logical operator.</param>
+        /// <param name="Values">The values.</param>
         public QueryFilterItem(string ColumnName, ComparisionOperator ComparisionOperatore, LogicOperator LogicalOperator, params object[] Values)
         {
             this.ColumnName = ColumnName;
@@ -515,9 +717,23 @@ namespace Passero.Framework.DapperHelper
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class QueryFilters
     {
+        /// <summary>
+        /// Gets or sets the filters.
+        /// </summary>
+        /// <value>
+        /// The filters.
+        /// </value>
         public Collection<QueryFilter> Filters { get; set; } = new Collection<QueryFilter>();
+        /// <summary>
+        /// Adds the filter.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="LogicOperator">The logic operator.</param>
         public void AddFilter(QueryFilter Item, LogicOperator LogicOperator = LogicOperator.None)
         {
             if (Filters.Contains(Item) == false)
@@ -527,11 +743,18 @@ namespace Passero.Framework.DapperHelper
             }
         }
 
+        /// <summary>
+        /// Clears the filters.
+        /// </summary>
         public void ClearFilters()
         {
             Filters.Clear();
         }
 
+        /// <summary>
+        /// Builds the query.
+        /// </summary>
+        /// <returns></returns>
         public string BuildQuery()
         {
             return default;
@@ -544,10 +767,29 @@ namespace Passero.Framework.DapperHelper
         #Enable Warning BC42105 ' La funzione non restituisce un valore per tutti i percorsi del codice
         */
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public class QueryFilter
     {
+        /// <summary>
+        /// Gets or sets the filter items.
+        /// </summary>
+        /// <value>
+        /// The filter items.
+        /// </value>
         public Collection<QueryFilterItem> FilterItems { get; set; } = new Collection<QueryFilterItem>();
+        /// <summary>
+        /// Gets or sets the logic operator.
+        /// </summary>
+        /// <value>
+        /// The logic operator.
+        /// </value>
         public LogicOperator LogicOperator { get; set; } = LogicOperator.None;
+        /// <summary>
+        /// Adds the filter item.
+        /// </summary>
+        /// <param name="Item">The item.</param>
         public void AddFilterItem(QueryFilterItem Item)
         {
             if (FilterItems.Contains(Item) == false)
@@ -556,10 +798,20 @@ namespace Passero.Framework.DapperHelper
             }
         }
 
+        /// <summary>
+        /// Clears the filter items.
+        /// </summary>
         public void ClearFilterItems()
         {
             FilterItems.Clear();
         }
+        /// <summary>
+        /// Adds the filter item.
+        /// </summary>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <param name="ComparisionOperator">The comparision operator.</param>
+        /// <param name="LogicalOperator">The logical operator.</param>
+        /// <param name="Values">The values.</param>
         public void AddFilterItem(string ColumnName, ComparisionOperator ComparisionOperator, LogicOperator LogicalOperator, params object[] Values)
         {
 
@@ -574,28 +826,79 @@ namespace Passero.Framework.DapperHelper
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public enum ComparisionOperator
     {
+        /// <summary>
+        /// The equal to
+        /// </summary>
         EqualTo = 0,
+        /// <summary>
+        /// The greater than
+        /// </summary>
         GreaterThan = 1,
+        /// <summary>
+        /// The less than
+        /// </summary>
         LessThan = 2,
+        /// <summary>
+        /// The greater than or equal
+        /// </summary>
         GreaterThanOrEqual = 3,
+        /// <summary>
+        /// The less than or equal
+        /// </summary>
         LessThanOrEqual = 4,
+        /// <summary>
+        /// The not equal
+        /// </summary>
         NotEqual = 5,
+        /// <summary>
+        /// The between
+        /// </summary>
         Between = 6,
+        /// <summary>
+        /// The not between
+        /// </summary>
         NotBetween = 7,
+        /// <summary>
+        /// The like
+        /// </summary>
         Like = 8,
+        /// <summary>
+        /// The not like
+        /// </summary>
         NotLike = 9,
+        /// <summary>
+        /// The in
+        /// </summary>
         In = 10,
+        /// <summary>
+        /// The not in
+        /// </summary>
         NotIn = 11
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public enum LogicOperator
     {
+        /// <summary>
+        /// The and
+        /// </summary>
         And = 1,
+        /// <summary>
+        /// The or
+        /// </summary>
         Or = 2,
+        /// <summary>
+        /// The none
+        /// </summary>
         None = 0
     }
 

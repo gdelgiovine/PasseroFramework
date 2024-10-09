@@ -1,63 +1,125 @@
-﻿using Passero.Framework;
-using System.Collections.Generic;
-using System;
-using Wisej.Web;
-using System.Data;
-using Dapper;
-using System.Linq;
+﻿using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using Wisej.Web;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
     public class DbLookUp<ModelClass> where ModelClass : class
     {
+        /// <summary>
+        /// Gets or sets the binding source.
+        /// </summary>
+        /// <value>
+        /// The binding source.
+        /// </value>
         public BindingSource BindingSource { get; set; } = null;
+        /// <summary>
+        /// Gets or sets the data binding mode.
+        /// </summary>
+        /// <value>
+        /// The data binding mode.
+        /// </value>
         public DataBindingMode DataBindingMode { get; set; } = DataBindingMode.Passero;
+        /// <summary>
+        /// Gets or sets the database connection.
+        /// </summary>
+        /// <value>
+        /// The database connection.
+        /// </value>
         public IDbConnection DbConnection { get; set; }
+        /// <summary>
+        /// Gets or sets the data bind controls.
+        /// </summary>
+        /// <value>
+        /// The data bind controls.
+        /// </value>
         public Dictionary<string, DataBindControl> DataBindControls { get; set; } = new Dictionary<string, DataBindControl>(StringComparer.InvariantCultureIgnoreCase);
-        public  DynamicParameters  DbParameters {get; set; } = new DynamicParameters();
+        /// <summary>
+        /// Gets or sets the database parameters.
+        /// </summary>
+        /// <value>
+        /// The database parameters.
+        /// </value>
+        public DynamicParameters DbParameters { get; set; } = new DynamicParameters();
+        /// <summary>
+        /// Gets or sets the SQL query.
+        /// </summary>
+        /// <value>
+        /// The SQL query.
+        /// </value>
         public string SQLQuery { get; set; } = "";
+        /// <summary>
+        /// Gets or sets the last execution result.
+        /// </summary>
+        /// <value>
+        /// The last execution result.
+        /// </value>
         public ExecutionResult LastExecutionResult { get; set; } = new ExecutionResult();
-        public ModelClass Model { get; private set; }= Activator.CreateInstance<ModelClass>();
+        /// <summary>
+        /// Gets the model.
+        /// </summary>
+        /// <value>
+        /// The model.
+        /// </value>
+        public ModelClass Model { get; private set; } = Activator.CreateInstance<ModelClass>();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
+        /// </summary>
         public DbLookUp()
         {
-            
+
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
         public DbLookUp(IDbConnection DbConnection)
         {
             this.DbConnection = DbConnection;
         }
 
+        /// <summary>
+        /// Lookups this instance.
+        /// </summary>
+        /// <returns></returns>
         public bool Lookup()
         {
             LastExecutionResult.Reset();
-            bool result = false;    
+            bool result = false;
             try
             {
-                this.Model = Activator.CreateInstance<ModelClass>();
-                this.Model = this.DbConnection.Query<ModelClass>(this.SQLQuery, (object)this.DbParameters).FirstOrDefault<ModelClass>();
-                if (this.Model== null) 
+                Model = Activator.CreateInstance<ModelClass>();
+                Model = DbConnection.Query<ModelClass>(SQLQuery, DbParameters).FirstOrDefault<ModelClass>();
+                if (Model == null)
                 {
-                    this.Model=Activator .CreateInstance<ModelClass>(); 
+                    Model = Activator.CreateInstance<ModelClass>();
                 }
                 else
                 {
                     result = true;
                 }
                 // Databinding
-                switch (this.DataBindingMode)
+                switch (DataBindingMode)
                 {
                     case DataBindingMode.None:
                         break;
                     case DataBindingMode.Passero:
-                        this.WriteControls();
+                        WriteControls();
                         break;
                     case DataBindingMode.BindingSource:
-                        if (this.BindingSource == null)
+                        if (BindingSource == null)
                             break;
-                        this.BindingSource .DataSource =Model;
+                        BindingSource.DataSource = Model;
                         break;
                     default:
                         break;
@@ -67,17 +129,23 @@ namespace Passero.Framework
             catch (Exception ex)
             {
 
-                LastExecutionResult .ResultCode = ExecutionResultCodes.Failed;
-                LastExecutionResult .ErrorCode = 1;
+                LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
+                LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.ResultMessage = ex.Message;
                 LastExecutionResult.Exception = ex;
-                 
+
             }
 
 
             return result;
         }
 
+        /// <summary>
+        /// Gets the bound control key.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
         private string GetBoundControlKey(Control Control, string PropertyName)
         {
             string objname = Conversions.ToString(Interaction.CallByName(Control, "Name", CallType.Get, (object[])null));
@@ -86,6 +154,13 @@ namespace Passero.Framework
 
 
         // Scrive il valore della proprietà del Model nella proprietà del controllo
+        /// <summary>
+        /// Writes the control.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int WriteControl(ModelClass Model, Control Control, string ControlPropertyName = "")
         {
 
@@ -126,6 +201,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Writes the controls.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <returns></returns>
         public int WriteControls(ModelClass Model = null)
         {
             int _writedcontrols = 0;
@@ -159,6 +239,14 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Adds the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <param name="ModelPropertyName">Name of the model property.</param>
+        /// <param name="BindingBehaviour">The binding behaviour.</param>
+        /// <returns></returns>
         public bool AddControl(Control Control, string ControlPropertyName, string ModelPropertyName, BindingBehaviour BindingBehaviour = (BindingBehaviour)((int)BindingBehaviour.Insert + (int)BindingBehaviour.Update + (int)BindingBehaviour.Select))
         {
             string Key = GetBoundControlKey(Control, ControlPropertyName);
@@ -184,12 +272,23 @@ namespace Passero.Framework
             // End If
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <param name="ControlPropertyName">Name of the control property.</param>
+        /// <returns></returns>
         public int RemoveControl(Control Control, string ControlPropertyName)
         {
             string Key = GetBoundControlKey(Control, ControlPropertyName);
             return RemoveControl(Key);
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Key">The key.</param>
+        /// <returns></returns>
         public int RemoveControl(string Key)
         {
             if (DataBindControls.ContainsKey(Key) == true)
@@ -199,10 +298,10 @@ namespace Passero.Framework
                 if (DataBindingMode == DataBindingMode.BindingSource)
                 {
                     DataBindControls[Key].Control.DataBindings.Clear();
-                }                    
-                
+                }
+
                 DataBindControls.Remove(Key);
-                
+
                 return 1;
             }
             else
@@ -211,6 +310,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="Control">The control.</param>
+        /// <returns></returns>
         public int RemoveControl(Control Control)
         {
             string objname = Conversions.ToString(Interaction.CallByName(Control, "Name", CallType.Get, (object[])null));
@@ -218,6 +322,11 @@ namespace Passero.Framework
             return _RemoveControl(keytofind);
         }
 
+        /// <summary>
+        /// Removes the control.
+        /// </summary>
+        /// <param name="keytofind">The keytofind.</param>
+        /// <returns></returns>
         private int _RemoveControl(string keytofind)
         {
             int removedobjects = 0;

@@ -1,23 +1,23 @@
-﻿using Microsoft.Ajax.Utilities;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing.Text;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Wisej.Web;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class EnumExtensions
     {
+        /// <summary>
+        /// Gets the localized description.
+        /// </summary>
+        /// <param name="enum">The enum.</param>
+        /// <returns></returns>
         public static string GetLocalizedDescription(this Enum @enum)
         {
             if (@enum == null)
@@ -34,17 +34,38 @@ namespace Passero.Framework
             return description;
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="System.ComponentModel.DescriptionAttribute" />
     public class LocalizedEnumAttribute : DescriptionAttribute
     {
+        /// <summary>
+        /// The name property
+        /// </summary>
         private PropertyInfo _nameProperty;
+        /// <summary>
+        /// The resource type
+        /// </summary>
         private Type _resourceType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalizedEnumAttribute"/> class.
+        /// </summary>
+        /// <param name="displayNameKey">The display name key.</param>
+        /// <param name="Resource">The resource.</param>
         public LocalizedEnumAttribute(string displayNameKey, Type Resource)
             : base(displayNameKey)
         {
-            this.NameResourceType = Resource;
+            NameResourceType = Resource;
         }
 
+        /// <summary>
+        /// Gets or sets the type of the name resource.
+        /// </summary>
+        /// <value>
+        /// The type of the name resource.
+        /// </value>
         public Type NameResourceType
         {
             get
@@ -55,10 +76,13 @@ namespace Passero.Framework
             {
                 _resourceType = value;
 
-                _nameProperty = _resourceType.GetProperty(this.Description, BindingFlags.Static | BindingFlags.Public);
+                _nameProperty = _resourceType.GetProperty(Description, BindingFlags.Static | BindingFlags.Public);
             }
         }
 
+        /// <summary>
+        /// Ottiene la descrizione memorizzata in questo attributo.
+        /// </summary>
         public override string Description
         {
             get
@@ -92,9 +116,17 @@ namespace Passero.Framework
         //}
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class EnumHelper
     {
 
+        /// <summary>
+        /// Enums the description.
+        /// </summary>
+        /// <param name="EnumConstant">The enum constant.</param>
+        /// <returns></returns>
         public static string EnumDescription(Enum EnumConstant)
         {
             string str;
@@ -106,6 +138,13 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Enums to data table.
+        /// </summary>
+        /// <param name="enumType">Type of the enum.</param>
+        /// <param name="valueitem">The valueitem.</param>
+        /// <param name="displayitem">The displayitem.</param>
+        /// <returns></returns>
         public static DataTable EnumToDataTable(Type enumType, Passero.Framework.EnumToDataTableValueItem valueitem, Passero.Framework.EnumToDataTableDisplayItem displayitem)
         {
             string ID;
@@ -194,6 +233,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Enums to data table.
+        /// </summary>
+        /// <param name="enumType">Type of the enum.</param>
+        /// <param name="valueitem">The valueitem.</param>
+        /// <param name="displayitem">The displayitem.</param>
+        /// <returns></returns>
         public static DataTable EnumToDataTable(Type enumType, Passero.Framework.EnumToDataTableDisplayItem valueitem, Passero.Framework.EnumToDataTableDisplayItem displayitem)
         {
             string ID;
@@ -287,6 +333,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// is the enumerable to data table.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static DataTable IEnumerableToDataTable<TSource>(IEnumerable<TSource> source)
         {
             PropertyInfo[] props = typeof(TSource).GetProperties();
@@ -295,6 +347,12 @@ namespace Passero.Framework
             source.ToList().ForEach(i => dt.Rows.Add(props.Select(p => p.GetValue(i, null)).ToArray()));
             return dt;
         }
+        /// <summary>
+        /// is the list to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
         public static DataTable IListToDataTable<T>(IList<T> data)
         {
             PropertyDescriptorCollection properties =
@@ -314,6 +372,12 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// is the enumerable to binding list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
         public static BindingList<T> IEnumerableToBindingList<T>(IEnumerable<T> data)
         {
             BindingList<T> result = null;
@@ -328,19 +392,41 @@ namespace Passero.Framework
 
 
 
+        /// <summary>
+        /// Binds the enum int value to ComboBox.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
         public static void BindEnumIntValueToComboBox<T>(ref Wisej.Web.ComboBox comboBox, object defaultSelection = null, string ResourceFileName = "Resources")
         {
-            BindEnumToComboBox<T>(ref comboBox , true,defaultSelection ,ResourceFileName);
+            BindEnumToComboBox<T>(ref comboBox, true, defaultSelection, ResourceFileName);
         }
+        /// <summary>
+        /// Binds the enum value to ComboBox.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
         public static void BindEnumValueToComboBox<T>(ref Wisej.Web.ComboBox comboBox, object defaultSelection = null, string ResourceFileName = "Resources")
         {
             BindEnumToComboBox<T>(ref comboBox, false, defaultSelection, ResourceFileName);
         }
 
 
-        public static void BindEnumToComboBox<T>(ref Wisej.Web.ComboBox comboBox,bool UseIntValue=false, object defaultSelection = null, string ResourceFileName = "Resources")
+        /// <summary>
+        /// Binds the enum to ComboBox.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="UseIntValue">if set to <c>true</c> [use int value].</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
+        public static void BindEnumToComboBox<T>(ref Wisej.Web.ComboBox comboBox, bool UseIntValue = false, object defaultSelection = null, string ResourceFileName = "Resources")
         {
-           
+
             object typevalue = defaultSelection;
             Type type = typeof(T);
             System.Collections.IList list;
@@ -424,7 +510,7 @@ namespace Passero.Framework
             //comboBox.DataSource = enumItems ;
             comboBox.DataSource = table;
             comboBox.DisplayMember = "Description";
-            if (UseIntValue )
+            if (UseIntValue)
                 comboBox.ValueMember = "Value";
             else
                 comboBox.ValueMember = "EnumValue";
@@ -454,16 +540,38 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Binds the enum int value to data grid view ComboBox column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
         public static void BindEnumIntValueToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn comboBox, object defaultSelection = null, string ResourceFileName = "Resources")
         {
             BindEnumToDataGridViewComboBoxColumn<T>(ref comboBox, true, defaultSelection, ResourceFileName);
         }
+        /// <summary>
+        /// Binds the enum value to data grid view ComboBox column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
         public static void BindEnumValueToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn comboBox, object defaultSelection = null, string ResourceFileName = "Resources")
         {
             BindEnumToDataGridViewComboBoxColumn<T>(ref comboBox, false, defaultSelection, ResourceFileName);
         }
 
-        public static void BindEnumToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn  comboBox, bool UseIntValue = false, object defaultSelection = null, string ResourceFileName = "Resources")
+        /// <summary>
+        /// Binds the enum to data grid view ComboBox column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="comboBox">The combo box.</param>
+        /// <param name="UseIntValue">if set to <c>true</c> [use int value].</param>
+        /// <param name="defaultSelection">The default selection.</param>
+        /// <param name="ResourceFileName">Name of the resource file.</param>
+        public static void BindEnumToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn comboBox, bool UseIntValue = false, object defaultSelection = null, string ResourceFileName = "Resources")
         {
 
             object typevalue = defaultSelection;
@@ -562,10 +670,32 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public class EnumItem<T>
         {
+            /// <summary>
+            /// Gets or sets the value.
+            /// </summary>
+            /// <value>
+            /// The value.
+            /// </value>
             public int Value { get; set; }
+            /// <summary>
+            /// Gets or sets the description.
+            /// </summary>
+            /// <value>
+            /// The description.
+            /// </value>
             public string Description { get; set; }
+            /// <summary>
+            /// Gets or sets the enum value.
+            /// </summary>
+            /// <value>
+            /// The enum value.
+            /// </value>
             public T EnumValue { get; set; }
         }
 

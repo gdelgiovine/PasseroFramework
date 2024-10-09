@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualBasic;
-
 using Wisej.Web;
 
 namespace Passero.Framework
@@ -10,28 +9,62 @@ namespace Passero.Framework
 
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ControlStorage
     {
 
 
+        /// <summary>
+        /// The bounds
+        /// </summary>
         public List<System.Drawing.Rectangle> bounds = new List<System.Drawing.Rectangle>();
         // questa funziona solo su Windows
+        /// <summary>
+        /// The font
+        /// </summary>
         public List<System.Drawing.Font> font = new List<System.Drawing.Font>();
         //
+        /// <summary>
+        /// The datagridview defaultcellstyle
+        /// </summary>
         public List<object> datagridview_defaultcellstyle = new List<object>();
+        /// <summary>
+        /// The datagridview defaultrowheight
+        /// </summary>
         public List<int> datagridview_defaultrowheight = new List<int>();
+        /// <summary>
+        /// The datagridview columnheadersheight
+        /// </summary>
         public List<int> datagridview_columnheadersheight = new List<int>();
+        /// <summary>
+        /// The datagridview columncollection
+        /// </summary>
         public List<object> datagridview_columncollection = new List<object>();
 
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FormResize
     {
+        /// <summary>
+        /// The form font
+        /// </summary>
         public System.Drawing.Font FormFont;
+        /// <summary>
+        /// The control storage
+        /// </summary>
         public ControlStorage ControlStorage = new ControlStorage();
         // Private _form_font As System.Drawing.Font
         // Private showRowHeader As Boolean = False
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormResize"/> class.
+        /// </summary>
+        /// <param name="CallingForm">The calling form.</param>
         public FormResize(Form CallingForm)
         {
             Form = CallingForm; // the calling form
@@ -40,7 +73,16 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// The private fontsize
+        /// </summary>
         private float private_fontsize;
+        /// <summary>
+        /// Gets or sets the fontsize.
+        /// </summary>
+        /// <value>
+        /// The fontsize.
+        /// </value>
         private float _fontsize
         {
             get
@@ -53,7 +95,16 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// The private form size
+        /// </summary>
         private System.Drawing.SizeF private_formSize;
+        /// <summary>
+        /// Gets or sets the size of the form.
+        /// </summary>
+        /// <value>
+        /// The size of the form.
+        /// </value>
         private System.Drawing.SizeF _formSize
         {
             get
@@ -66,7 +117,16 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// The privateform
+        /// </summary>
         private Form privateform;
+        /// <summary>
+        /// Gets or sets the form.
+        /// </summary>
+        /// <value>
+        /// The form.
+        /// </value>
         private Form Form
         {
             get
@@ -79,6 +139,9 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the initial size.
+        /// </summary>
         public void GetInitialSize() // get initial size//
         {
 
@@ -100,8 +163,8 @@ namespace Passero.Framework
                 // If you have datagridview
                 if (ReferenceEquals(control.GetType(), typeof(DataGridView)))
                 {
-                    Wisej.Web .DataGridView _dgv = (Wisej.Web .DataGridView)control;
-                    DataGridViewColumnCollection _nColumns = new Wisej .Web. DataGridViewColumnCollection(_dgv);
+                    Wisej.Web.DataGridView _dgv = (Wisej.Web.DataGridView)control;
+                    DataGridViewColumnCollection _nColumns = new Wisej.Web.DataGridViewColumnCollection(_dgv);
                     foreach (Wisej.Web.DataGridViewColumn _col in _dgv.Columns)
                     {
                         _nColumns.Add((Wisej.Web.DataGridViewColumn)_col.Clone());
@@ -122,6 +185,10 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Resizes the specified cs.
+        /// </summary>
+        /// <param name="CS">The cs.</param>
         public void Resize(ControlStorage CS) // Set the resize
         {
             double _form_ratio_width = Form.ClientSize.Width / (double)_formSize.Width; // ratio could be greater or less than 1
@@ -203,18 +270,36 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets all form controls.
+        /// </summary>
+        /// <param name="c">The c.</param>
+        /// <returns></returns>
         private static IEnumerable<Control> GetAllFormControls(Control c)
         {
             return c.Controls.Cast<Control>().SelectMany(item => GetAllFormControls(item)).Concat(c.Controls.Cast<Control>()).Where(control => !string.IsNullOrEmpty(control.Name));
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class PageResize
     {
+        /// <summary>
+        /// The page font
+        /// </summary>
         public System.Drawing.Font PageFont;
+        /// <summary>
+        /// The control storage
+        /// </summary>
         public ControlStorage ControlStorage = new ControlStorage();
         // Private _form_font As System.Drawing.Font
         // Private showRowHeader As Boolean = False
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PageResize"/> class.
+        /// </summary>
+        /// <param name="CallingPage">The calling page.</param>
         public PageResize(Page CallingPage)
         {
             Page = CallingPage; // the calling form
@@ -223,7 +308,16 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// The private fontsize
+        /// </summary>
         private float private_fontsize;
+        /// <summary>
+        /// Gets or sets the fontsize.
+        /// </summary>
+        /// <value>
+        /// The fontsize.
+        /// </value>
         private float _fontsize
         {
             get
@@ -236,7 +330,16 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// The private form size
+        /// </summary>
         private System.Drawing.SizeF private_formSize;
+        /// <summary>
+        /// Gets or sets the size of the page.
+        /// </summary>
+        /// <value>
+        /// The size of the page.
+        /// </value>
         private System.Drawing.SizeF _pageSize
         {
             get
@@ -249,7 +352,16 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// The privatepage
+        /// </summary>
         private Page privatepage;
+        /// <summary>
+        /// Gets or sets the page.
+        /// </summary>
+        /// <value>
+        /// The page.
+        /// </value>
         private Page Page
         {
             get
@@ -262,6 +374,10 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the initial size.
+        /// </summary>
+        /// <param name="Container">The container.</param>
         public void GetInitialSize(Control Container = null) // get initial size//
         {
 
@@ -285,11 +401,11 @@ namespace Passero.Framework
                 if (ReferenceEquals(control.GetType(), typeof(DataGridView)))
                 {
                     DataGridView _dgv = (DataGridView)control;
-                  
+
                     var _nColumns = new DataGridViewColumnCollection(_dgv);
-                  
+
                     foreach (DataGridViewColumn _col in _dgv.Columns)
-                        _nColumns.Add((Wisej.Web.DataGridViewColumn)_col.Clone  ());
+                        _nColumns.Add((Wisej.Web.DataGridViewColumn)_col.Clone());
 
                     ControlStorage.datagridview_defaultcellstyle.Add(_dgv.DefaultCellStyle.Clone());
                     ControlStorage.datagridview_columncollection.Add(_nColumns);
@@ -307,6 +423,10 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Resizes the specified cs.
+        /// </summary>
+        /// <param name="CS">The cs.</param>
         public void Resize(ControlStorage CS) // Set the resize
         {
             double _page_ratio_width = Page.ClientSize.Width / (double)_pageSize.Width; // ratio could be greater or less than 1
@@ -325,7 +445,7 @@ namespace Passero.Framework
                                                                                                                                                                                                                   // set bounds
                 control.Bounds = new System.Drawing.Rectangle(_controlposition, _controlSize); // Put together
                                                                                                // set font
-           
+
                 float FontSize = (float)Conversion.Fix((double)CS.font[_pos].Size * _page_ratio_height);
                 control.Font = new System.Drawing.Font(CS.font[_pos].FontFamily, FontSize, CS.font[_pos].Style);
 
@@ -387,6 +507,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets all page controls.
+        /// </summary>
+        /// <param name="c">The c.</param>
+        /// <returns></returns>
         private static IEnumerable<Control> GetAllPageControls(Control c)
         {
             return c.Controls.Cast<Control>().SelectMany(item => GetAllPageControls(item)).Concat(c.Controls.Cast<Control>()).Where(control => !string.IsNullOrEmpty(control.Name));

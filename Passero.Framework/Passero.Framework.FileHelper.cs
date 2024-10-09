@@ -1,16 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class FileHelper
     {
 
+        /// <summary>
+        /// Files to memory stream.
+        /// </summary>
+        /// <param name="FileName">Name of the file.</param>
+        /// <returns></returns>
         public static MemoryStream FileToMemoryStream(object FileName)
         {
             if (File.Exists(Convert.ToString(FileName)) == false)
@@ -26,6 +30,11 @@ namespace Passero.Framework
             return ms;
         }
 
+        /// <summary>
+        /// Files to file stream.
+        /// </summary>
+        /// <param name="FileName">Name of the file.</param>
+        /// <returns></returns>
         public static FileStream FileToFileStream(object FileName)
         {
             if (File.Exists(Convert.ToString(FileName)) == false)
@@ -37,11 +46,21 @@ namespace Passero.Framework
             return ms;
         }
 
+        /// <summary>
+        /// Gets the name of the file.
+        /// </summary>
+        /// <param name="Path">The path.</param>
+        /// <returns></returns>
         public static string GetFileName(string Path)
         {
             return System.IO.Path.GetFileName(Path);
         }
 
+        /// <summary>
+        /// Gets the name of the unique file.
+        /// </summary>
+        /// <param name="FileName">Name of the file.</param>
+        /// <returns></returns>
         public static string GetUniqueFileName(string FileName)
         {
             string _Path = FileName;
@@ -78,20 +97,39 @@ namespace Passero.Framework
             return _NewFileName;
         }
 
+        /// <summary>
+        /// Gets the name of the temporary file.
+        /// </summary>
+        /// <returns></returns>
         public static string GetTempFileName()
         {
             return System.IO.Path.GetTempPath() + @"\" + System.Guid.NewGuid().ToString();
         }
+        /// <summary>
+        /// Gets the file extension.
+        /// </summary>
+        /// <param name="UserInput">The user input.</param>
+        /// <returns></returns>
         public static string GetFileExtension(string UserInput)
         {
             return System.IO.Path.GetExtension(UserInput);
         }
 
+        /// <summary>
+        /// Gets the file name without extension.
+        /// </summary>
+        /// <param name="UserInput">The user input.</param>
+        /// <returns></returns>
         public static string GetFileNameWithoutExtension(string UserInput)
         {
             return System.IO.Path.GetFileNameWithoutExtension(UserInput);
         }
 
+        /// <summary>
+        /// Gets the name of the safe file.
+        /// </summary>
+        /// <param name="UserInput">The user input.</param>
+        /// <returns></returns>
         public static string GetSafeFileName(string UserInput)
         {
             foreach (char invalidChar in Path.GetInvalidFileNameChars())

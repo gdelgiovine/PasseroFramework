@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Dapper;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
 using Wisej.Core;
 using Wisej.Web;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Utilities
     {
 
-      
 
+
+        /// <summary>
+        /// Disposes the wisej session.
+        /// </summary>
         [WebMethod]
         public static void DisposeWisejSession()
         {
@@ -44,6 +43,12 @@ namespace Passero.Framework
 #pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
 
         }
+        /// <summary>
+        /// Objects the property exist.
+        /// </summary>
+        /// <param name="Object">The object.</param>
+        /// <param name="Property">The property.</param>
+        /// <returns></returns>
         public static bool ObjectPropertyExist(object Object, string Property)
         {
             if (Object is not null)
@@ -65,9 +70,13 @@ namespace Passero.Framework
             }
 
         }
-       
 
 
+
+        /// <summary>
+        /// Gets the application runtime information.
+        /// </summary>
+        /// <returns></returns>
         public static string GetApplicationRuntimeInfo()
         {
             var sb = new StringBuilder();
@@ -85,6 +94,11 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Saves the byte array to file.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="filePath">The file path.</param>
         public static void SaveByteArrayToFile(byte[] data, string filePath)
         {
             using (var writer = new BinaryWriter(File.OpenWrite(filePath)))
@@ -94,6 +108,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Determines whether [is valid date time] [the specified date time].
+        /// </summary>
+        /// <param name="DateTime">The date time.</param>
+        /// <returns>
+        ///   <c>true</c> if [is valid date time] [the specified date time]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsValidDateTime(DateTime DateTime)
         {
 
@@ -108,6 +129,12 @@ namespace Passero.Framework
 
         }
 
+        /// <summary>
+        /// Gets the type of the parent of.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
         public static T GetParentOfType<T>(this Control control) where T : class
         {
             if (control?.Parent == null)
@@ -119,6 +146,13 @@ namespace Passero.Framework
             return GetParentOfType<T>(control.Parent);
         }
 
+        /// <summary>
+        /// Determines whether [is valid json] [the specified string input].
+        /// </summary>
+        /// <param name="strInput">The string input.</param>
+        /// <returns>
+        ///   <c>true</c> if [is valid json] [the specified string input]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsValidJson(string strInput)
         {
             if (string.IsNullOrWhiteSpace(strInput))
@@ -152,6 +186,13 @@ namespace Passero.Framework
                 return false;
             }
         }
+        /// <summary>
+        /// Assigns the specified target.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target">The target.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         [DebuggerStepThrough]
         public static T Assign<T>(ref T target, T value)
         {
@@ -159,11 +200,19 @@ namespace Passero.Framework
             return value;
         }
 
-  
+
+        /// <summary>
+        /// Delays the process.
+        /// </summary>
+        /// <param name="Milliseconds">The milliseconds.</param>
         public static void DelayProcess(int Milliseconds)
         {
             Task.Run(async () => await _DelayProcess(Milliseconds)).Wait();
         }
+        /// <summary>
+        /// Delays the process.
+        /// </summary>
+        /// <param name="Milliseconds">The milliseconds.</param>
         public async static Task _DelayProcess(int Milliseconds)
         {
             // Wait for 5 seconds
@@ -171,25 +220,37 @@ namespace Passero.Framework
         }
 
 
-        
 
+
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static T Clone<T>(T source)
         {
             if (ReferenceEquals(source, null))
                 return default;
             T newObject = Conversions.ToGenericParameter<T>(Activator.CreateInstance(source.GetType()));
-            var deserializeSettings = new JsonSerializerSettings() 
-            { 
+            var deserializeSettings = new JsonSerializerSettings()
+            {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
                 //, ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 //, PreserveReferencesHandling = PreserveReferencesHandling.All 
             };
 
 
-            newObject= JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source), deserializeSettings);
-            return newObject;   
+            newObject = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source), deserializeSettings);
+            return newObject;
         }
 
+        /// <summary>
+        /// Objectses the equals.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="another">Another.</param>
+        /// <returns></returns>
         public static bool ObjectsEquals(object obj, object another)
         {
             if (ReferenceEquals(obj, another))
@@ -204,25 +265,41 @@ namespace Passero.Framework
         }
 
 
-      
 
-      
 
+
+
+        /// <summary>
+        /// The get random static random generator
+        /// </summary>
         private static Random GetRandom_staticRandomGenerator;
 
+        /// <summary>
+        /// Initializes the <see cref="Utilities"/> class.
+        /// </summary>
         static Utilities()
         {
             GetRandom_staticRandomGenerator = new Random();
         }
 
+        /// <summary>
+        /// Designs the mode.
+        /// </summary>
+        /// <returns></returns>
         public static bool DesignMode()
         {
             return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         }
-    
 
 
-       
+
+
+        /// <summary>
+        /// Gets the random.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">The maximum.</param>
+        /// <returns></returns>
         public static int GetRandom(int min, int max)
         {
             max += 1;
@@ -230,6 +307,12 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the true false data table for ComboBox.
+        /// </summary>
+        /// <param name="TrueDescription">The true description.</param>
+        /// <param name="FalseDescription">The false description.</param>
+        /// <returns></returns>
         public static DataTable GetTrueFalseDataTableForComboBox(string TrueDescription = "True", string FalseDescription = "False")
         {
             var table = new DataTable();
@@ -240,12 +323,23 @@ namespace Passero.Framework
             return table;
         }
 
+        /// <summary>
+        /// Gets the yes no data table for ComboBox.
+        /// </summary>
+        /// <param name="YesDescription">The yes description.</param>
+        /// <param name="NoDescription">The no description.</param>
+        /// <returns></returns>
         public static DataTable GetYesNoDataTableForComboBox(string YesDescription = "Yes", string NoDescription = "No")
         {
             return GetTrueFalseDataTableForComboBox(YesDescription, NoDescription);
         }
 
 
+        /// <summary>
+        /// Safes the image from file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public static System.Drawing.Image SafeImageFromFile(string path)
         {
 
@@ -253,11 +347,15 @@ namespace Passero.Framework
             bytesArr = File.ReadAllBytes(path);
 
             var memstr = new MemoryStream(bytesArr);
-            return System.Drawing .Image .FromStream (memstr);
-            
+            return System.Drawing.Image.FromStream(memstr);
+
 
         }
 
+        /// <summary>
+        /// Creates new guid.
+        /// </summary>
+        /// <returns></returns>
         public static string NewGUID()
         {
             var guid = Guid.NewGuid();
@@ -265,6 +363,10 @@ namespace Passero.Framework
             return upper;
         }
 
+        /// <summary>
+        /// Reflections the get fields.
+        /// </summary>
+        /// <param name="t">The t.</param>
         public static void Reflection_GetFields(Type t)
         {
             Console.WriteLine("***** Fields *****");
@@ -274,6 +376,10 @@ namespace Passero.Framework
             Console.WriteLine("");
         }
 
+        /// <summary>
+        /// Reflections the get properties.
+        /// </summary>
+        /// <param name="t">The t.</param>
         public static void Reflection_GetProperties(Type t)
         {
             Console.WriteLine("***** Properties *****");
@@ -283,6 +389,11 @@ namespace Passero.Framework
             Console.WriteLine("");
         }
 
+        /// <summary>
+        /// Reflections the get valid filename.
+        /// </summary>
+        /// <param name="Filename">The filename.</param>
+        /// <returns></returns>
         public static string Reflection_GetValidFilename(string Filename)
         {
             string regex = string.Format("[{0}]", Regex.Escape(new string(Path.GetInvalidFileNameChars())));
@@ -291,6 +402,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Determines whether the specified expression is numeric.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified expression is numeric; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsNumeric(object expression)
         {
             if (expression == null)
@@ -305,6 +423,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Determines whether [is numeric type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is numeric type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsNumericType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
@@ -326,6 +451,13 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Determines whether [is list type] [the specified type].
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is list type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsListType(Type type)
         {
             if (null == type)
@@ -338,6 +470,13 @@ namespace Passero.Framework
                     return true;
             return false;
         }
+        /// <summary>
+        /// Determines whether [is string type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is string type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsStringType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
@@ -350,6 +489,13 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Determines whether [is date time type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is date time type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsDateTimeType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
@@ -360,16 +506,30 @@ namespace Passero.Framework
                     return false;
             }
         }
+        /// <summary>
+        /// Determines whether [is boolean type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is boolean type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsBooleanType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
             {
-                case TypeCode.Boolean :
+                case TypeCode.Boolean:
                     return true;
                 default:
                     return false;
             }
         }
+        /// <summary>
+        /// Determines whether [is object type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is object type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsObjectType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
@@ -381,6 +541,13 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Determines whether [is empty type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is empty type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsEmptyType(Type Type)
         {
             switch (Type.GetTypeCode(Type))
@@ -392,6 +559,11 @@ namespace Passero.Framework
             }
         }
 
+        /// <summary>
+        /// Gets the system type is.
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns></returns>
         public static EnumSystemTypeIs GetSystemTypeIs(Type Type)
         {
             if (IsStringType(Type))
@@ -401,9 +573,9 @@ namespace Passero.Framework
             if (IsDateTimeType(Type))
                 return EnumSystemTypeIs.DateTime;
             if (IsBooleanType(Type))
-                return EnumSystemTypeIs.Boolean ;
+                return EnumSystemTypeIs.Boolean;
             if (IsObjectType(Type))
-                return EnumSystemTypeIs.Object ;
+                return EnumSystemTypeIs.Object;
 
             return EnumSystemTypeIs.Empty;
         }
@@ -428,7 +600,7 @@ namespace Passero.Framework
         //    }
         //}
 
-      
+
 
         //public enum SystemTypeIs
         //{
@@ -448,6 +620,11 @@ namespace Passero.Framework
         //}
 
 
+        /// <summary>
+        /// Databases the type of the type to.
+        /// </summary>
+        /// <param name="dbType">Type of the database.</param>
+        /// <returns></returns>
         public static Type DbTypeToType(DbType dbType)
         {
             Type toReturn = typeof(DBNull);
@@ -550,6 +727,13 @@ namespace Passero.Framework
             return toReturn;
         }
 
+        /// <summary>
+        /// Converts the type of the string to.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidCastException"></exception>
         public static object ConvertStringToType(string value, Type type)
         {
             object result;
@@ -571,6 +755,11 @@ namespace Passero.Framework
                 throw new InvalidCastException(string.Format("Unable to cast the {0} to type {1}", value, type, exception));
             }
         }
+        /// <summary>
+        /// Gets the type of the database.
+        /// </summary>
+        /// <param name="runtimeType">Type of the runtime.</param>
+        /// <returns></returns>
         public static DbType GetDbType(Type runtimeType)
         {
             var nonNullableType = Nullable.GetUnderlyingType(runtimeType);

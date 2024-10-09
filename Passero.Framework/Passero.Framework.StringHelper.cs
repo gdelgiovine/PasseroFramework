@@ -1,30 +1,44 @@
 ﻿using Microsoft.VisualBasic;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class StringHelper
     {
 
-        public static bool StringStartsWith(string inputstring, string[] strings, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase )
+        /// <summary>
+        /// Strings the starts with.
+        /// </summary>
+        /// <param name="inputstring">The inputstring.</param>
+        /// <param name="strings">The strings.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
+        public static bool StringStartsWith(string inputstring, string[] strings, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase)
         {
             if (string.IsNullOrEmpty(inputstring))
                 return false;
             foreach (string x in strings)
             {
-                if (inputstring.StartsWith(x,comparison ))
+                if (inputstring.StartsWith(x, comparison))
                 {
                     return true;
                 }
             }
-            return false;   
+            return false;
         }
 
+        /// <summary>
+        /// Strings the ends with.
+        /// </summary>
+        /// <param name="inputstring">The inputstring.</param>
+        /// <param name="strings">The strings.</param>
+        /// <param name="comparison">The comparison.</param>
+        /// <returns></returns>
         public static bool StringEndsWith(string inputstring, string[] strings, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase)
         {
             if (string.IsNullOrEmpty(inputstring))
@@ -39,6 +53,11 @@ namespace Passero.Framework
             }
             return false;
         }
+        /// <summary>
+        /// Sequences from.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static string SequenceFrom(string value)
         {
             char chr;
@@ -87,6 +106,12 @@ namespace Passero.Framework
             return value;
         }
 
+        /// <summary>
+        /// Sequences from.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="SequenceMask">The sequence mask.</param>
+        /// <returns></returns>
         public static string SequenceFrom(string value, string SequenceMask)
         {
             char chr;
@@ -178,6 +203,13 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Values the sub string.
+        /// </summary>
+        /// <param name="Value">The value.</param>
+        /// <param name="StartPos">The start position.</param>
+        /// <param name="EndPos">The end position.</param>
+        /// <returns></returns>
         public static string ValueSubString(string Value, int StartPos, int EndPos)
         {
             string str;
@@ -206,16 +238,19 @@ namespace Passero.Framework
 
 
         /// <summary>
-        /// Returns a new string in which all occurrences of a specified string in the current instance are replaced with another 
-        /// specified string according the type of search to use for the specified string.
+        /// Strings the replace.
         /// </summary>
-        /// <paramname="str">The string performing the replace method.</param>
-        /// <paramname="oldValue">The string to be replaced.</param>
-        /// <paramname="newValue">The string replace all occurrences of <paramrefname="oldValue"/>. 
-        /// If value is equal to <c>null</c>, than all occurrences of <paramrefname="oldValue"/> will be removed from the <paramrefname="str"/>.</param>
-        /// <paramname="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
-        /// <returns>A string that is equivalent to the current string except that all instances of <paramrefname="oldValue"/> are replaced with <paramrefname="newValue"/>. 
-        /// If <paramrefname="oldValue"/> is not found in the current instance, the method returns the current instance unchanged.</returns>
+        /// <param name="str">The string.</param>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <param name="comparisonType">Type of the comparison.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// str
+        /// or
+        /// oldValue
+        /// </exception>
+        /// <exception cref="System.ArgumentException">String cannot be of zero length.</exception>
         [DebuggerStepThrough]
         public static string StringReplace(this string str, string oldValue, string newValue, StringComparison comparisonType)
         {
