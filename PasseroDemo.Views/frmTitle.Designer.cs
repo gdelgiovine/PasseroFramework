@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle7 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle8 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.ComponentTool componentTool4 = new Wisej.Web.ComponentTool();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.ComponentTool componentTool1 = new Wisej.Web.ComponentTool();
             this.tabTitle = new Wisej.Web.TabControl();
             this.tabPageTitles = new Wisej.Web.TabPage();
             this.dgv_TitleAuthors = new Wisej.Web.DataGridView();
@@ -93,9 +93,9 @@
             // 
             this.tabPageTitles.Controls.Add(this.dgv_TitleAuthors);
             this.tabPageTitles.Controls.Add(this.pnl_Title);
-            this.tabPageTitles.Location = new System.Drawing.Point(1, 40);
+            this.tabPageTitles.Location = new System.Drawing.Point(0, 39);
             this.tabPageTitles.Name = "tabPageTitles";
-            this.tabPageTitles.Size = new System.Drawing.Size(884, 455);
+            this.tabPageTitles.Size = new System.Drawing.Size(886, 457);
             this.tabPageTitles.Text = "Title";
             // 
             // dgv_TitleAuthors
@@ -138,8 +138,8 @@
             // dgvc_qbe_authors
             // 
             this.dgvc_qbe_authors.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle7.NullValue = "...";
-            this.dgvc_qbe_authors.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.NullValue = "...";
+            this.dgvc_qbe_authors.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgvc_qbe_authors.HeaderText = "";
             this.dgvc_qbe_authors.Name = "dgvc_qbe_authors";
             this.dgvc_qbe_authors.Text = "...";
@@ -156,9 +156,9 @@
             // dgvc_au_ord
             // 
             this.dgvc_au_ord.DataPropertyName = "au_ord";
-            dataGridViewCellStyle8.Format = "N0";
-            dataGridViewCellStyle8.NullValue = null;
-            this.dgvc_au_ord.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Format = "N0";
+            dataGridViewCellStyle2.NullValue = null;
+            this.dgvc_au_ord.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvc_au_ord.HeaderText = "Auth.Order";
             this.dgvc_au_ord.HideUpDownButtons = true;
             this.dgvc_au_ord.Name = "dgvc_au_ord";
@@ -290,11 +290,11 @@
             this.cmb_pub_id.Name = "cmb_pub_id";
             this.cmb_pub_id.Size = new System.Drawing.Size(264, 48);
             this.cmb_pub_id.TabIndex = 3;
-            componentTool4.ImageSource = "icon-refresh";
-            componentTool4.Name = "refresh";
-            componentTool4.ToolTipText = "Reload Publishers";
+            componentTool1.ImageSource = "icon-refresh";
+            componentTool1.Name = "refresh";
+            componentTool1.ToolTipText = "Reload Publishers";
             this.cmb_pub_id.Tools.AddRange(new Wisej.Web.ComponentTool[] {
-            componentTool4});
+            componentTool1});
             this.cmb_pub_id.ToolClick += new Wisej.Web.ToolClickEventHandler(this.cmb_pub_id_ToolClick);
             // 
             // txt_title_id
@@ -333,7 +333,7 @@
             // 
             // dtp_pubbdate
             // 
-            this.dtp_pubbdate.DataBindings.Add(new Wisej.Web.Binding("Value", this.bsTitles, "pubdate", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.dtp_pubbdate.DataBindings.Add(new Wisej.Web.Binding("NullableValue", this.bsTitles, "pubdate", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
             this.dtp_pubbdate.Format = Wisej.Web.DateTimePickerFormat.Short;
             this.dtp_pubbdate.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.dtp_pubbdate.LabelText = "Pub. Date";
@@ -346,9 +346,9 @@
             // 
             // tabPageTitleAuthors
             // 
-            this.tabPageTitleAuthors.Location = new System.Drawing.Point(1, 40);
+            this.tabPageTitleAuthors.Location = new System.Drawing.Point(0, 39);
             this.tabPageTitleAuthors.Name = "tabPageTitleAuthors";
-            this.tabPageTitleAuthors.Size = new System.Drawing.Size(884, 455);
+            this.tabPageTitleAuthors.Size = new System.Drawing.Size(886, 457);
             this.tabPageTitleAuthors.Text = "Title Authors";
             // 
             // tabDataNavigator
@@ -366,9 +366,9 @@
             // 
             this.tabForm.Controls.Add(this.dataNavigator1);
             this.tabForm.Controls.Add(this.tabTitle);
-            this.tabForm.Location = new System.Drawing.Point(1, 40);
+            this.tabForm.Location = new System.Drawing.Point(0, 39);
             this.tabForm.Name = "tabForm";
-            this.tabForm.Size = new System.Drawing.Size(900, 579);
+            this.tabForm.Size = new System.Drawing.Size(902, 581);
             this.tabForm.Text = "Form View";
             // 
             // dataNavigator1
@@ -376,10 +376,10 @@
             this.dataNavigator1.Caption = "Titles";
             this.dataNavigator1.DelegateCurrencyManager = false;
             this.dataNavigator1.Dock = Wisej.Web.DockStyle.Bottom;
-            this.dataNavigator1.Location = new System.Drawing.Point(0, 517);
+            this.dataNavigator1.Location = new System.Drawing.Point(0, 519);
             this.dataNavigator1.ManageNavigation = false;
             this.dataNavigator1.Name = "dataNavigator1";
-            this.dataNavigator1.Size = new System.Drawing.Size(898, 60);
+            this.dataNavigator1.Size = new System.Drawing.Size(900, 60);
             this.dataNavigator1.TabIndex = 22;
             this.dataNavigator1.eAddNew += new Passero.Framework.Controls.DataNavigator.eAddNewEventHandler(this.dataNavigator1_eAddNew);
             this.dataNavigator1.eDelete += new Passero.Framework.Controls.DataNavigator.eDeleteEventHandler(this.dataNavigator1_eDelete);
@@ -394,10 +394,10 @@
             // tabList
             // 
             this.tabList.Controls.Add(this.dgvListView);
-            this.tabList.Location = new System.Drawing.Point(1, 40);
+            this.tabList.Location = new System.Drawing.Point(0, 39);
             this.tabList.Name = "tabList";
             this.tabList.Padding = new Wisej.Web.Padding(3);
-            this.tabList.Size = new System.Drawing.Size(900, 579);
+            this.tabList.Size = new System.Drawing.Size(902, 581);
             this.tabList.Text = "List View";
             // 
             // dgvListView
@@ -409,7 +409,7 @@
             this.dgvListView.Location = new System.Drawing.Point(3, 3);
             this.dgvListView.Name = "dgvListView";
             this.dgvListView.ReadOnly = true;
-            this.dgvListView.Size = new System.Drawing.Size(892, 571);
+            this.dgvListView.Size = new System.Drawing.Size(894, 573);
             this.dgvListView.TabIndex = 0;
             // 
             // frmTitle

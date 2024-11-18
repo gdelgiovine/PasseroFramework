@@ -107,7 +107,7 @@
             // 
             // txt_Discount_highqty
             // 
-            this.txt_Discount_highqty.DataBindings.Add(new Wisej.Web.Binding("Value", this.bsDiscount, "highqty", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.txt_Discount_highqty.DataBindings.Add(new Wisej.Web.Binding("NullableValue", this.bsDiscount, "highqty", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
             this.txt_Discount_highqty.HideUpDownButtons = true;
             this.txt_Discount_highqty.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Discount_highqty.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);

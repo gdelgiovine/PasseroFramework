@@ -127,6 +127,7 @@ namespace PasseroDemo.Views
             xQBEReport.Owner = this;
             //xQBEReport.SetFocusControlAfterClose = this.txt_au_id;
             //xQBEReport.CallBackAction = () => { this.Reload(); };
+            //
             xQBEReport.ShowQBEReport();
         }
 
