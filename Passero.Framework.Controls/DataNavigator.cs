@@ -2203,6 +2203,8 @@ namespace Passero.Framework.Controls
                 //_DataGridListView.MultiSelect = false;
             }
         }
+
+        
         /// <summary>
         /// The caption
         /// </summary>
@@ -6388,22 +6390,25 @@ namespace Passero.Framework.Controls
 
 
 
-            var hcol = new DataGridViewTextBoxColumn();
-            ncolIndex = _DataGridListView.Columns.Add(hcol);
-            _DataGridListViewRowIndexColumnIndex = ncolIndex;
-            _DataGridListView.Columns[ncolIndex].Name = _DataGridListViewRowIndexColumnName;
-            _DataGridListView.Columns[ncolIndex].DataPropertyName = _DataGridListViewRowIndexColumnName;
-            _DataGridListView.Columns[ncolIndex].Visible = false;
-            _DataGridListView.Columns[ncolIndex].ShowInVisibilityMenu = false;
+            //var hcol = new DataGridViewTextBoxColumn();
+            //ncolIndex = _DataGridListView.Columns.Add(hcol);
+            //_DataGridListViewRowIndexColumnIndex = ncolIndex;
+            //_DataGridListView.Columns[ncolIndex].Name = _DataGridListViewRowIndexColumnName;
+            //_DataGridListView.Columns[ncolIndex].DataPropertyName = _DataGridListViewRowIndexColumnName;
+            //_DataGridListView.Columns[ncolIndex].Visible = false;
+            //_DataGridListView.Columns[ncolIndex].ShowInVisibilityMenu = false;
             // _DataGridListViewDataTable = _DbObject.DataTable.Copy();
-            _DataGridListViewDataTable.Columns.Add(_DataGridListViewRowIndexColumnName);
+            //_DataGridListViewDataTable.Columns.Add(_DataGridListViewRowIndexColumnName);
 
-            for (int i = 0, loopTo = _DataGridListViewDataTable.Rows.Count - 1; i <= loopTo; i++)
+            //for (int i = 0, loopTo = _DataGridListViewDataTable.Rows.Count - 1; i <= loopTo; i++)
+            //{
+            //    _DataGridListViewDataTable.Rows[i][_DataGridListViewRowIndexColumnName] = i;
+            //}
+            //_DataGridListView.Columns[ncolIndex].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-                _DataGridListViewDataTable.Rows[i][_DataGridListViewRowIndexColumnName] = i;
-            _DataGridListView.Columns[ncolIndex].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            _DataGridListView.DataSource = _DataGridListViewDataTable;
 
+
+            this._DataGridListView.DataSource = this.ActiveDataNavigatorViewModel.ViewModel.ModelItems;
         }
 
         /// <summary>

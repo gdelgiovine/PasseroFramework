@@ -12,6 +12,7 @@ namespace PasseroDemo.Models
     public class AuthorSmall : Passero.Framework.ModelBase
     {
         [ExplicitKey]
+        [Dapper.Contrib.Extensions.Key]
         [ColumnMapping("au_id")]
         public string? au_id { get; set; }
         [ColumnMapping("au_lname")]
@@ -304,5 +305,12 @@ namespace PasseroDemo.Models
         public string pub_id { get; set; }
     }
 
-
+    [Table("TEST")]
+    public class TEST : Passero.Framework.ModelBase
+    {
+        [Dapper.Contrib.Extensions.ExplicitKey]
+        [Dapper.Contrib.Extensions.Key]
+        public int idx { get; set; }
+        public string name { get; set; }    
+    }
 }

@@ -493,7 +493,7 @@ namespace Passero.Framework.Controls
         public void SetupResultGrid(bool OverrideColumns = false)
         {
 
-
+            ResultGrid.MultiSelect = true;
             switch (QBEResultMode)
             {
                 case QBEResultMode.BoundControls:

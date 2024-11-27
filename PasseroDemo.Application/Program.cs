@@ -10,6 +10,7 @@ namespace PasseroDemo.Application
         /// </summary>
         static void Main()
         {
+            //Environment.SetEnvironmentVariable("ITEXT_BOUNCY_CASTLE_FACTORY_NAME", "bouncy-castle");
             Application.LoginPage LoginPage  = new Application.LoginPage ();   
             LoginPage .Show();
         }

@@ -74,11 +74,14 @@
             this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             this.TabPageExport = new Wisej.Web.TabPage();
             this.PanelExport = new Wisej.Web.FlowLayoutPanel();
-            this.rbHTML = new Wisej.Web.RadioButton();
             this.rbExcel = new Wisej.Web.RadioButton();
             this.rbEXCELXML = new Wisej.Web.RadioButton();
             this.rbWord = new Wisej.Web.RadioButton();
             this.rbWORDXML = new Wisej.Web.RadioButton();
+            this.rbHTML = new Wisej.Web.RadioButton();
+            this.rbMHTML = new Wisej.Web.RadioButton();
+            this.rbIMAGEEMF = new Wisej.Web.RadioButton();
+            this.rbIMAGETIFF = new Wisej.Web.RadioButton();
             this.btnExport = new Wisej.Web.Button();
             this.TabPageDebug = new Wisej.Web.TabPage();
             this.Button2 = new Wisej.Web.Button();
@@ -100,9 +103,6 @@
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
-            this.rbMHTML = new Wisej.Web.RadioButton();
-            this.rbIMAGETIFF = new Wisej.Web.RadioButton();
-            this.rbIMAGEEMF = new Wisej.Web.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
@@ -166,6 +166,7 @@
             this.PanelReportInfo.Controls.Add(this.txtReportTitle);
             this.PanelReportInfo.Controls.Add(this.txtReportDescription);
             this.PanelReportInfo.Name = "PanelReportInfo";
+            this.PanelReportInfo.Resize += new System.EventHandler(this.PanelReportInfo_Resize);
             // 
             // txtReportTitle
             // 
@@ -465,16 +466,12 @@
             resources.ApplyResources(this.PanelExport, "PanelExport");
             this.PanelExport.Name = "PanelExport";
             // 
-            // rbHTML
-            // 
-            resources.ApplyResources(this.rbHTML, "rbHTML");
-            this.rbHTML.Name = "rbHTML";
-            // 
             // rbExcel
             // 
             this.rbExcel.Checked = true;
             resources.ApplyResources(this.rbExcel, "rbExcel");
             this.rbExcel.Name = "rbExcel";
+            this.rbExcel.TabStop = true;
             // 
             // rbEXCELXML
             // 
@@ -490,6 +487,27 @@
             // 
             resources.ApplyResources(this.rbWORDXML, "rbWORDXML");
             this.rbWORDXML.Name = "rbWORDXML";
+            // 
+            // rbHTML
+            // 
+            resources.ApplyResources(this.rbHTML, "rbHTML");
+            this.rbHTML.Name = "rbHTML";
+            // 
+            // rbMHTML
+            // 
+            resources.ApplyResources(this.rbMHTML, "rbMHTML");
+            this.rbMHTML.Name = "rbMHTML";
+            // 
+            // rbIMAGEEMF
+            // 
+            resources.ApplyResources(this.rbIMAGEEMF, "rbIMAGEEMF");
+            this.rbIMAGEEMF.Name = "rbIMAGEEMF";
+            // 
+            // rbIMAGETIFF
+            // 
+            this.PanelExport.SetFlowBreak(this.rbIMAGETIFF, true);
+            resources.ApplyResources(this.rbIMAGETIFF, "rbIMAGETIFF");
+            this.rbIMAGETIFF.Name = "rbIMAGETIFF";
             // 
             // btnExport
             // 
@@ -660,22 +678,6 @@
             // 
             resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
             this.pbEngineLogo.Name = "pbEngineLogo";
-            // 
-            // rbMHTML
-            // 
-            resources.ApplyResources(this.rbMHTML, "rbMHTML");
-            this.rbMHTML.Name = "rbMHTML";
-            // 
-            // rbIMAGETIFF
-            // 
-            this.PanelExport.SetFlowBreak(this.rbIMAGETIFF, true);
-            resources.ApplyResources(this.rbIMAGETIFF, "rbIMAGETIFF");
-            this.rbIMAGETIFF.Name = "rbIMAGETIFF";
-            // 
-            // rbIMAGEEMF
-            // 
-            resources.ApplyResources(this.rbIMAGEEMF, "rbIMAGEEMF");
-            this.rbIMAGEEMF.Name = "rbIMAGEEMF";
             // 
             // ReportManager
             // 

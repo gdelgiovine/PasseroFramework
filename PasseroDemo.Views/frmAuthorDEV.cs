@@ -189,7 +189,7 @@ namespace PasseroDemo.Views
             //xQBEForm_Author.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
 
             xQBEForm_Author.SetupQBEForm();
-//            xQBEForm_Author .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
+//          xQBEForm_Author .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
 
             //xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
             xQBEForm_Author.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
@@ -297,7 +297,7 @@ namespace PasseroDemo.Views
         private void button3_Click(object sender, EventArgs e)
         {
             Models.Author author = (Models.Author)this.comboBox1.SelectedItem;
-            author.address = "STO CAZZO";
+           
         }
     }
 }

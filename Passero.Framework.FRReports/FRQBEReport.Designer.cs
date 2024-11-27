@@ -34,6 +34,10 @@
             Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
             this.SplitContainer = new Wisej.Web.SplitContainer();
             this.PanelReportViewer = new Wisej.Web.Panel();
+            this.htmlPanel = new Wisej.Web.HtmlPanel();
+            this.PanelReportInfo = new Wisej.Web.FlowLayoutPanel();
+            this.txtReportTitle = new Wisej.Web.TextBox();
+            this.txtReportDescription = new Wisej.Web.TextBox();
             this.txtRenderError = new Wisej.Web.TextBox();
             this.AspNetPanel = new Wisej.Web.AspNetPanel();
             this.WebBrowser = new Wisej.Web.WebBrowser();
@@ -88,14 +92,12 @@
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
-            this.PanelReportInfo = new Wisej.Web.FlowLayoutPanel();
-            this.txtReportTitle = new Wisej.Web.TextBox();
-            this.txtReportDescription = new Wisej.Web.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
             this.SplitContainer.SuspendLayout();
             this.PanelReportViewer.SuspendLayout();
+            this.PanelReportInfo.SuspendLayout();
             this.TabControl.SuspendLayout();
             this.TabPageReports.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ReportGrid)).BeginInit();
@@ -107,7 +109,6 @@
             this.PanelExport.SuspendLayout();
             this.TabPageDebug.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbEngineLogo)).BeginInit();
-            this.PanelReportInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // SplitContainer
@@ -127,6 +128,7 @@
             // 
             // PanelReportViewer
             // 
+            this.PanelReportViewer.Controls.Add(this.htmlPanel);
             this.PanelReportViewer.Controls.Add(this.PanelReportInfo);
             this.PanelReportViewer.Controls.Add(this.txtRenderError);
             this.PanelReportViewer.Controls.Add(this.AspNetPanel);
@@ -135,6 +137,44 @@
             resources.ApplyResources(this.PanelReportViewer, "PanelReportViewer");
             this.PanelReportViewer.Name = "PanelReportViewer";
             this.PanelReportViewer.Resize += new System.EventHandler(this.PanelReportViewer_Resize);
+            // 
+            // htmlPanel
+            // 
+            this.htmlPanel.Focusable = false;
+            resources.ApplyResources(this.htmlPanel, "htmlPanel");
+            this.htmlPanel.Name = "htmlPanel";
+            this.htmlPanel.TabStop = false;
+            // 
+            // PanelReportInfo
+            // 
+            resources.ApplyResources(this.PanelReportInfo, "PanelReportInfo");
+            this.PanelReportInfo.BackColor = System.Drawing.SystemColors.MenuBar;
+            this.PanelReportInfo.Controls.Add(this.txtReportTitle);
+            this.PanelReportInfo.Controls.Add(this.txtReportDescription);
+            this.PanelReportInfo.Name = "PanelReportInfo";
+            this.PanelReportInfo.Resize += new System.EventHandler(this.PanelReportInfo_Resize);
+            // 
+            // txtReportTitle
+            // 
+            this.txtReportTitle.Focusable = false;
+            this.txtReportTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Position = Wisej.Web.LabelPosition.Left;
+            resources.ApplyResources(this.txtReportTitle, "txtReportTitle");
+            this.txtReportTitle.Name = "txtReportTitle";
+            this.txtReportTitle.ReadOnly = true;
+            this.txtReportTitle.TabStop = false;
+            // 
+            // txtReportDescription
+            // 
+            this.txtReportDescription.Focusable = false;
+            this.txtReportDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Position = Wisej.Web.LabelPosition.Left;
+            resources.ApplyResources(this.txtReportDescription, "txtReportDescription");
+            this.txtReportDescription.Name = "txtReportDescription";
+            this.txtReportDescription.ReadOnly = true;
+            this.txtReportDescription.TabStop = false;
             // 
             // txtRenderError
             // 
@@ -558,36 +598,6 @@
             resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
             this.pbEngineLogo.Name = "pbEngineLogo";
             // 
-            // PanelReportInfo
-            // 
-            resources.ApplyResources(this.PanelReportInfo, "PanelReportInfo");
-            this.PanelReportInfo.BackColor = System.Drawing.SystemColors.MenuBar;
-            this.PanelReportInfo.Controls.Add(this.txtReportTitle);
-            this.PanelReportInfo.Controls.Add(this.txtReportDescription);
-            this.PanelReportInfo.Name = "PanelReportInfo";
-            // 
-            // txtReportTitle
-            // 
-            this.txtReportTitle.Focusable = false;
-            this.txtReportTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Position = Wisej.Web.LabelPosition.Left;
-            resources.ApplyResources(this.txtReportTitle, "txtReportTitle");
-            this.txtReportTitle.Name = "txtReportTitle";
-            this.txtReportTitle.ReadOnly = true;
-            this.txtReportTitle.TabStop = false;
-            // 
-            // txtReportDescription
-            // 
-            this.txtReportDescription.Focusable = false;
-            this.txtReportDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Position = Wisej.Web.LabelPosition.Left;
-            resources.ApplyResources(this.txtReportDescription, "txtReportDescription");
-            this.txtReportDescription.Name = "txtReportDescription";
-            this.txtReportDescription.ReadOnly = true;
-            this.txtReportDescription.TabStop = false;
-            // 
             // ReportManager
             // 
             resources.ApplyResources(this, "$this");
@@ -607,6 +617,8 @@
             this.SplitContainer.ResumeLayout(false);
             this.PanelReportViewer.ResumeLayout(false);
             this.PanelReportViewer.PerformLayout();
+            this.PanelReportInfo.ResumeLayout(false);
+            this.PanelReportInfo.PerformLayout();
             this.TabControl.ResumeLayout(false);
             this.TabPageReports.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ReportGrid)).EndInit();
@@ -620,8 +632,6 @@
             this.TabPageDebug.ResumeLayout(false);
             this.TabPageDebug.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbEngineLogo)).EndInit();
-            this.PanelReportInfo.ResumeLayout(false);
-            this.PanelReportInfo.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -688,5 +698,6 @@
         private Wisej.Web.FlowLayoutPanel PanelReportInfo;
         internal Wisej.Web.TextBox txtReportTitle;
         internal Wisej.Web.TextBox txtReportDescription;
+        private Wisej.Web.HtmlPanel htmlPanel;
     }
 }

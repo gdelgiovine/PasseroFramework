@@ -687,7 +687,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The qbe initial value.
         /// </value>
-        public object QBEInitialValue { get; set; }
+        public object QBEInitialValue { get; set; } = "";
         /// <summary>
         /// Gets or sets the name of the report.
         /// </summary>

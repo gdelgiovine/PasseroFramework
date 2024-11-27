@@ -9,10 +9,24 @@ using Wisej.Web;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using FastReport;
+using FastReport.Export.PdfSimple.PdfObjects;
+using System.Collections.Generic;
+using System.Drawing.Printing;
+using System.Reflection.Metadata;
+using MiniExcelLibs;
+
+using FastReport.Export;
+using iText.Html2pdf.Resolver.Font;
+using iText.Kernel.Pdf;
+using iText.Html2pdf;
+using System.Net.Http;
+using iText.Layout.Font;
+
 
 namespace Passero.Framework.FRReports
 {
 
+ 
     public partial class ReportManager : Form
     {
         private string RenderError = "";
@@ -30,6 +44,7 @@ namespace Passero.Framework.FRReports
         public string SQLQuery { get; set; } = "";
         public DynamicParameters SQLQueryParameters { get; set; } = new DynamicParameters();
 
+
         private FRReport FRReport = new FRReport();
 
         public event EventHandler ReportRenderRequest;
@@ -45,7 +60,6 @@ namespace Passero.Framework.FRReports
         {
             ReportAfterRender?.Invoke(this, e);
         }
-
 
 
         public bool UseLikeOperator
@@ -265,30 +279,182 @@ namespace Passero.Framework.FRReports
                 return;
             }
 
-            this.txtRenderError.Visible = false;
-          
-            byte[] ReportBytes = this.RenderReport(report, FRRenderFormat.PDF);
-          
-            if (ReportBytes != null)
-            {
-                //if (this.PdfViewer.Dock != DockStyle.Fill) this.PdfViewer.Dock = DockStyle.Fill;
-                this.PdfViewer.PdfStream = new MemoryStream(ReportBytes);
-                this.PdfViewer.Visible = true;
-                Passero.Framework.Utilities.SaveByteArrayToFile(ReportBytes, @"c:\REports\report1.pdf");
-                
-            }
-            else
+           this.txtRenderError.Visible = false;
+      
+            
+            FRRenderFormat format = FRRenderFormat.PDF;
+            byte[] ReportBytes=null;
+
+            ReportBytes = this.RenderReport(report,format ,200);
+
+            if (ReportBytes == null)
             {
                 this.txtRenderError.Text = this.RenderError;
                 this.txtRenderError.Dock = DockStyle.Fill;
                 this.txtRenderError.Visible = true;
+                return;
             }
-          
+
+            if (format == FRRenderFormat.PDF)
+            {
+                this.PdfViewer.PdfStream = new MemoryStream(ReportBytes);
+                this.PdfViewer.Visible = true;
+            }
+
+            if (format == FRRenderFormat.IMAGE )
+            {
+
+            }    
+
+            if (format == FRRenderFormat.HTML32)
+            {
+                string html = Encoding.UTF8.GetString(ReportBytes);
+                this.htmlPanel.Top = this.PdfViewer.Top;
+                this.htmlPanel.Left = this.PdfViewer.Left;
+                this.htmlPanel.Width = this.PdfViewer.Width;
+                this.htmlPanel.Height = this.PdfViewer.Height;
+
+                this.htmlPanel.Html = Encoding.UTF8.GetString(ReportBytes);
+                this.htmlPanel.Visible = true;
+
+                // Conversione in PDF
+                //MemoryStream pdfstream = new MemoryStream();
+                //try
+                //{
+                //    ReportBytes= GeneratePdfFromHtml(html, iText.Kernel.Geom.PageSize.A4);
+                //    iText.Layout.Font.FontProvider fontProvider = new DefaultFontProvider(true, true, false);
+                //    var converterProperties = new iText.Html2pdf.ConverterProperties();
+
+                //    converterProperties.SetFontProvider(fontProvider);
+                //    HtmlConverter.ConvertToPdf(html, pdfstream, converterProperties);
+                //    ReportBytes = pdfstream.ToArray();
+
+                //}
+                //catch (Exception ex)
+                //{
+
+
+                //}
+            }
+
+
+
 
         }
 
+        public static class Utils
+        {
+            public const int PageDivProperty = -10;
+        }
+        public class CustomPageTagWorker : iText.Html2pdf.Attach.Impl.Tags.DivTagWorker
+        {
+            public CustomPageTagWorker(iText.StyledXmlParser.Node.IElementNode element, iText.Html2pdf.Attach.ProcessorContext context) : base(element, context)
+            {
+            }
 
-        private byte[] RenderReport(string ReportName, FRRenderFormat Format = FRRenderFormat.PDF)
+            public override void ProcessEnd(iText.StyledXmlParser.Node.IElementNode element, iText.Html2pdf.Attach.ProcessorContext context)
+            {
+                base.ProcessEnd(element, context);
+                iText.Layout.IPropertyContainer elementResult = GetElementResult();
+                if (elementResult != null && 
+                    !String.IsNullOrEmpty(element.GetAttribute(iText.Html2pdf.Html.AttributeConstants.CLASS)) && 
+                    element.GetAttribute(iText.Html2pdf.Html.AttributeConstants.CLASS).StartsWith("frpage"))
+                {
+                    elementResult.SetProperty(Utils.PageDivProperty, element.GetAttribute(iText.Html2pdf.Html.AttributeConstants.CLASS));
+                }
+            }
+        }
+        public class CustomTagWorkerFactory : iText.Html2pdf.Attach.Impl.DefaultTagWorkerFactory
+        {
+            public override iText.Html2pdf.Attach.ITagWorker GetCustomTagWorker(iText.StyledXmlParser.Node.IElementNode tag, iText.Html2pdf.Attach.ProcessorContext context)
+            {
+                if (iText.Html2pdf.Html.TagConstants.DIV.Equals(tag.Name().ToLower()))
+                {
+                    return new CustomPageTagWorker(tag, context);
+                }
+                return base.GetCustomTagWorker(tag, context);
+            }
+        }
+
+        public byte[] GeneratePdfFromHtml(string reportHtml, iText.Kernel.Geom.PageSize pageSize)
+        {
+
+            if (string.IsNullOrEmpty(reportHtml))
+            {
+                return null;
+            }
+
+
+
+            //using (var workStream = new MemoryStream())
+            //{
+            //    using (var pdfWriter = new iText.Kernel.Pdf.PdfWriter(workStream))
+            //    {
+            //        FontProvider fontProvider = new DefaultFontProvider(true, true, true);
+            //        var converterProperties = new ConverterProperties();
+            //        converterProperties.SetTagWorkerFactory(new CustomTagWorkerFactory());
+            //        converterProperties.SetFontProvider(fontProvider);
+            //        var pdfDocument = new PdfDocument(pdfWriter);
+            //        pdfDocument.SetDefaultPageSize(Utils.GetPageSizeFromMilimeters(pages[0].PaperWidth, pages[0].PaperHeight));
+            //        var elements = HtmlConverter.ConvertToElements(reportHtml, converterProperties);
+            //        var document = new Document(pdfDocument);
+            //        document.SetMargins(pages[0].TopMargin, pages[0].RightMargin, pages[0].BottomMargin, pages[0].LeftMargin);
+            //        int elementIndex = 0;
+            //        int pageIndex = 0;
+            //        foreach (IElement element in elements)
+            //        {
+            //            if (element.HasProperty(Utils.PageDivProperty) && elementIndex > 0)
+            //            {
+            //                pageIndex++;
+            //                pdfDocument.SetDefaultPageSize(Utils.GetPageSizeFromMilimeters(pages[pageIndex].PaperWidth, pages[pageIndex].PaperHeight));
+            //                document.SetMargins(pages[pageIndex].TopMargin, pages[pageIndex].RightMargin, pages[pageIndex].BottomMargin, pages[pageIndex].LeftMargin);
+            //                document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+            //            }
+            //            document.Add((IBlockElement)element);
+            //            elementIndex++;
+            //        }
+            //        document.Close();
+            //        return workStream.ToArray();
+            //    }
+            //}
+
+            using (var workStream = new MemoryStream())
+
+            {
+                using (var pdfWriter = new iText.Kernel.Pdf.PdfWriter(workStream))
+                {
+                    //iText.Layout.Font.FontProvider fontProvider = new iText.Html2pdf.Resolver.Font.DefaultFontProvider(true, true, true);
+
+                    iText.Layout.Font.FontProvider fontProvider = new DefaultFontProvider(true, true, false);
+                    var converterProperties = new iText.Html2pdf.ConverterProperties();
+                    converterProperties.SetTagWorkerFactory(new CustomTagWorkerFactory());
+                    converterProperties.SetFontProvider(fontProvider);
+  
+                    iText.Kernel.Pdf.PdfDocument pdfDocument = new iText.Kernel.Pdf.PdfDocument(pdfWriter);
+                    pdfDocument.SetDefaultPageSize(pageSize);
+
+                    var elements = iText.Html2pdf.HtmlConverter.ConvertToElements(reportHtml, converterProperties);
+                    var document = new iText.Layout.Document(pdfDocument, pageSize);
+                    document.SetMargins(0, 0, 0, 0);
+                    int elementIndex = 0;
+                    foreach (iText.Layout.Element.IElement element in elements)
+                    {
+                        if (element.HasProperty(Utils.PageDivProperty) && elementIndex > 0)
+                        {
+                            document.Add(new iText.Layout.Element.AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
+                        }
+                        document.Add((iText.Layout.Element.IBlockElement)element);
+                        elementIndex++;
+                    }
+                    
+                    document.Close();
+                    return workStream.ToArray();
+                }
+            }
+        }
+
+
+        private byte[] RenderReport(string ReportName, FRRenderFormat Format = FRRenderFormat.PDF, int ImageDpi=100)
         {
 
             ReportName = ReportName.Trim().ToUpper();
@@ -313,7 +479,7 @@ namespace Passero.Framework.FRReports
         }
 
 
-        private byte[] RenderReport(QBEFRReport Report, FRRenderFormat  Format = FRRenderFormat.PDF)
+        private byte[] RenderReport(QBEFRReport Report, FRRenderFormat  Format = FRRenderFormat.PDF, int ImageDpi=100)
         {
 
             if (Report == null)
@@ -338,10 +504,9 @@ namespace Passero.Framework.FRReports
             FRReport.ReportPath = Report.ReportFileName;
             FRReport.ReportFormat = Format;
             FRReport.DataSets = Report.DataSets;
+                   
 
-         
-
-            byte[] ReportBytes = FRReport.Render(Format );
+            byte[] ReportBytes = FRReport.Render(Format,ImageDpi );
             if (FRReport.LastExecutionResult.Exception != null)
             {
                 this.RenderError = FRReport.LastExecutionResult.ResultMessage + "\n" + FRReport.LastExecutionResult.Exception.ToString();
@@ -838,6 +1003,12 @@ namespace Passero.Framework.FRReports
         private void bClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void PanelReportInfo_Resize(object sender, EventArgs e)
+        {
+            this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
+            this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
         }
     }
 }

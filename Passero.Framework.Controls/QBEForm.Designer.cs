@@ -161,7 +161,6 @@ namespace Passero.Framework.Controls
             this.ResultGrid.ReadOnly = true;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.ResultGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.ResultGrid.RowHeadersVisible = false;
             this.ResultGrid.RowHeadersWidth = 24;
             this.ResultGrid.RowTemplate.DefaultCellStyle.Alignment = Wisej.Web.DataGridViewContentAlignment.MiddleLeft;
             this.ResultGrid.RowTemplate.Height = 20;
@@ -215,7 +214,7 @@ namespace Passero.Framework.Controls
             this.QueryGrid.Name = "QueryGrid";
             this.QueryGrid.RowHeadersVisible = false;
             this.QueryGrid.RowHeadersWidth = 24;
-            this.QueryGrid.Size = new System.Drawing.Size(890, 89);
+            this.QueryGrid.Size = new System.Drawing.Size(888, 87);
             this.QueryGrid.TabIndex = 3;
             this.QueryGrid.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.QueryGrid_CellDoubleClick);
             // 

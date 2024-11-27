@@ -406,10 +406,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+    <value>0, 39</value>
   </data>
   <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>892, 111</value>
   </data>
   <data name="TabPageReports.Text" xml:space="preserve">
     <value>Avalaible Reports</value>
@@ -499,10 +499,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+    <value>0, 39</value>
   </data>
   <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>892, 111</value>
   </data>
   <data name="TabPageReportQuery.Text" xml:space="preserve">
     <value>Search Criteria</value>
@@ -772,7 +772,7 @@
     <value>0, 0</value>
   </data>
   <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>888, 107</value>
+    <value>890, 109</value>
   </data>
   <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -793,10 +793,10 @@
     <value>True</value>
   </data>
   <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+    <value>0, 39</value>
   </data>
   <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>892, 111</value>
   </data>
   <data name="TabPageReportSort.Text" xml:space="preserve">
     <value>Report Sorting</value>
@@ -1039,7 +1039,7 @@
     <value>0, 0</value>
   </data>
   <data name="PanelExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>888, 107</value>
+    <value>890, 109</value>
   </data>
   <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -1060,10 +1060,10 @@
     <value>True</value>
   </data>
   <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+    <value>0, 39</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>892, 111</value>
   </data>
   <data name="TabPageExport.Text" xml:space="preserve">
     <value>Export</value>
@@ -1213,13 +1213,13 @@
     <value>True</value>
   </data>
   <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 40</value>
+    <value>0, 39</value>
   </data>
   <data name="TabPageDebug.Padding" type="Wisej.Web.Padding, Wisej.Framework">
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>892, 111</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>

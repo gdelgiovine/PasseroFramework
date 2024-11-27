@@ -47,23 +47,30 @@ namespace PasseroDemo.Views
             vmAuthor.BindingSource = this.bsAuthors;
 
             vmAuthor.CreatePasseroBindingFromBindingSource();
-            
-            
+
+
             // Questo Metodo sta nel ViewModel Customizzato
             //this.vmAuthor.GetAuthors();
             // Questo Metodo invece sta nella classe base ViewModel
-           // this.vmAuthor.GetAllItems();
+            // this.vmAuthor.GetAllItems();
 
             //this.dbLookUpTextBox1.DbConnection = this.DbConnection;
             //this.dbLookUpTextBox1.ModelClass = typeof(Models.Author);
             //this.dbLookUpTextBox1.DisplayMember = "au_fullname";
             //this.dbLookUpTextBox1.ValueMember = "au_id";
             //this.dbLookUpTextBox1.SelectClause = "SELECT *, TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
-            this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
-            this.dataNavigator1.SetActiveViewModel("Authors");
-            this.dataNavigator1.Init(true);
+
 
             
+            this.dataNavigator1.DataGridListView = this.dataGridView1;  
+            
+            this.dataNavigator1.DataGridListViewActive = true;  
+            this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
+            this.dataNavigator1.SetActiveViewModel("Authors");
+            
+            this.dataNavigator1.Init(true);
+            this.dataNavigator1.DataGridListViewInit();
+
         }
 
         public void Reload()
@@ -182,6 +189,32 @@ namespace PasseroDemo.Views
 
             this.FR_QBEReport_Authors();
 
+        }
+
+        private void btnCreateMillionRecords_Click(object sender, EventArgs e)
+        {
+            Passero.Framework.ViewModel<Models.TEST> a1 = new Passero.Framework.ViewModel<Models.TEST>();
+            Passero .Framework.ViewModel<Models.Author> a = new Passero.Framework.ViewModel<Models.Author>();
+            a.Init(this.DbConnection);
+            a1.Init(this.DbConnection);
+
+            a1.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
+            for (int i = 0; i < 100000; i++)
+            {
+                //Models.Author author = new Models.Author();
+                //author.au_id = "X-"+i.ToString();
+                //author.au_fname = "Name" + i.ToString();
+                //author.au_lname = "Surname" + i.ToString();
+                //a.AddNew(author);
+                //a.InsertItem();
+
+                Models.TEST _a1 = new Models.TEST();
+                //_a1.idx = i;
+                _a1.name = "Name" + i.ToString();
+
+                a1.InsertItem(_a1);
+
+            }
         }
     }
 }

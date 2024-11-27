@@ -1,11 +1,13 @@
 ﻿using Dapper;
 using FastReport;
 using FastReport.Data;
+using FastReport.Export.Html;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Net;
 
 namespace Passero.Framework.FRReports
 {
@@ -642,14 +644,13 @@ namespace Passero.Framework.FRReports
 
       
 
-        public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF)
+        public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF, int ImageDpi=100)
         {
             LastExecutionResult.Reset();
             LastExecutionResult.Context = $"FRReport.Render({RenderFormat})";
             byte[] result = null;
             string f = RenderFormat.ToString();
-
-            
+                        
             MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
             Report.Dictionary.Connections.Clear();
             foreach (var dataset in this.DataSets)
@@ -712,7 +713,12 @@ namespace Passero.Framework.FRReports
 
                 if (datasets_validated == true)
                 {
-                    Report.Prepare();
+                    bool success = Report.Prepare();
+                    if (success == false)
+                    {
+                        LastExecutionResult.ResultMessage = "Report Preparation Failed.";
+                        return null;
+                    }   
                     MemoryStream stream = new MemoryStream();
                     switch (RenderFormat)
                     {
@@ -725,16 +731,44 @@ namespace Passero.Framework.FRReports
                         case FRRenderFormat.IMAGE:
                             break;
                         case FRRenderFormat.PDF:
+
+                            
                             FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+                            
                             //pdfExport.Export(Report, @"C:\REPORTS\XREPORT1.pdf");
+                            pdfExport.ImageDpi = ImageDpi;
+                            pdfExport.ShowProgress= true;   
                             pdfExport.Export(Report,stream );
+                            stream.Flush();
                             result = stream.ToArray();    
                             break;
                         case FRRenderFormat.HTML40:
+                            FastReport.Export.Html.HTMLExport HTML40Export = new FastReport.Export.Html.HTMLExport();
+                            HTML40Export.Format = HTMLExportFormat.HTML;
+                            HTML40Export.Layers = true;
+                            HTML40Export.EmbedPictures = true;
+                            HTML40Export.Export(Report, stream);
+                            stream.Flush();
+                            result =stream.ToArray();
+
                             break;
                         case FRRenderFormat.HTML32:
+                            FastReport.Export.Html.HTMLExport HTML32Export = new FastReport.Export.Html.HTMLExport();
+                            HTML32Export.Format = HTMLExportFormat.HTML;
+                            HTML32Export.Layers = true;
+                            HTML32Export.EmbedPictures = true;
+                            HTML32Export.Export(Report, stream);
+                            stream.Flush();
+                            result = stream.ToArray();
                             break;
                         case FRRenderFormat.MHTML:
+                            FastReport.Export.Html.HTMLExport MHTMLExport = new FastReport.Export.Html.HTMLExport();
+                            MHTMLExport.Format = HTMLExportFormat.MessageHTML;
+                            MHTMLExport.Layers = true;
+                            MHTMLExport.EmbedPictures = true;
+                            MHTMLExport.Export(Report, stream);
+                            stream.Flush();
+                            result = stream.ToArray();
                             break;
                         case FRRenderFormat.EXCEL:
                             
@@ -744,8 +778,6 @@ namespace Passero.Framework.FRReports
                         default:
                             break;
                     }
-
-                   
                 }
 
 

@@ -467,8 +467,10 @@ namespace Passero.Framework.SSRSReports
 
                 }
             }
-            
-                this.txtReportTitle.Text = QBEReport.ReportTitle  ;
+
+            this.txtReportTitle.Width = this.PanelReportInfo.Width * 40 / 100;
+            this.txtReportDescription   .Width = this.PanelReportInfo.Width * 60 / 100;
+            this.txtReportTitle.Text = QBEReport.ReportTitle  ;
                 this.txtReportDescription.Text = QBEReport.ReportDescription;
             
             this.lstSortColumns.DataSource = QBEReport.SortColumns.Values.ToList();
@@ -927,6 +929,12 @@ namespace Passero.Framework.SSRSReports
         {
             this.lstSortColumns.Height = this.flowLayoutPanel1.ClientSize.Height - 5;
             this.dgv_SelectedSortColumns.Height = this.flowLayoutPanel1.ClientSize.Height - 5;
+        }
+
+        private void PanelReportInfo_Resize(object sender, EventArgs e)
+        {
+            this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
+            this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
         }
     }
 }

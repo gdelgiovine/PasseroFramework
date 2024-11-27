@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net7.0</TargetFrameworks>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -16,9 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastReport.Data.MsSql" Version="2024.2.14" />
-    <PackageReference Include="FastReport.OpenSource" Version="2024.2.14" />
-    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2024.2.14" />
+    <PackageReference Include="FastReport.Data.MsSql" Version="2025.1.0" />
+    <PackageReference Include="FastReport.OpenSource" Version="2025.1.0" />
+    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2025.1.0" />
+    <PackageReference Include="itext" Version="9.0.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.0.0" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.0.0" />
+    <PackageReference Include="itext7.pdfhtml" Version="6.0.0" />
 
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="Wisej-3" Version="3.5.12" />
@@ -48,7 +52,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
     <PackageReference Include="FastReport.OpenSource.Web">
-      <Version>2024.2.14</Version>
+      <Version>2025.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
   </ItemGroup>

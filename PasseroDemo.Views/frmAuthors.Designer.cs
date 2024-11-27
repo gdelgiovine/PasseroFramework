@@ -43,8 +43,11 @@
             this.txt_au_lname = new Wisej.Web.TextBox();
             this.btnFastReportReport = new Wisej.Web.Button();
             this.flpAuthors = new Wisej.Web.FlowLayoutPanel();
+            this.dataGridView1 = new Wisej.Web.DataGridView();
+            this.btnCreateMillionRecords = new Wisej.Web.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.flpAuthors.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // bsAuthors
@@ -171,11 +174,11 @@
             // 
             // btnFastReportReport
             // 
-            this.btnFastReportReport.Location = new System.Drawing.Point(3, 159);
+            this.btnFastReportReport.Location = new System.Drawing.Point(3, 353);
             this.btnFastReportReport.Name = "btnFastReportReport";
             this.btnFastReportReport.Size = new System.Drawing.Size(100, 37);
             this.btnFastReportReport.TabIndex = 38;
-            this.btnFastReportReport.Text = "button2";
+            this.btnFastReportReport.Text = "FSREPORT REPORT";
             this.btnFastReportReport.Click += new System.EventHandler(this.btnFastReportReport_Click);
             // 
             // flpAuthors
@@ -193,11 +196,29 @@
             this.flpAuthors.Controls.Add(this.txt_phone);
             this.flpAuthors.Controls.Add(this.txt_email);
             this.flpAuthors.Controls.Add(this.chk_Contract);
+            this.flpAuthors.Controls.Add(this.dataGridView1);
             this.flpAuthors.Controls.Add(this.btnFastReportReport);
+            this.flpAuthors.Controls.Add(this.btnCreateMillionRecords);
             this.flpAuthors.Location = new System.Drawing.Point(3, 12);
             this.flpAuthors.Name = "flpAuthors";
             this.flpAuthors.Size = new System.Drawing.Size(790, 463);
             this.flpAuthors.TabIndex = 39;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.Location = new System.Drawing.Point(3, 159);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(740, 188);
+            this.dataGridView1.TabIndex = 39;
+            // 
+            // btnCreateMillionRecords
+            // 
+            this.btnCreateMillionRecords.Location = new System.Drawing.Point(109, 353);
+            this.btnCreateMillionRecords.Name = "btnCreateMillionRecords";
+            this.btnCreateMillionRecords.Size = new System.Drawing.Size(100, 37);
+            this.btnCreateMillionRecords.TabIndex = 40;
+            this.btnCreateMillionRecords.Text = "MillionRecord";
+            this.btnCreateMillionRecords.Click += new System.EventHandler(this.btnCreateMillionRecords_Click);
             // 
             // frmAuthors
             // 
@@ -212,6 +233,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).EndInit();
             this.flpAuthors.ResumeLayout(false);
             this.flpAuthors.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -232,5 +254,7 @@
         internal Wisej.Web.TextBox txt_au_lname;
         private Wisej.Web.Button btnFastReportReport;
         private Wisej.Web.FlowLayoutPanel flpAuthors;
+        private Wisej.Web.DataGridView dataGridView1;
+        private Wisej.Web.Button btnCreateMillionRecords;
     }
 }

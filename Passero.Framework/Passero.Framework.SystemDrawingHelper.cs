@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 
 namespace Passero.Framework
 {
@@ -69,7 +70,23 @@ namespace Passero.Framework
 
             return returnImage;
         }
-
+        /// <summary>
+        /// Restituisce la lunghezza di una stringa dato uno specifico font.
+        /// </summary>
+        /// <param name="text">La stringa di cui calcolare la lunghezza.</param>
+        /// <param name="font">Il font da utilizzare per calcolare la lunghezza.</param>
+        /// <returns>La lunghezza della stringa in pixel.</returns>
+        public static int GetStringLength(string text, Font font)
+        {
+            using (var bitmap = new Bitmap(1, 1))
+            {
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    var size = graphics.MeasureString(text, font);
+                    return (int)size.Width;
+                }
+            }
+        }
 
     }
 
