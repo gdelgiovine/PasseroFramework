@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using FastReport.Data;
 using System.Threading;
 using Passero.Framework.FRReports;
+using System.Collections.Generic;
 
 
 namespace PasseroDemo.Views
@@ -199,7 +200,7 @@ namespace PasseroDemo.Views
             a1.Init(this.DbConnection);
 
             a1.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 //Models.Author author = new Models.Author();
                 //author.au_id = "X-"+i.ToString();
@@ -215,6 +216,22 @@ namespace PasseroDemo.Views
                 a1.InsertItem(_a1);
 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Passero.Framework.ViewModel<Models.TEST> a1 = new Passero.Framework.ViewModel<Models.TEST>();
+            a1.Init(this.DbConnection);
+
+            System.Collections.Generic.List<Models.TEST> _a1 = a1.GetAllItems().Value ;
+
+            List<Models.TEST> _a2 = new List<Models.TEST>();
+            _a2.Add(_a1[0]);
+            _a2.Add(_a1[_a1.Count - 1]);
+            
+            
+            a1.DeleteItems(_a2);
+            
         }
     }
 }

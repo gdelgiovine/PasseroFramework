@@ -45,6 +45,7 @@
             this.flpAuthors = new Wisej.Web.FlowLayoutPanel();
             this.dataGridView1 = new Wisej.Web.DataGridView();
             this.btnCreateMillionRecords = new Wisej.Web.Button();
+            this.button1 = new Wisej.Web.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.flpAuthors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -199,6 +200,7 @@
             this.flpAuthors.Controls.Add(this.dataGridView1);
             this.flpAuthors.Controls.Add(this.btnFastReportReport);
             this.flpAuthors.Controls.Add(this.btnCreateMillionRecords);
+            this.flpAuthors.Controls.Add(this.button1);
             this.flpAuthors.Location = new System.Drawing.Point(3, 12);
             this.flpAuthors.Name = "flpAuthors";
             this.flpAuthors.Size = new System.Drawing.Size(790, 463);
@@ -219,6 +221,15 @@
             this.btnCreateMillionRecords.TabIndex = 40;
             this.btnCreateMillionRecords.Text = "MillionRecord";
             this.btnCreateMillionRecords.Click += new System.EventHandler(this.btnCreateMillionRecords_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(215, 353);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 37);
+            this.button1.TabIndex = 41;
+            this.button1.Text = "DeleteItems";
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // frmAuthors
             // 
@@ -256,5 +267,6 @@
         private Wisej.Web.FlowLayoutPanel flpAuthors;
         private Wisej.Web.DataGridView dataGridView1;
         private Wisej.Web.Button btnCreateMillionRecords;
+        private Wisej.Web.Button button1;
     }
 }

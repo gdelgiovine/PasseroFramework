@@ -310,7 +310,7 @@ namespace PasseroDemo.Models
     {
         [Dapper.Contrib.Extensions.ExplicitKey]
         [Dapper.Contrib.Extensions.Key]
-        public int idx { get; set; }
+        public int id { get; set; }
         public string name { get; set; }    
     }
 }

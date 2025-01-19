@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -87,19 +88,21 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="DBConnection">The database connection.</param>
         /// <returns></returns>
-        public static Framework.ExecutionResult PingDB(System.Data.SqlClient.SqlConnection DBConnection)
+        public static Framework.ExecutionResult PingDB(IDbConnection DBConnection)
         {
 
             var er = new Framework.ExecutionResult();
             er.Context = "PingDB";
 
-            var _DBConnection = new System.Data.SqlClient.SqlConnection();
+           
+
+            var _DBConnection = (System.Data.Common .DbConnection) Activator.CreateInstance(DBConnection.GetType());
             _DBConnection.ConnectionString = DBConnection.ConnectionString;
-            _DBConnection.Credential = DBConnection.Credential;
+            //_DBConnection.Credential = DBConnection.Credential;
 
             try
             {
-                DBConnection.Open();
+                _DBConnection.Open();
             }
             catch (Exception ex)
             {
@@ -108,7 +111,8 @@ namespace Passero.Framework
                 er.ResultMessage = ex.Message;
                 er.Exception = ex;
             }
-
+            _DBConnection.Close();
+            _DBConnection.Dispose();    
             return er;
         }
 
@@ -128,7 +132,7 @@ namespace Passero.Framework
 
         }
 
-
+        
 
 
         /// <summary>

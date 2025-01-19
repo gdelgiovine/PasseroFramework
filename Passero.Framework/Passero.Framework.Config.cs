@@ -273,21 +273,21 @@ namespace Passero.Framework
 
             if (!string.IsNullOrEmpty(FileName.Trim()))
             {
-                _FileName = FileName;
+                this.FileName = FileName;
             }
 
             if (System.IO.File.Exists(this.FileName) == false)
             {
                 LastExecutionResult.ErrorCode = 1;
                 LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
-                LastExecutionResult.ResultMessage = $"Il file {_FileName} non esiste!";
+                LastExecutionResult.ResultMessage = $"Il file {this.FileName} non esiste!";
                 return false;
             }
 
             try
             {
                 ConfigurationDictionary.Clear();
-                string[] content = System.IO.File.ReadAllLines(_FileName);
+                string[] content = System.IO.File.ReadAllLines(this.FileName);
                 Dictionary<string, string> CurrentSection = null;
                 string CurrentSectionName = null;
 

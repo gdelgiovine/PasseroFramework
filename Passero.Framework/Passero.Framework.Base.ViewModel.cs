@@ -2140,12 +2140,16 @@ namespace Passero.Framework
             if (Convert.ToBoolean(ER.Value))
             {
 
-                foreach (var item in Items)
+                for (int  i = 0;  i < Items.Count;  i++)
                 {
-                    ModelItems.Remove(item);
+                    ModelItems.Remove(Items[i]);
                 }
+                //foreach (var item in Items)
+                //{
+                //    ModelItems.Remove(item);
+                //}
 
-                ModelItem = Items.ElementAt(0);
+                ModelItem = ModelItems.ElementAt(0);
 
             }
             ER.Context = Context;

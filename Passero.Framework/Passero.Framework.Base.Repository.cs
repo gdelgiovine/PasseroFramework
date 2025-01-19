@@ -1396,6 +1396,7 @@ namespace Passero.Framework
             try
             {
 
+                //result = DbConnection.Delete<List<ModelClass>>((List<ModelClass>)ModelItems, Transaction, CommandTimeout);
                 result = DbConnection.Delete(ModelItems, Transaction, CommandTimeout);
                 ER.Value = result;
             }

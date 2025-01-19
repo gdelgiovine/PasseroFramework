@@ -25,7 +25,7 @@
     <PackageReference Include="itext7.pdfhtml" Version="6.0.0" />
 
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.12" />
+    <PackageReference Include="Wisej-3" Version="3.5.15" />
     <PackageReference Include="System.Data.SqlClient" Version="4.*" />
   </ItemGroup>
 

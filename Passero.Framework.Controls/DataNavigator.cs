@@ -5040,6 +5040,7 @@ namespace Passero.Framework.Controls
                 if (eMoveFirst != null)
                     eMoveFirst();
             }
+            RaiseEventBoundCompleted();
             MoveFirstDataGridListView();
             UpdateRecordLabel();
             ER.Context = ERContenxt;
@@ -5188,6 +5189,7 @@ namespace Passero.Framework.Controls
                 if (eMovePrevious != null)
                     eMovePrevious();
             }
+            RaiseEventBoundCompleted();
             MovePreviousDataGridListView();
             UpdateRecordLabel();
 
@@ -5328,6 +5330,7 @@ namespace Passero.Framework.Controls
             {
                 return ER;
             }
+            
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
                 ViewModel_MoveNextItem();
@@ -5337,9 +5340,10 @@ namespace Passero.Framework.Controls
                 if (eMoveNext != null)
                     eMoveNext();
             }
+            RaiseEventBoundCompleted();
             MoveNextDataGridListView();
             UpdateRecordLabel();
-            ER.Context = ERContenxt;
+                        ER.Context = ERContenxt;
             return ER;
 
         }
@@ -5438,6 +5442,7 @@ namespace Passero.Framework.Controls
                 if (eMoveLast != null)
                     eMoveLast();
             }
+            RaiseEventBoundCompleted();
             MoveLastDataGridListView();
             UpdateRecordLabel();
             ER.Context = ERContenxt;

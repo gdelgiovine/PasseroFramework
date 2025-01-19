@@ -17,6 +17,60 @@ namespace Passero.Framework
     public static class ControlsUtilities
 
     {
+
+        public static int GetDataGridViewHeight(DataGridView dataGridView)
+        {
+            // Se non ci sono righe, esci
+            if (dataGridView.Rows.Count == 0)
+                return dataGridView .Height;
+
+            // Calcolo dell’altezza totale:
+            // 1) Aggiungo l’altezza dell’intestazione colonne
+            int totalHeight = dataGridView.ColumnHeadersHeight;
+
+            // 2) Altezza di una riga (in genere si può usare dataGridView1.RowTemplate.Height
+            //    oppure, se ci sono già righe, la prima riga).
+            int rowHeight = dataGridView.Rows[0].Height;
+
+            // 3) Moltiplico l’altezza per il numero di righe
+            totalHeight += rowHeight * dataGridView.Rows.Count;
+
+            // 4) Imposto la Height della DataGridView
+            return totalHeight+20;
+            
+        }
+        public static int GetTextBoxHeight(TextBox textBox)
+        {
+            if (textBox.Multiline)
+            {
+                int lineHeight = textBox.Font.Height;
+                int numberOfLines = textBox.Lines.Length + 1;
+                int newHeight = lineHeight * numberOfLines + textBox.Margin.Vertical;
+                return newHeight;
+            }
+            else
+            {
+                return textBox.Height;  
+            }
+        }
+        public static Control GetChildControl(Control ParentControl, Control ChildControlToFind)
+        {
+            if (ParentControl is null | ChildControlToFind is null)
+            {
+                return null;
+            }
+
+            if (ParentControl.Controls.ContainsKey(ChildControlToFind.Name))
+            {
+                return ParentControl.Controls[ChildControlToFind.Name];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
         /// <summary>
         /// Datas the column is numeric.
         /// </summary>
