@@ -1,10 +1,13 @@
 ﻿using Dapper;
+using FastDeepCloner;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Wisej.Web;
 
@@ -128,11 +131,11 @@ namespace Passero.Framework
         /// <summary>
         /// The m model items
         /// </summary>
-        private List<ModelClass> mModelItems;
+        private IList<ModelClass> mModelItems;
         /// <summary>
         /// The m model items shadow
         /// </summary>
-        private List<ModelClass> mModelItemsShadow;
+        private IList<ModelClass> mModelItemsShadow;
         /// <summary>
         /// The m binding source
         /// </summary>
@@ -236,6 +239,33 @@ namespace Passero.Framework
                 Repository.SQLQuery = value;
             }
         }
+
+
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    //mBindingSource?.Dispose();
+                    Repository?.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        // Cacheare i PropertyInfo per reflection
+        private static readonly ConcurrentDictionary<string, PropertyInfo> _propertyCache =
+            new ConcurrentDictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+        
 
         /// <summary>
         /// Resolveds the SQL query.
@@ -371,7 +401,7 @@ namespace Passero.Framework
         /// <value>
         /// The model items.
         /// </value>
-        public List<ModelClass> ModelItems
+        public IList<ModelClass> ModelItems
         {
             get
             {
@@ -410,7 +440,7 @@ namespace Passero.Framework
         /// <value>
         /// The model items shadow.
         /// </value>
-        public List<ModelClass> ModelItemsShadow
+        public IList<ModelClass> ModelItemsShadow
         {
             get
             {
@@ -701,11 +731,148 @@ namespace Passero.Framework
             ModelItemShadow = Utilities.Clone(ModelItem);
         }
 
+
+
+        private ExecutionResult MoveToPosition(int newPosition, NavigationOperation operation)
+        {
+            var ERContext = $"{mClassName}.{operation}()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (UseModelData == UseModelData.InternalRepository)
+                {
+                    ER = operation switch
+                    {
+                        NavigationOperation.MoveFirst => Repository.MoveFirstItem(),
+                        NavigationOperation.MoveLast => Repository.MoveLastItem(),
+                        NavigationOperation.MovePrevious => Repository.MovePreviousItem(),
+                        NavigationOperation.MoveNext => Repository.MoveNextItem(),
+                        NavigationOperation.MoveAt => Repository.MoveAtItem(newPosition),
+                        _ => throw new ArgumentException($"Invalid operation: {operation}")
+                    };
+
+                    if (ER.Success && operation == NavigationOperation.MoveLast)
+                    {
+                        mCurrentModelItemIndex = Repository.CurrentModelItemIndex;
+                        mAddNewCurrentModelItemIndex = Repository.AddNewCurrentModelItemIndex;
+                    }
+                }
+                else
+                {
+                    if (mModelItems?.Count > 0)
+                    {
+                        bool isValidPosition = operation switch
+                        {
+                            NavigationOperation.MoveFirst => true,
+                            NavigationOperation.MoveLast => true,
+                            NavigationOperation.MovePrevious => mCurrentModelItemIndex > 0,
+                            NavigationOperation.MoveNext => mCurrentModelItemIndex < mModelItems.Count - 1,
+                            NavigationOperation.MoveAt => newPosition >= 0 && newPosition < mModelItems.Count,
+                            _ => false
+                        };
+
+                        if (isValidPosition)
+                        {
+                            mCurrentModelItemIndex = operation switch
+                            {
+                                NavigationOperation.MoveFirst => 0,
+                                NavigationOperation.MoveLast => mModelItems.Count - 1,
+                                NavigationOperation.MovePrevious => mCurrentModelItemIndex - 1,
+                                NavigationOperation.MoveNext => mCurrentModelItemIndex + 1,
+                                NavigationOperation.MoveAt => newPosition,
+                                _ => mCurrentModelItemIndex
+                            };
+
+                            mModelItemShadow = mModelItems.ElementAt(mCurrentModelItemIndex);
+                        }
+                    }
+                    else
+                    {
+                        mModelItemShadow = null;
+                        mCurrentModelItemIndex = -1;
+                        ER.ResultCode = ExecutionResultCodes.Failed;
+                        ER.ErrorCode = 1;
+                        ER.ResultMessage = "Invalid Index Position.";
+                        return ER;
+                    }
+                }
+
+                if (ER.Success)
+                {
+                    SetModelItemShadow();
+                    HandleDataBindingMode(operation);
+                }
+
+                return ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                return ER;
+            }
+        }
+
+        private void HandleDataBindingMode(NavigationOperation operation)
+        {
+            switch (mDataBindingMode)
+            {
+                case DataBindingMode.None:
+                    break;
+                case DataBindingMode.Passero:
+                    if (AutoWriteControls)
+                    {
+                        WriteControls();
+                    }
+                    break;
+                case DataBindingMode.BindingSource:
+                    switch (operation)
+                    {
+                        case NavigationOperation.MoveFirst:
+                            mBindingSource.MoveFirst();
+                            DataNavigatorRaiseEventBoundCompled();
+                            break;
+                        case NavigationOperation.MoveLast:
+                            mBindingSource.MoveLast();
+                            break;
+                        case NavigationOperation.MovePrevious:
+                            mBindingSource.MovePrevious();
+                            break;
+                        case NavigationOperation.MoveNext:
+                            mBindingSource.MoveNext();
+                            break;
+                        case NavigationOperation.MoveAt:
+                            mBindingSource.Position = CurrentModelItemIndex;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+
+        public ExecutionResult MoveFirstItem() => MoveToPosition(0, NavigationOperation.MoveFirst);
+        public ExecutionResult MoveLastItem() => MoveToPosition(-1, NavigationOperation.MoveLast);
+        public ExecutionResult MovePreviousItem() => MoveToPosition(-1, NavigationOperation.MovePrevious);
+        public ExecutionResult MoveNextItem() => MoveToPosition(-1, NavigationOperation.MoveNext);
+        public ExecutionResult MoveAtItem(int index) => MoveToPosition(index, NavigationOperation.MoveAt);
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Moves the first item.
         /// </summary>
         /// <returns></returns>
-        public ExecutionResult MoveFirstItem()
+        public ExecutionResult MoveFirstItem_OLD()
         {
             var ERContext = $"{mClassName}.MoveFirstItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
@@ -761,7 +928,7 @@ namespace Passero.Framework
         /// Moves the last item.
         /// </summary>
         /// <returns></returns>
-        public ExecutionResult MoveLastItem()
+        public ExecutionResult MoveLastItem_OLD()
         {
             var ERContext = $"{mClassName}.MoveLastItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
@@ -819,7 +986,7 @@ namespace Passero.Framework
         /// Moves the previous item.
         /// </summary>
         /// <returns></returns>
-        public ExecutionResult MovePreviousItem()
+        public ExecutionResult MovePreviousItem_OLD()
         {
             var ERContext = $"{mClassName}.MovePreviousItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
@@ -880,7 +1047,7 @@ namespace Passero.Framework
         /// Moves the next item.
         /// </summary>
         /// <returns></returns>
-        public ExecutionResult MoveNextItem()
+        public ExecutionResult MoveNextItem_OLD()
         {
             var ERContext = $"{mClassName}.MoveNextItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
@@ -937,7 +1104,7 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="Index">The index.</param>
         /// <returns></returns>
-        public ExecutionResult MoveAtItem(int Index)
+        public ExecutionResult MoveAtItem_OLD(int Index)
         {
             var ERContext = $"{mClassName}.MoveAtItem()";
             ExecutionResult ER = new ExecutionResult(ERContext);
@@ -1473,13 +1640,13 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<List<ModelClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<IList<ModelClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             string ERContenxt = $"{mClassName}.GetItems()";
-            ExecutionResult<List<ModelClass>> ER = new ExecutionResult<List<ModelClass>>(ERContenxt);
+            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContenxt);
 
 
-            List<ModelClass> x = null;
+            IList<ModelClass> x = null;
             try
             {
                 mCurrentModelItemIndex = -1;
@@ -1566,11 +1733,11 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<IList<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.GetAllItems()";
-            ExecutionResult<List<ModelClass>> ER = new ExecutionResult<List<ModelClass>>(ERContenxt);
-            List<ModelClass> x = null;
+            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContenxt);
+            IList<ModelClass> x = null;
             try
             {
                 ER = Repository.GetAllItems(Transaction, Buffered, CommandTimeout);
@@ -1655,7 +1822,7 @@ namespace Passero.Framework
 
 
                 //If AllItems And AutoUpdateModelItemsShadows = True Then
-                ModelItems = Utilities.Clone<List<ModelClass>>(ModelItemsShadow);
+                ModelItems = Utilities.Clone<IList<ModelClass>>(ModelItemsShadow);
                 //End If
 
                 switch (mDataBindingMode)
@@ -1972,7 +2139,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItems(IList<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
@@ -2015,7 +2182,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItemsEx(List<ModelClass> Items = null, List<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItemsEx(IList<ModelClass> Items = null, IList<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
             var ER = new ExecutionResult($"{mClassName}.UpdateItemsEx()");
@@ -2023,11 +2190,11 @@ namespace Passero.Framework
 
             if (Items == null)
             {
-                Items = ModelItems;
+                Items = ModelItems.Clone();
             }
             if (ItemsShadow == null)
             {
-                ItemsShadow = ModelItemsShadow;
+                ItemsShadow = ModelItemsShadow.Clone();
             }
 
 
@@ -2170,8 +2337,27 @@ namespace Passero.Framework
         /// <returns></returns>
         private string GetBoundControlKey(Control Control, string PropertyName)
         {
-            string objname = Conversions.ToString(Microsoft.VisualBasic.Interaction.CallByName(Control, "Name", CallType.Get, null));
-            return (objname + "|" + PropertyName.Trim()).ToLower();
+            //string objname = Conversions.ToString(Microsoft.VisualBasic.Interaction.CallByName(Control, "Name", CallType.Get, null));
+            //return (objname + "|" + PropertyName.Trim()).ToLower();
+
+
+            // Versione ottimizzata compatibile con .NET Framework 4.8
+            if (Control == null)
+                throw new ArgumentNullException(nameof(Control));
+            if (string.IsNullOrEmpty(PropertyName))
+                throw new ArgumentException("Property name cannot be null or empty", nameof(PropertyName));
+
+            var controlName = Control.Name ?? string.Empty;
+            var trimmedPropertyName = PropertyName.Trim();
+
+            // Utilizzo StringBuilder per concatenazioni multiple
+            var sb = new StringBuilder(controlName.Length + trimmedPropertyName.Length + 1);
+            sb.Append(controlName)
+              .Append('|')
+              .Append(trimmedPropertyName);
+
+            return sb.ToString().ToLowerInvariant();
+
         }
 
 
@@ -2304,7 +2490,30 @@ namespace Passero.Framework
         /// <param name="Control">The control.</param>
         /// <param name="ControlPropertyName">Name of the control property.</param>
         /// <returns></returns>
+        /// 
         public int WriteControl(ModelClass Model, Control Control, string ControlPropertyName = "")
+        {
+            if (mDataBindingMode == DataBindingMode.None || Control is null || Model is null)
+            {
+                return 0;
+            }
+
+            int _writedcontrols = 0;
+            string keytofind = GetBoundControlKey(Control, ControlPropertyName);
+
+            foreach (var key in DataBindControls.Keys.Where(k => k.StartsWith(keytofind)))
+            {
+                if (DataBindControls.TryGetValue(key, out var DataBindControl))
+                {
+                    var Value = Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Get, null);
+                    Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Set, Value ?? "");
+                    _writedcontrols++;
+                }
+            }
+
+            return _writedcontrols;
+        }
+        public int WriteControl_OLD(ModelClass Model, Control Control, string ControlPropertyName = "")
         {
             //if (mDataBindingMode == DataBindingMode.BindingSource | mDataBindingMode == DataBindingMode.None)
             if (mDataBindingMode == DataBindingMode.None)
@@ -2365,13 +2574,15 @@ namespace Passero.Framework
                 case DataBindingMode.Passero:
                     foreach (DataBindControl Control in DataBindControls.Values)
                     {
-                        _writedcontrols = _writedcontrols + WriteControl(Model, Control.Control);
+                        //_writedcontrols = _writedcontrols + WriteControl(Model, Control.Control);
+                        _writedcontrols += WriteControl(Model, Control.Control);
                     }
                     break;
                 case DataBindingMode.BindingSource:
                     foreach (DataBindControl Control in DataBindControls.Values)
                     {
-                        _writedcontrols = _writedcontrols + WriteControl(Model, Control.Control);
+                        //_writedcontrols = _writedcontrols + WriteControl(Model, Control.Control);
+                        _writedcontrols += WriteControl(Model, Control.Control);
                     }
                     break;
                 default:
@@ -2506,7 +2717,7 @@ namespace Passero.Framework
         /// Sets the model items shadow.
         /// </summary>
         /// <returns></returns>
-        public List<ModelClass> SetModelItemsShadow()
+        public IList<ModelClass> SetModelItemsShadow()
         {
             mModelItemsShadow = Utilities.Clone(mModelItems);
 

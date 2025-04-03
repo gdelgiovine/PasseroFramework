@@ -7,15 +7,18 @@
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
     <NoWarn>CA1416</NoWarn>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Windows.Forms"><Aliases>swf</Aliases></Reference>
+    
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="System.Data.SqlClient" Version="4.*" />
   </ItemGroup>
 

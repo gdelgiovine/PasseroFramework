@@ -9,6 +9,9 @@
 		<RootNamespace>Passero.Framework</RootNamespace>
 		<LangVersion>latest</LangVersion>
 		<NoWarn>CA1416</NoWarn>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+		<DelaySign>False</DelaySign>
 	</PropertyGroup>
 
 	<!--
@@ -35,26 +38,29 @@
 	<ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
 		<Reference Include="mscorlib" />
 		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System.Data.DataSetExtensions" />
 		<Reference Include="System.Windows.Forms">
 			<Aliases>swf</Aliases>
 		</Reference>
-		<Reference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Passero.Framework.Reports.cs" />
+		
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.1.35" />
+		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-		<PackageReference Include="FastMember.Signed" Version="1.5.0" />
-		<PackageReference Include="MiniExcel" Version="1.36.1" />
+		<PackageReference Include="FastDeepCloner" Version="1.3.6" />
+		<PackageReference Include="MiniExcel" Version="1.39.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
-		<PackageReference Include="Wisej-3" Version="3.5.15" />
+		<PackageReference Include="Wisej-3" Version="3.5.17" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+	
+		
 	</ItemGroup>
 
 
@@ -63,6 +69,7 @@
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 		<Reference Include="Microsoft.VisualBasic" />
 		<Reference Include="System.Web" />
+		
 	</ItemGroup>
 
 

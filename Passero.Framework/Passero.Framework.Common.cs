@@ -44,7 +44,7 @@ namespace Passero.Framework
         /// <value>
         /// The items.
         /// </value>
-        public List<ModelClass> Items { get; set; } = new List<ModelClass>();
+        public IList<ModelClass> Items { get; set; } = new List<ModelClass>();
     }
 
 

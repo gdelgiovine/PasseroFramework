@@ -223,7 +223,7 @@ namespace PasseroDemo.Views
             Passero.Framework.ViewModel<Models.TEST> a1 = new Passero.Framework.ViewModel<Models.TEST>();
             a1.Init(this.DbConnection);
 
-            System.Collections.Generic.List<Models.TEST> _a1 = a1.GetAllItems().Value ;
+            System.Collections.Generic.IList<Models.TEST> _a1 = a1.GetAllItems().Value ;
 
             List<Models.TEST> _a2 = new List<Models.TEST>();
             _a2.Add(_a1[0]);

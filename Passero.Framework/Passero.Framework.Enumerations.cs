@@ -1,7 +1,17 @@
 ﻿using System;
 
 namespace Passero.Framework
+
 {
+
+    public enum NavigationOperation
+    {
+        MoveFirst,
+        MoveLast,
+        MovePrevious,
+        MoveNext,
+        MoveAt
+    }
     /// <summary>
     /// 
     /// </summary>

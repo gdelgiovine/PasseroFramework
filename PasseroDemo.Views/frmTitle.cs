@@ -227,7 +227,7 @@ namespace PasseroDemo.Views
         private void bsTitles_CurrentChanged(object sender, EventArgs e)
         {
 
-            ExecutionResult < List <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
+            ExecutionResult < IList <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
                                                 $"{Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Titleauthor>()} " +
                                                 $"WHERE title_id=@title_id", new { title_id = this.txt_title_id.Text });
 

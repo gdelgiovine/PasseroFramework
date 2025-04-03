@@ -646,11 +646,15 @@ namespace Passero.Framework.FRReports
 
         public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF, int ImageDpi=100)
         {
+
+         
             LastExecutionResult.Reset();
             LastExecutionResult.Context = $"FRReport.Render({RenderFormat})";
             byte[] result = null;
             string f = RenderFormat.ToString();
-                        
+                       
+            
+
             MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
             Report.Dictionary.Connections.Clear();
             foreach (var dataset in this.DataSets)

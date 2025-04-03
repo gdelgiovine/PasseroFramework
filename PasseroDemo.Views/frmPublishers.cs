@@ -33,7 +33,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
             this.dataNavigator1.Init(false);
-
+            
         }
 
         public void Reload()

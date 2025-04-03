@@ -206,7 +206,7 @@
             this.TabControl.Controls.Add(this.TabPageExport);
             this.TabControl.Controls.Add(this.TabPageDebug);
             this.TabControl.Name = "TabControl";
-            this.TabControl.PageInsets = new Wisej.Web.Padding(0, 39, 0, 0);
+            this.TabControl.PageInsets = new Wisej.Web.Padding(1, 40, 1, 1);
             // 
             // TabPageReports
             // 

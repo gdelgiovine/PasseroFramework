@@ -2323,6 +2323,7 @@ namespace Passero.Framework.Controls
             {
                 //ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
                 ActiveViewModel.GetAllItems();
+                
                 //_DbObject.Open(true);
             }
 

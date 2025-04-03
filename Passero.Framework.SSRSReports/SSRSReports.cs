@@ -417,9 +417,15 @@ namespace Passero.Framework.SSRSReports
             ds.DbConnection = DbConnection;
 
             if (SQLQuery != "")
+            {
                 ds.SQLQuery = SQLQuery;
+                this.SQLQuery = SQLQuery;
+            }
             if (Parameters != null)
+            {
                 ds.Parameters = Parameters;
+                this.SQLQueryParameters = Parameters;
+            }
             ds.ModelType = typeof(T);
             ds.EnsureReportDataSet();
             this.DataSets.Add(Name, ds);
@@ -586,9 +592,9 @@ namespace Passero.Framework.SSRSReports
             {
                 object obj = Activator.CreateInstance(ModelType);
                 this.Model = obj;   
-                Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "DbConnection", DbConnection);
-                Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "Parameters", Parameters);
-                //this.Repository = obj;
+                //Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "DbConnection", DbConnection);
+                //Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "Parameters", Parameters);
+                ////this.Repository = obj;
 
                 
                 this.ModelProperties.Clear();
@@ -603,9 +609,10 @@ namespace Passero.Framework.SSRSReports
             return false;   
         }
 
-        public void LoadData()
+        public void LoadData(string SQLQuery, DynamicParameters Parameters )
         {
-            this.Data = this.DbConnection.Query(this.SQLQuery, this.Parameters);
+            //this.Data = this.DbConnection.Query(this.SQLQuery, this.Parameters);
+            this.Data = this.DbConnection.Query(SQLQuery, Parameters);
             
         }
     }

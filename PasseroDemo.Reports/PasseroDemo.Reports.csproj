@@ -1,10 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 
 	<PropertyGroup>
 		<RootNamespace>PasseroDemo.Reports</RootNamespace>
 		<TargetFrameworks>net48;net8.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>

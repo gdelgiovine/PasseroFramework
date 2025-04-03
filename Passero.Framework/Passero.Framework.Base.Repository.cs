@@ -2,11 +2,14 @@
 using Dapper.Contrib.Extensions;
 using Microsoft.Ajax.Utilities;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 namespace Passero.Framework
 
 {
@@ -21,7 +24,7 @@ namespace Passero.Framework
     /// <typeparam name="ModelClass"></typeparam>
     /// <remarks></remarks>
     [Serializable]
-    public class Repository<ModelClass> where ModelClass : class
+    public class Repository<ModelClass> : IDisposable where ModelClass : class
     {
         /// <summary>
         /// The m class name
@@ -100,6 +103,40 @@ namespace Passero.Framework
                 mSQLQuery = value;
             }
         }
+
+        private static readonly Func<ModelClass, ModelClass, bool> _compareFunc = CreateCompareFunc();
+        private static Func<ModelClass, ModelClass, bool> CreateCompareFunc()
+        {
+            return (a, b) =>
+            {
+                var properties = typeof(ModelClass).GetProperties();
+                return properties.All(p => Equals(p.GetValue(a), p.GetValue(b)));
+            };
+        }
+        // Aggiungere dispose pattern
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                ModelItems?.Clear();
+                ModelItemsShadow?.Clear();
+                Parameters = null;
+                DbTransaction?.Dispose();
+                DbConnection?.Dispose();
+            }
+            _disposed = true;
+        }
+             
+
 
         /// <summary>
         /// Resets the model item.
@@ -180,7 +217,7 @@ namespace Passero.Framework
                 {
                     if (_ModelItems.Count < value)
                     {
-                        _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
+                        _ModelItem = _ModelItems.ElementAt(_CurrentModelItemIndex);
                     }
                 }
             }
@@ -212,161 +249,240 @@ namespace Passero.Framework
         }
 
 
+        ///// <summary>
+        ///// Moves the first item.
+        ///// </summary>
+        ///// <returns></returns>
+        //public ExecutionResult MoveFirstItem_OLD()
+        //{
+        //    var ERContext = $"{mClassName}.MoveFirstItem()";
+        //    ExecutionResult ER = new ExecutionResult(ERContext);
+
+        //    if (_ModelItems != null && _ModelItems.Count > 0)
+        //    {
+        //        _CurrentModelItemIndex = 0;
+        //        _Modeltem = _ModelItems.ElementAt(0);
+        //    }
+        //    else
+        //    {
+        //        _Modeltem = null;
+        //        _CurrentModelItemIndex = -1;
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.ErrorCode = 1;
+        //        ER.ResultMessage = "Invalid Index Position.";
+        //    }
+        //    return ER;
+        //}
+
+
+        ///// <summary>
+        ///// Moves the last item.
+        ///// </summary>
+        ///// <returns></returns>
+        //public ExecutionResult MoveLastItem_OLD()
+        //{
+        //    var ERContext = $"{mClassName}.MoveLastItem()";
+        //    ExecutionResult ER = new ExecutionResult(ERContext);
+
+        //    if (_ModelItems != null && _ModelItems.Count > 0)
+        //    {
+        //        _CurrentModelItemIndex = _ModelItems.Count() - 1;
+        //        _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
+        //    }
+        //    else
+        //    {
+        //        _Modeltem = null;
+        //        _CurrentModelItemIndex = -1;
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.ErrorCode = 1;
+        //        ER.ResultMessage = "Invalid Index Position.";
+        //    }
+        //    return ER;
+        //}
+
+
+        ///// <summary>
+        ///// Moves the previous item.
+        ///// </summary>
+        ///// <returns></returns>
+        //public ExecutionResult MovePreviousItem_OLD()
+        //{
+        //    var ERContext = $"{mClassName}.MovePreviousItem()";
+        //    ExecutionResult ER = new ExecutionResult(ERContext);
+
+        //    if (_ModelItems != null && _ModelItems.Count > 0)
+        //    {
+        //        if (_CurrentModelItemIndex > 0)
+        //        {
+        //            _CurrentModelItemIndex -= 1;
+        //            _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _Modeltem = null;
+        //        _CurrentModelItemIndex = -1;
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.ErrorCode = 1;
+        //        ER.ResultMessage = "Invalid Index Position.";
+        //    }
+        //    return ER;
+        //}
+
+
+        ///// <summary>
+        ///// Moves the next item.
+        ///// </summary>
+        ///// <returns></returns>
+        //public ExecutionResult MoveNextItem_OLD()
+        //{
+        //    var ERContext = $"{mClassName}.MoveNextItem()";
+        //    ExecutionResult ER = new ExecutionResult(ERContext);
+
+        //    if (_ModelItems != null && _ModelItems.Count > 0)
+        //    {
+        //        if (_CurrentModelItemIndex < _ModelItems.Count() - 1)
+        //        {
+        //            _CurrentModelItemIndex += 1;
+        //            _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _Modeltem = null;
+        //        _CurrentModelItemIndex = -1;
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.ErrorCode = 1;
+        //        ER.ResultMessage = "Invalid Index Position.";
+        //    }
+        //    return ER;
+        //}
+
+     
+        private ExecutionResult MoveToIndex(int index)
+        {
+            var ERContext = $"{mClassName}.MoveToIndex()";
+            ExecutionResult ER = new ExecutionResult(ERContext);
+
+            if (_ModelItems != null && _ModelItems.Count > 0)
+            {
+                if (index >= 0 && index < _ModelItems.Count)
+                {
+                    _CurrentModelItemIndex = index;
+                    _ModelItem = _ModelItems.ElementAt(index);
+                }
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Failed;
+                    ER.ErrorCode = 1;
+                    ER.ResultMessage = "Invalid Index Position.";
+                }
+            }
+            else
+            {
+                _ModelItem = null;
+                _CurrentModelItemIndex = -1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ErrorCode = 1;
+                ER.ResultMessage = "Model items collection is empty.";
+            }
+
+            return ER;
+        }
+
+
+        ///// <summary>
+        ///// Moves at item.
+        ///// </summary>
+        ///// <param name="Index">The index.</param>
+        ///// <returns></returns>
+        //public ExecutionResult MoveAtItem_OLD(int Index)
+        //{
+        //    var ERContext = $"{mClassName}.MoveAtItem()";
+        //    ExecutionResult ER = new ExecutionResult(ERContext);
+
+        //    if (_ModelItems != null && _ModelItems.Count > 0)
+        //    {
+        //        if (Index >= 0 && Index < _ModelItems.Count())
+        //        {
+        //            _CurrentModelItemIndex = Index;
+        //            _Modeltem = _ModelItems.ElementAt(Index);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _Modeltem = null;
+        //        _CurrentModelItemIndex = -1;
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.ErrorCode = 1;
+        //        ER.ResultMessage = "Invalid Index Position.";
+        //    }
+        //    return ER;
+        //}
+
         /// <summary>
-        /// Moves the first item.
+        /// Moves to the first item.
         /// </summary>
         /// <returns></returns>
         public ExecutionResult MoveFirstItem()
         {
-            var ERContext = $"{mClassName}.MoveFirstItem()";
-            ExecutionResult ER = new ExecutionResult(ERContext);
-
-            if (_ModelItems != null && _ModelItems.Count > 0)
-            {
-                _CurrentModelItemIndex = 0;
-                _Modeltem = _ModelItems.ElementAt(0);
-            }
-            else
-            {
-                _Modeltem = null;
-                _CurrentModelItemIndex = -1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 1;
-                ER.ResultMessage = "Invalid Index Position.";
-            }
-            return ER;
+            return MoveToIndex(0);
         }
-
-
         /// <summary>
-        /// Moves the last item.
+        /// Moves to the last item.
         /// </summary>
         /// <returns></returns>
         public ExecutionResult MoveLastItem()
         {
-            var ERContext = $"{mClassName}.MoveLastItem()";
-            ExecutionResult ER = new ExecutionResult(ERContext);
-
-            if (_ModelItems != null && _ModelItems.Count > 0)
-            {
-                _CurrentModelItemIndex = _ModelItems.Count() - 1;
-                _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
-            }
-            else
-            {
-                _Modeltem = null;
-                _CurrentModelItemIndex = -1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 1;
-                ER.ResultMessage = "Invalid Index Position.";
-            }
-            return ER;
+            return MoveToIndex(_ModelItems.Count - 1);
         }
 
-
         /// <summary>
-        /// Moves the previous item.
+        /// Moves to the previous item.
         /// </summary>
         /// <returns></returns>
         public ExecutionResult MovePreviousItem()
         {
-            var ERContext = $"{mClassName}.MovePreviousItem()";
-            ExecutionResult ER = new ExecutionResult(ERContext);
-
-            if (_ModelItems != null && _ModelItems.Count > 0)
-            {
-                if (_CurrentModelItemIndex > 0)
-                {
-                    _CurrentModelItemIndex -= 1;
-                    _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
-                }
-            }
-            else
-            {
-                _Modeltem = null;
-                _CurrentModelItemIndex = -1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 1;
-                ER.ResultMessage = "Invalid Index Position.";
-            }
-            return ER;
+            return MoveToIndex(_CurrentModelItemIndex - 1);
         }
 
-
         /// <summary>
-        /// Moves the next item.
+        /// Moves to the next item.
         /// </summary>
         /// <returns></returns>
         public ExecutionResult MoveNextItem()
         {
-            var ERContext = $"{mClassName}.MoveNextItem()";
-            ExecutionResult ER = new ExecutionResult(ERContext);
-
-            if (_ModelItems != null && _ModelItems.Count > 0)
-            {
-                if (_CurrentModelItemIndex < _ModelItems.Count() - 1)
-                {
-                    _CurrentModelItemIndex += 1;
-                    _Modeltem = _ModelItems.ElementAt(_CurrentModelItemIndex);
-                }
-            }
-            else
-            {
-                _Modeltem = null;
-                _CurrentModelItemIndex = -1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 1;
-                ER.ResultMessage = "Invalid Index Position.";
-            }
-            return ER;
+            return MoveToIndex(_CurrentModelItemIndex + 1);
         }
-
-
 
         /// <summary>
         /// Moves at item.
         /// </summary>
         /// <param name="Index">The index.</param>
         /// <returns></returns>
-        public ExecutionResult MoveAtItem(int Index)
+        public ExecutionResult MoveAtItem(int index)
         {
-            var ERContext = $"{mClassName}.MoveAtItem()";
-            ExecutionResult ER = new ExecutionResult(ERContext);
-
-            if (_ModelItems != null && _ModelItems.Count > 0)
-            {
-                if (Index >= 0 && Index < _ModelItems.Count())
-                {
-                    _CurrentModelItemIndex = Index;
-                    _Modeltem = _ModelItems.ElementAt(Index);
-                }
-            }
-            else
-            {
-                _Modeltem = null;
-                _CurrentModelItemIndex = -1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.ErrorCode = 1;
-                ER.ResultMessage = "Invalid Index Position.";
-            }
-            return ER;
+            return MoveToIndex(index);
         }
 
 
+
         /// <summary>
         /// Gets or sets the model items.
         /// </summary>
         /// <value>
         /// The model items.
         /// </value>
-        private List<ModelClass>? _ModelItems { get; set; } = new List<ModelClass>();
+        //private List<ModelClass>? _ModelItems { get; set; } = new List<ModelClass>();
+        private IList<ModelClass>? _ModelItems { get; set; } = new List<ModelClass>();
+
         /// <summary>
         /// Gets or sets the model items.
         /// </summary>
         /// <value>
         /// The model items.
         /// </value>
-        public List<ModelClass>? ModelItems
+        public IList<ModelClass>? ModelItems
         {
             get
             {
@@ -385,7 +501,7 @@ namespace Passero.Framework
         /// <value>
         /// The modeltem.
         /// </value>
-        private ModelClass? _Modeltem { get; set; }
+        private ModelClass? _ModelItem { get; set; }
         /// <summary>
         /// Gets or sets the model item.
         /// </summary>
@@ -396,11 +512,11 @@ namespace Passero.Framework
         {
             get
             {
-                return _Modeltem;
+                return _ModelItem;
             }
             set
             {
-                _Modeltem = value;
+                _ModelItem = value;
             }
         }
 
@@ -439,14 +555,14 @@ namespace Passero.Framework
         /// <value>
         /// The model items shadow.
         /// </value>
-        private List<ModelClass> _ModelItemsShadow { get; set; } = new List<ModelClass>();
+        private IList<ModelClass> _ModelItemsShadow { get; set; } = new List<ModelClass>();
         /// <summary>
         /// Gets or sets the model items shadow.
         /// </summary>
         /// <value>
         /// The model items shadow.
         /// </value>
-        public List<ModelClass> ModelItemsShadow
+        public IList<ModelClass> ModelItemsShadow
         {
             get
             {
@@ -546,14 +662,14 @@ namespace Passero.Framework
         /// <returns></returns>
         public ModelClass GetModelItemClone()
         {
-            return Utilities.Clone(_Modeltem);
+            return Utilities.Clone(_ModelItem);
         }
 
         /// <summary>
         /// Gets the model items clone.
         /// </summary>
         /// <returns></returns>
-        public List<ModelClass> GetModelItemsClone()
+        public IList<ModelClass> GetModelItemsClone()
         {
             return Utilities.Clone(_ModelItems);
         }
@@ -564,7 +680,7 @@ namespace Passero.Framework
         /// </summary>
         public void SetModelItemShadow()
         {
-            _ModelItemShadow = Utilities.Clone(_Modeltem);
+            _ModelItemShadow = Utilities.Clone(_ModelItem);
             //TBD: verifica se è superfluo
             if (ViewModel != null)
             {
@@ -610,7 +726,7 @@ namespace Passero.Framework
         public Repository(IDbConnection SqlConnection, IDbTransaction SqlTransaction = null)
         {
 
-            _Modeltem = GetEmptyModel();
+            _ModelItem = GetEmptyModel();
             SetModelItemShadow();
             DbTransaction = SqlTransaction;
             DbConnection = SqlConnection;
@@ -625,7 +741,7 @@ namespace Passero.Framework
         public Repository(ModelClass Model)
         {
 
-            _Modeltem = GetEmptyModel();
+            _ModelItem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
@@ -639,7 +755,7 @@ namespace Passero.Framework
         public Repository()
         {
 
-            _Modeltem = GetEmptyModel();
+            _ModelItem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
             DbObject = new DbObject<ModelClass>(DbConnection);
@@ -654,9 +770,9 @@ namespace Passero.Framework
         public Repository(DbContext DbContext)
         {
 
-            _Modeltem = GetEmptyModel();
+            _ModelItem = GetEmptyModel();
             SetModelItemShadow();
-            SetModelItemShadow();
+            SetModelItemsShadow();
             this.DbContext = DbContext;
             DbTransaction = DbContext.SqlTransaction;
             DbConnection = DbContext.SqlConnection;
@@ -681,7 +797,7 @@ namespace Passero.Framework
                 ModelShadow = _ModelItemShadow;
             }
 
-            return !Utilities.ObjectsEquals(_Modeltem, ModelShadow);
+            return !Utilities.ObjectsEquals(_ModelItem, ModelShadow);
 
         }
 
@@ -690,7 +806,7 @@ namespace Passero.Framework
         /// Handles the exeception.
         /// </summary>
         /// <param name="ER">The er.</param>
-        public void HandleExeception(ExecutionResult ER)
+        public void HandleException(ExecutionResult ER)
         {
 
             if (ER == null)
@@ -746,22 +862,25 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
+        /// 
+    
         public ExecutionResult<ModelClass> GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
             ER.Value = null;
+            
             try
             {
-                _Modeltem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).SingleOrDefault();
+                _ModelItem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).SingleOrDefault();
                 if (ViewModel != null)
                 {
-                    ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItem = _ModelItem;
                 }
                 SetModelItemShadow();
                 LastExecutionResult = ER.ToExecutionResult();
                 mSQLQuery = Query;
                 Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
-                ER.Value = _Modeltem;
+                ER.Value = _ModelItem;
             }
             catch (Exception ex)
             {
@@ -771,11 +890,104 @@ namespace Passero.Framework
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"SQLQuery = {Query}";
                 LastExecutionResult = ER.ToExecutionResult();
-                HandleExeception(ER.ToExecutionResult());
+                HandleException(ER.ToExecutionResult());
             }
             return ER;
         }
 
+        /// <summary>
+        /// Gets the item asynchronously.
+        /// </summary>
+        /// <param name="Query">The query.</param>
+        /// <param name="Params">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result with the item.</returns>
+        public async Task<ExecutionResult<ModelClass>> GetItemAsync(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItemAsync()");
+            ER.Value = null;
+
+            try
+            {
+                _ModelItem = (await DbConnection.QueryAsync<ModelClass>(Query, Params, Transaction, CommandTimeout)).SingleOrDefault();
+                if (ViewModel != null)
+                {
+                    ViewModel.ModelItem = _ModelItem;
+                }
+                SetModelItemShadow();
+                LastExecutionResult = ER.ToExecutionResult();
+                mSQLQuery = Query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                ER.Value = _ModelItem;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"SQLQuery = {Query}";
+                LastExecutionResult = ER.ToExecutionResult();
+                HandleException(ER.ToExecutionResult());
+            }
+            return ER;
+        }
+
+        /// <summary>
+        /// Gets the items asynchronously.
+        /// </summary>
+        /// <param name="Query">The query.</param>
+        /// <param name="Params">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result with the list of items.</returns>
+        public async Task<ExecutionResult<IList<ModelClass>>> GetItemsAsync(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult<IList<ModelClass>>($"{mClassName}.GetItemsAsync()");
+            if (Equals(Query, ""))
+            {
+                Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                Parameters = new DynamicParameters();
+            }
+            _CurrentModelItemIndex = -1;
+            try
+            {
+                _ModelItemsShadow = new List<ModelClass>();
+                _ModelItems = (await DbConnection.QueryAsync<ModelClass>(Query, Params, Transaction, CommandTimeout)).ToList();
+                if (_ModelItems.Count() > 0)
+                {
+                    _ModelItem = _ModelItems.First();
+                    _CurrentModelItemIndex = 0;
+                    MoveFirstItem();
+                    SetModelItemsShadow();
+                }
+                if (ViewModel != null)
+                {
+                    ViewModel.ModelItems = _ModelItems;
+                    ViewModel.ModelItem = _ModelItem;
+                    ViewModel.ModelItemsShadow = _ModelItemsShadow;
+                    ViewModel.MoveFirstItem();
+                    _CurrentModelItemIndex = 0;
+                }
+                SQLQuery = Query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                ER.Value = _ModelItems;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query = {Query}";
+                HandleException(ER.ToExecutionResult());
+            }
+            LastExecutionResult = ER.ToExecutionResult();
+            return ER;
+        }
 
 
         /// <summary>
@@ -798,11 +1010,30 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<List<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<IList<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             return GetItems(mSQLQuery, Parameters, Transaction, Buffered, CommandTimeout);
         }
 
+
+
+        /// <summary>
+        /// Gets all items.
+        /// </summary>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
+        public async Task<ExecutionResult<IList<ModelClass>>>GetAllItemsAsync(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            string query = mSQLQuery;
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                Parameters = new DynamicParameters();
+            }
+            return await GetItemsAsync(query, Parameters, Transaction, Buffered, CommandTimeout);
+        }
 
         /// <summary>
         /// Gets the items.
@@ -813,9 +1044,11 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<List<ModelClass>> GetItems(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<IList<ModelClass>> GetItems(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult<List<ModelClass>>($"{mClassName}.GetItems()");
+            var ER = new ExecutionResult<IList<ModelClass>>($"{mClassName}.GetItems()");
+            //ValidateConnection();
+
             if (Equals(Query, ""))
             {
                 Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
@@ -829,7 +1062,7 @@ namespace Passero.Framework
                 _ModelItems = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).ToList();
                 if (_ModelItems.Count() > 0)
                 {
-                    _Modeltem = _ModelItems.First();
+                    _ModelItem = _ModelItems.First();
                     _CurrentModelItemIndex = 0;
                     MoveFirstItem();
                     SetModelItemsShadow();
@@ -837,7 +1070,7 @@ namespace Passero.Framework
                 if (ViewModel != null)
                 {
                     ViewModel.ModelItems = _ModelItems;
-                    ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItem = _ModelItem;
                     ViewModel.ModelItemsShadow = _ModelItemsShadow;
                     ViewModel.MoveFirstItem();
                     _CurrentModelItemIndex = 0;
@@ -853,7 +1086,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"Query = {Query}";
-                HandleExeception(ER.ToExecutionResult());
+                HandleException(ER.ToExecutionResult());
             }
             LastExecutionResult = ER.ToExecutionResult();
             return ER;
@@ -878,14 +1111,14 @@ namespace Passero.Framework
 
                 if (_ModelItems.Count() > 0)
                 {
-                    _Modeltem = _ModelItems.First();
+                    _ModelItem = _ModelItems.First();
                     MoveFirstItem();
                     SetModelItemsShadow();
                 }
                 if (ViewModel != null)
                 {
                     ViewModel.ModelItems = _ModelItems;
-                    ViewModel.ModelItem = _Modeltem;
+                    ViewModel.ModelItem = _ModelItem;
                     ViewModel.ModelItemsShadow = _ModelItemsShadow;
                     ViewModel.MoveFirstItem();
                 }
@@ -898,7 +1131,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"Query = {mSQLQuery}";
-                HandleExeception(ER);
+                HandleException(ER);
             }
 
             LastExecutionResult = ER;
@@ -977,7 +1210,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
 
             }
             LastExecutionResult = ER;
@@ -1026,7 +1259,7 @@ namespace Passero.Framework
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.Value = 0;
-                HandleExeception(ER);
+                HandleException(ER);
 
             }
 
@@ -1037,6 +1270,108 @@ namespace Passero.Framework
 
 
         /// <summary>
+        /// Inserts the item asynchronously.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> InsertItemAsync(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.InsertItemAsync()");
+            long x = 0;
+            if (Model == null)
+            {
+                Model = ModelItem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                x = await DbConnection.InsertAsync(Model, Transaction, CommandTimeout);
+
+                ModelItem = Model;
+                ModelItemShadow = Model;
+                if (ModelItems == null)
+                {
+                    ModelItems = new List<ModelClass>();
+                    ModelItems.Add(Model);
+                }
+                if (ModelItemsShadow == null)
+                {
+                    ModelItemsShadow = new List<ModelClass>();
+                    ModelItemsShadow.Add(Model);
+                }
+                ModelItemsShadow.Add(Model);
+                mAddNewState = false;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+        /// <summary>
+        /// Inserts the items asynchronously.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> InsertItemsAsync(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.InsertItemsAsync()");
+            long x = 0;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+            try
+            {
+                x = await DbConnection.InsertAsync(ModelItems, Transaction, CommandTimeout);
+                mAddNewState = false;
+                ER.Value = x;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Value = 0;
+                HandleException(ER);
+            }
+
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+
+
+        /// <summary>
         /// Undoes the changes.
         /// </summary>
         /// <returns></returns>
@@ -1044,7 +1379,12 @@ namespace Passero.Framework
         {
             //var ER = new ExecutionResult($"{mClassName}.UndoChanges()");
             var result = false;
-            ModelItem = ModelItemShadow;
+            if (ModelItemShadow != null)
+            {
+                ModelItem = Utilities.Clone(ModelItemShadow);
+                ModelItem = Utilities .WisejClone(ModelItemShadow); 
+            }
+            //ModelItem = ModelItemShadow;
             if (AddNewState == true)
             {
                 AddNewState = false;
@@ -1062,11 +1402,12 @@ namespace Passero.Framework
         public ExecutionResult UpdateItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItem()");
+            //ValidateConnection();
             bool result = false;
 
             if (Model == null)
             {
-                Model = _Modeltem;
+                Model = _ModelItem;
             }
             if (Transaction == null)
             {
@@ -1092,22 +1433,64 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
 
             }
             LastExecutionResult = ER;
             return ER;
 
         }
-
+        private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> _entityPropertiesCache = new();
+        private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> _entityPrimaryKeysCache = new();
+        private List<PropertyInfo> _entityProperties;
+        private List<PropertyInfo> _entityPrimaryKeys;
         /// <summary>
         /// The entity properties
         /// </summary>
-        public List<PropertyInfo> EntityProperties = DapperHelper.Utilities.GetPropertiesInfo(typeof(ModelClass), true);
+        /// 
+        public List<PropertyInfo> EntityProperties
+        {
+            get
+            {
+                if (_entityProperties == null)
+                {
+                    _entityProperties = _entityPropertiesCache.GetOrAdd(typeof(ModelClass), type =>
+                        DapperHelper.Utilities.GetPropertiesInfo(type, true));
+                }
+                return _entityProperties;
+            }
+            set
+            {
+                _entityProperties = value;
+                _entityPropertiesCache[typeof(ModelClass)] = value; // Aggiorna il cache
+            }
+        }
+        //public List<PropertyInfo> EntityProperties = DapperHelper.Utilities.GetPropertiesInfo(typeof(ModelClass), true);
+
         /// <summary>
         /// The entity primary keys
         /// </summary>
-        public List<PropertyInfo> EntityPrimaryKeys = DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(typeof(ModelClass));
+        public List<PropertyInfo> EntityPrimaryKeys
+        {
+            get
+            {
+                if (_entityPrimaryKeys == null)
+                {
+                    _entityPrimaryKeys = _entityPrimaryKeysCache.GetOrAdd(typeof(ModelClass), type =>
+                        DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(type));
+                }
+                return _entityPrimaryKeys;
+            }
+            set
+            {
+                _entityPrimaryKeys = value;
+                _entityPrimaryKeysCache[typeof(ModelClass)] = value; // Aggiorna il cache
+            }
+        }
+        //public List<PropertyInfo> EntityPrimaryKeys = DapperHelper.Utilities.GetPrimaryKeysPropertiesInfo(typeof(ModelClass));
+
+
+
         /// <summary>
         /// The m SQL update command
         /// </summary>
@@ -1139,11 +1522,12 @@ namespace Passero.Framework
         public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemEx()");
+            //ValidateConnection();
             int result = 0;
 
             if (ModelItem == null)
             {
-                ModelItem = _Modeltem;
+                ModelItem = _ModelItem;
             }
             if (ModelItemShadow == null)
             {
@@ -1160,7 +1544,8 @@ namespace Passero.Framework
 
             try
             {
-                if (ReflectionHelper.Compare<ModelClass>(ModelItem, ModelItemShadow) == false)
+                //if (ReflectionHelper.Compare<ModelClass>(ModelItem, ModelItemShadow) == false)
+                if (!_compareFunc(ModelItem, ModelItemShadow))
                 {
                     DynamicParameters @params = new DynamicParameters();
                     foreach (PropertyInfo k in EntityProperties)
@@ -1185,7 +1570,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
 
             }
             LastExecutionResult = ER;
@@ -1204,6 +1589,7 @@ namespace Passero.Framework
         public ExecutionResult UpdateItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
+           
             bool esito = false;
 
             if (ModelItems == null)
@@ -1229,7 +1615,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
                 esito = false;
             }
             LastExecutionResult = ER;
@@ -1276,7 +1662,8 @@ namespace Passero.Framework
                 for (int i = 0; i < ModelItems.Count(); i++)
                 {
                     parameters = new DynamicParameters();
-                    if (!ReflectionHelper.Compare<ModelClass>(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
+                    //if (!ReflectionHelper.Compare<ModelClass>(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
+                    if (!_compareFunc(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
                     {
                         foreach (var k in EntityProperties)
                         {
@@ -1298,7 +1685,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
                 ER.Value = affectedrecords;
             }
             LastExecutionResult = ER;
@@ -1329,7 +1716,7 @@ namespace Passero.Framework
 
             if (ModelItem == null)
             {
-                ModelItem = _Modeltem;
+                ModelItem = _ModelItem;
             }
             if (Transaction == null)
             {
@@ -1349,7 +1736,7 @@ namespace Passero.Framework
                     //If (AutoUpdateModelItemsShadows) Then
                     _ModelItemsShadow.Remove(ModelItem);
                     //End If
-                    _Modeltem = GetEmptyModelItem();
+                    _ModelItem = GetEmptyModelItem();
                     _ModelItemShadow = GetEmptyModelItem();
                 }
                 ER.Value = _result;
@@ -1361,7 +1748,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleExeception(ER);
+                HandleException(ER);
 
             }
 
@@ -1407,13 +1794,105 @@ namespace Passero.Framework
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
 
-                HandleExeception(ER);
+                HandleException(ER);
             }
 
             LastExecutionResult = ER;
             return ER;
 
         }
+
+
+        /// <summary>
+        /// Deletes the item asynchronously.
+        /// </summary>
+        /// <param name="ModelItem">The model item.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> DeleteItemAsync(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItemAsync()");
+
+            bool _result = false;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _ModelItem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                _result = await DbConnection.DeleteAsync(ModelItem, Transaction, CommandTimeout);
+                if (_result)
+                {
+                    _ModelItems.Remove(ModelItem);
+                    _ModelItemsShadow.Remove(ModelItem);
+                    _ModelItem = GetEmptyModelItem();
+                    _ModelItemShadow = GetEmptyModelItem();
+                }
+                ER.Value = _result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+        /// <summary>
+        /// Deletes the items asynchronously.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> DeleteItemsAsync(IEnumerable<ModelClass> ModelItems, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItemsAsync()");
+            bool result = false;
+
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                result = await DbConnection.DeleteAsync(ModelItems, Transaction, CommandTimeout);
+                ER.Value = result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+
+            LastExecutionResult = ER;
+            return ER;
+        }
+
         /// <summary>
         /// Gets or sets the default SQL query.
         /// </summary>
@@ -1445,25 +1924,34 @@ namespace Passero.Framework
 
 
 
-
+        private static readonly ConcurrentDictionary<Type, string> _tableNameCache = new();
         /// <summary>
         /// Gets the name of the table.
         /// </summary>
         /// <returns></returns>
+        /// 
         public string GetTableName()
         {
-            string tableName = "";
-            var type = typeof(ModelClass);
-            var tableAttr = type.GetCustomAttribute<Dapper.Contrib.Extensions.TableAttribute>();
-
-            if (tableAttr is not null)
+            return _tableNameCache.GetOrAdd(typeof(ModelClass), type =>
             {
-                tableName = tableAttr.Name;
-                return tableName;
-            }
-
-            return type.Name; // & "s"
+                var tableAttr = type.GetCustomAttribute<TableAttribute>();
+                return tableAttr?.Name ?? type.Name;
+            });
         }
+        //public string GetTableName_OLD()
+        //{
+        //    string tableName = "";
+        //    var type = typeof(ModelClass);
+        //    var tableAttr = type.GetCustomAttribute<Dapper.Contrib.Extensions.TableAttribute>();
+
+        //    if (tableAttr is not null)
+        //    {
+        //        tableName = tableAttr.Name;
+        //        return tableName;
+        //    }
+
+        //    return type.Name; // & "s"
+        //}
 
         /// <summary>
         /// Sets the name of the table.
@@ -1552,6 +2040,10 @@ namespace Passero.Framework
             return values;
         }
 
+
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
+
+
         /// <summary>
         /// Gets the properties.
         /// </summary>
@@ -1559,9 +2051,14 @@ namespace Passero.Framework
         /// <returns></returns>
         public IEnumerable<PropertyInfo> GetProperties(bool excludeKey = false)
         {
-            // Dim properties = GetType(ModelClass).GetProperties().Where(Function(p) Not excludeKey OrElse p.GetCustomAttribute(Of Dapper.Contrib.Extensions.KeyAttribute)() Is Nothing)
-            var properties = typeof(ModelClass).GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
-            return properties;
+
+            var properties = _propertyCache.GetOrAdd(typeof(ModelClass), t => t.GetProperties());
+            return excludeKey
+                ? properties.Where(p => p.GetCustomAttribute<KeyAttribute>() == null)
+                : properties;
+
+            //var properties = typeof(ModelClass).GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
+            //return properties;
         }
 
         /// <summary>
@@ -1581,5 +2078,105 @@ namespace Passero.Framework
             return null;
         }
 
+
+        private void ValidateConnection(bool OpenIfNotOpen=false)
+        {
+            if (DbConnection == null)
+                throw new InvalidOperationException($"{mClassName}: Database connection not initialized");
+            if (OpenIfNotOpen && DbConnection.State != ConnectionState.Open)
+            {
+                DbConnection.Open();
+                if (DbConnection.State != ConnectionState.Open)
+                    throw new InvalidOperationException($"{mClassName}: Database connection is not open");
+            }
+        }
+
+        private void UpdateViewModelAndShadow()
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.ModelItem = _ModelItem;
+            }
+            SetModelItemShadow();
+            LastExecutionResult = new ExecutionResult(mClassName);
+        }
+
+        private void SetQueryParameters(string query, object parameters)
+        {
+            mSQLQuery = query;
+            Parameters = DapperHelper.Utilities.GetDynamicParameters(parameters);
+        }
+
+        private void HandleGetItemError(ExecutionResult<ModelClass> er, Exception ex, string query)
+        {
+            er.ResultCode = ExecutionResultCodes.Failed;
+            er.Exception = ex;
+            er.ResultMessage = ex.Message;
+            er.ErrorCode = 1;
+            er.DebugInfo = $"SQLQuery = {query}";
+            LastExecutionResult = er.ToExecutionResult();
+            HandleException(er.ToExecutionResult());
+        }
+
+        public async Task<ExecutionResult> ExecuteInTransactionScope(
+       Func<IDbTransaction, Task> operation,
+       IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
+       int retryCount = 3)
+        {
+            var er = new ExecutionResult($"{mClassName}.ExecuteInTransactionScope()");
+            for (int i = 0; i < retryCount; i++)
+            {
+                try
+                {
+                    //ValidateConnection();
+                    using (var transaction = DbConnection.BeginTransaction(isolationLevel))
+                    {
+                        await operation(transaction);
+                        transaction.Commit();
+                        return er;
+                    }
+                }
+                catch (Exception ex) when (i < retryCount - 1)
+                {
+                    await Task.Delay(100 * (i + 1)); // Ritenta con un breve delay
+                }
+                catch (Exception ex)
+                {
+                    er.Exception = ex;
+                    er.ResultMessage = ex.Message;
+                    HandleException(er);
+                    return er;
+                }
+            }
+            return er;
+        }
+
+
+
     }
+
+    public class TransactionScope : IDisposable
+    {
+        public IDbTransaction Transaction { get; } // Proprietà pubblica per accedere alla transazione
+        private bool _committed;
+
+        public TransactionScope(IDbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        {
+            Transaction = connection.BeginTransaction(isolationLevel);
+        }
+
+        public void Commit()
+        {
+            Transaction.Commit();
+            _committed = true;
+        }
+
+        public void Dispose()
+        {
+            if (!_committed)
+                Transaction.Rollback();
+            Transaction.Dispose();
+        }
+    }
+
 }

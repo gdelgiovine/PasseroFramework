@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿using FastDeepCloner;
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -218,7 +219,26 @@ namespace Passero.Framework
             // Wait for 5 seconds
             await Task.Delay(Milliseconds);
         }
+        
 
+   
+
+
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        public static T WisejClone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            T newObject = Conversions.ToGenericParameter<T>(Activator.CreateInstance(source.GetType()));
+            newObject = Wisej.Core.WisejSerializer .Parse(Wisej.Core.WisejSerializer.Serialize(source));
+            return newObject;
+        }
 
 
 
@@ -228,7 +248,24 @@ namespace Passero.Framework
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <returns></returns>
+        /// 
+
         public static T Clone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            // Usa FastDeepCloner per creare una copia profonda
+            return (T)FastDeepCloner.DeepCloner.Clone(source);
+        }
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        /// 
+        public static T JsonClone<T>(T source)
         {
             if (ReferenceEquals(source, null))
                 return default;

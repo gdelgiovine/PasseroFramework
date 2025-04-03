@@ -1,5 +1,6 @@
 ﻿
 using Dapper;
+using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
@@ -189,12 +190,13 @@ namespace Passero.Framework.SSRSReports
             }
 
         }
-        public void ShowQBEReport()
+        public void ShowQBEReport(bool ShowModalMask=false)
         {
             this.SetupQBEReport();
             if (this.ReportGrid.CurrentRow != null)
                 this.SetupQueryGrid(this.ReportGrid.CurrentRow[0].Value.ToString().Trim().ToUpper());
 
+            this.ShowModalMask = ShowModalMask;
             this.Show();
         }
 
@@ -532,66 +534,102 @@ namespace Passero.Framework.SSRSReports
             {
                 PrimaryDataSet = Report.DataSets.Values.First();
             }
-            
+
             StringBuilder sqlwhere = new StringBuilder();
-            string _WhereAND = "";
             this.QueryGrid.EndEdit();
             DynamicParameters parameters = new DynamicParameters();
-            foreach (var item in this.QueryGrid.Rows)
+
+            //if (PrimaryDataSet.SQLQuery == null || PrimaryDataSet.SQLQuery.Trim() == "")
             {
-                StringBuilder sqlwhereitem = new StringBuilder();
-                string Value = "";
-                if (item[1].Value != null)
-                    Value = item[1].Value.ToString();
 
-                string _WhereItemOR = "";
-                string[] Values;
-                Type PropertyType = PrimaryDataSet .ModelProperties[item.Tag.ToString()].PropertyType;
-                Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
-                if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
+
+                
+                string _WhereAND = "";
+              
+                foreach (var item in this.QueryGrid.Rows)
                 {
-                    Value = Value.Trim();
+                    StringBuilder sqlwhereitem = new StringBuilder();
+                    string Value = "";
+                    if (item[1].Value != null)
+                        Value = item[1].Value.ToString();
+
+                    string _WhereItemOR = "";
+                    string[] Values;
+                    Type PropertyType = PrimaryDataSet.ModelProperties[item.Tag.ToString()].PropertyType;
+                    Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
+                    if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
+                    {
+                        Value = Value.Trim();
 
 
-                    if (Value != ";")
-                    {
-                        Values = Strings.Split(Value, ";");
-                    }
-                    else
-                    {
-                        Values = new string[1];
-                        Values[0] = ";";
-                    }
-
-                    int i = 1;
-                    foreach (var _Value in Values)
-                    {
-                        string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                        if (this.chkLikeOperator.Checked)
+                        if (Value != ";")
                         {
-                            sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                            parameters.Add(parametername, "%"+_Value+"%", Passero.Framework.Utilities.GetDbType(PropertyType));
+                            Values = Strings.Split(Value, ";");
                         }
                         else
                         {
-                            sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                            parameters.Add(parametername,RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
+                            Values = new string[1];
+                            Values[0] = ";";
                         }
 
-                        if (sqlwhereitem.Length > 0)
+                        int i = 1;
+                        foreach (var _Value in Values)
                         {
-                            _WhereItemOR = " OR ";
-                        }
-                        i++;
-                    }
-                    if (sqlwhere.Length > 0)
-                    {
-                        _WhereAND = " AND ";
-                    }
-                    sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
-                }
-            }
+                            string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
+                            if (this.chkLikeOperator.Checked)
+                            {
+                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
+                                parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
+                            }
+                            else
+                            {
+                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
+                                parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
+                            }
 
+                            if (sqlwhereitem.Length > 0)
+                            {
+                                _WhereItemOR = " OR ";
+                            }
+                            i++;
+                        }
+                        if (sqlwhere.Length > 0)
+                        {
+                            _WhereAND = " AND ";
+                        }
+                        sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
+                    }
+                }
+
+                if (PrimaryDataSet.SQLQuery == null || PrimaryDataSet.SQLQuery.Trim() == "")
+                {
+                    this.SQLQuery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName(PrimaryDataSet.Model)}";
+                    if (sqlwhere.ToString().Trim() != "")
+                        this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
+                    this.SQLQueryParameters = parameters;
+                }
+                else
+                {
+                    
+                    this.SQLQuery = $"SELECT * FROM ({PrimaryDataSet.SQLQuery}) AS X";
+                    if (sqlwhere.ToString().Trim() != "")
+                        this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
+                    parameters.AddDynamicParams(PrimaryDataSet.Parameters); 
+                    
+                    this.SQLQueryParameters = parameters;
+                }
+ 
+                 
+                this.SQLQuery += " " + Report.OrderBy();
+                
+                //PrimaryDataSet.Parameters = parameters;
+                //PrimaryDataSet.SQLQuery = SQLQuery;
+            }
+            //else
+            //{
+            //    SQLQuery = PrimaryDataSet.SQLQuery;
+            //    SQLQueryParameters = PrimaryDataSet.Parameters;
+            //}
 
             Report.SelectedSortColumns.Clear();
             foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
@@ -606,17 +644,8 @@ namespace Passero.Framework.SSRSReports
 
 
 
-            this.SQLQuery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName(PrimaryDataSet .Model)}";
-
-            if (sqlwhere.ToString ().Trim () != "")
-                this.SQLQuery=this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
-
-
-            this.SQLQuery += " "+Report.OrderBy() ;
-            this.SQLQueryParameters = parameters;
-            PrimaryDataSet.Parameters = parameters;
-            PrimaryDataSet.SQLQuery = SQLQuery;
-            PrimaryDataSet.LoadData();
+            
+            PrimaryDataSet.LoadData(SQLQuery, SQLQueryParameters);
 
 
             //Load Data for other datasets
@@ -628,7 +657,7 @@ namespace Passero.Framework.SSRSReports
                     {
                         DataSet.SQLQuery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName(DataSet.Model)}";
                     }
-                    DataSet.LoadData ();    
+                    DataSet.LoadData (DataSet.SQLQuery,DataSet.Parameters );    
                 }
             }
            

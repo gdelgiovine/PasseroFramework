@@ -92,7 +92,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The qbe model items.
         /// </value>
-        public List<ModelClass> QBEModelItems
+        public IList<ModelClass> QBEModelItems
         {
             get { return Repository.ModelItems; }
             set { Repository.ModelItems = value; }

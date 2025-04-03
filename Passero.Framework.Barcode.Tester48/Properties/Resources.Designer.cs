@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Passero.Framework.FRReports.Properties {
+namespace Passero.Framework.Barcode.Tester48.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Passero.Framework.FRReports.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Passero.Framework.FRReports.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Passero.Framework.Barcode.Tester48.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,16 +57,6 @@ namespace Passero.Framework.FRReports.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Powered_By_FastReport {
-            get {
-                object obj = ResourceManager.GetObject("Powered By FastReport", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

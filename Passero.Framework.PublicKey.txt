@@ -1,0 +1,12 @@
+
+Utilità Nome sicuro di Microsoft (R) .NET Framework Versione 4.0.30319.0
+Copyright (c) Microsoft Corporation. Tutti i diritti riservati.
+
+Chiave pubblica (algoritmo hash: sha1):
+0024000004800000940000000602000000240000525341310004000001000100112da38f085535
+7c8f507a7f7e60d9e974b3df0730d9d0bce809ddc2ff9cd07501e85a7b07af840a667c328c9963
+9ac2e71c884fd1f3d88931e20b2d971f8a7f795033f77396df3b040be0c15b7006e2b3cebd757e
+35d3955876e7e348ff48c349f193447cc18d1a8da4e84a31e2958aa799835369a8ae6d3224995d
+4e90b2b5
+
+Il token della chiave pubblica è 89d5a6871a57ff33
