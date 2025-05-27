@@ -151,7 +151,8 @@ namespace PasseroDemo.Views
         private void dataNavigator1_eAddNew()
         {
 
-            if (this.dataNavigator1.ActiveViewModel== this.vmTitleAuthor )
+            //if (this.dataNavigator1.ActiveViewModel.Equals(this.vmTitleAuthor) )
+            if (this.dataNavigator1.ActiveViewModelIs(this.vmTitleAuthor) )
             //if (this.dataNavigator1.DataGridActive)
             {
                 Models.Titleauthor titleauthor =new Models.Titleauthor();
@@ -172,7 +173,7 @@ namespace PasseroDemo.Views
         {
             this.dataNavigator1.ViewModel_UndoChanges();
 
-            //if (this.dataNavigator1.ActiveViewModel == this.vmTitleAuthor)
+            //if (this.dataNavigator1.ActiveViewModel.Equals(this.vmTitleAuthor))
             //{
             //    this.dataNavigator1.DataGrid_Undo();
             //}

@@ -2678,7 +2678,10 @@ namespace Passero.Framework
                                     int maxlength = Repository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
                                     if (s.Length > maxlength)
                                     {
-                                        s = s.Substring(0, maxlength);
+                                        //s = s.Substring(0, maxlength);
+                                        // Sostituzione di Substring con AsSpan
+                                        s = s.AsSpan(0, maxlength).ToString();
+
                                         Value = s;
                                     }
                                 }

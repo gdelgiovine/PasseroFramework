@@ -128,7 +128,8 @@ namespace Passero.Framework
             }
             for (i = x; i >= 1; i -= 1)
             {
-                a = SequenceMask.Substring(i - 1, 1);
+                //a = SequenceMask.Substring(i - 1, 1);
+                a= SequenceMask.AsSpan(i - 1, 1).ToString();    
                 if (!Equals(a, "F"))
                 {
                     c = Convert.ToInt32(value[i - 1]);
@@ -227,7 +228,8 @@ namespace Passero.Framework
                 {
                     EndPos = Value.Length;
                 }
-                str = StartPos <= Value.Length ? Value.Substring(StartPos - 1, EndPos - StartPos + 1) : "";
+                //str = StartPos <= Value.Length ? Value.Substring(StartPos - 1, EndPos - StartPos + 1) : "";
+                str = StartPos <= Value.Length ? Value.AsSpan(StartPos - 1, EndPos - StartPos + 1).ToString() : "";
             }
             else
             {

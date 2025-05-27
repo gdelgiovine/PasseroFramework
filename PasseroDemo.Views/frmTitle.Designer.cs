@@ -84,8 +84,8 @@
             this.tabTitle.Controls.Add(this.tabPageTitleAuthors);
             this.tabTitle.Location = new System.Drawing.Point(3, 0);
             this.tabTitle.Name = "tabTitle";
-            this.tabTitle.PageInsets = new Wisej.Web.Padding(0, 39, 0, 0);
-            this.tabTitle.Size = new System.Drawing.Size(886, 496);
+            this.tabTitle.PageInsets = new Wisej.Web.Padding(1, 40, 1, 1);
+            this.tabTitle.Size = new System.Drawing.Size(884, 494);
             this.tabTitle.TabIndex = 0;
             this.tabTitle.SelectedIndexChanged += new System.EventHandler(this.tabTitle_SelectedIndexChanged);
             // 
@@ -93,9 +93,9 @@
             // 
             this.tabPageTitles.Controls.Add(this.dgv_TitleAuthors);
             this.tabPageTitles.Controls.Add(this.pnl_Title);
-            this.tabPageTitles.Location = new System.Drawing.Point(0, 39);
+            this.tabPageTitles.Location = new System.Drawing.Point(1, 40);
             this.tabPageTitles.Name = "tabPageTitles";
-            this.tabPageTitles.Size = new System.Drawing.Size(886, 457);
+            this.tabPageTitles.Size = new System.Drawing.Size(882, 453);
             this.tabPageTitles.Text = "Title";
             // 
             // dgv_TitleAuthors
@@ -115,7 +115,7 @@
             this.dgv_TitleAuthors.Name = "dgv_TitleAuthors";
             this.dgv_TitleAuthors.ReadOnly = true;
             this.dgv_TitleAuthors.SelectionMode = Wisej.Web.DataGridViewSelectionMode.NoSelection;
-            this.dgv_TitleAuthors.Size = new System.Drawing.Size(866, 213);
+            this.dgv_TitleAuthors.Size = new System.Drawing.Size(862, 209);
             this.dgv_TitleAuthors.TabIndex = 2;
             this.dgv_TitleAuthors.DataBindingComplete += new Wisej.Web.DataGridViewBindingCompleteEventHandler(this.dgv_TitleAuthors_DataBindingComplete);
             this.dgv_TitleAuthors.CellClick += new Wisej.Web.DataGridViewCellEventHandler(this.dgv_TitleAuthors_CellClick);
@@ -188,7 +188,7 @@
             this.pnl_Title.Controls.Add(this.dtp_pubbdate);
             this.pnl_Title.Location = new System.Drawing.Point(6, 3);
             this.pnl_Title.Name = "pnl_Title";
-            this.pnl_Title.Size = new System.Drawing.Size(878, 224);
+            this.pnl_Title.Size = new System.Drawing.Size(874, 224);
             this.pnl_Title.TabIndex = 1;
             // 
             // button1
@@ -232,7 +232,7 @@
             this.txt_notes.MaxLength = 200;
             this.txt_notes.Multiline = true;
             this.txt_notes.Name = "txt_notes";
-            this.txt_notes.Size = new System.Drawing.Size(863, 111);
+            this.txt_notes.Size = new System.Drawing.Size(859, 111);
             this.txt_notes.TabIndex = 1;
             // 
             // txt_Royalties
@@ -346,9 +346,9 @@
             // 
             // tabPageTitleAuthors
             // 
-            this.tabPageTitleAuthors.Location = new System.Drawing.Point(0, 39);
+            this.tabPageTitleAuthors.Location = new System.Drawing.Point(1, 40);
             this.tabPageTitleAuthors.Name = "tabPageTitleAuthors";
-            this.tabPageTitleAuthors.Size = new System.Drawing.Size(886, 457);
+            this.tabPageTitleAuthors.Size = new System.Drawing.Size(882, 453);
             this.tabPageTitleAuthors.Text = "Title Authors";
             // 
             // tabDataNavigator
@@ -358,7 +358,7 @@
             this.tabDataNavigator.Dock = Wisej.Web.DockStyle.Fill;
             this.tabDataNavigator.Location = new System.Drawing.Point(0, 0);
             this.tabDataNavigator.Name = "tabDataNavigator";
-            this.tabDataNavigator.PageInsets = new Wisej.Web.Padding(0, 39, 0, 0);
+            this.tabDataNavigator.PageInsets = new Wisej.Web.Padding(1, 40, 1, 1);
             this.tabDataNavigator.Size = new System.Drawing.Size(902, 620);
             this.tabDataNavigator.TabIndex = 1;
             // 
@@ -366,9 +366,9 @@
             // 
             this.tabForm.Controls.Add(this.dataNavigator1);
             this.tabForm.Controls.Add(this.tabTitle);
-            this.tabForm.Location = new System.Drawing.Point(0, 39);
+            this.tabForm.Location = new System.Drawing.Point(1, 40);
             this.tabForm.Name = "tabForm";
-            this.tabForm.Size = new System.Drawing.Size(902, 581);
+            this.tabForm.Size = new System.Drawing.Size(900, 579);
             this.tabForm.Text = "Form View";
             // 
             // dataNavigator1
@@ -394,10 +394,10 @@
             // tabList
             // 
             this.tabList.Controls.Add(this.dgvListView);
-            this.tabList.Location = new System.Drawing.Point(0, 39);
+            this.tabList.Location = new System.Drawing.Point(1, 40);
             this.tabList.Name = "tabList";
             this.tabList.Padding = new Wisej.Web.Padding(3);
-            this.tabList.Size = new System.Drawing.Size(902, 581);
+            this.tabList.Size = new System.Drawing.Size(900, 579);
             this.tabList.Text = "List View";
             // 
             // dgvListView

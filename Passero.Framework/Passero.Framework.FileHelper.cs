@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 
 namespace Passero.Framework
@@ -69,7 +70,9 @@ namespace Passero.Framework
             string _Extension = GetFileExtension(FileName);
             if (FileName.EndsWith(_FileNameComplete))
             {
-                _Path = FileName.Substring(0, FileName.Length - _FileNameComplete.Length - 1);
+                //_Path = FileName.Substring(0, FileName.Length - _FileNameComplete.Length - 1);
+                _Path = FileName.AsSpan(0, FileName.Length - _FileNameComplete.Length - 1).ToString();
+
             }
 
             string _NewFileName = _Path + _FileName + _Extension;

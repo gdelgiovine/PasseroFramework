@@ -881,6 +881,8 @@ namespace Passero.Framework.Controls
             if (Value.StartsWith(op, StringComparison.CurrentCultureIgnoreCase) == false)
                 Value = op + Value;
             return Value.Substring(op.Length).Trim();
+            // Sostituzione di Substring con AsSpan
+            //return Value.AsSpan(op.Length).Trim().ToString();
         }
 
         /// <summary>

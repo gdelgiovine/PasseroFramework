@@ -877,7 +877,7 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// The active view model
         /// </summary>
-        private dynamic _ActiveViewModel = null;
+        private dynamic   _ActiveViewModel = null;
         /// <summary>
         /// Gets the active view model.
         /// </summary>
@@ -891,7 +891,21 @@ namespace Passero.Framework.Controls
                 return _ActiveViewModel;
             }
 
+            
         }
+        
+        public bool ActiveViewModelIs(object viewModel)    
+        {
+            if (_ActiveViewModel.Equals(viewModel))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Gets the type of the model.
         /// </summary>
