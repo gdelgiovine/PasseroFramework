@@ -582,7 +582,16 @@ namespace Passero.Framework.Controls
                 case ViewModelGridModes.DataRepeater:
                     if (_DataRepeater != null && DataGridActive)
                     {
-                        _DataRepeater.DataSource = ModelItems;
+
+                        if (_DataRepeater.DataSource is BindingSource bs)
+                        {
+                            bs.ResetBindings(false);
+                        }
+                        else
+                        {
+                            _DataRepeater.DataSource = ModelItems;
+                        }
+                        
                         //Me._DataRepeater.Refresh()
                         ER = DataRepeater_MoveFirst();
                     }
@@ -2458,7 +2467,6 @@ namespace Passero.Framework.Controls
                     if (_AddNewState == true)
                     {
                         dynamic item = ((IList)_ModelItems)[NewItemIndex];
-                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
                         ER = (ExecutionResult)_ActiveViewModel.InsertItem(item);
 
                         if (ER.Success)
@@ -2469,10 +2477,8 @@ namespace Passero.Framework.Controls
                     else
                     {
                         if (UseUpdateEx == false)
-                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItems(_ModelItems);
                         else
-                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItemsEx(_ModelItems);
                     }
 
@@ -3123,7 +3129,15 @@ namespace Passero.Framework.Controls
                 {
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
                     ER = (ExecutionResult)_ActiveViewModel.UndoChanges(true);
-                    DataRepeater.DataSource = ModelItems;
+
+                    if (DataRepeater.DataSource is BindingSource bs)
+                    {
+                        bs.ResetBindings(false);
+                    }
+                    else
+                    {
+                        DataRepeater.DataSource = ModelItems;
+                    }
                 }
 
             }
@@ -3197,7 +3211,23 @@ namespace Passero.Framework.Controls
             {
                 try
                 {
+                                      
+
                     IList items = (IList)DataRepeater.DataSource;
+
+                    if (DataRepeater.DataSource is BindingSource bs)
+                    {
+                        // If it is a BindingSource, get its DataSource
+                        if (bs.DataSource is IList)
+                        {
+                            items = (IList)bs.DataSource;
+                        }
+                    }
+                    else if (DataRepeater.DataSource is IList)
+                    {
+                        items = (IList)DataRepeater.DataSource;
+                    }
+
                     Type T = ReflectionHelper.GetListType(items);
                     _AddNewState = true;
                     if (NewItem == null)
