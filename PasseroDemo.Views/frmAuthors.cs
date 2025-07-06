@@ -20,10 +20,12 @@ namespace PasseroDemo.Views
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public IDbConnection DbConnection { get; set; }
         // Cosi di usa il viewmodel esteso
-        //public PasseroDemo.ViewModels.Author vmAuthor = new ViewModels.Author();
+        public PasseroDemo.ViewModels.vmAuthor  vmAuthor2 = new ViewModels.vmAuthor (); 
 
         // cosi quello base
         public Passero.Framework.ViewModel<Models.Author> vmAuthor = new Passero.Framework.ViewModel<Models.Author>();
+        public Passero.Framework.ViewModel<Models.Author> vmAuthor1 = new Passero.Framework.ViewModel<Models.Author>();
+
         Passero.Framework .Controls.QBEForm<Models.Author> QBEForm_Author = new Passero.Framework.Controls.QBEForm<Models.Author>();
         Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
         Passero.Framework.DbLookUp<Models.Author> dblAuthor = new DbLookUp<Models.Author>();
@@ -49,20 +51,30 @@ namespace PasseroDemo.Views
 
             vmAuthor.CreatePasseroBindingFromBindingSource();
 
-
+            vmAuthor1 .Init (this.DbConnection);
             // Questo Metodo sta nel ViewModel Customizzato
             //this.vmAuthor.GetAuthors();
             // Questo Metodo invece sta nella classe base ViewModel
             // this.vmAuthor.GetAllItems();
-
-            //this.dbLookUpTextBox1.DbConnection = this.DbConnection;
-            //this.dbLookUpTextBox1.ModelClass = typeof(Models.Author);
-            //this.dbLookUpTextBox1.DisplayMember = "au_fullname";
-            //this.dbLookUpTextBox1.ValueMember = "au_id";
-            //this.dbLookUpTextBox1.SelectClause = "SELECT *, TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
-
-
             
+
+            this.dbLookUpTextBox1.DbConnection = this.DbConnection;
+            this.dbLookUpTextBox1.SelectClause = " * , TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
+            this.dbLookUpTextBox1.ModelType = vmAuthor1.ModelType ;
+            this.dbLookUpTextBox1.DisplayMember = "au_id";
+            this.dbLookUpTextBox1.ValueMember = "au_id";
+            this.dbLookUpTextBox1.AddControl(this.textBox1 , "text", nameof(Models.Author.city));
+            //this.dbLookUpTextBox1.LookUpFunction  = () => vmAuthor1.GetAllItems();
+
+
+            //dblAuthor.SQLQuery = "SELECT * FROM Authors Where au_id=@au_id";
+            //dblAuthor.DataBindingMode = DataBindingMode.BindingSource;
+            //dblAuthor.DbConnection = this.DbConnection;
+            vmAuthor2 .Init(this.DbConnection); 
+            this.dblAuthor.LookUpFunction   = () => vmAuthor2.GetAuthor(this.txt_au_id.Text);
+            
+            dblAuthor.AddControl (this.textBox2 , "text", nameof(Models.Author.au_fullname )); 
+           
             this.dataNavigator1.DataGridListView = this.dataGridView1;  
             
             this.dataNavigator1.DataGridListViewActive = true;  
@@ -231,6 +243,13 @@ namespace PasseroDemo.Views
             
             
             a1.DeleteItems(_a2);
+            
+        }
+
+        private void txt_au_id_TextChanged(object sender, EventArgs e)
+        {
+            dblAuthor.DbParameters = new Dapper.DynamicParameters ( new { au_id = this.txt_au_id.Text } );
+            dblAuthor.Lookup();
             
         }
     }

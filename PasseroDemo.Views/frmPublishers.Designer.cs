@@ -32,13 +32,14 @@
             this.bsPublishers = new Wisej.Web.BindingSource(this.components);
             this.txt_Publishers_pub_id = new Wisej.Web.TextBox();
             this.txt_Publishers_pub_name = new Wisej.Web.TextBox();
-            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             this.txt_Publishers_city = new Wisej.Web.TextBox();
             this.flowLayoutPanel1 = new Wisej.Web.FlowLayoutPanel();
             this.txt_Publishers_state = new Wisej.Web.TextBox();
             this.txt_Publishers_country = new Wisej.Web.TextBox();
             this.txt_Publishers_phone = new Wisej.Web.TextBox();
             this.txt_Publishers_email = new Wisej.Web.TextBox();
+            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.gdgTextBox1 = new Passero.Framework.Controls.GDGTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.bsPublishers)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -70,32 +71,9 @@
             this.txt_Publishers_pub_name.Size = new System.Drawing.Size(264, 48);
             this.txt_Publishers_pub_name.TabIndex = 1;
             // 
-            // dataNavigator1
-            // 
-            this.dataNavigator1.Caption = "Publishers";
-            this.dataNavigator1.Dock = Wisej.Web.DockStyle.Bottom;
-            this.dataNavigator1.Location = new System.Drawing.Point(0, 297);
-            this.dataNavigator1.Name = "dataNavigator1";
-            this.dataNavigator1.Size = new System.Drawing.Size(542, 57);
-            this.dataNavigator1.TabIndex = 0;
-            this.dataNavigator1.eAddNew += new Passero.Framework.Controls.DataNavigator.eAddNewEventHandler(this.dataNavigator1_eAddNew);
-            this.dataNavigator1.eAddNewCompleted += new Passero.Framework.Controls.DataNavigator.eAddNewCompletedEventHandler(this.dataNavigator1_eAddNewCompleted);
-            this.dataNavigator1.eDelete += new Passero.Framework.Controls.DataNavigator.eDeleteEventHandler(this.dataNavigator1_eDelete);
-            this.dataNavigator1.eDeleteCompleted += new Passero.Framework.Controls.DataNavigator.eDeleteCompletedEventHandler(this.dataNavigator1_eDeleteCompleted);
-            this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
-            this.dataNavigator1.eSave += new Passero.Framework.Controls.DataNavigator.eSaveEventHandler(this.dataNavigator1_eSave);
-            this.dataNavigator1.eSaveCompleted += new Passero.Framework.Controls.DataNavigator.eSaveCompletedEventHandler(this.dataNavigator1_eSaveCompleted);
-            this.dataNavigator1.eUndo += new Passero.Framework.Controls.DataNavigator.eUndoEventHandler(this.dataNavigator1_eUndo);
-            this.dataNavigator1.eUndoCompleted += new Passero.Framework.Controls.DataNavigator.eUndoCompletedEventHandler(this.dataNavigator1_eUndoCompleted);
-            this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
-            this.dataNavigator1.eDeleteRequest += new Passero.Framework.Controls.DataNavigator.eDeleteRequestEventHandler(this.dataNavigator1_eDeleteRequest);
-            this.dataNavigator1.eSaveRequest += new Passero.Framework.Controls.DataNavigator.eSaveRequestEventHandler(this.dataNavigator1_eSaveRequest);
-            this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
-            this.dataNavigator1.eUndoRequest += new Passero.Framework.Controls.DataNavigator.eUndoRequestEventHandler(this.dataNavigator1_eUndoRequest);
-            // 
             // txt_Publishers_city
             // 
-            this.txt_Publishers_city.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "state", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.txt_Publishers_city.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "city", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
             this.flowLayoutPanel1.SetFlowBreak(this.txt_Publishers_city, true);
             this.txt_Publishers_city.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_city.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
@@ -118,6 +96,7 @@
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_country);
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_phone);
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_email);
+            this.flowLayoutPanel1.Controls.Add(this.gdgTextBox1);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 288);
@@ -168,6 +147,36 @@
             this.txt_Publishers_email.Size = new System.Drawing.Size(239, 48);
             this.txt_Publishers_email.TabIndex = 6;
             // 
+            // dataNavigator1
+            // 
+            this.dataNavigator1.Caption = "Publishers";
+            this.dataNavigator1.Dock = Wisej.Web.DockStyle.Bottom;
+            this.dataNavigator1.Location = new System.Drawing.Point(0, 297);
+            this.dataNavigator1.Name = "dataNavigator1";
+            this.dataNavigator1.Size = new System.Drawing.Size(542, 57);
+            this.dataNavigator1.TabIndex = 0;
+            this.dataNavigator1.eAddNew += new Passero.Framework.Controls.DataNavigator.eAddNewEventHandler(this.dataNavigator1_eAddNew);
+            this.dataNavigator1.eAddNewCompleted += new Passero.Framework.Controls.DataNavigator.eAddNewCompletedEventHandler(this.dataNavigator1_eAddNewCompleted);
+            this.dataNavigator1.eDelete += new Passero.Framework.Controls.DataNavigator.eDeleteEventHandler(this.dataNavigator1_eDelete);
+            this.dataNavigator1.eDeleteCompleted += new Passero.Framework.Controls.DataNavigator.eDeleteCompletedEventHandler(this.dataNavigator1_eDeleteCompleted);
+            this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
+            this.dataNavigator1.eSave += new Passero.Framework.Controls.DataNavigator.eSaveEventHandler(this.dataNavigator1_eSave);
+            this.dataNavigator1.eSaveCompleted += new Passero.Framework.Controls.DataNavigator.eSaveCompletedEventHandler(this.dataNavigator1_eSaveCompleted);
+            this.dataNavigator1.eUndo += new Passero.Framework.Controls.DataNavigator.eUndoEventHandler(this.dataNavigator1_eUndo);
+            this.dataNavigator1.eUndoCompleted += new Passero.Framework.Controls.DataNavigator.eUndoCompletedEventHandler(this.dataNavigator1_eUndoCompleted);
+            this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
+            this.dataNavigator1.eDeleteRequest += new Passero.Framework.Controls.DataNavigator.eDeleteRequestEventHandler(this.dataNavigator1_eDeleteRequest);
+            this.dataNavigator1.eSaveRequest += new Passero.Framework.Controls.DataNavigator.eSaveRequestEventHandler(this.dataNavigator1_eSaveRequest);
+            this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
+            this.dataNavigator1.eUndoRequest += new Passero.Framework.Controls.DataNavigator.eUndoRequestEventHandler(this.dataNavigator1_eUndoRequest);
+            // 
+            // gdgTextBox1
+            // 
+            this.gdgTextBox1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_name", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.gdgTextBox1.Location = new System.Drawing.Point(391, 165);
+            this.gdgTextBox1.Name = "gdgTextBox1";
+            this.gdgTextBox1.TabIndex = 7;
+            // 
             // frmPublishers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
@@ -197,5 +206,6 @@
         private Wisej.Web.TextBox txt_Publishers_country;
         private Wisej.Web.TextBox txt_Publishers_phone;
         private Wisej.Web.TextBox txt_Publishers_email;
+        private Passero.Framework.Controls.GDGTextBox gdgTextBox1;
     }
 }

@@ -1,11 +1,18 @@
 ﻿using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Wisej.Web;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Passero.Framework
 {
@@ -71,10 +78,39 @@ namespace Passero.Framework
         /// The model.
         /// </value>
         public ModelClass Model { get; private set; } = Activator.CreateInstance<ModelClass>();
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
-        /// </summary>
-        public DbLookUp()
+
+
+
+    private Expression<Func<object, bool>> _linqExpression;
+
+        private Func<object> mLookupFunction;
+
+
+    [Browsable(false)]
+    public Func<object> LookUpFunction
+    {
+        get { return mLookupFunction; }
+        set { mLookupFunction = value; }
+    }
+
+    public void SetFilter(Expression<Func<object, bool>> linqExpression)
+    {
+        _linqExpression = linqExpression;
+    }
+
+    public void ClearFilter()
+    {
+        _linqExpression = null;
+    }
+
+
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
+    /// </summary>
+    public DbLookUp()
         {
 
         }
@@ -88,6 +124,138 @@ namespace Passero.Framework
             this.DbConnection = DbConnection;
         }
 
+
+        private Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value)
+        {
+            if (Model== null)
+            {
+                throw new ArgumentException("ModelClass must be set before building a LINQ query");
+            }
+
+            // Create the parameter of type Object
+            var parameter = Expression.Parameter(typeof(object), "x");
+            var modelType = Model.GetType();    
+            // Convert the Object parameter to the model type
+            var convertedParameter = Expression.Convert(parameter, modelType);
+
+            // Create the property access on the converted parameter
+            var property = Expression.Property(convertedParameter, propertyName);
+
+            // Create the constant value with the correct type of the property
+            var propertyType = modelType.GetProperty(propertyName).PropertyType;
+            var constant = Expression.Constant(Convert.ChangeType(value, propertyType));
+
+            // Create the equality expression
+            var equalExpression = Expression.Equal(property, constant);
+
+            // Create the complete expression tree using the original Object parameter
+            return Expression.Lambda<Func<object, bool>>(equalExpression, parameter);
+        }
+
+        private void EnsureLookupFunction()
+        {
+            // Model = Activator.CreateInstance(mModelClass);
+            object Items = null;
+            try
+            {
+                var extResult = mLookupFunction.Invoke();
+
+                switch (extResult)
+                {
+                    case ExecutionResult executionResult:
+
+                        break;
+
+                    case var _ when extResult != null &&
+                                extResult.GetType().IsGenericType &&
+                                extResult.GetType().GetGenericTypeDefinition() == typeof(ExecutionResult<>):
+                        var resultType = extResult.GetType();
+                        var valueField = resultType.GetField("Value", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                        if (valueField != null)
+                        {
+                            Items = (IList)valueField.GetValue(extResult);
+                        }
+                        var _value = "";
+                        var _propertyName = "";
+                        _linqExpression = BuildDynamicLinqQuery(_propertyName  , _value);
+                        break;
+
+                    case IList list:
+                        Items = list;
+                        break;
+
+                    case IEnumerable enumerable:
+                        Items = enumerable;
+                        break;
+
+                    case ModelClass:
+
+                        // Altri casi
+                        // Se il risultato è un oggetto singolo, lo mettiamo in una lista   
+                        if (extResult != null && extResult.GetType().IsClass)
+                        {
+                            Model = (ModelClass )extResult;
+                            Items = new List<object> { extResult };
+                        }
+                        else
+                        {
+
+                        }
+                        break;
+
+
+                        default:
+                        // Altri casi
+                        
+                        break;
+                }
+
+                object Item = null;
+                if (Items != null)
+                {
+                    // Cast Items to the correct type for using LINQ
+                    var typedItems = (IEnumerable<object>)Items;
+
+                    // Apply the LINQ filter
+                    if (_linqExpression != null)
+                        // Use the LINQ expression to filter the items
+                        Item = typedItems.AsEnumerable().FirstOrDefault(_linqExpression.Compile());
+                    else
+                        Item = typedItems.AsEnumerable().FirstOrDefault();
+
+                    // Convert the result to IDictionary if necessary
+                    if (Item != null)
+                    {
+                        if (Item is IDictionary<string, object> dictionary)
+                        {
+                            //Model = dictionary;
+                            Model = Model;
+                        }
+                        else
+                        {
+                            
+                            //Model = Item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                            //    .Where(p => p.CanRead)
+                            //    .ToDictionary(p => p.Name, p => p.GetValue(Item) ?? null);
+                        }
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                // Error handling
+                //LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
+                //LastExecutionResult.ErrorCode = 1;
+                //LastExecutionResult.ResultMessage = ex.Message;
+                //LastExecutionResult.Exception = ex;
+            }
+
+        }
+
+
+
         /// <summary>
         /// Lookups this instance.
         /// </summary>
@@ -96,18 +264,35 @@ namespace Passero.Framework
         {
             LastExecutionResult.Reset();
             bool result = false;
+                       
+
+
+
             try
             {
                 Model = Activator.CreateInstance<ModelClass>();
-                Model = DbConnection.Query<ModelClass>(SQLQuery, DbParameters).FirstOrDefault<ModelClass>();
-                if (Model == null)
+
+                if (mLookupFunction != null)
                 {
-                    Model = Activator.CreateInstance<ModelClass>();
+                    EnsureLookupFunction();
+                    if (Model is not null)
+                    {
+                        result = true;
+                    }
                 }
                 else
                 {
-                    result = true;
+                    Model = DbConnection.Query<ModelClass>(SQLQuery, DbParameters).FirstOrDefault<ModelClass>();
+                    if (Model == null)
+                    {
+                        Model = Activator.CreateInstance<ModelClass>();
+                    }
+                    else
+                    {
+                        result = true;
+                    }
                 }
+
                 // Databinding
                 switch (DataBindingMode)
                 {

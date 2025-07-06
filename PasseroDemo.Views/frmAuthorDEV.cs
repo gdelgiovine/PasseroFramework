@@ -62,7 +62,7 @@ namespace PasseroDemo.Views
             dblAuthor.SQLQuery = "SELECT * FROM Authors Where au_id=@au_id";
             dblAuthor.DataBindingMode = DataBindingMode.Passero   ;
             //dblAuthor.BindingSource = this.bindingSource1;
-           
+            
             dblAuthor.AddControl(this.textBox1, "text", nameof(dblAuthor.Model.address));
             dblAuthor.AddControl(this.textBox3, "text", nameof(dblAuthor.Model.city ));
 

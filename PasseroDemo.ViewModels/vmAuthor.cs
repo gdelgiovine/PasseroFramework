@@ -11,7 +11,7 @@ namespace PasseroDemo.ViewModels
         public Models.Author GetAuthor(string au_id)
         {
             
-            return this.Repository.DbConnection.Query<Models.Author>($"Select * FROM {this.Repository.GetTableName()} Where au_id=@ID", new { au_id = au_id }).Single();
+            return this.Repository.DbConnection.Query<Models.Author>($"Select * FROM {this.Repository.GetTableName()} Where au_id=@au_id", new { au_id = au_id }).Single();
         }
         public IEnumerable<Models.Author> GetAuthors()
         {

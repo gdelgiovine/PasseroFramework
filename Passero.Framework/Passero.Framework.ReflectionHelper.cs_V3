@@ -1,14 +1,10 @@
-﻿
-using Microsoft.VisualBasic;
+﻿using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
-
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 
 namespace Passero.Framework
@@ -61,8 +57,6 @@ namespace Passero.Framework
         }
 
 
-      
-
 
         /// <summary>
         /// Calls the name of the by.
@@ -72,7 +66,7 @@ namespace Passero.Framework
         /// <param name="UseCallType">Type of the use call.</param>
         /// <param name="Args">The arguments.</param>
         /// <returns></returns>
-        public static object CallByNameVB(object ObjectRef, string ProcName, CallType UseCallType, params object[] Args)
+        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType, params object[] Args)
         {
 
             return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType, Args);
@@ -86,163 +80,11 @@ namespace Passero.Framework
         /// <param name="ProcName">Name of the proc.</param>
         /// <param name="UseCallType">Type of the use call.</param>
         /// <returns></returns>
-        public static object CallByNameVB(object ObjectRef, string ProcName, CallType UseCallType)
+        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType)
         {
 
             return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType);
 
-        }
-
-
-        // Cache per migliorare le prestazioni della riflessione
-        private static readonly ConcurrentDictionary<string, MemberInfo> _memberCache =
-            new ConcurrentDictionary<string, MemberInfo>();
-        private static readonly ConcurrentDictionary<string, MethodInfo[]> _methodCache =
-            new ConcurrentDictionary<string, MethodInfo[]>();
-
-        /// <summary>
-        /// Calls the name of the by - Optimized version.
-        /// </summary>
-        /// <param name="ObjectRef">The object reference.</param>
-        /// <param name="ProcName">Name of the proc.</param>
-        /// <param name="UseCallType">Type of the use call.</param>
-        /// <param name="Args">The arguments.</param>
-        /// <returns></returns>
-        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType, params object[] Args)
-        {
-            if (ObjectRef == null)
-                throw new ArgumentNullException(nameof(ObjectRef));
-            if (string.IsNullOrEmpty(ProcName))
-                throw new ArgumentException("Procedure name cannot be null or empty", nameof(ProcName));
-            //return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType, Args);
-            return CallByNameOptimized(ObjectRef, ProcName, UseCallType, Args);
-        }
-
-        /// <summary>
-        /// Calls the name of the by - Optimized version.
-        /// </summary>
-        /// <param name="ObjectRef">The object reference.</param>
-        /// <param name="ProcName">Name of the proc.</param>
-        /// <param name="UseCallType">Type of the use call.</param>
-        /// <returns></returns>
-        public static object CallByName(object ObjectRef, string ProcName, CallType UseCallType)
-        {
-            return CallByName(ObjectRef, ProcName, UseCallType, null);
-        }
-
-        /// <summary>
-        /// Optimized implementation of CallByName using caching for better performance.
-        /// </summary>
-        private static object CallByNameOptimized(object target, string memberName, CallType callType, params object[] args)
-        {
-            if (target == null) return null;
-
-            var targetType = target.GetType();
-            var cacheKey = $"{targetType.FullName}.{memberName}";
-
-            try
-            {
-                switch (callType)
-                {
-                    case CallType.Get:
-                        return GetPropertyValueCached(target, memberName, cacheKey, args);
-
-                    case CallType.Let:
-                    case CallType.Set:
-                        SetPropertyValueCached(target, memberName, cacheKey, args);
-                        return null;
-
-                    case CallType.Method:
-                        return InvokeMethodCached(target, memberName, cacheKey, args);
-
-                    default:
-                        throw new ArgumentException($"Unsupported CallType: {callType}");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Fallback to VB.NET implementation for compatibility
-                return Microsoft.VisualBasic.Interaction.CallByName(target, memberName, callType, args);
-            }
-        }
-
-        private static object GetPropertyValueCached(object target, string propertyName, string cacheKey, object[] args)
-        {
-            var propertyInfo = _memberCache.GetOrAdd(cacheKey, key =>
-                target.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance)) as PropertyInfo;
-
-            if (propertyInfo == null)
-                throw new ArgumentException($"Property '{propertyName}' not found on type '{target.GetType().Name}'");
-
-            return propertyInfo.GetValue(target, args);
-        }
-
-        private static void SetPropertyValueCached(object target, string propertyName, string cacheKey, object[] args)
-        {
-            var propertyInfo = _memberCache.GetOrAdd(cacheKey, key =>
-                target.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance)) as PropertyInfo;
-
-            if (propertyInfo == null)
-                throw new ArgumentException($"Property '{propertyName}' not found on type '{target.GetType().Name}'");
-
-            if (!propertyInfo.CanWrite)
-                throw new ArgumentException($"Property '{propertyName}' is read-only");
-
-            propertyInfo.SetValue(target, args?[0], null);
-        }
-
-        private static object InvokeMethodCached(object target, string methodName, string cacheKey, object[] args)
-        {
-            var methods = _methodCache.GetOrAdd(cacheKey, key =>
-                target.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(m => m.Name == methodName)
-                    .ToArray());
-
-            if (methods.Length == 0)
-                throw new ArgumentException($"Method '{methodName}' not found on type '{target.GetType().Name}'");
-
-            // Trova il metodo con il numero di parametri corretto
-            var method = FindBestMatchingMethod(methods, args);
-            if (method == null)
-                throw new ArgumentException($"No suitable overload found for method '{methodName}' with {args?.Length ?? 0} parameters");
-
-            return method.Invoke(target, args);
-        }
-
-        //private static MethodInfo FindBestMatchingMethod(MethodInfo[] methods, object[] args)
-        //{
-        //    var argCount = args?.Length ?? 0;
-
-        //    // Prima cerca corrispondenza esatta per numero di parametri
-        //    var exactMatch = methods.FirstOrDefault(m => m.GetParameters().Length == argCount);
-        //    if (exactMatch != null) return exactMatch;
-
-        //    // Poi cerca metodi con parametri params
-        //    return methods.FirstOrDefault(m =>
-        //    {
-        //        var parameters = m.GetParameters();
-        //        return parameters.Length > 0 &&
-        //               parameters[1].IsDefined(typeof(ParamArrayAttribute), false) &&
-        //               parameters.Length - 1 <= argCount;
-        //    });
-        //}
-
-        private static MethodInfo FindBestMatchingMethod(MethodInfo[] methods, object[] args)
-        {
-            var argCount = args?.Length ?? 0;
-
-            // Prima cerca corrispondenza esatta per numero di parametri
-            var exactMatch = methods.FirstOrDefault(m => m.GetParameters().Length == argCount);
-            if (exactMatch != null) return exactMatch;
-
-            // Poi cerca metodi con parametri params
-            return methods.FirstOrDefault(m =>
-            {
-                var parameters = m.GetParameters();
-                return parameters.Length > 0 &&
-                       parameters[parameters.Length - 1].IsDefined(typeof(ParamArrayAttribute), false) && // Controlla l'ultimo parametro
-                       parameters.Length - 1 <= argCount;
-            });
         }
         /// <summary>
         /// Gets the type of the list.

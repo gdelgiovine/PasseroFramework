@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passero.Framework.FRReports
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passero.Framework.Barcode", "Passero.Framework.Barcode\Passero.Framework.Barcode.csproj", "{7520F398-98F0-AB04-2836-B2C2FFC03E98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passero.Framework.BusinessSystem", "Passero.Framework.BusinessSystem\Passero.Framework.BusinessSystem.csproj", "{32992A38-895A-4C19-8897-477DBBDC287A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{7520F398-98F0-AB04-2836-B2C2FFC03E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7520F398-98F0-AB04-2836-B2C2FFC03E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7520F398-98F0-AB04-2836-B2C2FFC03E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32992A38-895A-4C19-8897-477DBBDC287A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32992A38-895A-4C19-8897-477DBBDC287A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32992A38-895A-4C19-8897-477DBBDC287A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32992A38-895A-4C19-8897-477DBBDC287A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -43,12 +43,13 @@
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="MiniExcel" Version="1.41.2" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.19" />
-    <PackageReference Include="Wisej-3-Camera" Version="3.5.19" />
-    <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.19" />
+    <PackageReference Include="Wisej-3" Version="3.5.20" />
+    <PackageReference Include="Wisej-3-Camera" Version="3.5.20" />
+    <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.20" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Passero.Framework.BusinessSystem\Passero.Framework.BusinessSystem.csproj" />
     <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
   </ItemGroup>
 

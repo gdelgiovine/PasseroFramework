@@ -1,12 +1,15 @@
 ﻿using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Linq.Expressions;
+using System.Reflection;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
@@ -18,6 +21,34 @@ namespace Passero.Framework.Controls
     [DefaultBindingProperty("Value")]
     public partial class DbLookUpTextBox : Wisej.Web.TextBox
     {
+
+
+        private Expression<Func<object, bool>> _linqExpression;
+
+        private Func<object> mLookUpFunction;
+
+        [Browsable(false)]
+        public Func<object> LookUpFunction
+        {
+            get { return mLookUpFunction; }
+            set { mLookUpFunction = value; }
+        }
+
+        public void SetFilter(Expression<Func<object, bool>> linqExpression)
+        {
+            _linqExpression = linqExpression;
+        }
+
+        public void ClearFilter()
+        {
+            _linqExpression = null;
+        }
+
+
+
+
+
+
         /// <summary>
         /// Gets or sets the data bind controls.
         /// </summary>
@@ -59,7 +90,7 @@ namespace Passero.Framework.Controls
         {
             InitializeComponent();
             SetControl();
-            
+
         }
 
         /// <summary>
@@ -128,7 +159,7 @@ namespace Passero.Framework.Controls
                     //e.Handled = true;
                     Lock = false;
                 }
-                
+
             }
 
         }
@@ -358,7 +389,7 @@ namespace Passero.Framework.Controls
                 if (this.DisplayMember.Trim() == "" | this.ValueMember.Trim() == "")
                     return;
 
-                if (value == null | value == System.DBNull.Value  )
+                if (value == null | value == System.DBNull.Value)
                 {
                     this.Text = "";
                     ClearControls();
@@ -440,6 +471,17 @@ namespace Passero.Framework.Controls
                 TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(mModelClass);
             }
         }
+
+        public Type ModelType
+        {
+            get
+            { return ModelClass; }
+            set
+            {
+                ModelClass = value;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the select clause.
         /// </summary>
@@ -515,9 +557,42 @@ namespace Passero.Framework.Controls
                 parameters.Add(par, 0);
             }
             //parameters.Add("@ValueMember", this.mValue);
-            parameters.Add("@ValueMember",this.Text  );
+            parameters.Add("@ValueMember", this.Text);
 
         }
+
+
+
+
+        private Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value)
+        {
+
+            if (ModelClass == null)
+            {
+                throw new ArgumentException("ModelClass must be set before building a LINQ query");
+            }
+
+            // Create the parameter of type Object
+            var parameter = Expression.Parameter(typeof(object), "x");
+
+            // Convert the Object parameter to the model type
+            var convertedParameter = Expression.Convert(parameter, ModelClass);
+
+            // Create the property access on the converted parameter
+            var property = Expression.Property(convertedParameter, propertyName);
+
+            // Create the constant value with the correct type of the property
+            var propertyType = ModelClass.GetProperty(propertyName).PropertyType;
+            var constant = Expression.Constant(Convert.ChangeType(value, propertyType));
+
+            // Create the equality expression
+            var equalExpression = Expression.Equal(property, constant);
+
+            // Create the complete expression tree using the original Object parameter
+            return Expression.Lambda<Func<object, bool>>(equalExpression, parameter);
+        }
+
+
 
         /// <summary>
         /// Ensures the SQL query display member.
@@ -532,6 +607,7 @@ namespace Passero.Framework.Controls
             //if (this.Text == "")
             //    return;
 
+            //_linqExpression = BuildDynamicLinqQuery(ValueMember, _value);
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
             this.SQLQuery = $"SELECT {this.SelectClause} FROM {TableName} WHERE {this.DisplayMember}=@DisplayMember";
@@ -551,6 +627,89 @@ namespace Passero.Framework.Controls
 
         }
 
+
+        private void EnsureLookupFunction()
+        {
+            // Model = Activator.CreateInstance(mModelClass);
+            object Items = null;
+            try
+            {
+                var extResult = LookUpFunction.Invoke();
+
+                switch (extResult)
+                {
+                    case ExecutionResult executionResult:
+
+                        break;
+
+                    case var _ when extResult != null &&
+                                extResult.GetType().IsGenericType &&
+                                extResult.GetType().GetGenericTypeDefinition() == typeof(ExecutionResult<>):
+                        var resultType = extResult.GetType();
+                        var valueField = resultType.GetField("Value", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                        if (valueField != null)
+                        {
+                            Items = (IList)valueField.GetValue(extResult);
+                        }
+                        var _value = this.Text;
+                        _linqExpression = BuildDynamicLinqQuery(ValueMember, _value);
+                        break;
+
+                    case IList list:
+                        Items = list;
+                        break;
+
+                    case IEnumerable enumerable:
+                        Items = enumerable;
+                        break;
+
+                    default:
+                        // Altri casi
+                        break;
+                }
+
+                object Item = null;
+                if (Items != null)
+                {
+                    // Cast Items to the correct type for using LINQ
+                    var typedItems = (IEnumerable<object>)Items;
+
+                    // Apply the LINQ filter
+                    if (_linqExpression != null)
+                        // Use the LINQ expression to filter the items
+                        Item = typedItems.AsEnumerable().FirstOrDefault(_linqExpression.Compile());
+                    else
+                        Item = typedItems.AsEnumerable().FirstOrDefault();
+
+                    // Convert the result to IDictionary if necessary
+                    if (Item != null)
+                    {
+                        if (Item is IDictionary<string, object> dictionary)
+                        {
+                            Model = dictionary;
+                        }
+                        else
+                        {
+                            Model = Item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                .Where(p => p.CanRead)
+                                .ToDictionary(p => p.Name, p => p.GetValue(Item) ?? null);
+                        }
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                // Error handling
+                //LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
+                //LastExecutionResult.ErrorCode = 1;
+                //LastExecutionResult.ResultMessage = ex.Message;
+                //LastExecutionResult.Exception = ex;
+            }
+             
+        }
+
         /// <summary>
         /// Looks up.
         /// </summary>
@@ -561,6 +720,68 @@ namespace Passero.Framework.Controls
             ValidLookUp = false;
             this.ClearControls(FromEditing);
 
+            object Items = null;
+
+            if (LookUpFunction == null)
+            {
+                if (LookUpMode == LookUpModes.Standard)
+                {
+                    this.EnsureSQLQueryValueMember();
+                }
+                else
+                {
+                    this.EnsureSQLQueryDisplayMember();
+                }
+            }
+            else
+            {
+                // Model = Activator.CreateInstance(mModelClass);
+                if (LookUpMode == LookUpModes.Standard)
+                {
+                    this.EnsureLookupFunction();
+                }
+                else
+                {
+                    //this.EnsureSQLQueryDisplayMember();
+                }
+                
+            }
+
+            if (Model != null)
+            {
+                    Lock = true;
+                    if (LookUpMode == LookUpModes.Standard)
+                    {
+                        Text = Model[ValueMember].ToString();
+                    }
+                    else
+                    {
+                        Text = Model[DisplayMember].ToString();
+                        mValue = Model[ValueMember];
+                    }
+                    Lock = false;
+
+                    // DataBindControls
+                    foreach (var _item in DataBindControls.Values)
+                    {
+                        if (Model[_item.ModelPropertyName] != null)
+                        {
+                            Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, Model[_item.ModelPropertyName]);
+                        }
+                        else
+                        {
+                            Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, "");
+                        }
+                    }
+                    ValidLookUp = true;
+                }
+                else
+                {
+                    // Lock = true;
+                    // Text = "";
+                    // Lock = false;
+                }
+            
             if (FromEditing)
             {
                 this.mValue = this.Text;

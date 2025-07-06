@@ -17,13 +17,14 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Passero.Framework.BusinessSystem\Passero.Framework.BusinessSystem.csproj" />
+    <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
   </ItemGroup>
 
 </Project>

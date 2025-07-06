@@ -188,7 +188,7 @@ namespace PasseroDemo.Views
 
             this.pnl_Title.Parent = tabTitle.SelectedTab;
             this.dgv_TitleAuthors.Parent = tabTitle.SelectedTab;
-
+            this.dgv_TitleAuthors.BringToFront();
 
             if (tabTitle .SelectedTab== tabPageTitles )
             {
@@ -196,9 +196,6 @@ namespace PasseroDemo.Views
                 this.dgv_TitleAuthors.ReadOnly = true;
 
                 this.dataNavigator1.SetActiveViewModel(this.dataNavigator1.ViewModels["Title"]);
-                //this.dataNavigator1.DataGridActive = false;
-                //this.dataNavigator1.ViewModel = vmTitle;
-
             }
 
             if (tabTitle.SelectedTab == tabPageTitleAuthors )
@@ -334,6 +331,11 @@ namespace PasseroDemo.Views
             string sql = "";
 
             sql = Passero.Framework.DataBaseHelper.GetUpdateSqlCommand("Select * FROM Titles", (System.Data .SqlClient .SqlConnection )this.DbConnection);
+
+        }
+
+        private void tabPageTitles_PanelCollapsed(object sender, EventArgs e)
+        {
 
         }
     }

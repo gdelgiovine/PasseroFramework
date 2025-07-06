@@ -4,16 +4,18 @@ using Dapper.ColumnMapper;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Drawing2D;
 using Dapper;
-
+using Passero.Framework.BusinessSystem;
+using System.ComponentModel;
 namespace PasseroDemo.Models
 {
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("Authors")]
     public class AuthorSmall : Passero.Framework.ModelBase
     {
         [ExplicitKey]
         [Dapper.Contrib.Extensions.Key]
         [ColumnMapping("au_id")]
+        
         public string? au_id { get; set; }
         [ColumnMapping("au_lname")]
         public string? au_lname { get; set; }
@@ -21,8 +23,9 @@ namespace PasseroDemo.Models
       
 
         }
-   
-        [Table("Authors")]
+
+    [BusinessAttributes.SystemName("ERP")]
+    [Table("Authors")]
     public class Author: Passero.Framework.ModelBase 
     {
         [ExplicitKey]
@@ -87,7 +90,7 @@ namespace PasseroDemo.Models
         }
     }
 
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("titles")]
     public class Title : Passero.Framework.ModelBase
     {
@@ -115,7 +118,7 @@ namespace PasseroDemo.Models
 
 
 
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("discounts")]
     public class Discount : Passero.Framework.ModelBase
     {
@@ -130,7 +133,7 @@ namespace PasseroDemo.Models
         public decimal? discount { get; set; } = 0;
        
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("employee")]
     public class Employee : Passero.Framework.ModelBase
     {
@@ -147,17 +150,21 @@ namespace PasseroDemo.Models
         public string phone { get; set; }
         public string email { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
+    [BusinessAttributes.ObjectName("JOBS","TABELLA JOBS")]
     [Table("jobs")]
     public class Job : Passero.Framework.ModelBase
     {
         [ExplicitKey]
+        [Description("A")]
+        [BusinessAttributes.ObjectName ("JOB_ID","DESCRIZIONE")]
         public short job_id { get; set; }
         public string job_desc { get; set; }
         public byte min_lvl { get; set; }
         public byte max_lvl { get; set; }
     }
 
+    [BusinessAttributes.SystemName("ERP")]
     [Table("pub_info")]
     public class Pub_info : Passero.Framework.ModelBase
     {
@@ -166,7 +173,7 @@ namespace PasseroDemo.Models
         public byte[] logo { get; set; }
         public string pr_info { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("publishers")]
     public class Publisher : Passero.Framework.ModelBase
     {
@@ -180,6 +187,7 @@ namespace PasseroDemo.Models
         public string email { get; set; }
     }
 
+    [BusinessAttributes.SystemName("ERP")]
     [Table("roysched")]
     public class Roysched : Passero.Framework.ModelBase
     {
@@ -193,6 +201,7 @@ namespace PasseroDemo.Models
         public int? royalty { get; set; }
     }
 
+    [BusinessAttributes.SystemName("ERP")]
     [Table("sales")]
     public class Sale : Passero.Framework.ModelBase
     {
@@ -210,6 +219,7 @@ namespace PasseroDemo.Models
         public string title_id { get; set; }
     }
 
+    [BusinessAttributes.SystemName("ERP")]
     [Table("salesdetails")]
     public class Salesdetail : Passero.Framework.ModelBase
     {
@@ -220,7 +230,7 @@ namespace PasseroDemo.Models
         public short qty { get; set; }
         public decimal price { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("salesmaster")]
     public class Salemaster : Passero.Framework.ModelBase
     {
@@ -232,7 +242,7 @@ namespace PasseroDemo.Models
         public string stor_ord_num { get; set; }
         public DateTime? stor_ord_date { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("stores")]
     public class Store : Passero.Framework.ModelBase
     {
@@ -245,7 +255,7 @@ namespace PasseroDemo.Models
         public string? zip { get; set; }
         public string? mcode { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     [Table("titleauthor")]
     public class Titleauthor : Passero.Framework.ModelBase
     {
@@ -257,8 +267,8 @@ namespace PasseroDemo.Models
         public int? royaltyper { get; set; }
     }
 
-    
- 
+
+    [BusinessAttributes.SystemName("ERP")]
     public class vAuthorsFullname : Passero.Framework.ModelBase
     {
         public string au_id { get; set; }
@@ -273,7 +283,7 @@ namespace PasseroDemo.Models
         public string email { get; set; }
         public string au_fullname { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     public class vpub_info_publisher : Passero.Framework.ModelBase
     {
         public string pub_id { get; set; }
@@ -286,7 +296,7 @@ namespace PasseroDemo.Models
         public string phone { get; set; }
         public string email { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     public class vtitles_publishers : Passero.Framework.ModelBase
     {
         public string title_id { get; set; }
@@ -294,7 +304,7 @@ namespace PasseroDemo.Models
         public string pub_id { get; set; }
         public string pub_name { get; set; }
     }
-
+    [BusinessAttributes.SystemName("ERP")]
     public class vtitleview : Passero.Framework.ModelBase
     {
         public string title { get; set; }
@@ -305,6 +315,7 @@ namespace PasseroDemo.Models
         public string pub_id { get; set; }
     }
 
+    [BusinessAttributes.SystemName("ERP")]
     [Table("TEST")]
     public class TEST : Passero.Framework.ModelBase
     {
