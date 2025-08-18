@@ -59,13 +59,16 @@ namespace PasseroDemo.Views
             
 
             this.dbLookUpTextBox1.DbConnection = this.DbConnection;
-            this.dbLookUpTextBox1.SelectClause = " * , TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
-            this.dbLookUpTextBox1.ModelType = vmAuthor1.ModelType ;
+            // questi servono solo se non si usa DataSource 
+            //this.dbLookUpTextBox1.SelectClause = " * , TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
+            //this.dbLookUpTextBox1.ModelType = vmAuthor1.ModelType ;
+            //-----------------------------
+
             this.dbLookUpTextBox1.DisplayMember = "au_id";
             this.dbLookUpTextBox1.ValueMember = "au_id";
             this.dbLookUpTextBox1.AddControl(this.textBox1 , "text", nameof(Models.Author.city));
-            //this.dbLookUpTextBox1.LookUpFunction  = () => vmAuthor1.GetAllItems();
-
+            this.dbLookUpTextBox1.DynamicDataSource  = () => vmAuthor1.GetAllItems();
+            //this.dbLookUpTextBox1.DataSource = vmAuthor1.GetAllItems();
 
             //dblAuthor.SQLQuery = "SELECT * FROM Authors Where au_id=@au_id";
             //dblAuthor.DataBindingMode = DataBindingMode.BindingSource;

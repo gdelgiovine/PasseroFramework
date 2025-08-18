@@ -2,6 +2,7 @@
 using Wisej.Web;
 using System.Data;
 using Passero.Framework.Controls;
+using Passero.Framework.Base;
 
 namespace PasseroDemo.Views
 {
@@ -10,7 +11,7 @@ namespace PasseroDemo.Views
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public Passero.Framework.ViewModel<Models.Publisher> vmPublishers = new Passero.Framework.ViewModel<Models.Publisher>();
         private System.Data.SqlClient.SqlConnection DbConnection;
-
+        private Microsoft.Data.SqlClient.SqlConnection DbConnectionA;
         public frmPublishers()
         {
             InitializeComponent();
@@ -19,8 +20,10 @@ namespace PasseroDemo.Views
         public void Init()
         {
             this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnectionA = new Microsoft.Data.SqlClient.SqlConnection(ConfigurationManager.DBConnections["PasseroDemo"].ConnectionString);
 
-            vmPublishers.Init(this.DbConnection);
+
+            vmPublishers.Init(this.DbConnectionA);
             //vmPublishers.DataBindControlsAutoSetMaxLenght = true;
             //vmPublishers.AutoWriteControls = true;
             //vmPublishers.AutoReadControls = true;
@@ -32,7 +35,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.SetActiveViewModel("Publishers");
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
-            this.dataNavigator1.Init(false);
+            this.dataNavigator1.Init(true);
             
         }
 
@@ -75,7 +78,9 @@ namespace PasseroDemo.Views
 
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
 
-            QBE.SetTargetRepository(this.vmPublishers.Repository, () => { this.Reload(); });
+            //QBE.SetTargetRepository(this.vmPublishers.Repository, () => { this.Reload(); });
+            QBE.SetTargetViewModel(this.vmPublishers, () => { this.Reload(); });
+
             //xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository);
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
 

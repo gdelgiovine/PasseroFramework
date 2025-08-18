@@ -25,14 +25,33 @@ namespace Passero.Framework.Controls
 
         private Expression<Func<object, bool>> _linqExpression;
 
-        private Func<object> mLookUpFunction;
+        private Func<object> mDynamicDataSource;
 
         [Browsable(false)]
-        public Func<object> LookUpFunction
+        public Func<object> DynamicDataSource
         {
-            get { return mLookUpFunction; }
-            set { mLookUpFunction = value; }
+            get { return mDynamicDataSource; }
+            set 
+            { 
+                mDynamicDataSource = value;
+               
+            }
         }
+
+        private object mDataSource;
+
+        
+        public object DataSource
+        {
+            get { return mDataSource; }
+            set
+            {
+                mDataSource = value;
+                DataTable dt = Passero.Framework.DataBaseHelper.ListToDataTable(mDataSource);
+
+            }
+        }
+
 
         public void SetFilter(Expression<Func<object, bool>> linqExpression)
         {
@@ -224,20 +243,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         public bool ValidLookUp = false;
 
-        //private object mDataSource=null;    
-        //public object DataSource 
-        //{ get
-        //    {
-        //        return mDataSource; 
-        //    }
-        //    set
-        //    { 
-        //        mDataSource =value;
-        //        //Type type = Passero.Framework .ReflectionHelper .GetListType (mDataSource);
-        //        DataTable dt = Passero.Framework.DataBaseHelper.ListToDataTable(mDataSource);
-
-        //    }
-        //}
+     
         /// <summary>
         /// The m show search tool
         /// </summary>
@@ -328,10 +334,15 @@ namespace Passero.Framework.Controls
             {
                 mValueMember = value;
                 if (mValueMember.Equals(mDisplayMember, StringComparison.InvariantCultureIgnoreCase))
+                {
                     LookUpMode = LookUpModes.Standard;
+                    SameColumn = true;
+                }
                 else
+                {
                     LookUpMode = LookUpModes.Enhanced;
-
+                    SameColumn = false;
+                }
                 SetupDefault();
             }
         }
@@ -357,9 +368,15 @@ namespace Passero.Framework.Controls
             {
                 mDisplayMember = value;
                 if (mValueMember.Equals(mDisplayMember, StringComparison.InvariantCultureIgnoreCase))
+                {
                     LookUpMode = LookUpModes.Standard;
+                    SameColumn = true;
+                }
                 else
+                {
                     LookUpMode = LookUpModes.Enhanced;
+                    SameColumn = false;
+                }
                 SetupDefault();
             }
         }
@@ -403,17 +420,17 @@ namespace Passero.Framework.Controls
                     return;
 
                 mValue = value;
-                this.Text = mValue.ToString();
+                
+                if (SameColumn )
+                {
+                    this.Text = mValue.ToString();
+                }
+                else
+                {
+                                        
+                }   
+                
 
-                // deve cercare nel datasource il relativo DisplayValue
-                //if (this.ValueMember.Equals(this.DisplayMember, StringComparison.InvariantCultureIgnoreCase))
-                //{
-                //    this.SameColumn = true;
-                //}
-                //else
-                //{
-                //    this.SameColumn = false;
-                //}
                 this.LookUp(false);
 
             }
@@ -475,10 +492,12 @@ namespace Passero.Framework.Controls
         public Type ModelType
         {
             get
-            { return ModelClass; }
+            { return mModelClass; }
             set
             {
-                ModelClass = value;
+                mModelClass = value;
+                TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(mModelClass);
+                
             }
         }
 
@@ -562,38 +581,6 @@ namespace Passero.Framework.Controls
         }
 
 
-
-
-        private Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value)
-        {
-
-            if (ModelClass == null)
-            {
-                throw new ArgumentException("ModelClass must be set before building a LINQ query");
-            }
-
-            // Create the parameter of type Object
-            var parameter = Expression.Parameter(typeof(object), "x");
-
-            // Convert the Object parameter to the model type
-            var convertedParameter = Expression.Convert(parameter, ModelClass);
-
-            // Create the property access on the converted parameter
-            var property = Expression.Property(convertedParameter, propertyName);
-
-            // Create the constant value with the correct type of the property
-            var propertyType = ModelClass.GetProperty(propertyName).PropertyType;
-            var constant = Expression.Constant(Convert.ChangeType(value, propertyType));
-
-            // Create the equality expression
-            var equalExpression = Expression.Equal(property, constant);
-
-            // Create the complete expression tree using the original Object parameter
-            return Expression.Lambda<Func<object, bool>>(equalExpression, parameter);
-        }
-
-
-
         /// <summary>
         /// Ensures the SQL query display member.
         /// </summary>
@@ -604,10 +591,7 @@ namespace Passero.Framework.Controls
             if (this.ModelClass == null)
                 return;
 
-            //if (this.Text == "")
-            //    return;
-
-            //_linqExpression = BuildDynamicLinqQuery(ValueMember, _value);
+           
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName(this.ModelClass);
             this.SQLQuery = $"SELECT {this.SelectClause} FROM {TableName} WHERE {this.DisplayMember}=@DisplayMember";
@@ -628,13 +612,114 @@ namespace Passero.Framework.Controls
         }
 
 
-        private void EnsureLookupFunction()
+        private void EnsureDynamicDataSource()
         {
             // Model = Activator.CreateInstance(mModelClass);
             object Items = null;
+            object Item = null;
+            Model = null;
             try
             {
-                var extResult = LookUpFunction.Invoke();
+                var extResult = DynamicDataSource.Invoke();
+                
+                switch (extResult)
+                {
+                    case ExecutionResult executionResult:
+
+                        break;
+
+                    case var _ when extResult != null &&
+                                extResult.GetType().IsGenericType &&
+                                extResult.GetType().GetGenericTypeDefinition() == typeof(ExecutionResult<>):
+                        var resultType = extResult.GetType();
+                        var valueField = resultType.GetField("Value", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                        if (valueField != null)
+                        {
+                            Items = (IList)valueField.GetValue(extResult);
+                        }
+                        var _value = this.Text;
+                        this.ModelClass = Passero.Framework.ReflectionHelper.GetListType(Items);
+                        _linqExpression = Passero.Framework .LinqHelper.BuildDynamicLinqQuery(ValueMember, _value, this.ModelClass );
+                        break;
+
+                    case IList list:
+                        Items = list;
+                        break;
+
+                    case IEnumerable enumerable:
+                        Items = enumerable;
+                        break;
+                    
+                    default:
+                        // Altri casi
+                        if (extResult !=null)
+                        {
+                            Item = extResult;
+                            // Convert the result to IDictionary if necessary
+                            if (Item != null)
+                            {
+                                
+                                    Model = Item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                        .Where(p => p.CanRead)
+                                        .ToDictionary(p => p.Name, p => p.GetValue(Item) ?? null);
+                                
+                            }
+                        }
+                        else
+                        {
+                           
+                        }
+                        break;
+                }
+
+                
+                if (Items != null)
+                {
+                    // Cast Items to the correct type for using LINQ
+                    var typedItems = (IEnumerable<object>)Items;
+
+                    // Apply the LINQ filter
+                    if (_linqExpression != null)
+                        // Use the LINQ expression to filter the items
+                        Item = typedItems.AsEnumerable().FirstOrDefault(_linqExpression.Compile());
+                    else
+                        Item = typedItems.AsEnumerable().FirstOrDefault();
+
+                    // Convert the result to IDictionary if necessary
+                    if (Item != null)
+                    {
+                        if (Item is IDictionary<string, object> dictionary)
+                        {
+                            Model = dictionary;
+                        }
+                        else
+                        {
+                            Model = Item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                .Where(p => p.CanRead)
+                                .ToDictionary(p => p.Name, p => p.GetValue(Item) ?? null);
+                        }
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                // Error handling
+                //LastExecutionResult.ResultCode = ExecutionResultCodes.Failed;
+                //LastExecutionResult.ErrorCode = 1;
+                //LastExecutionResult.ResultMessage = ex.Message;
+                //LastExecutionResult.Exception = ex;
+            }
+             
+        }
+        private void EnsureDataSource()
+        {
+            
+            object Items = null;
+            try
+            {
+                var extResult = this.DataSource;
 
                 switch (extResult)
                 {
@@ -652,7 +737,8 @@ namespace Passero.Framework.Controls
                             Items = (IList)valueField.GetValue(extResult);
                         }
                         var _value = this.Text;
-                        _linqExpression = BuildDynamicLinqQuery(ValueMember, _value);
+                        this.ModelClass = Passero.Framework.ReflectionHelper.GetListType(Items);
+                        _linqExpression = Passero.Framework.LinqHelper.BuildDynamicLinqQuery(ValueMember, _value, this.ModelClass);
                         break;
 
                     case IList list:
@@ -707,8 +793,9 @@ namespace Passero.Framework.Controls
                 //LastExecutionResult.ResultMessage = ex.Message;
                 //LastExecutionResult.Exception = ex;
             }
-             
+
         }
+
 
         /// <summary>
         /// Looks up.
@@ -721,135 +808,121 @@ namespace Passero.Framework.Controls
             this.ClearControls(FromEditing);
 
             object Items = null;
+            
 
-            if (LookUpFunction == null)
+            int datamode = 0; // 0 =SQL, 1 = DynamicDataSource, 2 = DataSource  
+
+            if (DynamicDataSource != null)
             {
-                if (LookUpMode == LookUpModes.Standard)
-                {
-                    this.EnsureSQLQueryValueMember();
-                }
-                else
-                {
-                    this.EnsureSQLQueryDisplayMember();
-                }
+                datamode = 1;
+            }
+            else if (DataSource != null)
+            {
+                datamode = 2;
             }
             else
             {
-                // Model = Activator.CreateInstance(mModelClass);
-                if (LookUpMode == LookUpModes.Standard)
-                {
-                    this.EnsureLookupFunction();
-                }
-                else
-                {
-                    //this.EnsureSQLQueryDisplayMember();
-                }
-                
+                datamode = 0;
             }
 
-            if (Model != null)
+
+            switch (datamode)
             {
-                    Lock = true;
-                    if (LookUpMode == LookUpModes.Standard)
+                case 0:
+                    // SQL Query
+                    if (SameColumn )
                     {
-                        Text = Model[ValueMember].ToString();
+                        this.EnsureSQLQueryValueMember();
                     }
                     else
                     {
-                        Text = Model[DisplayMember].ToString();
-                        mValue = Model[ValueMember];
+                        this.EnsureSQLQueryDisplayMember();
                     }
-                    Lock = false;
-
-                    // DataBindControls
-                    foreach (var _item in DataBindControls.Values)
+                    break;
+                case 1:
+                    // DynamicDataSource
+                    if (SameColumn)
                     {
-                        if (Model[_item.ModelPropertyName] != null)
-                        {
-                            Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, Model[_item.ModelPropertyName]);
-                        }
-                        else
-                        {
-                            Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, "");
-                        }
+                        this.EnsureDynamicDataSource();
                     }
-                    ValidLookUp = true;
+                    else
+                    {
+                        this.EnsureDynamicDataSource();
+            
+                    }
+                    break;
+                case 2:
+                    // DataSource
+                    if (SameColumn)
+                    {
+                        this.EnsureDataSource();
+                    }
+                    else
+                    {
+                        this.EnsureDataSource();
+            
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+          
+
+            if (Model != null)
+            {
+                Lock = true;
+                if (SameColumn )
+                {
+                    Text = Model[ValueMember].ToString();
                 }
                 else
                 {
-                    // Lock = true;
-                    // Text = "";
-                    // Lock = false;
+                    Text = Model[DisplayMember].ToString();
+                    mValue = Model[ValueMember];
                 }
+                Lock = false;
+
+                // DataBindControls
+                foreach (var _item in DataBindControls.Values)
+                {
+                    if (Model[_item.ModelPropertyName] != null)
+                    {
+                        Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, Model[_item.ModelPropertyName]);
+                    }
+                    else
+                    {
+                        Interaction.CallByName(_item.Control, _item.ControlPropertyName, CallType.Set, "");
+                    }
+                }
+                ValidLookUp = true;
+            }
+            else
+            {
+                Lock = true;
+                mValue = null;
+                Text = "";
+                Lock = false;
+            }
             
             if (FromEditing)
             {
                 this.mValue = this.Text;
-                if (LookUpMode  == LookUpModes.Standard   )
+                if (SameColumn   )
                 {
-                    this.EnsureSQLQueryValueMember();
+                    //this.EnsureSQLQueryValueMember();
                 }
                 else
                 {
-                    this.EnsureSQLQueryDisplayMember();
+                  //  this.EnsureSQLQueryDisplayMember();
                 }
             }
             else
             {
-                this.EnsureSQLQueryValueMember();
+                //this.EnsureSQLQueryValueMember();
             }
-            string _sqlquery = Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, this.parameters);
-            if (SQLQuery == "")
-                return ValidLookUp ;
-            if (DbConnection == null)
-                return ValidLookUp;
-            try
-            {
-                
-                Model = (IDictionary<string, object>)DbConnection.Query(SQLQuery, this.parameters).FirstOrDefault();
-                if (Model != null)
-                {
-                    this.Lock = true;
-                    if (LookUpMode == LookUpModes.Standard)
-                    {
 
-                        this.Text = Model[this.ValueMember].ToString();
-                        this.mValue = Model[this.ValueMember].ToString();
-                    }
-                    else
-                    {
-                        this.Text = Model[this.DisplayMember].ToString();
-                        this.mValue = Model[this.ValueMember];
-                    }
-                    ValidLookUp = true;
-                    this.Lock = false;
 
-                    // DataBindControls
-                    foreach (DataBindControl item in this.DataBindControls.Values)
-                    {
-                        if (Model[item.ModelPropertyName] is not null)
-                        {
-                            Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, Model[item.ModelPropertyName]);
-                        }
-                        else
-                        {
-                            Interaction.CallByName(item.Control, item.ControlPropertyName, CallType.Set, "");
-                        }
-                    }
-                }
-                else
-                {
-
-                }
-
-            }
-            catch (Exception)
-            {
-                this.Lock = true;
-                this.Text = "";
-                this.Lock = false;
-
-            }
             if (this.eLookUp != null)
                 this.eLookUp();
 

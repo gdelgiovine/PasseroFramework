@@ -175,7 +175,7 @@
             this.tbAppTitle});
             this.ToolBar.Location = new System.Drawing.Point(0, 0);
             this.ToolBar.Name = "ToolBar";
-            this.ToolBar.Size = new System.Drawing.Size(1489, 43);
+            this.ToolBar.Size = new System.Drawing.Size(1218, 43);
             this.ToolBar.TabIndex = 1;
             this.ToolBar.TabStop = false;
             this.ToolBar.ButtonClick += new Wisej.Web.ToolBarButtonClickEventHandler(this.ToolBar_ButtonClick);
@@ -219,7 +219,7 @@
             // txtSearchBox
             // 
             this.txtSearchBox.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
-            this.txtSearchBox.Location = new System.Drawing.Point(1249, 8);
+            this.txtSearchBox.Location = new System.Drawing.Point(978, 8);
             this.txtSearchBox.Name = "txtSearchBox";
             this.txtSearchBox.Size = new System.Drawing.Size(180, 30);
             this.txtSearchBox.TabIndex = 2;
@@ -239,7 +239,7 @@
             // 
             this.pbGDGLogo.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
             this.pbGDGLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbGDGLogo.Image")));
-            this.pbGDGLogo.Location = new System.Drawing.Point(1434, 5);
+            this.pbGDGLogo.Location = new System.Drawing.Point(1163, 5);
             this.pbGDGLogo.Name = "pbGDGLogo";
             this.pbGDGLogo.Size = new System.Drawing.Size(51, 35);
             this.pbGDGLogo.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
@@ -255,7 +255,7 @@
             this.Controls.Add(this.ToolBar);
             this.Controls.Add(this.NavigationBar);
             this.Name = "MainPage";
-            this.Size = new System.Drawing.Size(1489, 677);
+            this.Size = new System.Drawing.Size(1218, 599);
             this.Load += new System.EventHandler(this.MaiPage_Load);
             this.Resize += new System.EventHandler(this.MaiPage_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pbAppLogo)).EndInit();

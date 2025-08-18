@@ -18,9 +18,10 @@ namespace Passero.Framework
     /// </summary>
     public class ReflectionHelper
     {
-
-
-
+        public static Type GetDTOClassType(object viewModelInstance)
+        {
+            return viewModelInstance.GetType().GetGenericArguments()[0];
+        }
 
         /// <summary>
         /// Compares the specified object1.

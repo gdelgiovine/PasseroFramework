@@ -2,6 +2,7 @@
 using FastDeepCloner;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Passero.Framework.Base;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,13 +23,47 @@ namespace Passero.Framework
 
 
     /// <summary>
-    /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
+    /// <typeparam name="DTOClass">The type of the odel class.</typeparam>
     /// Base class for models that supports property change notifications and cloning
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
     
-    public class ViewModel<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging where ModelClass :  class 
+    public class ViewModelDTO<DTOClass> : INotifyPropertyChanged, INotifyPropertyChanging where DTOClass : DTOBase<ModelBase>
     {
+
+        public Type DTOClassType = typeof(ViewModelDTO<>).GetGenericArguments()[0];
+        private ModelBase repositoryModelItem;
+        private List<ModelBase> repositoryModelItems = new List<ModelBase>();
+        private ModelBase repositoryModelItemShadow;
+        private List<ModelBase> repositoryModelItemsShadow = new List<ModelBase>();
+
+
+        #region MAPPER
+        private readonly IMapper<ModelBase, DTOClass> _mapper;
+
+        public ViewModelDTO(IMapper<ModelBase, DTOClass> mapper)
+        {
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        public IList<DTOClass> DTOItems { get; private set; } = new List<DTOClass>();
+
+        public void LoadFromRepository(IRepository<ModelBase> repository)
+        {
+            if (repository == null) throw new ArgumentNullException(nameof(repository));
+
+            var modelItems = repository.GetAllItems();
+            DTOItems = _mapper.MapToDTO(modelItems);
+        }
+
+        public void SaveToRepository(IRepository<ModelBase> repository)
+        {
+            if (repository == null) throw new ArgumentNullException(nameof(repository));
+
+            var modelItems = _mapper.MapToModel(DTOItems);
+            repository.SaveItems(modelItems);
+        }
+        #endregion MAPPER
 
         #region INotifyPropertyChanged and INotifyPropertyChanging  
         /// <summary>
@@ -63,11 +98,12 @@ namespace Passero.Framework
         /// Clones this instance.
         /// </summary>
         /// <returns>A clone of the current instance</returns>
-        public ViewModel<ModelClass> Clone()
+        public ViewModelDTO<DTOClass> Clone()
         {
             return Utilities.Clone(this);
         }
-       
+        #endregion 
+
 
 
         /// <summary>
@@ -91,7 +127,6 @@ namespace Passero.Framework
             return true;
         }
 
-        #endregion
 
         /// <summary>
         /// The m class name
@@ -136,14 +171,14 @@ namespace Passero.Framework
         /// <value>
         /// The name.
         /// </value>
-        public string Name { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
+        public string Name { get; set; } = $"ViewModel<{typeof(DTOClass).FullName}>";
         /// <summary>
         /// Gets or sets the name of the friendly.
         /// </summary>
         /// <value>
         /// The name of the friendly.
         /// </value>
-        public string FriendlyName { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}>";
+        public string FriendlyName { get; set; } = $"ViewModel<{typeof(DTOClass).FullName}>";
         /// <summary>
         /// Gets or sets the minimum date time.
         /// </summary>
@@ -183,11 +218,11 @@ namespace Passero.Framework
         /// <summary>
         /// The m model item shadow
         /// </summary>
-        private ModelClass mModelItemShadow;
+        private DTOClass mModelItemShadow;
         /// <summary>
         /// The external model shadow
         /// </summary>
-        private ModelClass ExternalModelShadow;
+        private DTOClass  ExternalModelShadow;
         /// <summary>
         /// The m add new current model item index
         /// </summary>
@@ -199,11 +234,11 @@ namespace Passero.Framework
         /// <summary>
         /// The m model items
         /// </summary>
-        private IList<ModelClass> mModelItems;
+        private IList<DTOClass> mModelItems;
         /// <summary>
         /// The m model items shadow
         /// </summary>
-        private IList<ModelClass> mModelItemsShadow;
+        private IList<DTOClass> mModelItemsShadow;
         /// <summary>
         /// The m binding source
         /// </summary>
@@ -361,17 +396,6 @@ namespace Passero.Framework
         }
 
         /// <summary>
-        /// Resolveds the SQL query.
-        /// </summary>
-        /// <returns></returns>
-        public string ResolvedSQLQuery()
-        {
-            if (this.SQLQuery != null && this.Parameters != null)
-                return Passero.Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, Parameters);
-            else
-                return Passero.Framework.DapperHelper.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
-        }
-        /// <summary>
         /// Gets or sets the binding source.
         /// </summary>
         /// <value>
@@ -427,14 +451,14 @@ namespace Passero.Framework
         {
             ModelItem = NewModeltem;
             if (ResetModelItems == true)
-                ModelItems = new List<ModelClass>();
+                ModelItems = new List<DTOClass>();
         }
         /// <summary>
         /// Resets the model items.
         /// </summary>
         public void ResetModelItems()
         {
-            ModelItems = new List<ModelClass>();
+            ModelItems = new List<DTOClass>();
         }
 
 
@@ -444,7 +468,7 @@ namespace Passero.Framework
         /// <value>
         /// The new modeltem.
         /// </value>
-        public ModelClass? NewModeltem
+        public DTOClass? NewModeltem
         {
             get { return GetEmptyModelItem(); }
             set { NewModeltem = value; }
@@ -455,30 +479,35 @@ namespace Passero.Framework
         /// <value>
         /// The model item.
         /// </value>
-        public ModelClass ModelItem
+        public DTOClass ModelItem
         {
             get
             {
-                switch (UseModelData)
+                // Se UseModelData è External, restituisci mModelItemShadow
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        return mModelItemShadow;
-                    default:
-                        return Repository.ModelItem;
+                    return mModelItemShadow;
                 }
+
+                // Converti repositoryModelItem in DTOClass usando il mapper
+                if (repositoryModelItem != null)
+                {
+                    return _mapper.MapToDTO(new List<ModelBase> { repositoryModelItem }).FirstOrDefault();
+                }
+
+                return null;
             }
             set
             {
-                switch (UseModelData)
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        mModelItemShadow = value;
-                        Repository.ModelItem = value;
-                        break;
-
-                    case UseModelData.InternalRepository:
-                        Repository.ModelItem = value;
-                        break;
+                    mModelItemShadow = value;
+                }
+                else
+                {
+                    // Converti DTOClass in ModelClass usando il mapper
+                    repositoryModelItem = _mapper.MapToModel(new List<DTOClass> { value }).FirstOrDefault();
+                    Repository.ModelItem = repositoryModelItem;
                 }
             }
 
@@ -491,37 +520,39 @@ namespace Passero.Framework
         /// <value>
         /// The model items.
         /// </value>
-        public IList<ModelClass> ModelItems
+        public IList<DTOClass> ModelItems
         {
             get
             {
-                switch (UseModelData)
+                // Se UseModelData è External, restituisci mModelItemsShadow
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        return mModelItems;
-                    default:
-                        return Repository.ModelItems;
+                    return mModelItemsShadow;
                 }
+
+                // Converti repositoryModelItems in DTOClass usando il mapper
+                if (repositoryModelItems != null && repositoryModelItems.Any())
+                {
+                    return _mapper.MapToDTO(repositoryModelItems);
+                }
+
+                return new List<DTOClass>();
             }
             set
             {
-                switch (UseModelData)
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        mModelItems = value;
-                        break;
-
-                    case UseModelData.InternalRepository:
-                        Repository.ModelItems = value;
-                        break;
+                    mModelItemsShadow = value;
                 }
-
-                if (mBindingSource != null)
+                else
                 {
-                    mBindingSource.DataSource = value;
+                    // Converti DTOClass in ModelBase usando il mapper
+                  
+                    repositoryModelItems = _mapper.MapToModel(value).ToList();
+                    Repository.ModelItems = repositoryModelItems;
                 }
-
             }
+
         }
 
         /// <summary>
@@ -530,29 +561,35 @@ namespace Passero.Framework
         /// <value>
         /// The model items shadow.
         /// </value>
-        public IList<ModelClass> ModelItemsShadow
+        public IList<DTOClass> ModelItemsShadow
         {
             get
             {
-                switch (UseModelData)
+                // Se UseModelData è External, restituisci mModelItemsShadow
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        return mModelItemsShadow;
-                    default:
-                        return Repository.ModelItemsShadow;
+                    return mModelItemsShadow;
                 }
+
+                // Converti repositoryModelItemsShadow in DTOClass usando il mapper
+                if (repositoryModelItemsShadow != null && repositoryModelItemsShadow.Any())
+                {
+                    return _mapper.MapToDTO(repositoryModelItemsShadow);
+                }
+
+                return new List<DTOClass>();
             }
             set
             {
-                switch (UseModelData)
+                if (UseModelData == UseModelData.External)
                 {
-                    case UseModelData.External:
-                        mModelItemsShadow = value;
-                        break;
-
-                    case UseModelData.InternalRepository:
-                        Repository.ModelItemsShadow = value;
-                        break;
+                    mModelItemsShadow = value;
+                }
+                else
+                {
+                    // Converti DTOClass in ModelBase usando il mapper
+                    repositoryModelItemsShadow = _mapper.MapToModel(value).ToList();
+                    Repository.ModelItemsShadow = repositoryModelItemsShadow;
                 }
             }
         }
@@ -695,11 +732,11 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        private ExecutionResult<ModelClass> ExternalGetModelItemsAt(int index)
+        private ExecutionResult<DTOClass> ExternalGetModelItemsAt(int index)
         {
 
             var ERContext = $"{mClassName}.ExternalGetModelItemsAt()";
-            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+            ExecutionResult<DTOClass> ER = new ExecutionResult<DTOClass>(ERContext);
             if (mModelItems == null)
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
@@ -721,25 +758,63 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public ExecutionResult<ModelClass> GetModelItemsAt(int index)
+        /// 
+        public ExecutionResult<DTOClass> GetModelItemsAt(int index)
         {
             var ERContext = $"{mClassName}.GetModelItemsAt()";
-            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+            ExecutionResult<DTOClass> ER = new ExecutionResult<DTOClass>(ERContext);
 
-            if (UseModelData == UseModelData.External)
+            try
             {
-                ER = ExternalGetModelItemsAt(index);
+                // Recupera il risultato dal repository
+                var repositoryResult = Repository.GetModelItemsAt(index);
+
+                // Mappatura del valore da ExecutionResult<ModelClass> a ExecutionResult<DTOClass>
+                var modelValue = repositoryResult.Value;
+                var dtoValue = _mapper.MapToDTO(new List<ModelBase> { modelValue }).FirstOrDefault();
+
+                ER.Value = dtoValue;
+                ER.ResultCode = repositoryResult.ResultCode;
+                ER.ResultMessage = repositoryResult.ResultMessage;
+                ER.Exception = repositoryResult.Exception;
+
+                // Aggiorna le proprietà locali
+                ModelItem = dtoValue;
+                mCurrentModelItemIndex = index;
+
+                // Aggiorna il DataNavigator
+                DataNavigatorRaiseEventBoundCompled();
             }
-            else
+            catch (Exception ex)
             {
-                ER = Repository.GetModelItemsAt(index);
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
             }
 
-            ER.Context = ERContext;
             LastExecutionResult = ER.ToExecutionResult();
             return ER;
-
         }
+        //public ExecutionResult<DTOClass> GetModelItemsAtOLD(int index)
+        //{
+        //    var ERContext = $"{mClassName}.GetModelItemsAt()";
+        //    ExecutionResult<DTOClass> ER = new ExecutionResult<DTOClass>(ERContext);
+
+        //    if (UseModelData == UseModelData.External)
+        //    {
+        //        ER = ExternalGetModelItemsAt(index);
+        //    }
+        //    else
+        //    {
+        //        ER = Repository.GetModelItemsAt(index);
+        //    }
+
+        //    ER.Context = ERContext;
+        //    LastExecutionResult = ER.ToExecutionResult();
+        //    return ER;
+
+        //}
 
         /// <summary>
         /// Gets or sets the model item shadow.
@@ -747,18 +822,23 @@ namespace Passero.Framework
         /// <value>
         /// The model item shadow.
         /// </value>
-        public ModelClass ModelItemShadow
+        public DTOClass ModelItemShadow
         {
             get
             {
+                // Se UseModelData è External, restituisci ExternalModelShadow
                 if (UseModelData == UseModelData.External)
                 {
                     return ExternalModelShadow;
                 }
-                else
+
+                // Converti repositoryModelItemShadow in DTOClass usando il mapper
+                if (repositoryModelItemShadow != null)
                 {
-                    return Repository.ModelItemShadow;
+                    return _mapper.MapToDTO(new List<ModelBase> { repositoryModelItemShadow }).FirstOrDefault();
                 }
+
+                return null;
             }
             set
             {
@@ -768,7 +848,9 @@ namespace Passero.Framework
                 }
                 else
                 {
-                    Repository.ModelItemShadow = value;
+                    // Converti DTOClass in ModelBase usando il mapper
+                    repositoryModelItemShadow = _mapper.MapToModel(new List<DTOClass> { value }).FirstOrDefault();
+                    Repository.ModelItemShadow = repositoryModelItemShadow;
                 }
             }
         }
@@ -778,13 +860,14 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="ModelShadow">The model shadow.</param>
         /// <returns></returns>
-        private bool ExternalModelDataChanged(ModelClass ModelShadow = null)
+        private bool ExternalModelDataChanged(ModelBase ModelShadow = null)
         {
             if (ModelShadow is null)
             {
-                ModelShadow = ExternalModelShadow;
+                //ModelShadow = ExternalModelShadow;
+                //ModelShadow = _mapper.MapToDTO(new List<ModelBase> { ModelShadow }).FirstOrDefault();
             }
-            return !Utilities.ObjectsEquals(mModelItemShadow, ModelShadow);
+            return !Utilities.ObjectsEquals(repositoryModelItemShadow, ModelShadow);
         }
 
         /// <summary>
@@ -794,7 +877,7 @@ namespace Passero.Framework
         /// <returns>
         ///   <c>true</c> if [is model data changed] [the specified model shadow]; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsModelDataChanged(ModelClass ModelShadow = null)
+        public bool IsModelDataChanged(ModelBase  ModelShadow = null)
         {
             if (UseModelData == UseModelData.InternalRepository)
                 return Repository.IsModelDataChanged(ModelShadow);
@@ -802,6 +885,7 @@ namespace Passero.Framework
                 return ExternalModelDataChanged(ModelShadow);
         }
 
+        
         /// <summary>
         /// Datas the navigator raise event bound compled.
         /// </summary>
@@ -1288,10 +1372,10 @@ namespace Passero.Framework
                     ER.Context = "Checking newItem";
                     if (newItem == null)
                     {
-                        newItem = (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+                        newItem = (DTOClass)Activator.CreateInstance(typeof(DTOClass));
                     }
-                    ModelItem = (ModelClass)newItem;
-                    ModelItemShadow = (ModelClass)newItem;
+                    ModelItem = (DTOClass)newItem;
+                    ModelItemShadow = (DTOClass)newItem;
 
                     ER.Context = "DataBinding";
                     switch (mDataBindingMode)
@@ -1336,7 +1420,7 @@ namespace Passero.Framework
         /// <value>
         /// The description.
         /// </value>
-        public string Description { get; set; } = $"ViewModel<{typeof(ModelClass).FullName}> description.";
+        public string Description { get; set; } = $"ViewModel<{typeof(DTOClass).FullName}> description.";
 
         /// <summary>
         /// Gets or sets the data binding mode.
@@ -1423,9 +1507,9 @@ namespace Passero.Framework
         /// Gets the empty model item.
         /// </summary>
         /// <returns></returns>
-        public ModelClass GetEmptyModelItem()
+        public DTOClass GetEmptyModelItem()
         {
-            return (ModelClass)Activator.CreateInstance(typeof(ModelClass));
+            return (DTOClass)Activator.CreateInstance(typeof(DTOClass));
         }
 
 
@@ -1512,7 +1596,7 @@ namespace Passero.Framework
         /// <value>
         /// The repository.
         /// </value>
-        public Repository<ModelClass> Repository { get; set; }
+        public RepositoryDTO<DTOClass> Repository { get; set; }
 
         //public ModelClass GetEmptyModel()
         //{
@@ -1590,15 +1674,15 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="Name">ViewModel Name</param>
         /// <param name="Description">ViewModel Description</param>
-        public ViewModel(string Name = "", string FriendlyName ="", string Description  = "")
+        public ViewModelDTO(string Name = "", string FriendlyName ="", string Description  = "")
         {
-            Repository = new Repository<ModelClass>();
-            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            Repository = new RepositoryDTO<DTOClass>();
+            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<DTOClass>()}";
             DefaultSQLQueryParameters = new DynamicParameters();
             if (Name != "")
                 this.Name = Name;
             else
-                this.Name = nameof(ModelClass);
+                this.Name = nameof(DTOClass);
             if (FriendlyName  != "")
                 this.FriendlyName = FriendlyName;
             else
@@ -1609,8 +1693,10 @@ namespace Passero.Framework
             else
                 this.Description = Name;
 
+            // VA FATTA LA CONVERSIONE A ModelBase
             Repository.ViewModel = this;
-            Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
+            
+            Repository.Name = $"Repository<{typeof(DTOClass).FullName}>";
             Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
             Repository.ErrorNotificationMode = ErrorNotificationMode;
             mModelItemShadow = GetEmptyModelItem();
@@ -1624,27 +1710,63 @@ namespace Passero.Framework
         /// <param name="Repository">The repository.</param>
         /// <param name="Name">The name.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
-        public ViewModel(ref Repository<ModelClass> Repository, string Name = "", string FriendlyName="", string Description = "")
+        /// 
+        public ViewModelDTO(IRepository<ModelBase> repository, IMapper<ModelBase, DTOClass> mapper)
         {
+            if (repository == null) throw new ArgumentNullException(nameof(repository));
+            if (mapper == null) throw new ArgumentNullException(nameof(mapper));
 
-            if (Name != "")
-                this.Name = Name;
-            else
-                this.Name = nameof(ModelClass);
-            if (FriendlyName != "")
-                this.FriendlyName = FriendlyName;
-            else
-                this.FriendlyName = Name;
+            // Determina il tipo di ModelClass associato a DTOClass
+            var modelClassType = typeof(DTOClass).BaseType?.GetGenericArguments().FirstOrDefault();
+            if (modelClassType == null || !typeof(ModelBase).IsAssignableFrom(modelClassType))
+            {
+                throw new InvalidOperationException("Il tipo DTOClass non è associato a un ModelClass valido.");
+            }
 
-            if (Description != "")
-                this.Description = Description;
-            else
-                this.Description = Name;
+            // Crea un repository specifico per ModelClass
+            Repository = (Repository<ModelBase>)Activator.CreateInstance(typeof(Repository<>).MakeGenericType(modelClassType));
 
-            mModelItemShadow = GetEmptyModelItem();
-            this.Repository = Repository;
+            _mapper = mapper;
         }
-        
+
+        public void SetRepository<TModelClass>(Repository<TModelClass> repository) where TModelClass : ModelBase
+        {
+            if (repository == null) throw new ArgumentNullException(nameof(repository));
+
+            // Verifica che il tipo TModelClass corrisponda al tipo associato a DTOClass
+            var modelClassType = typeof(DTOClass).BaseType?.GetGenericArguments().FirstOrDefault();
+            if (modelClassType == null || modelClassType != typeof(TModelClass))
+            {
+                throw new InvalidOperationException("Il repository fornito non corrisponde al tipo di ModelClass associato a DTOClass.");
+            }
+
+            // Imposta il repository
+            Repository = (Repository<ModelBase>)Convert.ChangeType(repository, typeof(Repository<ModelBase>));
+        }
+
+        //public ViewModelDTO(ref Repository<> Repository, string Name = "", string FriendlyName="", string Description = "")
+        //{
+
+        //    if (Name != "")
+        //        this.Name = Name;
+        //    else
+        //        this.Name = nameof(DTOClass);
+        //    if (FriendlyName != "")
+        //        this.FriendlyName = FriendlyName;
+        //    else
+        //        this.FriendlyName = Name;
+
+        //    if (Description != "")
+        //        this.Description = Description;
+        //    else
+        //        this.Description = Name;
+
+        //    mModelItemShadow = GetEmptyModelItem();
+        //    this.Repository = Repository;
+        //}
+
+
+
         /// <summary>
         /// Initializes the specified database connection.
         /// </summary>
@@ -1684,31 +1806,21 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<ModelClass> GetItem(string SqlQuery, object Parameters, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<DTOClass> GetItem(string SqlQuery, object Parameters, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            var ERContenxt = $"{mClassName}.GetItems()";
-            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContenxt);
-            ER.Value = null;
-            ER = Repository.GetItem(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
-            switch (UseModelData)
-            {
-                case UseModelData.External:
-                    mModelItemShadow = ER.Value;
-                    break;
-                case UseModelData.InternalRepository:
+            var ERContext = $"{mClassName}.GetItems()";
+            ExecutionResult<DTOClass> ER = new ExecutionResult<DTOClass>(ERContext);
+           
+            var repositoryResult = Repository.GetItem(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
 
-                    Repository.ModelItem = ER.Value;
-                    break;
+            // Mappatura dei valori da ExecutionResult<ModelClass> a ExecutionResult<DTOClass>
+            this.ModelItem = _mapper.MapToDTO(new List<ModelBase> { repositoryResult.Value }).FirstOrDefault();
 
-                default:
-                    break;
-            }
-            ModelItem = ER.Value;
-            //if (ModelItem == null)
-            //{
-            //    ER.ResultCode = ExecutionResultCodes.Failed;
-            //    ER.ResultMessage = $"No data for query\n{Framework .DapperHelper .Utilities .ResolveSQL (SqlQuery,(DynamicParameters)Parameters)}";
-            //}
+            ER.Value = this.ModelItem;  
+            ER.ResultCode = repositoryResult.ResultCode;    
+            ER.ResultMessage = repositoryResult.ResultMessage;
+            ER.Exception= repositoryResult.Exception;   
+
             DataNavigatorRaiseEventBoundCompled();
             return ER;
         }
@@ -1723,57 +1835,38 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<IList<ModelClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        /// 
+        public ExecutionResult<IList<DTOClass>> GetItems(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            string ERContenxt = $"{mClassName}.GetItems()";
-            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContenxt);
+            var ERContext = $"{mClassName}.GetItems()";
+            ExecutionResult<IList<DTOClass>> ER = new ExecutionResult<IList<DTOClass>>(ERContext);
 
-
-            IList<ModelClass> x = null;
             try
             {
-                mCurrentModelItemIndex = -1;
-                Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
-                Repository.ErrorNotificationMode = ErrorNotificationMode;
+                // Recupera il risultato dal repository
+                var repositoryResult = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
 
-                Repository.SQLQuery = SqlQuery;
+                // Mappatura dei valori da ExecutionResult<IList<ModelClass>> a ExecutionResult<IList<DTOClass>>
+                var modelValues = repositoryResult.Value;
+                var dtoValues = _mapper.MapToDTO(modelValues);
 
-                //this.Repository.Parameters = (DynamicParameters)Parameters;
-                Repository.Parameters = DapperHelper.Utilities.GetDynamicParameters(Parameters);
-                ER = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+                ER.Value = dtoValues;
+                ER.ResultCode = repositoryResult.ResultCode;
+                ER.ResultMessage = repositoryResult.ResultMessage;
+                ER.Exception = repositoryResult.Exception;
 
-                if (ER.Success)
+                // Aggiorna le proprietà locali
+                ModelItems = dtoValues;
+                mCurrentModelItemIndex = ModelItems.Any() ? 0 : -1;
+
+                // Aggiorna il binding source se necessario
+                if (mDataBindingMode == DataBindingMode.BindingSource)
                 {
-                    x = ER.Value;
-                    mCurrentModelItemIndex = 0;
-                    switch (UseModelData)
-                    {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            //If (AutoUpdateModelItemsShadows) Then
-                            SetModelItemsShadow();
-                            //End If
-                            SetModelItemShadow();
-                            break;
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItems = x;
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            //If (AutoUpdateModelItemsShadows) Then
-                            Repository.SetModelItemsShadow();
-                            //End If
-                            Repository.SetModelItemShadow();
-                            Repository.CurrentModelItemIndex = 0;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (mDataBindingMode == DataBindingMode.BindingSource)
-                    {
-                        mBindingSource.DataSource = ModelItems;
-                    }
+                    mBindingSource.DataSource = ModelItems;
                 }
+
+                // Aggiorna il DataNavigator
+                DataNavigatorRaiseEventBoundCompled();
             }
             catch (Exception ex)
             {
@@ -1781,14 +1874,80 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
-                HandleExeception(ER.ToExecutionResult());
             }
-            MoveFirstItem();
+
             LastExecutionResult = ER.ToExecutionResult();
-            //DataNavigatorRaiseEventBoundCompled();
             return ER;
         }
+        //public ExecutionResult<IList<DTOClass>> GetItemsOLD(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        //{
+        //    string ERContenxt = $"{mClassName}.GetItems()";
+        //    ExecutionResult<IList<DTOClass>> ER = new ExecutionResult<IList<DTOClass>>(ERContenxt);
+
+
+        //    IList<DTOClass> x = null;
+        //    try
+        //    {
+        //        mCurrentModelItemIndex = -1;
+        //        Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+        //        Repository.ErrorNotificationMode = ErrorNotificationMode;
+
+        //        Repository.SQLQuery = SqlQuery;
+
+        //        //this.Repository.Parameters = (DynamicParameters)Parameters;
+        //        Repository.Parameters = DapperHelper.Utilities.GetDynamicParameters(Parameters);
+
+        //        ER = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+
+        //        if (ER.Success)
+        //        {
+        //            x = ER.Value;
+        //            mCurrentModelItemIndex = 0;
+        //            switch (UseModelData)
+        //            {
+        //                case UseModelData.External:
+        //                    mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+        //                    mModelItems = x;
+        //                    //If (AutoUpdateModelItemsShadows) Then
+        //                    SetModelItemsShadow();
+        //                    //End If
+        //                    SetModelItemShadow();
+        //                    break;
+        //                case UseModelData.InternalRepository:
+        //                    Repository.ModelItems = x;
+        //                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+        //                    //If (AutoUpdateModelItemsShadows) Then
+        //                    Repository.SetModelItemsShadow();
+        //                    //End If
+        //                    Repository.SetModelItemShadow();
+        //                    Repository.CurrentModelItemIndex = 0;
+        //                    break;
+        //                default:
+        //                    break;
+        //            }
+
+        //            if (mDataBindingMode == DataBindingMode.BindingSource)
+        //            {
+        //                mBindingSource.DataSource = ModelItems;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.Exception = ex;
+        //        ER.ResultMessage = ex.Message;
+        //        ER.ErrorCode = 1;
+        //        ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+        //        HandleExeception(ER.ToExecutionResult());
+        //    }
+        //    MoveFirstItem();
+        //    LastExecutionResult = ER.ToExecutionResult();
+        //    //DataNavigatorRaiseEventBoundCompled();
+        //    return ER;
+        //}
+
+
         /// <summary>
         /// Sets the binding source.
         /// </summary>
@@ -1816,42 +1975,38 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<IList<ModelClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        /// 
+        public ExecutionResult<IList<DTOClass>> GetAllItems(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
-            var ERContenxt = $"{mClassName}.GetAllItems()";
-            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContenxt);
-            IList<ModelClass> x = null;
+            var ERContext = $"{mClassName}.GetAllItems()";
+            ExecutionResult<IList<DTOClass>> ER = new ExecutionResult<IList<DTOClass>>(ERContext);
+
             try
             {
-                ER = Repository.GetAllItems(Transaction, Buffered, CommandTimeout);
-                if (ER.Success)
+                // Recupera il risultato dal repository
+                var repositoryResult = Repository.GetAllItems(Transaction, Buffered, CommandTimeout);
+
+                // Mappatura dei valori da ExecutionResult<IList<ModelClass>> a ExecutionResult<IList<DTOClass>>
+                var modelValues = repositoryResult.Value;
+                var dtoValues = _mapper.MapToDTO(modelValues);
+
+                ER.Value = dtoValues;
+                ER.ResultCode = repositoryResult.ResultCode;
+                ER.ResultMessage = repositoryResult.ResultMessage;
+                ER.Exception = repositoryResult.Exception;
+
+                // Aggiorna le proprietà locali
+                ModelItems = dtoValues;
+                mCurrentModelItemIndex = ModelItems.Any() ? 0 : -1;
+
+                // Aggiorna il binding source se necessario
+                if (mDataBindingMode == DataBindingMode.BindingSource)
                 {
-                    x = ER.Value;
-                    switch (UseModelData)
-                    {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = ModelItems;
-
-                            }
-                            break;
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            Repository.ModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = Repository.ModelItems;
-
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
+                    mBindingSource.DataSource = ModelItems;
                 }
+
+                // Aggiorna il DataNavigator
+                DataNavigatorRaiseEventBoundCompled();
             }
             catch (Exception ex)
             {
@@ -1859,20 +2014,68 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query = {SQLQuery}";
-                HandleExeception(ER.ToExecutionResult());
             }
 
-            //if (this.DataNavigator != null)
-            //{
-            //    ReflectionHelper.CallByName(this.DataNavigator, "InitDataNavigator", Microsoft.VisualBasic.CallType.Method, null);
-            //}
-
-            MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
-            //DataNavigatorRaiseEventBoundCompled()
             return ER;
         }
+        //public ExecutionResult<IList<DTOClass>> GetAllItemsOLD(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        //{
+        //    var ERContenxt = $"{mClassName}.GetAllItems()";
+        //    ExecutionResult<IList<DTOClass>> ER = new ExecutionResult<IList<DTOClass>>(ERContenxt);
+        //    IList<DTOClass> x = null;
+        //    try
+        //    {
+        //        ER = Repository.GetAllItems(Transaction, Buffered, CommandTimeout);
+        //        if (ER.Success)
+        //        {
+        //            x = ER.Value;
+        //            switch (UseModelData)
+        //            {
+        //                case UseModelData.External:
+        //                    mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+        //                    mModelItems = x;
+        //                    if (mDataBindingMode == DataBindingMode.BindingSource)
+        //                    {
+        //                        mBindingSource.DataSource = ModelItems;
+
+        //                    }
+        //                    break;
+        //                case UseModelData.InternalRepository:
+        //                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+        //                    Repository.ModelItems = x;
+        //                    if (mDataBindingMode == DataBindingMode.BindingSource)
+        //                    {
+        //                        mBindingSource.DataSource = Repository.ModelItems;
+
+        //                    }
+        //                    break;
+        //                default:
+        //                    break;
+        //            }
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ER.ResultCode = ExecutionResultCodes.Failed;
+        //        ER.Exception = ex;
+        //        ER.ResultMessage = ex.Message;
+        //        ER.ErrorCode = 1;
+        //        ER.DebugInfo = $"Query = {SQLQuery}";
+        //        HandleExeception(ER.ToExecutionResult());
+        //    }
+
+        //    //if (this.DataNavigator != null)
+        //    //{
+        //    //    ReflectionHelper.CallByName(this.DataNavigator, "InitDataNavigator", Microsoft.VisualBasic.CallType.Method, null);
+        //    //}
+
+        //    MoveFirstItem();
+        //    LastExecutionResult = ER.ToExecutionResult();
+        //    //DataNavigatorRaiseEventBoundCompled()
+        //    return ER;
+        //}
 
 
 
@@ -1889,10 +2092,10 @@ namespace Passero.Framework
             {
                 if (AddNewState == false)
                 {
-                    ModelItem = Utilities.Clone<ModelClass>(ModelItemShadow);
+                    ModelItem = Utilities.Clone<DTOClass>(ModelItemShadow);
                     if (ModelItems.Count >= CurrentModelItemIndex)
                     {
-                        ModelItems[CurrentModelItemIndex] = Utilities.Clone<ModelClass>(ModelItemShadow);
+                        ModelItems[CurrentModelItemIndex] = Utilities.Clone<DTOClass>(ModelItemShadow);
                     }
                 }
                 else
@@ -1905,7 +2108,7 @@ namespace Passero.Framework
 
 
                 //If AllItems And AutoUpdateModelItemsShadows = True Then
-                ModelItems = Utilities.Clone<IList<ModelClass>>(ModelItemsShadow);
+                ModelItems = Utilities.Clone<IList<DTOClass>>(ModelItemsShadow);
                 //End If
 
                 switch (mDataBindingMode)
@@ -1966,7 +2169,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult InsertItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult InsertItem(DTOClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERContext = $"{mClassName}.InsertItem()";
             var ER = new ExecutionResult(ERContext);
@@ -1999,7 +2202,7 @@ namespace Passero.Framework
                 case DataBindingMode.BindingSource:
                     //BindingSource.CurrencyManager.EndCurrentEdit()
                     BindingSource.EndEdit();
-                    Item = (ModelClass)BindingSource.Current;
+                    Item = (DTOClass)BindingSource.Current;
                     ModelItem = Item;
                     break;
                 //Item = CType(mBindingSource.Current, ModelClass)
@@ -2008,32 +2211,14 @@ namespace Passero.Framework
                     break;
             }
 
-            ER = Repository.InsertItem(Item, DbTransaction, DbCommandTimeout);
+            //ER = Repository.InsertItem(Item, DbTransaction, DbCommandTimeout);
+            ER = Repository.InsertItem(repositoryModelItem, DbTransaction, DbCommandTimeout);
             ER.Context = ERContext;
 
 
             if (ER.Success)
             {
                 mAddNewState = false;
-                // carica il nuovo item
-                switch (mDataBindingMode)
-                {
-                    case DataBindingMode.None:
-                        break;
-                    case DataBindingMode.Passero:
-                        if (AutoWriteControls == true)
-                        {
-                            WriteControls();
-                        }
-                        break;
-                    case DataBindingMode.BindingSource:
-
-                        this.BindingSource.ResetCurrentItem();
-                        break;
-                    default:
-                        break;
-                }
-
 
             }
 
@@ -2052,7 +2237,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult InsertItems(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult InsertItems(List<DTOClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERContenxt = $"{mClassName}.InsertItems()";
             var ER = new ExecutionResult(ERContenxt);
@@ -2071,7 +2256,7 @@ namespace Passero.Framework
             }
 
             long x = 0;
-            ER = Repository.InsertItems(Items, DbTransaction, DbCommandTimeout);
+            ER = Repository.InsertItems(repositoryModelItems, DbTransaction, DbCommandTimeout);
             ER.Context = ERContenxt;
             x = Convert.ToInt64(ER.Value);
             if (x > 0)
@@ -2097,7 +2282,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItem(DTOClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERcontext = $"{mClassName}.UpdateItem()";
             var ER = new ExecutionResult(ERcontext);
@@ -2145,7 +2330,7 @@ namespace Passero.Framework
                     break;
             }
 
-            ER = Repository.UpdateItem(Item, DbTransaction, DbCommandTimeout);
+            ER = Repository.UpdateItem(repositoryModelItem, DbTransaction, DbCommandTimeout);
 
             if (Convert.ToBoolean(ER.Value))
             {
@@ -2168,7 +2353,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItemEx(ModelClass Item = null, ModelClass ItemShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItemEx(DTOClass Item = null, DTOClass ItemShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ERcontext = $"{mClassName}.UpdateItemEx()";
             var ER = new ExecutionResult();
@@ -2222,7 +2407,7 @@ namespace Passero.Framework
                     break;
             }
 
-            ER = Repository.UpdateItemEx(Item, ItemShadow, DbTransaction, DbCommandTimeout);
+            ER = Repository.UpdateItemEx(repositoryModelItem, repositoryModelItemShadow, DbTransaction, DbCommandTimeout);
 
             if (Convert.ToBoolean(ER.Value))
             {
@@ -2241,7 +2426,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItems(IList<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItems(IList<DTOClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
@@ -2263,7 +2448,7 @@ namespace Passero.Framework
             }
 
 
-            ER = Repository.UpdateItems(Items, DbTransaction, DbCommandTimeout);
+            ER = Repository.UpdateItems(repositoryModelItems, DbTransaction, DbCommandTimeout);
             LastExecutionResult = Repository.LastExecutionResult;
             if (Convert.ToBoolean(ER.Value))
             {
@@ -2284,7 +2469,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItemsEx(IList<ModelClass> Items = null, IList<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult UpdateItemsEx(IList<DTOClass> Items = null, IList<DTOClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
 
             var ER = new ExecutionResult($"{mClassName}.UpdateItemsEx()");
@@ -2311,7 +2496,7 @@ namespace Passero.Framework
             }
 
 
-            ER = Repository.UpdateItemsEx(Items, ItemsShadow, DbTransaction, DbCommandTimeout);
+            ER = Repository.UpdateItemsEx(repositoryModelItems, repositoryModelItemsShadow, DbTransaction, DbCommandTimeout);
             LastExecutionResult = Repository.LastExecutionResult;
             if (Convert.ToBoolean(ER.Value))
             {
@@ -2331,7 +2516,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult DeleteItem(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult DeleteItem(DTOClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
             string Context = ER.Context;
@@ -2352,10 +2537,10 @@ namespace Passero.Framework
             switch (mDataBindingMode)
             {
                 case DataBindingMode.None:
-                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+                    ER = Repository.DeleteItem(repositoryModelItem, DbTransaction, DbCommandTimeout);
                     break;
                 case DataBindingMode.Passero:
-                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+                    ER = Repository.DeleteItem(repositoryModelItem, DbTransaction, DbCommandTimeout);
 
                     if (Convert.ToBoolean(ER.Value))
                     {
@@ -2370,7 +2555,7 @@ namespace Passero.Framework
 
                     mBindingSource.Remove(Item);
                     mBindingSource.EndEdit();
-                    ER = Repository.DeleteItem(Item, DbTransaction, DbCommandTimeout);
+                    ER = Repository.DeleteItem(repositoryModelItem, DbTransaction, DbCommandTimeout);
                     CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
                     break;
                 default:
@@ -2391,7 +2576,7 @@ namespace Passero.Framework
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult DeleteItems(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public ExecutionResult DeleteItems(List<DTOClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
             string Context = ER.Context;
@@ -2405,7 +2590,7 @@ namespace Passero.Framework
             {
                 DbCommandTimeout = this.DbCommandTimeout;
             }
-            ER = Repository.DeleteItems(Items, DbTransaction, DbCommandTimeout);
+            ER = Repository.DeleteItems(repositoryModelItems, DbTransaction, DbCommandTimeout);
             if (Convert.ToBoolean(ER.Value))
             {
 
@@ -2593,7 +2778,7 @@ namespace Passero.Framework
         /// <param name="ControlPropertyName">Name of the control property.</param>
         /// <returns></returns>
         /// 
-        public int WriteControl(ModelClass Model, Control Control, string ControlPropertyName = "")
+        public int WriteControl(DTOClass Model, Control Control, string ControlPropertyName = "")
         {
             if (mDataBindingMode == DataBindingMode.None || Control is null || Model is null)
             {
@@ -2615,7 +2800,7 @@ namespace Passero.Framework
 
             return _writedcontrols;
         }
-        public int WriteControl_OLD(ModelClass Model, Control Control, string ControlPropertyName = "")
+        public int WriteControl_OLD(DTOClass Model, Control Control, string ControlPropertyName = "")
         {
             //if (mDataBindingMode == DataBindingMode.BindingSource | mDataBindingMode == DataBindingMode.None)
             if (mDataBindingMode == DataBindingMode.None)
@@ -2660,7 +2845,7 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="Model">The model.</param>
         /// <returns></returns>
-        public int WriteControls(ModelClass Model = null)
+        public int WriteControls(DTOClass Model = null)
         {
             int _writedcontrols = 0;
 
@@ -2702,7 +2887,7 @@ namespace Passero.Framework
         /// <param name="Control">The control.</param>
         /// <param name="ControlPropertyName">Name of the control property.</param>
         /// <returns></returns>
-        public int ReadControl(ModelClass Model, Control Control, string ControlPropertyName = "")
+        public int ReadControl(DTOClass Model, Control Control, string ControlPropertyName = "")
         {
 
             if (mDataBindingMode == DataBindingMode.BindingSource)
@@ -2811,7 +2996,7 @@ namespace Passero.Framework
         /// Sets the model shadow.
         /// </summary>
         /// <returns></returns>
-        public ModelClass SetModelShadow()
+        public DTOClass SetModelShadow()
         {
             ModelItemShadow = Utilities.Clone(ModelItem);
 
@@ -2822,7 +3007,7 @@ namespace Passero.Framework
         /// Sets the model items shadow.
         /// </summary>
         /// <returns></returns>
-        public IList<ModelClass> SetModelItemsShadow()
+        public IList<DTOClass> SetModelItemsShadow()
         {
             mModelItemsShadow = Utilities.Clone(mModelItems);
 
@@ -2833,7 +3018,7 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="Model">The model.</param>
         /// <returns></returns>
-        public int ReadControls(ModelClass Model = null)
+        public int ReadControls(DTOClass Model = null)
         {
 
             if (mDataBindingMode == DataBindingMode.BindingSource | mDataBindingMode == DataBindingMode.None)

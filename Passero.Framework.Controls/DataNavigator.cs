@@ -4811,7 +4811,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void bNew_Click(object sender, EventArgs e)
+        public void bNew_Click(object sender, EventArgs e)
         {
             AddNew();
         }

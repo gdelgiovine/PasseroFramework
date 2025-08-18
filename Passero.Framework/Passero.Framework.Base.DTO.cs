@@ -4,12 +4,22 @@ using System.Runtime.CompilerServices;
 
 namespace Passero.Framework
 {
-    /// <summary>
-    /// Base class for models that supports property change notifications and cloning
-    /// </summary>
-    /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
-    /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
-    public abstract  class ModelBase : INotifyPropertyChanged, INotifyPropertyChanging
+
+    public class DTOBase<ModelClass> : ModelBase
+    {
+        public Type ModelClassType => typeof(ModelClass);   
+    }
+
+
+
+        /// <summary>
+        /// Base class for models that supports property change notifications and cloning
+        /// </summary>
+        /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
+        /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
+        /// <typeparam name="ModelClass">The type of the model class.</typeparam>
+
+        public class DTOBaseX<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>
         /// Generato quando il valore di una proprietà cambia.
@@ -43,7 +53,7 @@ namespace Passero.Framework
         /// Clones this instance.
         /// </summary>
         /// <returns>A clone of the current instance</returns>
-        public ModelBase Clone()
+        public DTOBaseX<ModelClass> Clone()
         {
             return Utilities.Clone(this);
         }
@@ -73,8 +83,8 @@ namespace Passero.Framework
     /// <summary>
     /// Stub model class for testing and demonstration purposes
     /// </summary>
-    /// <seealso cref="Passero.Framework.ModelBase" />
-    public class ModelStub : ModelBase
+    /// <seealso cref="Passero.Framework.DTOBase" />
+    public class DTOStubX<ModelClass> : DTOBaseX<ModelClass>
     {
         private string _string;
         private int _integer;

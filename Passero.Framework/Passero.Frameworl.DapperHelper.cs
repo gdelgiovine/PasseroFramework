@@ -24,6 +24,71 @@ namespace Passero.Framework.DapperHelper
     public class Utilities
     {
 
+
+        /// <summary>
+        /// Crea DynamicParameters da un oggetto anonimo o qualsiasi oggetto
+        /// </summary>
+        /// <param name="obj">Oggetto contenente i parametri</param>
+        /// <returns>DynamicParameters</returns>
+        public static Dapper.DynamicParameters CreateDynamicParameters(object obj)
+        {
+            var parameters = new Dapper.DynamicParameters();
+
+            if (obj == null)
+                return parameters;
+
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(obj);
+                parameters.Add(property.Name, value);
+            }
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Crea DynamicParameters da un dizionario
+        /// </summary>
+        /// <param name="dictionary">Dizionario chiave-valore</param>
+        /// <returns>DynamicParameters</returns>
+        public static Dapper.DynamicParameters CreateDynamicParameters(IDictionary<string, object> dictionary)
+        {
+            var parameters = new Dapper.DynamicParameters();
+
+            if (dictionary == null)
+                return parameters;
+
+            foreach (var kvp in dictionary)
+            {
+                parameters.Add(kvp.Key, kvp.Value);
+            }
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Aggiunge parametri da oggetto anonimo a DynamicParameters esistenti
+        /// </summary>
+        /// <param name="parameters">DynamicParameters esistenti</param>
+        /// <param name="obj">Oggetto contenente parametri da aggiungere</param>
+        public static void AddParameters(Dapper.DynamicParameters parameters, object obj)
+        {
+            if (obj == null || parameters == null)
+                return;
+
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(obj);
+                parameters.Add(property.Name, value);
+            }
+        }
+
+
+
         /// <summary>
         /// Gets the properties information.
         /// </summary>
@@ -531,7 +596,11 @@ namespace Passero.Framework.DapperHelper
                 string ParamValue = "";
                 if (value is not null)
                 {
-                    if (value.GetType() == typeof(string))
+                    if (
+                        value.GetType() == typeof(string) |
+                        value.GetType() == typeof(DateTime) 
+                        
+                        )
                     {
 
                         ParamValue = $"'{value.ToString()}'";

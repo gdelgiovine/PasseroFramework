@@ -252,11 +252,29 @@ namespace Passero.Framework.Controls
         /// Sets the target repository.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="targetRepository">The target repository.</param>
+        /// <param name="TargetRepository">The target repository.</param>
         /// <param name="CallBackAction">The call back action.</param>
-        public void SetTargetRepository<T>(T targetRepository, Action CallBackAction = null) where T : class
+        public void SetTargetRepository<T>(T target, Action CallBackAction = null) where T : class
         {
-            TargetRepository = targetRepository;
+            TargetRepository = target;
+            if (CallBackAction != null)
+            {
+                this.CallBackAction = CallBackAction;
+            }
+            else
+            {
+
+            }
+        }
+        /// <summary>
+        /// Sets the target repository.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="TargetViewModel">The target repository.</param>
+        /// <param name="CallBackAction">The call back action.</param>
+        public void SetTargetViewModel<T>(T target, Action CallBackAction = null) where T : class
+        {
+            TargetRepository = target;
             if (CallBackAction != null)
             {
                 this.CallBackAction = CallBackAction;
@@ -342,15 +360,15 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// Shows the qbe.
         /// </summary>
-        /// <param name="Wait">if set to <c>true</c> [wait].</param>
-        public void ShowQBE(bool Wait = false)
+        /// <param name="AsMdiChildren">if set to <c>true</c> [wait].</param>
+        public void ShowQBE(bool AsMdiChildren = true)
         {
             SetupQBEForm();
 
             if (AutoLoadData)
                 LoadData();
 
-            if (Wait == true)
+            if (AsMdiChildren == false)
             {
                 MdiParent = null;
                 ShowDialog();
@@ -382,8 +400,8 @@ namespace Passero.Framework.Controls
             //this.ResultGrid.Visible = true;
             QueryGrid.Visible = true;
 
-            if (Owner == null && SetFocusControlAfterClose != null)
-                Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
+            //if (Owner == null && SetFocusControlAfterClose != null)
+            //    Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
 
             if (Owner != null && Owner.MdiParent != null)
                 MdiParent = Owner.MdiParent;

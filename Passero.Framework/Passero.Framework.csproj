@@ -45,6 +45,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Passero.Framework.Base.RepositoryDTO.cs" />
+	  <Compile Remove="Passero.Framework.Base.ViewModelDTO.cs" />
+	  <Compile Remove="Passero.Framework.Base.ViewModelWrapper.cs" />
 	  <Compile Remove="Passero.Framework.Reports.cs" />
 		
 	</ItemGroup>
@@ -58,11 +61,11 @@
 		<PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
 		<PackageReference Include="FastDeepCloner" Version="1.3.6" />
-		<PackageReference Include="MiniExcel" Version="1.41.2" />
+		<PackageReference Include="MiniExcel" Version="1.41.3" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
-		<PackageReference Include="Wisej-3" Version="3.5.20" />
+		<PackageReference Include="Wisej-3" Version="3.5.22" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
 	
 		

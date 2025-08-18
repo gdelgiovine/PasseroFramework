@@ -38,8 +38,8 @@
             this.txt_Publishers_country = new Wisej.Web.TextBox();
             this.txt_Publishers_phone = new Wisej.Web.TextBox();
             this.txt_Publishers_email = new Wisej.Web.TextBox();
-            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             this.gdgTextBox1 = new Passero.Framework.Controls.GDGTextBox();
+            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             ((System.ComponentModel.ISupportInitialize)(this.bsPublishers)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -147,6 +147,15 @@
             this.txt_Publishers_email.Size = new System.Drawing.Size(239, 48);
             this.txt_Publishers_email.TabIndex = 6;
             // 
+            // gdgTextBox1
+            // 
+            this.gdgTextBox1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_name", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.gdgTextBox1.LabelText = "gdgTextBox1";
+            this.gdgTextBox1.Location = new System.Drawing.Point(391, 165);
+            this.gdgTextBox1.Name = "gdgTextBox1";
+            this.gdgTextBox1.Size = new System.Drawing.Size(100, 53);
+            this.gdgTextBox1.TabIndex = 7;
+            // 
             // dataNavigator1
             // 
             this.dataNavigator1.Caption = "Publishers";
@@ -169,13 +178,6 @@
             this.dataNavigator1.eSaveRequest += new Passero.Framework.Controls.DataNavigator.eSaveRequestEventHandler(this.dataNavigator1_eSaveRequest);
             this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
             this.dataNavigator1.eUndoRequest += new Passero.Framework.Controls.DataNavigator.eUndoRequestEventHandler(this.dataNavigator1_eUndoRequest);
-            // 
-            // gdgTextBox1
-            // 
-            this.gdgTextBox1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_name", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.gdgTextBox1.Location = new System.Drawing.Point(391, 165);
-            this.gdgTextBox1.Name = "gdgTextBox1";
-            this.gdgTextBox1.TabIndex = 7;
             // 
             // frmPublishers
             // 

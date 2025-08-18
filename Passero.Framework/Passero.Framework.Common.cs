@@ -36,7 +36,7 @@ namespace Passero.Framework
     /// 
     /// </summary>
     /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
-    public class TargetModelItems<ModelClass>
+    public class TargetModelItems<ModelBase>
     {
         /// <summary>
         /// Gets or sets the items.
@@ -44,7 +44,7 @@ namespace Passero.Framework
         /// <value>
         /// The items.
         /// </value>
-        public IList<ModelClass> Items { get; set; } = new List<ModelClass>();
+        public IList<ModelBase> Items { get; set; } = new List<ModelBase>();
     }
 
 

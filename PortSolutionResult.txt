@@ -1,0 +1,104 @@
+==========
+References
+==========
+Passero.Framework
+System
+System.Linq.Expressions
+System.Reflection
+System.Linq
+Passero.Framework.Base
+System.Data
+System.Collections.Generic
+System.Data.SqlClient
+System.Data.Common
+System.ComponentModel.DataAnnotations.Schema
+System.ComponentModel
+System.Runtime.CompilerServices
+Dapper
+System.Text
+Passero.Framework.DapperHelper
+Microsoft.Ajax.Utilities
+Dapper.Contrib.Extensions
+System.Collections.Concurrent
+System.ComponentModel.DataAnnotations
+System.Threading.Tasks
+Wisej.Web
+Microsoft.VisualBasic
+FastDeepCloner
+Microsoft.VisualBasic.CompilerServices
+System.IO
+System.Drawing.Printing
+System.Security.Cryptography
+System.Collections
+System.Net.Mime
+System.Collections.ObjectModel
+System.Resources
+Passero.Framework.Localization
+System.Globalization
+Newtonsoft.Json
+System.Drawing
+System.Diagnostics
+System.Drawing.Imaging
+Wisej.Core
+System.Runtime.InteropServices
+Newtonsoft.Json.Linq
+System.Text.RegularExpressions
+MiniExcelLibs
+Dapper.ColumnMapper
+Wisej.Web.Data
+System.Net.Mime.MediaTypeNames
+project.all
+
+===============
+DownloadedFiles
+===============
+project.all.json
+system.data.sqlclient.json
+
+==============
+ProjectResults
+==============
+----------------------
+Showing results for: C:\Dev\PasseroFramework\Passero.Framework\Passero.Framework.csproj
+----------------------
+---------------------------
+Target Versions:
+---------------------------
+net7.0
+---------------------------
+Source Versions:
+---------------------------
+net48
+---------------------------
+Upgrade packages:
+---------------------------
+---------------------------
+Action packages:
+---------------------------
+Microsoft.Data.SqlClient,5.0.1
+
+----------------------
+Showing results for: C:\Dev\PasseroFramework\Passero.Framework\Passero.Framework.csproj
+----------------------
+---------------------------
+Target Versions:
+---------------------------
+net7.0
+---------------------------
+Source Versions:
+---------------------------
+net48
+---------------------------
+Upgrade packages:
+---------------------------
+---------------------------
+Action packages:
+---------------------------
+Microsoft.Data.SqlClient,5.0.1
+
+
+===========
+BuildErrors
+===========
+
+

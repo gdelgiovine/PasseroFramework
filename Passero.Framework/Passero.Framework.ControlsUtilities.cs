@@ -4,6 +4,7 @@ using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,19 @@ using Wisej.Web;
 
 namespace Passero.Framework
 {
+
+    /// <summary>
+    /// Classe per contenere informazioni sui ColSpan delle celle
+    /// </summary>
+    public class DataGridViewCellSpanInfo
+    {
+        public int StartColumnIndex { get; set; }
+        public int ColSpan { get; set; }
+        public int EndColumnIndex { get; set; }
+        public List<int> CoveredColumns { get; set; } = new List<int>();
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -18,6 +32,253 @@ namespace Passero.Framework
 
     {
 
+        /// <summary>
+        /// Verifica se una cella specifica è coperta da un'altra cella con ColSpan > 1
+        /// </summary>
+        /// <param name="cell">La cella da verificare</param>
+        /// <returns>True se la cella è coperta, False altrimenti</returns>
+        public static bool DataGridViewIsCellCoveredByColSpan(DataGridViewCell cell)
+        {
+            if (cell == null || cell.OwningRow == null || cell.OwningColumn == null)
+                return false;
+
+            DataGridViewRow row = cell.OwningRow;
+            int columnIndex = cell.ColumnIndex;
+
+            // Verifica se l'indice della colonna è valido
+            if (columnIndex < 0 || columnIndex >= row.Cells.Count)
+                return false;
+
+            // Verifica le celle precedenti nella stessa riga
+            for (int i = 0; i < columnIndex; i++)
+            {
+                DataGridViewCell previousCell = row.Cells[i];
+                int colSpan = previousCell.Style.ColSpan;
+
+                // Se la cella precedente ha un ColSpan che si estende fino alla cella corrente
+                if (colSpan > 1 && (i + colSpan) > columnIndex)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verifica se una cella specifica è coperta da un'altra cella con ColSpan > 1
+        /// </summary>
+        /// <param name="row">La riga da verificare</param>
+        /// <param name="columnName">Il nome della colonna da verificare</param>
+        /// <returns>True se la cella è coperta, False altrimenti</returns>
+        public static bool DataGridViewIsCellCoveredByColSpan(DataGridViewRow row, string columnName)
+        {
+            if (row == null || string.IsNullOrEmpty(columnName))
+                return false;
+
+            // Trova l'indice della colonna dal nome
+            int columnIndex = -1;
+            for (int i = 0; i < row.Cells.Count; i++)
+            {
+                if (row.Cells[i].OwningColumn.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    columnIndex = i;
+                    break;
+                }
+            }
+
+            // Se la colonna non è stata trovata, restituisci false
+            if (columnIndex < 0 || columnIndex >= row.Cells.Count)
+                return false;
+
+            // Verifica le celle precedenti nella stessa riga
+            for (int i = 0; i < columnIndex; i++)
+            {
+                DataGridViewCell cell = row.Cells[i];
+                int colSpan = cell.Style.ColSpan;
+
+                // Se la cella precedente ha un ColSpan che si estende fino alla cella corrente
+                if (colSpan > 1 && (i + colSpan) > columnIndex)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verifica se una cella specifica è coperta da un'altra cella con ColSpan > 1
+        /// </summary>
+        /// <param name="row">La riga da verificare</param>
+        /// <param name="columnIndex">L'indice della colonna da verificare</param>
+        /// <returns>True se la cella è coperta, False altrimenti</returns>
+        public static bool DataGridViewIsCellCoveredByColSpan(DataGridViewRow row, int columnIndex)
+        {
+            if (row == null || columnIndex < 0 || columnIndex >= row.Cells.Count)
+                return false;
+
+            // Verifica le celle precedenti nella stessa riga
+            for (int i = 0; i < columnIndex; i++)
+            {
+                DataGridViewCell cell = row.Cells[i];
+                int colSpan = cell.Style.ColSpan;
+
+                // Se la cella precedente ha un ColSpan che si estende fino alla cella corrente
+                if (colSpan > 1 && (i + colSpan) > columnIndex)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Ottiene una lista di tutte le celle coperte da ColSpan in una riga
+        /// </summary>
+        /// <param name="row">La riga da analizzare</param>
+        /// <returns>Lista degli indici delle colonne coperte</returns>
+        public static List<int> DataGridViewGetCoveredCellsInRow(DataGridViewRow row)
+        {
+            List<int> coveredCells = new List<int>();
+
+            if (row == null)
+                return coveredCells;
+
+            for (int i = 0; i < row.Cells.Count; i++)
+            {
+                DataGridViewCell cell = row.Cells[i];
+                int colSpan = cell.Style.ColSpan;
+
+                // Se la cella ha ColSpan > 1, aggiungi tutte le celle coperte
+                if (colSpan > 1)
+                {
+                    for (int j = i + 1; j < i + colSpan && j < row.Cells.Count; j++)
+                    {
+                        coveredCells.Add(j);
+                    }
+                }
+            }
+
+            return coveredCells;
+        }
+
+        /// <summary>
+        /// Verifica se ci sono celle coperte in una riga e restituisce informazioni dettagliate
+        /// </summary>
+        /// <param name="row">La riga da verificare</param>
+        /// <returns>Dizionario con informazioni sulle celle coperte</returns>
+        public static Dictionary<int, DataGridViewCellSpanInfo> GetRowCellSpanInfo(DataGridViewRow row)
+        {
+            Dictionary<int, DataGridViewCellSpanInfo> spanInfo = new Dictionary<int, DataGridViewCellSpanInfo>();
+
+            if (row == null)
+                return spanInfo;
+
+            for (int i = 0; i < row.Cells.Count; i++)
+            {
+                DataGridViewCell cell = row.Cells[i];
+                int colSpan = cell.Style.ColSpan;
+
+                if (colSpan > 1)
+                {
+                    var info = new DataGridViewCellSpanInfo
+                    {
+                        StartColumnIndex = i,
+                        ColSpan = colSpan,
+                        EndColumnIndex = i + colSpan - 1,
+                        CoveredColumns = new List<int>()
+                    };
+
+                    // Aggiungi gli indici delle colonne coperte
+                    for (int j = i + 1; j < i + colSpan && j < row.Cells.Count; j++)
+                    {
+                        info.CoveredColumns.Add(j);
+                    }
+
+                    spanInfo[i] = info;
+                }
+            }
+
+            return spanInfo;
+        }
+
+        /// <summary>
+        /// Trova la cella "master" che copre una specifica colonna
+        /// </summary>
+        /// <param name="row">La riga da verificare</param>
+        /// <param name="columnIndex">L'indice della colonna</param>
+        /// <returns>L'indice della cella master o -1 se non trovata</returns>
+        public static int DataGridViewFindMasterCellForColumn(DataGridViewRow row, int columnIndex)
+        {
+            if (row == null || columnIndex < 0 || columnIndex >= row.Cells.Count)
+                return -1;
+
+            for (int i = 0; i <= columnIndex; i++)
+            {
+                DataGridViewCell cell = row.Cells[i];
+                int colSpan = cell.Style.ColSpan;
+
+                if (colSpan > 1 && (i + colSpan) > columnIndex)
+                {
+                    return i; // Restituisce l'indice della cella master
+                }
+            }
+
+            return -1; // Nessuna cella master trovata
+        }
+
+
+
+
+
+        public enum ControlCenteringMode
+        {
+            None = 0,
+            Horizontal = 1,
+            Vertical = 2,
+            Both = 3
+        }
+        public static void CenterControlInParent(Control control, ControlCenteringMode centeringMode = ControlCenteringMode.Both)
+        {
+            if (control?.Parent == null) return;
+
+            int x = control.Location.X;
+            int y = control.Location.Y;
+
+            bool centerHorizontally = (centeringMode & ControlCenteringMode.Horizontal) == ControlCenteringMode.Horizontal;
+            bool centerVertically = (centeringMode & ControlCenteringMode.Vertical) == ControlCenteringMode.Vertical;
+
+            if (centerHorizontally)
+            {
+                x = control.Parent.ClientSize.Width / 2 - control.Size.Width / 2;
+            }
+
+            if (centerVertically)
+            {
+                y = control.Parent.ClientSize.Height / 2 - control.Size.Height / 2;
+            }
+
+            control.Location = new Point(x, y);
+
+            // Imposta l'anchor appropriato in base alla centratura
+            AnchorStyles anchor = AnchorStyles.None;
+            if (centeringMode == ControlCenteringMode.None)
+            {
+                anchor = AnchorStyles.Top | AnchorStyles.Left;
+            }
+            else if (!centerHorizontally)
+            {
+                anchor = AnchorStyles.Left;
+            }
+            else if (!centerVertically)
+            {
+                anchor = AnchorStyles.Top;
+            }
+
+            control.Anchor = anchor;
+        }
         public static int GetDataGridViewHeight(DataGridView dataGridView)
         {
             // Se non ci sono righe, esci
@@ -648,6 +909,28 @@ namespace Passero.Framework
             var page = PageCollection[PageName];
             return page;
 
+        }
+
+        /// <summary>
+        /// Restituisce la prima istanza aperta di una form MDIChild del tipo specificato, oppure null se non esiste.
+        /// </summary>
+        /// <typeparam name="T">Il tipo di form da cercare</typeparam>
+        /// <returns>La prima istanza trovata del tipo specificato, oppure null</returns>
+        public static T FindOpenForm<T>(bool CreateIfNotExist = false) where T : Form
+        {
+            foreach (Form f in Wisej.Web.Application.OpenForms)
+            {
+                if (f is T)
+                {
+                    return (T)f;
+                }
+            }
+            if (CreateIfNotExist)
+            {
+                return (T)Activator.CreateInstance(typeof(T));
+            }
+            
+            return null;
         }
 
         /// <summary>
