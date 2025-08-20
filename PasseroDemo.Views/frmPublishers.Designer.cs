@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.bsPublishers = new Wisej.Web.BindingSource(this.components);
             this.txt_Publishers_pub_id = new Wisej.Web.TextBox();
+            this.bsPublishers = new Wisej.Web.BindingSource(this.components);
             this.txt_Publishers_pub_name = new Wisej.Web.TextBox();
             this.txt_Publishers_city = new Wisej.Web.TextBox();
             this.flowLayoutPanel1 = new Wisej.Web.FlowLayoutPanel();
@@ -39,14 +39,12 @@
             this.txt_Publishers_phone = new Wisej.Web.TextBox();
             this.txt_Publishers_email = new Wisej.Web.TextBox();
             this.gdgTextBox1 = new Passero.Framework.Controls.GDGTextBox();
+            this.textBoxFramed1 = new Passero.Framework.Controls.TextBoxFramed();
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.model1 = new Passero.Framework.Controls.Model();
             ((System.ComponentModel.ISupportInitialize)(this.bsPublishers)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // bsPublishers
-            // 
-            this.bsPublishers.DataSource = typeof(PasseroDemo.Models.Publisher);
             // 
             // txt_Publishers_pub_id
             // 
@@ -58,6 +56,10 @@
             this.txt_Publishers_pub_id.Name = "txt_Publishers_pub_id";
             this.txt_Publishers_pub_id.Size = new System.Drawing.Size(100, 48);
             this.txt_Publishers_pub_id.TabIndex = 0;
+            // 
+            // bsPublishers
+            // 
+            this.bsPublishers.DataSource = typeof(PasseroDemo.Models.Publisher);
             // 
             // txt_Publishers_pub_name
             // 
@@ -97,6 +99,7 @@
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_phone);
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_email);
             this.flowLayoutPanel1.Controls.Add(this.gdgTextBox1);
+            this.flowLayoutPanel1.Controls.Add(this.textBoxFramed1);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 288);
@@ -156,6 +159,16 @@
             this.gdgTextBox1.Size = new System.Drawing.Size(100, 53);
             this.gdgTextBox1.TabIndex = 7;
             // 
+            // textBoxFramed1
+            // 
+            this.textBoxFramed1.AutoSize = false;
+            this.textBoxFramed1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.textBoxFramed1.Location = new System.Drawing.Point(3, 224);
+            this.textBoxFramed1.Name = "textBoxFramed1";
+            this.textBoxFramed1.Size = new System.Drawing.Size(178, 30);
+            this.textBoxFramed1.TabIndex = 8;
+            this.textBoxFramed1.TextAlign = Wisej.Web.HorizontalAlignment.Right;
+            // 
             // dataNavigator1
             // 
             this.dataNavigator1.Caption = "Publishers";
@@ -178,6 +191,11 @@
             this.dataNavigator1.eSaveRequest += new Passero.Framework.Controls.DataNavigator.eSaveRequestEventHandler(this.dataNavigator1_eSaveRequest);
             this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
             this.dataNavigator1.eUndoRequest += new Passero.Framework.Controls.DataNavigator.eUndoRequestEventHandler(this.dataNavigator1_eUndoRequest);
+            // 
+            // model1
+            // 
+            this.model1.DataSource = null;
+            this.model1.Name = null;
             // 
             // frmPublishers
             // 
@@ -209,5 +227,7 @@
         private Wisej.Web.TextBox txt_Publishers_phone;
         private Wisej.Web.TextBox txt_Publishers_email;
         private Passero.Framework.Controls.GDGTextBox gdgTextBox1;
+        private Passero.Framework.Controls.TextBoxFramed textBoxFramed1;
+        private Passero.Framework.Controls.Model model1;
     }
 }
