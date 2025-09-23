@@ -25,7 +25,6 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-	</ItemGroup>
+	
 
 </Project>

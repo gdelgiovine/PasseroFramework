@@ -7,6 +7,12 @@ namespace Passero.Framework
 {
 
 
+    public enum ViewModelTypes
+    {
+        Base = 0, 
+        Enhanced = 1 
+    }
+
     //    Public Class BasicDALMessageBox
 
     //    Public Sub Show(ByVal Text As String, Optional ByVal Caption As String = "Errore Gestione Dati")

@@ -1,0 +1,90 @@
+using Wisej.Web;
+
+namespace {{ Namespace }}.Forms
+{
+    partial class frm{{ Entity }}
+    {
+        private System.ComponentModel.IContainer components = null;
+
+{{~ for prop in Properties ~}}
+        private {{ if prop.Type == "string" }}TextBox{{ else if prop.Type == "int" || prop.Type == "decimal" || prop.Type == "double" }}NumericUpDown{{ else if prop.Type == "DateTime" }}DateTimePicker{{ else if prop.Type == "bool" }}CheckBox{{ else }}TextBox{{ end }} {{ prop.Name | string.downcase }};
+{{~ end ~}}
+        private Button btnSave;
+        private Button btnCancel;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            // Inizializzazione dei controlli
+{{~ for prop in Properties ~}}
+            this.{{ prop.Name | string.downcase }} = new {{ if prop.Type == "string" }}TextBox{{ else if prop.Type == "int" || prop.Type == "decimal" || prop.Type == "double" }}NumericUpDown{{ else if prop.Type == "DateTime" }}DateTimePicker{{ else if prop.Type == "bool" }}CheckBox{{ else }}TextBox{{ end }}();
+{{~ end ~}}
+            this.btnSave = new Button();
+            this.btnCancel = new Button();
+            this.SuspendLayout();
+
+            // Layout dei controlli
+            int yPos = 20;
+{{~ for prop in Properties ~}}
+            
+            // {{ prop.Name }}
+            this.{{ prop.Name | string.downcase }}.Location = new System.Drawing.Point(120, yPos);
+            this.{{ prop.Name | string.downcase }}.Name = "{{ prop.Name | string.downcase }}";
+            this.{{ prop.Name | string.downcase }}.Size = new System.Drawing.Size(200, 20);
+            this.{{ prop.Name | string.downcase }}.TabIndex = {{ for.index }};
+            
+            yPos += 30;
+{{~ end ~}}
+
+            // btnSave
+            this.btnSave.Location = new System.Drawing.Point(120, yPos + 20);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = {{ Properties.size }};
+            this.btnSave.Text = "Salva";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+
+            // btnCancel
+            this.btnCancel.Location = new System.Drawing.Point(205, yPos + 20);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = {{ Properties.size + 1 }};
+            this.btnCancel.Text = "Annulla";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+
+            // frm{{ Entity }}
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, {{ Properties.size * 30 + 100 }});
+{{~ for prop in Properties ~}}
+            this.Controls.Add(this.{{ prop.Name | string.downcase }});
+{{~ end ~}}
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.btnCancel);
+            this.Name = "frm{{ Entity }}";
+            this.Text = "{{ Title }}";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private void btnSave_Click(object sender, System.EventArgs e)
+        {
+            Save();
+        }
+
+        private void btnCancel_Click(object sender, System.EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

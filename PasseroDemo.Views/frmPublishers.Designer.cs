@@ -165,9 +165,12 @@
             this.textBoxFramed1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
             this.textBoxFramed1.Location = new System.Drawing.Point(3, 224);
             this.textBoxFramed1.Name = "textBoxFramed1";
+            this.textBoxFramed1.PenColor = System.Drawing.Color.Red;
             this.textBoxFramed1.Size = new System.Drawing.Size(178, 30);
             this.textBoxFramed1.TabIndex = 8;
             this.textBoxFramed1.TextAlign = Wisej.Web.HorizontalAlignment.Right;
+            this.textBoxFramed1.VerticalLineHeight = 75;
+            this.textBoxFramed1.VerticalLineStep = 3;
             // 
             // dataNavigator1
             // 

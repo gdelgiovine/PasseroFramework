@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Wisej.Web;
 
-namespace Passerow.Framework.ControlScaler  
+namespace Passero.Framework.ControlScaler  
 {
     public enum CenteringType
     {

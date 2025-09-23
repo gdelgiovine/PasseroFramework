@@ -1,0 +1,75 @@
+using Passero.Framework;
+using Dapper;
+using System.Collections.Generic;
+using System.Linq;
+using System.Data;
+using {{ Namespace }};
+
+namespace {{ Namespace }}.Repository
+{
+    public class {{ Entity }}Repository : Repository<{{ Namespace }}.{{ Entity }}>
+    {
+        public {{ Entity }}Repository(IDbConnection db) : base(db) {}
+
+        public {{ Namespace }}.{{ Entity }} GetById(object id)
+        {
+            return DbConnection.Query<{{ Namespace }}.{{ Entity }}>(
+                $"SELECT * FROM {GetTableName()} WHERE {{ PrimaryKey }}=@id", new { id }
+            ).SingleOrDefault();
+        }
+
+        public IEnumerable<{{ Namespace }}.{{ Entity }}> GetAll()
+        {
+            return DbConnection.Query<{{ Namespace }}.{{ Entity }}>(
+                $"SELECT * FROM {GetTableName()}"
+            ).ToList();
+        }
+
+        public void Insert({{ Namespace }}.{{ Entity }} entity)
+        {
+            var sql = GenerateInsertSql();
+            DbConnection.Execute(sql, entity);
+        }
+
+        public void Update({{ Namespace }}.{{ Entity }} entity)
+        {
+            var sql = GenerateUpdateSql();
+            DbConnection.Execute(sql, entity);
+        }
+
+        public void Delete(object id)
+        {
+            var sql = $"DELETE FROM {GetTableName()} WHERE {{ PrimaryKey }}=@id";
+            DbConnection.Execute(sql, new { id });
+        }
+
+        private string GenerateInsertSql()
+        {
+            var tableName = GetTableName();
+            var properties = GetProperties().Where(p => p != "{{ PrimaryKey }}");
+            var columns = string.Join(", ", properties);
+            var parameters = string.Join(", ", properties.Select(p => "@" + p));
+            
+            return $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
+        }
+
+        private string GenerateUpdateSql()
+        {
+            var tableName = GetTableName();
+            var properties = GetProperties().Where(p => p != "{{ PrimaryKey }}");
+            var setClause = string.Join(", ", properties.Select(p => $"{p}=@{p}"));
+            
+            return $"UPDATE {tableName} SET {setClause} WHERE {{ PrimaryKey }}=@{{ PrimaryKey }}";
+        }
+
+        private IEnumerable<string> GetProperties()
+        {
+            return new[]
+            {
+{{~ for prop in Properties ~}}
+                "{{ prop.Name }}",
+{{~ end ~}}
+            };
+        }
+    }
+}

@@ -20,7 +20,7 @@ namespace PasseroDemo.Views
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public IDbConnection DbConnection { get; set; }
         // Cosi di usa il viewmodel esteso
-        public PasseroDemo.ViewModels.vmAuthor  vmAuthor2 = new ViewModels.vmAuthor (); 
+        public PasseroDemo.ViewModels.vmAuthor  vmAuthor2 = new ViewModels.vmAuthor ();
 
         // cosi quello base
         public Passero.Framework.ViewModel<Models.Author> vmAuthor = new Passero.Framework.ViewModel<Models.Author>();

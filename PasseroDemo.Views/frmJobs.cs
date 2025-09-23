@@ -2,6 +2,7 @@
 using Wisej.Web;
 using Passero.Framework;
 using Passero.Framework.Controls;
+using PasseroDemo.ViewModels;
 
 namespace PasseroDemo.Views
 {
@@ -9,7 +10,9 @@ namespace PasseroDemo.Views
     {
 
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
-        public Passero.Framework.ViewModel<Models.Job> vmJobs = new Passero.Framework.ViewModel<Models.Job>();
+        public Passero.Framework.ViewModel<Models.Job> vmJobs2 = new Passero.Framework.ViewModel<Models.Job>();
+        //public vmTEST vmJobs = new vmTEST();
+        public ViewModels.vmJobs vmJobs = new vmJobs();
         private System.Data.SqlClient.SqlConnection DbConnection;
 
         public frmJobs()
@@ -22,18 +25,30 @@ namespace PasseroDemo.Views
             this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
 
             vmJobs.Init(this.DbConnection);
-            //vmPublishers.DataBindControlsAutoSetMaxLenght = true;
-            //vmPublishers.AutoWriteControls = true;
-            //vmPublishers.AutoReadControls = true;
-            //vmPublishers.AutoFitColumnsLenght = true;
             vmJobs.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
-            vmJobs.BindingSource = this.bsJobs ;
+            vmJobs.BindingSource = this.bsJobs;
 
-            this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmJobs, "Jobs");
+            vmJobs.Jobs.Init(this.DbConnection);
+            vmJobs.Jobs.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
+            vmJobs.Jobs.BindingSource = this.bsJobs;
+
+            vmJobs2.Init(this.DbConnection);
+            vmJobs2.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
+            vmJobs2.BindingSource = this.bsJobs;
+
+            vmJobs.AddViewModel<Models.Job>("vmJobs2",vmJobs2);
+
+            
+            ViewModel<Models.Job> vm = vmJobs.GetViewModel("vmJobs2");
+
+            //this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmJobs.Jobs , "Jobs");
+
+            this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(vm, "Jobs");
+
             this.dataNavigator1.SetActiveViewModel("Jobs");
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
-            this.dataNavigator1.Init(false);
+            this.dataNavigator1.Init(true);
 
         }
 
@@ -71,7 +86,8 @@ namespace PasseroDemo.Views
             QBE.Owner = this;
             QBE.SetFocusControlAfterClose = this.txt_job_id ;
             //xQBEForm_Author.CallBackAction = () => { this.Reload(); };
-            QBE.SetTargetRepository(this.vmJobs.Repository, () => { this.Reload(); });
+            //QBE.SetTargetRepository(this.vmJobs.DefaultViewModel.Repository, () => { this.Reload(); });
+            QBE.SetTargetRepository((Repository<Models.Job>)this.vmJobs.Repository, () => { this.Reload(); });
             //xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository);
 
 

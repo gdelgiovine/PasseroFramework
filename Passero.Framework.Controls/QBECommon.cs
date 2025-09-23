@@ -40,6 +40,7 @@ namespace Passero.Framework.Controls
     /// </summary>
     public class DataNavigatorViewModel
     {
+        public ViewModelTypes ViewModelType { get; set; } = ViewModelTypes.Base;  
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
@@ -92,7 +93,7 @@ namespace Passero.Framework.Controls
             get { return mGridMode; }
             set { mGridMode = value; }
         }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DataNavigatorViewModel"/> class.
         /// </summary>
@@ -103,7 +104,6 @@ namespace Passero.Framework.Controls
         /// <param name="DataRepeater">The data repeater.</param>
         public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
-
             if (string.IsNullOrEmpty(Name))
                 Name = ReflectionHelper.GetPropertyValue(ViewModel, "Name").ToString();
 
@@ -112,11 +112,10 @@ namespace Passero.Framework.Controls
 
             this.Name = Name;
             this.FriendlyName = FriendlyName;
-
             this.ViewModel = ViewModel;
-
-            this.DataRepeater = DataRepeater;
+            this.ViewModelType = (ViewModelTypes)ReflectionHelper.CallByName(ViewModel, "ViewModelType", CallType.Get);
             this.DataGridView = DataGridView;
+
             if (this.DataRepeater != null)
             {
                 GridMode = ViewModelGridModes.DataRepeater;

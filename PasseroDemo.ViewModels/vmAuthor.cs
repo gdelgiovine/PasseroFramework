@@ -8,6 +8,8 @@ namespace PasseroDemo.ViewModels
         public vmAuthor()
         {
         }
+
+        
         public Models.Author GetAuthor(string au_id)
         {
             

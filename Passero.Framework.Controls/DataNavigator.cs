@@ -2,8 +2,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 //using Passero.Framework.Base;
 using Wisej.Web;
@@ -212,6 +215,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The model items count.
         /// </value>
+        [Browsable(false)]
         public int ModelItemsCount
         {
             get
@@ -582,16 +586,7 @@ namespace Passero.Framework.Controls
                 case ViewModelGridModes.DataRepeater:
                     if (_DataRepeater != null && DataGridActive)
                     {
-
-                        if (_DataRepeater.DataSource is BindingSource bs)
-                        {
-                            bs.ResetBindings(false);
-                        }
-                        else
-                        {
-                            _DataRepeater.DataSource = ModelItems;
-                        }
-                        
+                        _DataRepeater.DataSource = ModelItems;
                         //Me._DataRepeater.Refresh()
                         ER = DataRepeater_MoveFirst();
                     }
@@ -893,6 +888,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The active view model.
         /// </value>
+        [Browsable(false)]
         public dynamic ActiveViewModel
         {
             get
@@ -921,6 +917,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The type of the model.
         /// </value>
+        [Browsable(false)]
         public Type ModelType
         {
             get
@@ -946,6 +943,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The model item.
         /// </value>
+        [Browsable(false)]
         public object ModelItem
         {
             get
@@ -981,6 +979,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The model items.
         /// </value>
+        [Browsable(false)]
         public dynamic ModelItems
         {
             get
@@ -1013,6 +1012,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The model item shadow.
         /// </value>
+        [Browsable(false)]
         public dynamic ModelItemShadow
         {
             get
@@ -1042,6 +1042,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The model items shadow.
         /// </value>
+        [Browsable(false)]
         public dynamic ModelItemsShadow
         {
             get
@@ -1713,6 +1714,7 @@ namespace Passero.Framework.Controls
         /// <value>
         ///   <c>true</c> if [data bound completed]; otherwise, <c>false</c>.
         /// </value>
+        [Browsable(false)]
         public bool DataBoundCompleted
         {
             get
@@ -2096,6 +2098,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The height of the data grid ListView default row.
         /// </value>
+        [Browsable(false)]
         public int DataGridListViewDefaultRowHeight
         {
             get
@@ -2148,6 +2151,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The data panel.
         /// </value>
+        [Browsable(false)]
         public Panel DataPanel
         {
             get
@@ -2169,6 +2173,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The data grid view.
         /// </value>
+        [Browsable(false)]
         public DataGridView DataGridView
         {
             get
@@ -2195,6 +2200,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The data repeater.
         /// </value>
+        [Browsable(false)]
         public DataRepeater DataRepeater
         {
             get
@@ -2213,6 +2219,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The data grid ListView.
         /// </value>
+        [Browsable(false)]
         public DataGridView DataGridListView
         {
             get
@@ -2467,6 +2474,7 @@ namespace Passero.Framework.Controls
                     if (_AddNewState == true)
                     {
                         dynamic item = ((IList)_ModelItems)[NewItemIndex];
+                        //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "InsertItem", Microsoft.VisualBasic.CallType.Method, item);
                         ER = (ExecutionResult)_ActiveViewModel.InsertItem(item);
 
                         if (ER.Success)
@@ -2477,8 +2485,10 @@ namespace Passero.Framework.Controls
                     else
                     {
                         if (UseUpdateEx == false)
+                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItems(_ModelItems);
                         else
+                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItemsEx(_ModelItems);
                     }
 
@@ -2950,6 +2960,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The active data navigator view model.
         /// </value>
+        [Browsable(false)]
         public DataNavigatorViewModel ActiveDataNavigatorViewModel
         {
             get
@@ -3129,15 +3140,7 @@ namespace Passero.Framework.Controls
                 {
                     //ER = (ExecutionResult)ReflectionHelper.CallByName(_ActiveViewModel, "UndoChanges", Microsoft.VisualBasic.CallType.Method, true);
                     ER = (ExecutionResult)_ActiveViewModel.UndoChanges(true);
-
-                    if (DataRepeater.DataSource is BindingSource bs)
-                    {
-                        bs.ResetBindings(false);
-                    }
-                    else
-                    {
-                        DataRepeater.DataSource = ModelItems;
-                    }
+                    DataRepeater.DataSource = ModelItems;
                 }
 
             }
@@ -3211,23 +3214,7 @@ namespace Passero.Framework.Controls
             {
                 try
                 {
-                                      
-
                     IList items = (IList)DataRepeater.DataSource;
-
-                    if (DataRepeater.DataSource is BindingSource bs)
-                    {
-                        // If it is a BindingSource, get its DataSource
-                        if (bs.DataSource is IList)
-                        {
-                            items = (IList)bs.DataSource;
-                        }
-                    }
-                    else if (DataRepeater.DataSource is IList)
-                    {
-                        items = (IList)DataRepeater.DataSource;
-                    }
-
                     Type T = ReflectionHelper.GetListType(items);
                     _AddNewState = true;
                     if (NewItem == null)
@@ -3666,6 +3653,7 @@ namespace Passero.Framework.Controls
         /// <value>
         ///   <c>true</c> if [data grid active]; otherwise, <c>false</c>.
         /// </value>
+        [Browsable(false)]
         public bool DataGridActive
         {
             get
@@ -3691,6 +3679,7 @@ namespace Passero.Framework.Controls
         /// <value>
         ///   <c>true</c> if [data grid ListView active]; otherwise, <c>false</c>.
         /// </value>
+        [Browsable(false)]
         public bool DataGridListViewActive
         {
             get
@@ -4811,7 +4800,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        public void bNew_Click(object sender, EventArgs e)
+        private void bNew_Click(object sender, EventArgs e)
         {
             AddNew();
         }
@@ -4944,6 +4933,54 @@ namespace Passero.Framework.Controls
             //HeaderSize = _HeaderSize;
             //ShowHeader = _ShowHeader;
         }
+
+
+        // --- Aggiungi in cima alla classe (insieme agli altri eventi) ---
+        [Category("Behavior")]
+        [Description("Generato quando si clicca un qualsiasi ToolBarButton della ToolBar interna.")]
+        public event EventHandler<ToolBarButtonClickEventArgs> ToolBarButtonClick;
+
+        private Collection<ToolBarButton> _CustomButtons = new Collection<ToolBarButton>();    
+
+        [Browsable(true)]
+        [Category("Behavior")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        [Description("Collezione dei pulsanti custom da aggiungere alla ToolBar interna.")]
+        public Collection<ToolBarButton> CustomButtons
+        {
+            get { return this._CustomButtons ; }
+        }
+
+        public void AddCustomButtonToToolBar(string  ButtonName, int Index=-1)
+        {
+           ToolBarButton toolBarButton = _CustomButtons.FirstOrDefault(b => b.Name == ButtonName);  
+           if (toolBarButton != null && !ToolBar.Buttons.Contains(toolBarButton))
+           {
+                if (Index == -1)
+                {
+                    Index = ToolBar.Buttons.Count - 1;
+                }
+                Index = NormalizeIndex(Index, ToolBar.Buttons.Count);
+                ToolBar.Buttons.Insert(Index, toolBarButton);
+           }   
+        }
+        public void AddCustomButtonToToolBar(ToolBarButton Button, int Index = -1)
+        {
+            if (Index == -1)
+            {
+                Index = ToolBar.Buttons.Count - 1;
+            }
+            Index = NormalizeIndex(Index, ToolBar.Buttons.Count);
+            ToolBar.Buttons.Insert(Index, Button);
+        }
+
+        private int NormalizeIndex(int desired, int count)
+        {
+            if (desired < 0) return 0;
+            if (desired > count) return count;
+            return desired;
+        }
+
 
         /// <summary>
         /// Handles the Click event of the DataGridView control.
@@ -6471,6 +6508,11 @@ namespace Passero.Framework.Controls
 
         }
 
+        private void _ToolBar_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
+        {
+            // Rilancio esterno “trasparente”
+            ToolBarButtonClick?.Invoke(this, e);
+        }
     }
 
     /// <summary>

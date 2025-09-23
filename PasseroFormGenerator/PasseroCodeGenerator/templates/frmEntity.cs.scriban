@@ -1,0 +1,49 @@
+using Passero.Framework;
+using Wisej.Web;
+using {{ Namespace }};
+using {{ Namespace }}.ViewModels;
+
+namespace {{ Namespace }}.Forms
+{
+    public partial class frm{{ Entity }} : Form
+    {
+        private vm{{ Entity }} viewModel;
+
+        public frm{{ Entity }}()
+        {
+            InitializeComponent();
+            viewModel = new vm{{ Entity }}();
+            InitializeData();
+        }
+
+        private void InitializeData()
+        {
+            // Inizializzazione dei controlli e binding dati
+            LoadData();
+        }
+
+        private void LoadData()
+        {
+            var entities = viewModel.GetAll();
+            // Bind ai controlli della form
+        }
+
+        private void Save()
+        {
+            // Logica di salvataggio
+            var entity = GetCurrentEntity();
+            viewModel.Save(entity);
+        }
+
+        private {{ Namespace }}.{{ Entity }} GetCurrentEntity()
+        {
+            // Crea un'istanza dell'entità dai controlli della form
+            return new {{ Namespace }}.{{ Entity }}
+            {
+{{~ for prop in Properties ~}}
+                {{ prop.Name }} = /* valore dal controllo */,
+{{~ end ~}}
+            };
+        }
+    }
+}

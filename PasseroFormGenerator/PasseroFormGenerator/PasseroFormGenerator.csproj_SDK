@@ -1,0 +1,84 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>PasseroFormGenerator</RootNamespace>
+    <AssemblyName>PasseroFormGenerator</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CreateVsixContainer>true</CreateVsixContainer>
+    <DeployExtension>false</DeployExtension>
+    
+    <!-- Metadati VSIX -->
+    <VsixDisplayName>Passero Form Generator</VsixDisplayName>
+    <VsixDescription>Generatore di Views PasseroFramework</VsixDescription>
+    <VsixVersion>1.0</VsixVersion>
+    <VsixCompany>Gabriele Del Giovine</VsixCompany>
+    <VsixLanguage>it-IT</VsixLanguage>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="GeneratePasseroFormCommandT4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.10.*" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.10.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="envdte" Version="17.10.*" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating" Version="17.10.*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.Interfaces" Version="17.10.*" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.TextTemplating.VSHost" Version="17.10.*" PrivateAssets="all" />
+    <PackageReference Include="Scriban.Signed" Version="6.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="templates\frmEntity.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>frmEntity.Designer.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="VSCommandTable.vsct">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Design" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="templates\EntityRepository.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="templates\frmEntity.Designer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="templates\frmEntity.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="templates\vmEntity.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <VSCTCompile Include="VSCommandTable.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+  </ItemGroup>
+
+	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+</Project>

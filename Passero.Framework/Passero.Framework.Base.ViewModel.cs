@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using FastDeepCloner;
+using Microsoft.Ajax.Utilities;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
@@ -20,15 +21,22 @@ using Wisej.Web.Data;
 namespace Passero.Framework
 {
 
-
     /// <summary>
     /// <typeparam name="ModelClass">The type of the odel class.</typeparam>
     /// Base class for models that supports property change notifications and cloning
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
-    
+
     public class ViewModel<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging where ModelClass :  class 
     {
+        public ViewModelTypes ViewModelType = ViewModelTypes.Base;
+        /// <summary>
+        /// The m class name
+        /// </summary>
+        private const string mClassName = "Passero.Framework.Base.ViewModel<T>";
+
+        private Dictionary<string, dynamic> _ViewModels = new(StringComparer.InvariantCultureIgnoreCase);
+
 
         #region INotifyPropertyChanged and INotifyPropertyChanging  
         /// <summary>
@@ -68,8 +76,6 @@ namespace Passero.Framework
             return Utilities.Clone(this);
         }
        
-
-
         /// <summary>
         /// Sets the property value and raises the appropriate change notifications.
         /// </summary>
@@ -93,21 +99,119 @@ namespace Passero.Framework
 
         #endregion
 
-        /// <summary>
-        /// The m class name
-        /// </summary>
-        private const string mClassName = "Passero.Framework.Base.ViewModel";
-        //public event EventHandler WriteControlsCompleted;
-        //protected virtual void OnWriteControlsdCompleted(EventArgs e)
-        //{
-        //    WriteControlsCompleted?.Invoke(this, e);
-        //}
 
-        //public event EventHandler ReadControlsCompleted;
-        //protected virtual void OnReadControlsdCompleted(EventArgs e)
-        //{
-        //    ReadControlsCompleted?.Invoke(this, e);
-        //}
+        #region Gestion ViewModels aggiuntivi
+        public void AddViewModel<ModelClass>(string Key, ViewModel<ModelClass> viewModel) where ModelClass : class
+        {
+            string methodName = "AddViewModel<ModelClass>";
+            try
+            {
+                if (viewModel == null)
+                {
+                    throw new ArgumentNullException(nameof(viewModel), "The view model instance cannot be null.");
+                }
+               
+                if(Key.IsNullOrWhiteSpace())
+                {
+                    throw new ArgumentNullException(Key, "The ViewModel Key be empty or null.");
+                }   
+                if (_ViewModels.ContainsKey(Key))
+                {
+                    throw new ArgumentException($"A view model with the key '{Key}' already exists in the collection.");
+                }
+                _ViewModels[Key] = viewModel;
+                
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"Error in {mClassName}.{methodName}: {ex.Message}";
+                throw new Exception(errorMessage, ex);
+            }
+        }
+        public dynamic GetViewModel(string Key)
+        {
+            string methodName = "GetViewModel";
+            try
+            {
+                if (Key.IsNullOrWhiteSpace())
+                {
+                    throw new ArgumentNullException(Key, "The ViewModel Key be empty or null.");
+                }
+                if (_ViewModels.ContainsKey(Key))
+                {
+                    return _ViewModels[Key];
+                }
+                else
+                {
+                    throw new ArgumentException($"A ViewModel with the Key '{Key}' did not exists in the ViewModels collection.");
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"Error in {mClassName}.{methodName}: {ex.Message}";
+                throw new Exception(errorMessage, ex);
+            }
+        }
+        public void UpdateViewModel<ModelType>(string Key, ViewModel<ModelType> viewModel) where ModelType : class
+        {
+            string methodName = "UpdateViewModel<ModelClass>";
+            try
+            {
+                if (viewModel == null)
+                {
+                    throw new ArgumentNullException(nameof(viewModel), "The ViewModel instance cannot be null.");
+                }
+                
+                if (_ViewModels.ContainsKey(Key))
+                {
+                    _ViewModels[Key] = viewModel;
+                }
+                else
+                {
+                    throw new ArgumentException($"A ViewModel with the Key '{Key}' did not exists in the ViewModels collection.", nameof(viewModel));
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"Error in {mClassName}.{methodName}: {ex.Message}";
+                throw new Exception(errorMessage, ex);
+            }
+        }
+
+        public void RemoveViewModel<ModelType>(string Key) where ModelType : class
+        {
+            string methodName = "RemoveViewModel<ModelType>";
+            try
+            {
+                if (Key == null)
+                {
+                    throw new ArgumentNullException("The ViewModel Key cannot be null.");
+                }
+               
+                if (_ViewModels.ContainsKey(Key))
+                {
+                    _ViewModels.Remove(Key);
+                }
+                else
+                {
+                    throw new ArgumentException($"A ViewModel with the Key '{Key}' did not exists in the ViewModels collection.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"Error in {mClassName}.{methodName}: {ex.Message}";
+                throw new Exception(errorMessage, ex);
+            }
+        }
+
+     
+
+        #endregion
+
+
         /// <summary>
         /// The m data navigator
         /// </summary>
@@ -215,7 +319,7 @@ namespace Passero.Framework
         /// <summary>
         /// The m data binding mode
         /// </summary>
-        private DataBindingMode mDataBindingMode = DataBindingMode.Passero;
+        private DataBindingMode mDataBindingMode = DataBindingMode.None;
 
 
         /// <summary>
@@ -927,15 +1031,19 @@ namespace Passero.Framework
                             break;
                         case NavigationOperation.MoveLast:
                             mBindingSource.MoveLast();
+                            DataNavigatorRaiseEventBoundCompled();
                             break;
                         case NavigationOperation.MovePrevious:
                             mBindingSource.MovePrevious();
+                            DataNavigatorRaiseEventBoundCompled();
                             break;
                         case NavigationOperation.MoveNext:
                             mBindingSource.MoveNext();
+                            DataNavigatorRaiseEventBoundCompled();
                             break;
                         case NavigationOperation.MoveAt:
                             mBindingSource.Position = CurrentModelItemIndex;
+                            DataNavigatorRaiseEventBoundCompled();
                             break;
                     }
                     break;
@@ -1598,7 +1706,8 @@ namespace Passero.Framework
             if (Name != "")
                 this.Name = Name;
             else
-                this.Name = nameof(ModelClass);
+                this.Name = $"{typeof(ModelClass).Name}_{this.GetHashCode():X}";
+            
             if (FriendlyName  != "")
                 this.FriendlyName = FriendlyName;
             else
@@ -1610,7 +1719,7 @@ namespace Passero.Framework
                 this.Description = Name;
 
             Repository.ViewModel = this;
-            Repository.Name = $"Repository<{typeof(ModelClass).FullName}>";
+            Repository.Name = $"Repository<{typeof(ModelClass).Name}>";
             Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
             Repository.ErrorNotificationMode = ErrorNotificationMode;
             mModelItemShadow = GetEmptyModelItem();

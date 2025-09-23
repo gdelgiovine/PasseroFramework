@@ -85,6 +85,7 @@ namespace Passero.Framework.Controls
             this._ToolBar.Size = new System.Drawing.Size(722, 50);
             this._ToolBar.TabIndex = 0;
             this._ToolBar.TabStop = false;
+            this._ToolBar.ButtonClick += new Wisej.Web.ToolBarButtonClickEventHandler(this._ToolBar_ButtonClick);
             // 
             // bFirst
             // 

@@ -1,0 +1,33 @@
+namespace MyApp.Views
+{
+    partial class frm{{ Entity }}
+    {
+        private System.ComponentModel.IContainer components = null;
+        private Passero.Framework.Controls.DataNavigator dataNavigator1;
+        private Wisej.Web.BindingSource bs{{ Entity }};
+
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.bs{{ Entity }} = new Wisej.Web.BindingSource(this.components);
+
+            this.SuspendLayout();
+            // 
+            // dataNavigator1
+            // 
+            this.dataNavigator1.Dock = Wisej.Web.DockStyle.Top;
+            this.dataNavigator1.Name = "dataNavigator1";
+            this.dataNavigator1.Size = new System.Drawing.Size(800, 70);
+            // 
+            // frm{{ Entity }}
+            // 
+            this.ClientSize = new System.Drawing.Size(800, 600);
+            this.Controls.Add(this.dataNavigator1);
+            this.Name = "frm{{ Entity }}";
+            this.Text = "{{ Title }}";
+            this.Load += new System.EventHandler(this.frm{{ Entity }}_Load);
+            this.ResumeLayout(false);
+        }
+    }
+}

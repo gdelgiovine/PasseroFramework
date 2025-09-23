@@ -1,0 +1,28 @@
+using Wisej.Web;
+using Passero.Framework;
+using Passero.Framework.Controls;
+
+namespace MyApp.Views
+{
+    public partial class frm{{ Entity }} : Form
+    {
+        private readonly ViewModels.vm{{ Entity }} vm = new ViewModels.vm{{ Entity }}();
+
+        public frm{{ Entity }}()
+        {
+            InitializeComponent();
+        }
+
+        private void frm{{ Entity }}_Load(object sender, EventArgs e)
+        {
+            var db = new System.Data.SqlClient.SqlConnection("TODO: from AppConfig");
+            vm.Init(db);
+            vm.DataBindingMode = DataBindingMode.BindingSource;
+            vm.BindingSource = bs{{ Entity }};
+
+            dataNavigator1.ViewModels["{{ Entity }}"] = new DataNavigatorViewModel(vm, "{{ Entity }}");
+            dataNavigator1.SetActiveViewModel("{{ Entity }}");
+            dataNavigator1.Init(true);
+        }
+    }
+}

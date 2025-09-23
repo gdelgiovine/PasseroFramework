@@ -10,11 +10,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Passero.Framework.Extensions;
+using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
 namespace Passero.Framework
 
 {
+
     //public interface IRepository<ModelClass> where ModelClass : ModelBase
     public interface  IRepository<ModelClass> : IDisposable
     where ModelClass : class  
@@ -38,6 +41,8 @@ namespace Passero.Framework
     where ModelClass : class   
     
     {
+
+        public BindingSource BindingSource { get; set; }
         /// <summary>
         /// The m class name
         /// </summary>
