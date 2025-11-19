@@ -125,6 +125,8 @@
             // SplitContainer.Panel2
             // 
             this.SplitContainer.Panel2.Controls.Add(this.TabControl);
+            this.SplitContainer.Panel2.ShowHeader = true;
+            resources.ApplyResources(this.SplitContainer.Panel2, "SplitContainer.Panel2");
             // 
             // PanelReportViewer
             // 
@@ -136,6 +138,7 @@
             this.PanelReportViewer.Controls.Add(this.PdfViewer);
             resources.ApplyResources(this.PanelReportViewer, "PanelReportViewer");
             this.PanelReportViewer.Name = "PanelReportViewer";
+            this.PanelReportViewer.ShowHeader = true;
             this.PanelReportViewer.Resize += new System.EventHandler(this.PanelReportViewer_Resize);
             // 
             // htmlPanel

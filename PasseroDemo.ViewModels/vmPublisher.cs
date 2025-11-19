@@ -17,16 +17,16 @@ namespace PasseroDemo.ViewModels
 
         }
 
-        public Models.Publisher  Get(string au_id)
+        public Models.Publisher GetPublisher(string pub_id)
         {
-            return this.Repository.DbConnection.Query<Models.Publisher >($"Select * FROM {this.Repository.GetTableName()} Where au_id=@ID", new { au_id = au_id }).Single();
+            var x= this.GetItem($"Select * FROM {this.GetTableName()} Where pub_id=@ID", new { ID = pub_id }).Value ;
+            return x;   
         }
 
 
         public IEnumerable<Models.Publisher > GetPublishers ()
         {
-            return this.Repository.DbConnection.Query<Models.Publisher>($"Select * FROM {this.Repository.GetTableName()}");
-
+            return this.GetItems($"Select * FROM {this.GetTableName()}").Value ;
         }
     }
 }

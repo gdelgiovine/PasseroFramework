@@ -91,58 +91,151 @@ namespace PasseroDemo.Application
         
         private void ManageNavigationBar(string ItemName)
         {
-            
+
+
+
+            if (ItemName == mnuSales.Name )
+            {
+          
+                PasseroDemo.Views.frmSales  frmSales = Passero.Framework.ControlsUtilities.FormExist<Views.frmSales>("frmSales");
+                if (frmSales is null)
+                {
+                    frmSales = new Views .frmSales ();
+                    frmSales.Name = "frmSales";
+                    frmSales.ConfigurationManager = this.ConfigurationManager;
+                    frmSales.MdiParent = this.MDIWindow;
+                    frmSales.Show();
+                }   
+                frmSales.Activate();
+                
+            }
+
+            if (ItemName == mnuRoyalties.Name)
+            {
+
+                PasseroDemo.Views.frmRoySched  frmRoySched = Passero.Framework.ControlsUtilities.FormExist<Views.frmRoySched>("frmRoySched");
+                if(frmRoySched is null)
+                {
+                    frmRoySched = new Views .frmRoySched ();
+                    frmRoySched.Name = "frmRoySched";
+                    frmRoySched.ConfigurationManager = this.ConfigurationManager;
+                    frmRoySched.MdiParent = this.MDIWindow;
+                    frmRoySched.Show();
+                }
+                frmRoySched.Activate();
+
+            }
+
+
+            if (ItemName == mnuPubInfo .Name)
+            {
+
+                PasseroDemo.Views.frmPubsInfo  frmPubsInfo   = Passero.Framework.ControlsUtilities.FormExist<Views.frmPubsInfo>("frmPubsInfo");
+                if (frmPubsInfo is null)
+                {
+                    frmPubsInfo = new Views .frmPubsInfo ();
+                    frmPubsInfo.Name = "frmPubsInfo";
+                    frmPubsInfo.ConfigurationManager = this.ConfigurationManager;
+                    frmPubsInfo.MdiParent = this.MDIWindow;
+                    frmPubsInfo.Show();
+                }
+                frmPubsInfo.Activate();
+
+            }
+
+
             if (ItemName == mnuAuthors.Name  )
             {
-               
-                PasseroDemo.Views.frmAuthors frmAuthors = new Views.frmAuthors();
-                frmAuthors.ConfigurationManager = this.ConfigurationManager;
-                frmAuthors.MdiParent = this.MDIWindow;
-                frmAuthors.Show();
+
+                PasseroDemo.Views.frmAuthors frmAuthors =Passero.Framework.ControlsUtilities.FormExist<Views.frmAuthors>("frmAuthors");
+                if (frmAuthors is null)
+                {
+                    frmAuthors = new Views.frmAuthors();
+                    frmAuthors.Name = "frmAuthors";
+                    frmAuthors.ConfigurationManager = this.ConfigurationManager;
+                    frmAuthors.MdiParent = this.MDIWindow;
+                    frmAuthors.Show();
+                }
+                frmAuthors.Activate();
+
+              
 
             }
 
             if (ItemName == mnuDiscounts.Name)
             {
 
-                PasseroDemo.Views.frmDiscount frmDiscount = new Views.frmDiscount ();
-                frmDiscount.ConfigurationManager = this.ConfigurationManager;
-                frmDiscount.MdiParent = this.MDIWindow;
-                frmDiscount.Show();
+                PasseroDemo.Views.frmDiscount frmDiscount = Passero.Framework.ControlsUtilities.FormExist <Views.frmDiscount>("frmDiscount");
+                
+                if (frmDiscount is null)
+                {
+                    frmDiscount = new Views .frmDiscount ();
+                    frmDiscount.Name = "frmDiscount";
+                    frmDiscount.ConfigurationManager = this.ConfigurationManager;
+                    frmDiscount.MdiParent = this.MDIWindow;
+                    frmDiscount.Show();
+                }   
+                frmDiscount.Activate();
 
             }
             if (ItemName == mnuEmployees .Name)
             {
 
-                PasseroDemo.Views.frmEmployee frmEmployee = new Views.frmEmployee();
-                frmEmployee.ConfigurationManager = this.ConfigurationManager;
-                frmEmployee.MdiParent = this.MDIWindow;
-                frmEmployee.Show();
+                PasseroDemo.Views.frmEmployee frmEmployee = Passero.Framework.ControlsUtilities.FormExist<Views.frmEmployee>("frmEmployee");
+                if (frmEmployee is null)
+                {
+                    frmEmployee = new Views .frmEmployee ();
+                    frmEmployee.Name = "frmEmployee";
+                    frmEmployee.ConfigurationManager = this.ConfigurationManager;
+                    frmEmployee.MdiParent = this.MDIWindow;
+                    frmEmployee.Show();
+                }
+                frmEmployee.Activate();
 
             }
 
             if (ItemName == mnuTitles.Name)
             {
-                PasseroDemo.Views.frmTitle frmTitle = new Views.frmTitle();
-                frmTitle.ConfigurationManager = this.ConfigurationManager;
-                frmTitle.MdiParent = this.MDIWindow;
-                frmTitle.Show();
+                PasseroDemo.Views.frmTitle frmTitle = Passero.Framework.ControlsUtilities.FormExist <Views.frmTitle>("frmTitle");
+                if (frmTitle is null)
+                {
+                    frmTitle = new Views .frmTitle ();
+                    frmTitle.Name = "frmTitle";
+                    frmTitle.ConfigurationManager = this.ConfigurationManager;
+                    frmTitle.MdiParent = this.MDIWindow;
+                    frmTitle.Show();
+                }   
+                frmTitle.Activate();    
             }
 
             if (ItemName == mnuJobs.Name)
             {
-                PasseroDemo.Views.frmJobs frmJobs = new Views.frmJobs();
-                frmJobs.ConfigurationManager = this.ConfigurationManager;
-                frmJobs.MdiParent = this.MDIWindow;
-                frmJobs.Show();
+                PasseroDemo.Views.frmJobs frmJobs = Passero.Framework.ControlsUtilities.FormExist<Views.frmJobs>("frmJobs");
+                if (frmJobs is null)
+                {
+                    frmJobs = new Views .frmJobs ();
+                    frmJobs.Name = "frmJobs";
+                    frmJobs.ConfigurationManager = this.ConfigurationManager;
+                    frmJobs.MdiParent = this.MDIWindow;
+                    frmJobs.Show();
+                }   
+                frmJobs.Activate(); 
+
             }
 
             if (ItemName == mnuPublishers.Name)
             {
-                PasseroDemo.Views.frmPublishers frmPublishers = new Views.frmPublishers();
-                frmPublishers.ConfigurationManager = this.ConfigurationManager;
-                frmPublishers.MdiParent = this.MDIWindow;
-                frmPublishers.Show();
+                PasseroDemo.Views.frmPublishers frmPublishers = Passero.Framework.ControlsUtilities.FormExist<Views.frmPublishers>("frmPublishers");
+                if(frmPublishers is null)
+                {
+                    frmPublishers = new Views.frmPublishers();
+                    frmPublishers.Name = "frmPublishers";
+                    frmPublishers.ConfigurationManager = this.ConfigurationManager;
+                    frmPublishers.MdiParent = this.MDIWindow;
+                    frmPublishers.Show();
+                }   
+                frmPublishers.Activate();
+
 
 
             }

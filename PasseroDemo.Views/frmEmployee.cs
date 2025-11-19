@@ -17,7 +17,8 @@ namespace PasseroDemo.Views
         // In this case we create a generic ViewModel for a model
         // REPLACE <ModelStub> with your Model
         private Passero.Framework.ViewModel<Models.Employee > vmEmployee = new Passero.Framework.ViewModel<Models.Employee>();
-
+        private Passero.Framework.ViewModel<Models.Publisher > vmPublisher = new Passero.Framework.ViewModel<Models.Publisher >();
+        private Passero.Framework.ViewModel<Models.Job > vmJob = new Passero.Framework.ViewModel<Models.Job>();
         //// Here we create an XQBEForm object for Query/Search Model Items
         //// REPLACE <ModelStub> with your Model
         //private Passero.Framework.Controls.XQBEForm<Models.Employee > xQBEForm_Employee = new Passero.Framework.Controls.XQBEForm<  Models .Employee >();
@@ -43,6 +44,18 @@ namespace PasseroDemo.Views
             vmEmployee.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
             vmEmployee.BindingSource = this.bsEmployee ;
 
+
+            vmPublisher.Init(this.DbConnection);
+            vmJob.Init(this.DbConnection);
+
+            this.cmb_job_id.DataSource = vmJob.GetAllItems().Value; 
+            this.cmb_job_id.DisplayMember = nameof(Models.Job.job_fullinfo );
+            this.cmb_job_id.ValueMember = nameof(Models.Job.job_id);
+
+            this.cmb_pub_id .DataSource = vmPublisher.GetAllItems().Value;
+            this.cmb_pub_id .DisplayMember = nameof(Models.Publisher.pub_fullinfo  );    
+            this.cmb_pub_id .ValueMember = nameof(Models.Publisher .pub_id);    
+
             // Set the DataNavigator1 ViewMode 
 
             this.dataNavigator1.ViewModels["Employee"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmEmployee, "Employee");
@@ -57,47 +70,48 @@ namespace PasseroDemo.Views
         private void QBE_Employee()
         {
 
-            QBEForm <Models.Employee> xQBEForm_myModel = new QBEForm<Models.Employee >(this.DbConnection);
+            QBEForm <Models.Employee> QBE = new QBEForm<Models.Employee >(this.DbConnection);
 
 
             // Here we customize the Result Grid and the Query Grid adding Columns to display in Result and in Query Criteria
-            //xQBEForm_myModel.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
-            //xQBEForm_myModel.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
-            //xQBEForm_myModel.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
-            //xQBEForm_myModel.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, QBEColumnsTypes.CheckBox, 20);
+            QBE.QBEColumns.Add(nameof(Models.Employee .emp_id), "Employee ID", "Employee Identification");
+            QBE.QBEColumns.Add(nameof(Models.Employee .fname), "First Name", "Employee First Name");
+            QBE.QBEColumns.Add(nameof(Models.Employee .lname), "Last Name", "Employee Last Name");  
+            QBE.QBEColumns.Add(nameof(Models.Employee .hire_date), "Hire Date", "Employee Hire Date");  
+            QBE.QBEColumns.Add(nameof(Models.Employee .job_id), "Job", "Employee Job"); 
+            QBE.QBEColumns.Add(nameof(Models.Employee .pub_id), "Publisher", "Employee Publisher"); 
 
             // Here we customize aspect of Result Grid
-            //xQBEForm_myModel.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
-            //xQBEForm_myModel.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
-            //xQBEForm_myModel.QBEColumns["au_id"].FontSize = 10;
-            //xQBEForm_myModel.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
+            //QBE.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
+            
 
             // Here we Build the Result Grid and the Query Grid.
-            xQBEForm_myModel.SetupQBEForm();
+            QBE.SetupQBEForm();
             // After the SetupQEBForm we have the ResultGrid Object (a DataGridView) and we can access/change any property
-            //xQBEForm_myModel .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
+            //QBE.ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
 
             // Setting the QBEResultMode for XQBEForm
-            //xQBEForm_myModel.QBEResultMode = QBEResultMode.BoundControls;
-            //xQBEForm_myModel.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
-            //xQBEForm_myModel.QBEResultMode = QBEResultMode.AllRowsItems;
-            //xQBEForm_myModel.QBEResultMode = QBEResultMode.MultipleRowsItems;
+            //QBE.QBEResultMode = QBEResultMode.BoundControls;
+            //QBE.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
+            QBE.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
+            //QBE.QBEResultMode = QBEResultMode.AllRowsItems;
+            //QBE.QBEResultMode = QBEResultMode.MultipleRowsItems;
 
             // Setting the Owner Form 
-            xQBEForm_myModel.Owner = this;
-            //xQBEForm_myModel.SetFocusControlAfterClose = this.txt_au_id;
-            //xQBEForm_myModel.CallBackAction = () => { methodtocall(); };
+            QBE.Owner = this;
+            //QBE.SetFocusControlAfterClose = this.txt_au_id;
+            //QBE.CallBackAction = () => { this.dataNavigator1.Init(true); };
 
             // The TargetRepository must be defined when we use QBEResultMode other than BoundControls
-            //xQBEForm_myModel.SetTargetRepository(this.myViewModel.Repository);
+            //QBE.SetTargetRepository(this.myViewModel.Repository);
             // We can use even an Action to invoke a Method inside the View to reload the data in a custom mode. 
-            //xQBEForm_myModel.SetTargetRepository(this.myViewModel.Repository,() => { methodtocall(); });
-
+            //QBE.SetTargetRepository(this.myViewModel.Repository,() => { methodtocall(); });
+            QBE.SetTargetRepository (this.vmEmployee.Repository, () => { this.dataNavigator1.Init(true); });
 
             // When whe return SQLQuery or Items  we need to map Model Properties from XQUEForm Model and the Target ViewModel
-            //xQBEForm_myModel.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
-            //xQBEForm_myModel.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
-
+            //QBE.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_id), nameof(Models.Author.au_id));
+            //QBE.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
+            QBE.QBEModelPropertiesMapping.Add(nameof(Models.Employee .emp_id), nameof(Models.Employee .emp_id));
 
             // If whe have a QBEResultMode.BoundControls  we need to map XQBEForm Model whit Controls inside the View Form
             //xQBEForm_myModel.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
@@ -105,9 +119,9 @@ namespace PasseroDemo.Views
 
             // We can invoke the ShowQBE Method. This method can be Sync or Async using the Wait parameter
             // When Wait is true the flow control remain inside the current method 
-            xQBEForm_myModel.ShowQBE();
-            //xQBEForm_myModel.ShowQBE(true);
-            //xQBEForm_myModel .ShowQBEWait() is a shortcut to ShowQBE(true)
+            
+            QBE.ShowQBE(true);
+            //QBE.ShowQBEWait() is a shortcut to ShowQBE(true)
 
 
 

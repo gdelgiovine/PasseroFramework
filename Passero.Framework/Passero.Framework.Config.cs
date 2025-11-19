@@ -78,7 +78,9 @@ namespace Passero.Framework
         /// <value>
         /// The database connections.
         /// </value>
-        public Dictionary<string, System.Data.Common.DbConnection> DBConnections { get; set; } = new Dictionary<string, System.Data.Common.DbConnection>(StringComparer.InvariantCultureIgnoreCase);
+        public Dictionary<string, System.Data.IDbConnection> DBConnections { get; set; } = new Dictionary<string, System.Data.IDbConnection>(StringComparer.InvariantCultureIgnoreCase);
+
+        //public Dictionary<string, System.Data.Common.DbConnection> DBConnections { get; set; } = new Dictionary<string, System.Data.Common.DbConnection>(StringComparer.InvariantCultureIgnoreCase);
         /// <summary>
         /// Gets or sets the configuration dictionary.
         /// </summary>
@@ -297,13 +299,14 @@ namespace Passero.Framework
                     if (s.StartsWith("["))
                     {
                         CurrentSectionName = s.Split(new[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                        CurrentSectionName = CurrentSectionName.Trim(); 
                         if (ConfigurationDictionary.ContainsKey(CurrentSectionName))
                         {
                             CurrentSection = ConfigurationDictionary[CurrentSectionName];
                         }
                         else
                         {
-                            ConfigurationDictionary.Add(CurrentSectionName, new Dictionary<string, string>());
+                            ConfigurationDictionary.Add(CurrentSectionName.Trim(), new Dictionary<string, string>());
                             CurrentSection = ConfigurationDictionary[CurrentSectionName];
                         }
                     }
@@ -311,7 +314,7 @@ namespace Passero.Framework
                     {
                         // Dim res = s.Split("=", 2).[Select](Function(x) x.Trim()).ToArray()
                         string[] res = s.Split(new char[] { '=' }, 2);
-                        CurrentSection[res[0]] = res[1];
+                        CurrentSection[res[0].Trim() ] = res[1].Trim ();
                     }
                     else
                     {

@@ -58,7 +58,7 @@ namespace Passero.Framework.Controls
             _linqExpression = linqExpression;
         }
 
-        public void ClearFilter()
+        public  void ClearFilter()
         {
             _linqExpression = null;
         }

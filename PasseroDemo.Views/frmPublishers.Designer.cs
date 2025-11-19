@@ -38,10 +38,7 @@
             this.txt_Publishers_country = new Wisej.Web.TextBox();
             this.txt_Publishers_phone = new Wisej.Web.TextBox();
             this.txt_Publishers_email = new Wisej.Web.TextBox();
-            this.gdgTextBox1 = new Passero.Framework.Controls.GDGTextBox();
-            this.textBoxFramed1 = new Passero.Framework.Controls.TextBoxFramed();
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
-            this.model1 = new Passero.Framework.Controls.Model();
             ((System.ComponentModel.ISupportInitialize)(this.bsPublishers)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -49,12 +46,13 @@
             // txt_Publishers_pub_id
             // 
             this.txt_Publishers_pub_id.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_id", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_pub_id, 20);
             this.txt_Publishers_pub_id.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_pub_id.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_pub_id.LabelText = "Publisher ID";
             this.txt_Publishers_pub_id.Location = new System.Drawing.Point(3, 3);
             this.txt_Publishers_pub_id.Name = "txt_Publishers_pub_id";
-            this.txt_Publishers_pub_id.Size = new System.Drawing.Size(100, 48);
+            this.txt_Publishers_pub_id.Size = new System.Drawing.Size(126, 48);
             this.txt_Publishers_pub_id.TabIndex = 0;
             // 
             // bsPublishers
@@ -64,25 +62,26 @@
             // txt_Publishers_pub_name
             // 
             this.txt_Publishers_pub_name.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_name", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_pub_name, 80);
             this.flowLayoutPanel1.SetFlowBreak(this.txt_Publishers_pub_name, true);
             this.txt_Publishers_pub_name.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_pub_name.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_pub_name.LabelText = "Publisher Name";
-            this.txt_Publishers_pub_name.Location = new System.Drawing.Point(109, 3);
+            this.txt_Publishers_pub_name.Location = new System.Drawing.Point(135, 3);
             this.txt_Publishers_pub_name.Name = "txt_Publishers_pub_name";
-            this.txt_Publishers_pub_name.Size = new System.Drawing.Size(264, 48);
+            this.txt_Publishers_pub_name.Size = new System.Drawing.Size(506, 48);
             this.txt_Publishers_pub_name.TabIndex = 1;
             // 
             // txt_Publishers_city
             // 
             this.txt_Publishers_city.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "city", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.flowLayoutPanel1.SetFlowBreak(this.txt_Publishers_city, true);
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_city, 40);
             this.txt_Publishers_city.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_city.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_city.LabelText = "City";
             this.txt_Publishers_city.Location = new System.Drawing.Point(3, 57);
             this.txt_Publishers_city.Name = "txt_Publishers_city";
-            this.txt_Publishers_city.Size = new System.Drawing.Size(264, 48);
+            this.txt_Publishers_city.Size = new System.Drawing.Size(263, 48);
             this.txt_Publishers_city.TabIndex = 2;
             // 
             // flowLayoutPanel1
@@ -98,11 +97,9 @@
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_country);
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_phone);
             this.flowLayoutPanel1.Controls.Add(this.txt_Publishers_email);
-            this.flowLayoutPanel1.Controls.Add(this.gdgTextBox1);
-            this.flowLayoutPanel1.Controls.Add(this.textBoxFramed1);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 288);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(644, 373);
             this.flowLayoutPanel1.TabIndex = 4;
             // 
             // txt_Publishers_state
@@ -111,7 +108,7 @@
             this.txt_Publishers_state.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_state.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_state.LabelText = "State";
-            this.txt_Publishers_state.Location = new System.Drawing.Point(3, 111);
+            this.txt_Publishers_state.Location = new System.Drawing.Point(272, 57);
             this.txt_Publishers_state.Name = "txt_Publishers_state";
             this.txt_Publishers_state.Size = new System.Drawing.Size(100, 48);
             this.txt_Publishers_state.TabIndex = 3;
@@ -119,66 +116,47 @@
             // txt_Publishers_country
             // 
             this.txt_Publishers_country.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "country", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_country, 40);
             this.flowLayoutPanel1.SetFlowBreak(this.txt_Publishers_country, true);
             this.txt_Publishers_country.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_country.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_country.LabelText = "Country";
-            this.txt_Publishers_country.Location = new System.Drawing.Point(109, 111);
+            this.txt_Publishers_country.Location = new System.Drawing.Point(378, 57);
             this.txt_Publishers_country.Name = "txt_Publishers_country";
-            this.txt_Publishers_country.Size = new System.Drawing.Size(200, 48);
+            this.txt_Publishers_country.Size = new System.Drawing.Size(263, 48);
             this.txt_Publishers_country.TabIndex = 4;
             // 
             // txt_Publishers_phone
             // 
             this.txt_Publishers_phone.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_phone, 30);
             this.txt_Publishers_phone.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_phone.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_phone.LabelText = "Phone";
-            this.txt_Publishers_phone.Location = new System.Drawing.Point(3, 165);
+            this.txt_Publishers_phone.Location = new System.Drawing.Point(3, 111);
             this.txt_Publishers_phone.Name = "txt_Publishers_phone";
-            this.txt_Publishers_phone.Size = new System.Drawing.Size(137, 48);
+            this.txt_Publishers_phone.Size = new System.Drawing.Size(190, 48);
             this.txt_Publishers_phone.TabIndex = 5;
             // 
             // txt_Publishers_email
             // 
             this.txt_Publishers_email.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "email", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFillWeight(this.txt_Publishers_email, 70);
             this.txt_Publishers_email.Label.Font = new System.Drawing.Font("default", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Publishers_email.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Publishers_email.LabelText = "Email";
-            this.txt_Publishers_email.Location = new System.Drawing.Point(146, 165);
+            this.txt_Publishers_email.Location = new System.Drawing.Point(199, 111);
             this.txt_Publishers_email.Name = "txt_Publishers_email";
-            this.txt_Publishers_email.Size = new System.Drawing.Size(239, 48);
+            this.txt_Publishers_email.Size = new System.Drawing.Size(442, 48);
             this.txt_Publishers_email.TabIndex = 6;
-            // 
-            // gdgTextBox1
-            // 
-            this.gdgTextBox1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "pub_name", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.gdgTextBox1.LabelText = "gdgTextBox1";
-            this.gdgTextBox1.Location = new System.Drawing.Point(391, 165);
-            this.gdgTextBox1.Name = "gdgTextBox1";
-            this.gdgTextBox1.Size = new System.Drawing.Size(100, 53);
-            this.gdgTextBox1.TabIndex = 7;
-            // 
-            // textBoxFramed1
-            // 
-            this.textBoxFramed1.AutoSize = false;
-            this.textBoxFramed1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsPublishers, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.textBoxFramed1.Location = new System.Drawing.Point(3, 224);
-            this.textBoxFramed1.Name = "textBoxFramed1";
-            this.textBoxFramed1.PenColor = System.Drawing.Color.Red;
-            this.textBoxFramed1.Size = new System.Drawing.Size(178, 30);
-            this.textBoxFramed1.TabIndex = 8;
-            this.textBoxFramed1.TextAlign = Wisej.Web.HorizontalAlignment.Right;
-            this.textBoxFramed1.VerticalLineHeight = 75;
-            this.textBoxFramed1.VerticalLineStep = 3;
             // 
             // dataNavigator1
             // 
             this.dataNavigator1.Caption = "Publishers";
             this.dataNavigator1.Dock = Wisej.Web.DockStyle.Bottom;
-            this.dataNavigator1.Location = new System.Drawing.Point(0, 297);
+            this.dataNavigator1.Location = new System.Drawing.Point(0, 382);
             this.dataNavigator1.Name = "dataNavigator1";
-            this.dataNavigator1.Size = new System.Drawing.Size(542, 57);
+            this.dataNavigator1.Size = new System.Drawing.Size(650, 57);
             this.dataNavigator1.TabIndex = 0;
             this.dataNavigator1.eAddNew += new Passero.Framework.Controls.DataNavigator.eAddNewEventHandler(this.dataNavigator1_eAddNew);
             this.dataNavigator1.eAddNewCompleted += new Passero.Framework.Controls.DataNavigator.eAddNewCompletedEventHandler(this.dataNavigator1_eAddNewCompleted);
@@ -195,16 +173,11 @@
             this.dataNavigator1.eMoveNextCompleted += new Passero.Framework.Controls.DataNavigator.eMoveNextCompletedEventHandler(this.dataNavigator1_eMoveNextCompleted);
             this.dataNavigator1.eUndoRequest += new Passero.Framework.Controls.DataNavigator.eUndoRequestEventHandler(this.dataNavigator1_eUndoRequest);
             // 
-            // model1
-            // 
-            this.model1.DataSource = null;
-            this.model1.Name = null;
-            // 
             // frmPublishers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(542, 354);
+            this.ClientSize = new System.Drawing.Size(650, 439);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.dataNavigator1);
             this.Name = "frmPublishers";
@@ -229,8 +202,5 @@
         private Wisej.Web.TextBox txt_Publishers_country;
         private Wisej.Web.TextBox txt_Publishers_phone;
         private Wisej.Web.TextBox txt_Publishers_email;
-        private Passero.Framework.Controls.GDGTextBox gdgTextBox1;
-        private Passero.Framework.Controls.TextBoxFramed textBoxFramed1;
-        private Passero.Framework.Controls.Model model1;
     }
 }

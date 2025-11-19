@@ -1856,20 +1856,20 @@ namespace Passero.Framework
                 return tableAttr?.Name ?? type.Name;
             });
         }
-        //public string GetTableName_OLD()
-        //{
-        //    string tableName = "";
-        //    var type = typeof(ModelClass);
-        //    var tableAttr = type.GetCustomAttribute<Dapper.Contrib.Extensions.TableAttribute>();
+        public string GetTableNameNoCache()
+        {
+            string tableName = "";
+            var type = typeof(ModelClass);
+            var tableAttr = type.GetCustomAttribute<Dapper.Contrib.Extensions.TableAttribute>();
 
-        //    if (tableAttr is not null)
-        //    {
-        //        tableName = tableAttr.Name;
-        //        return tableName;
-        //    }
+            if (tableAttr is not null)
+            {
+                tableName = tableAttr.Name;
+                return tableName;
+            }
 
-        //    return type.Name; // & "s"
-        //}
+            return type.Name; // & "s"
+        }
 
         /// <summary>
         /// Sets the name of the table.

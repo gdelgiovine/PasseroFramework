@@ -38,7 +38,20 @@ namespace Passero.Framework.Controls
         [DebuggerStepThrough()]
         private void InitializeComponent()
         {
-            Wisej.Web.ComponentTool componentTool1 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool57 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool58 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool59 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool60 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool61 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool62 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool63 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool64 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool65 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool66 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool67 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool68 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool69 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool70 = new Wisej.Web.ComponentTool();
             this._ToolBar = new Wisej.Web.ToolBar();
             this.bFirst = new Wisej.Web.ToolBarButton();
             this.bPrev = new Wisej.Web.ToolBarButton();
@@ -134,7 +147,7 @@ namespace Passero.Framework.Controls
             // bRefresh
             // 
             this.bRefresh.AllowHtml = true;
-            this.bRefresh.ImageSource = "icon-redo";
+            this.bRefresh.ImageSource = "icon-refresh";
             this.bRefresh.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Text = "Refresh dati<br>F5";
@@ -216,11 +229,52 @@ namespace Passero.Framework.Controls
             this.Panel.Size = new System.Drawing.Size(763, 70);
             this.Panel.TabIndex = 1;
             this.Panel.Text = "DataNavigator";
-            componentTool1.ImageSource = "table-row-editing";
-            componentTool1.Name = "edit";
-            componentTool1.Position = Wisej.Web.LeftRightAlignment.Left;
+            componentTool57.ImageSource = "menu-overflow";
+            componentTool57.Name = "overflow";
+            componentTool57.Position = Wisej.Web.LeftRightAlignment.Left;
+            componentTool58.ImageSource = "table-row-editing";
+            componentTool58.Name = "edit";
+            componentTool58.Position = Wisej.Web.LeftRightAlignment.Left;
+            componentTool59.ImageSource = "icon-first";
+            componentTool59.Name = "movefirst";
+            componentTool60.ImageSource = "scrollbar-arrow-left";
+            componentTool60.Name = "moveprevious";
+            componentTool61.ImageSource = "scrollbar-arrow-right";
+            componentTool61.Name = "movenext";
+            componentTool62.ImageSource = "icon-last";
+            componentTool62.Name = "movelast";
+            componentTool63.ImageSource = "icon-refresh";
+            componentTool63.Name = "refresh";
+            componentTool64.ImageSource = "icon-new";
+            componentTool64.Name = "addnew";
+            componentTool65.ImageSource = "icon-close";
+            componentTool65.Name = "delete";
+            componentTool66.ImageSource = "icon-search";
+            componentTool66.Name = "find";
+            componentTool67.ImageSource = "icon-print";
+            componentTool67.Name = "print";
+            componentTool68.ImageSource = "icon-undo";
+            componentTool68.Name = "undo";
+            componentTool69.ImageSource = "icon-save";
+            componentTool69.Name = "save";
+            componentTool70.ImageSource = "icon-exit";
+            componentTool70.Name = "close";
             this.Panel.Tools.AddRange(new Wisej.Web.ComponentTool[] {
-            componentTool1});
+            componentTool57,
+            componentTool58,
+            componentTool59,
+            componentTool60,
+            componentTool61,
+            componentTool62,
+            componentTool63,
+            componentTool64,
+            componentTool65,
+            componentTool66,
+            componentTool67,
+            componentTool68,
+            componentTool69,
+            componentTool70});
+            this.Panel.ToolClick += new Wisej.Web.ToolClickEventHandler(this.Panel_ToolClick);
             // 
             // DataNavigator
             // 

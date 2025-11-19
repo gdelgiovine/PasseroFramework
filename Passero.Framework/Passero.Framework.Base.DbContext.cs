@@ -3,9 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+// Aggiungi riferimenti per altri provider se necessari
+// using MySql.Data.MySqlClient;
+// using Npgsql;
 
 namespace Passero.Framework.Base
 {
+    public enum DatabaseProvider
+    {
+        SqlServer,
+        MySql,
+        PostgreSql,
+        Oracle,
+        Sqlite
+    }
+
     public enum EntityState
     {
         Added,
@@ -27,6 +39,14 @@ namespace Passero.Framework.Base
 
         public Dictionary<string, ViewModel<ModelBase >> ViewModels { get; set; } = new Dictionary<string, ViewModel<ModelBase >>();
         public string ConnectionString { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database provider.
+        /// </summary>
+        /// <value>
+        /// The database provider.
+        /// </value>
+        public DatabaseProvider Provider { get; set; } = DatabaseProvider.SqlServer;
 
         protected virtual void OnConfiguring()
         {
@@ -238,10 +258,36 @@ namespace Passero.Framework.Base
             return ER;
         }
 
+        /// <summary>
+        /// Creates the database connection based on the provider.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <returns>An instance of <see cref="IDbConnection"/>.</returns>
         private IDbConnection CreateDbConnection(string connectionString)
         {
-            // Puoi sostituire SqlConnection con un altro provider, se necessario
-            return new System.Data.SqlClient.SqlConnection(connectionString);
+            switch (Provider)
+            {
+                case DatabaseProvider.SqlServer:
+                    return new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+                case DatabaseProvider.MySql:
+                    // Assumi che MySql.Data sia installato
+                    // return new MySqlConnection(connectionString);
+                    throw new NotImplementedException("MySQL provider not implemented. Install MySql.Data package.");
+                case DatabaseProvider.PostgreSql:
+                    // Assumi che Npgsql sia installato
+                    // return new NpgsqlConnection(connectionString);
+                    throw new NotImplementedException("PostgreSQL provider not implemented. Install Npgsql package.");
+                case DatabaseProvider.Oracle:
+                    // Assumi che Oracle.ManagedDataAccess sia installato
+                    // return new OracleConnection(connectionString);
+                    throw new NotImplementedException("Oracle provider not implemented. Install Oracle.ManagedDataAccess package.");
+                case DatabaseProvider.Sqlite:
+                    // Assumi che System.Data.SQLite sia installato
+                    // return new SQLiteConnection(connectionString);
+                    throw new NotImplementedException("SQLite provider not implemented. Install System.Data.SQLite package.");
+                default:
+                    throw new ArgumentException("Unsupported database provider.");
+            }
         }
     }
 }

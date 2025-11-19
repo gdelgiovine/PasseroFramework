@@ -179,7 +179,7 @@ namespace Passero.Framework.Controls
             this.TabControl.ItemSize = new System.Drawing.Size(0, 30);
             this.TabControl.Location = new System.Drawing.Point(0, 0);
             this.TabControl.Name = "TabControl";
-            this.TabControl.PageInsets = new Wisej.Web.Padding(0, 29, 0, 0);
+            this.TabControl.PageInsets = new Wisej.Web.Padding(1, 30, 1, 1);
             this.TabControl.Size = new System.Drawing.Size(898, 158);
             this.TabControl.TabIndex = 0;
             // 
@@ -188,9 +188,9 @@ namespace Passero.Framework.Controls
             this.TabPageReportQuery.Controls.Add(this.QueryGrid);
             this.TabPageReportQuery.Controls.Add(this.chkLikeOperator);
             this.TabPageReportQuery.Hidden = true;
-            this.TabPageReportQuery.Location = new System.Drawing.Point(0, 29);
+            this.TabPageReportQuery.Location = new System.Drawing.Point(1, 30);
             this.TabPageReportQuery.Name = "TabPageReportQuery";
-            this.TabPageReportQuery.Size = new System.Drawing.Size(898, 129);
+            this.TabPageReportQuery.Size = new System.Drawing.Size(896, 127);
             this.TabPageReportQuery.Text = "Query Criteria";
             // 
             // QueryGrid
@@ -214,7 +214,7 @@ namespace Passero.Framework.Controls
             this.QueryGrid.Name = "QueryGrid";
             this.QueryGrid.RowHeadersVisible = false;
             this.QueryGrid.RowHeadersWidth = 24;
-            this.QueryGrid.Size = new System.Drawing.Size(888, 87);
+            this.QueryGrid.Size = new System.Drawing.Size(886, 85);
             this.QueryGrid.TabIndex = 3;
             this.QueryGrid.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.QueryGrid_CellDoubleClick);
             // 
@@ -254,9 +254,9 @@ namespace Passero.Framework.Controls
             // 
             this.TabPageExport.Controls.Add(this.PanelExport);
             this.TabPageExport.Hidden = true;
-            this.TabPageExport.Location = new System.Drawing.Point(0, 29);
+            this.TabPageExport.Location = new System.Drawing.Point(1, 30);
             this.TabPageExport.Name = "TabPageExport";
-            this.TabPageExport.Size = new System.Drawing.Size(898, 129);
+            this.TabPageExport.Size = new System.Drawing.Size(896, 127);
             this.TabPageExport.Text = "Export";
             // 
             // PanelExport
@@ -324,10 +324,10 @@ namespace Passero.Framework.Controls
             this.TabPageDebug.Controls.Add(this.Button1);
             this.TabPageDebug.Controls.Add(this.cmbRecords);
             this.TabPageDebug.Hidden = true;
-            this.TabPageDebug.Location = new System.Drawing.Point(0, 29);
+            this.TabPageDebug.Location = new System.Drawing.Point(1, 30);
             this.TabPageDebug.Name = "TabPageDebug";
             this.TabPageDebug.Padding = new Wisej.Web.Padding(3);
-            this.TabPageDebug.Size = new System.Drawing.Size(898, 129);
+            this.TabPageDebug.Size = new System.Drawing.Size(896, 127);
             this.TabPageDebug.Text = "Debug";
             // 
             // Button2
@@ -583,12 +583,13 @@ namespace Passero.Framework.Controls
             this.ClientSize = new System.Drawing.Size(898, 635);
             this.Controls.Add(this.NavBar);
             this.Controls.Add(this.SplitContainer);
+            this.IconSource = "icon-search";
             this.Name = "QBEForm";
             this.ShowModalMask = true;
             this.StartPosition = Wisej.Web.FormStartPosition.CenterParent;
-            this.Text = "QBEForm";
+            this.Text = "Find";
             this.Load += new System.EventHandler(this.XQBEForm_Load);
-            this.Shown += new System.EventHandler(this.XQBEForm_Shown);
+            this.Shown += new System.EventHandler(this.XQBEForm_Show);
             this.FormClosed += new Wisej.Web.FormClosedEventHandler(this.XQBEForm_FormClosed);
             this.SplitContainer.Panel1.ResumeLayout(false);
             this.SplitContainer.Panel2.ResumeLayout(false);

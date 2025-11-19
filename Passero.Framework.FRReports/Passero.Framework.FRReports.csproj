@@ -22,9 +22,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.23" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.*" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.*" />
+    <PackageReference Include="Wisej-3" Version="3.5.25-test.2" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,19 +43,26 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 
-		<PackageReference Include="FastReport.Data.MsSql" Version="2025.1.0" />
-		<PackageReference Include="FastReport.OpenSource" Version="2025.1.0" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2025.1.0" />
+		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 		
-		<PackageReference Include="FastReport.Data.MsSql" Version="2025.2.0" />
-		<PackageReference Include="FastReport.OpenSource" Version="2025.2.0" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2025.2.0" />
+		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
 		
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+
+		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
+		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
+
+	</ItemGroup>
 	<ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

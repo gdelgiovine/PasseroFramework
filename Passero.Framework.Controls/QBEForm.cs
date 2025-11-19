@@ -132,6 +132,17 @@ namespace Passero.Framework.Controls
             }
         }
 
+        private void LoadModelProperties()
+        {
+            var ModelPropertiesInfo = mRepository.GetProperties();
+            ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
+            foreach (var item in ModelPropertiesInfo)
+            {
+                ModelProperties.Add(item.Name, item);
+            }
+        }   
+
+
         /// <summary>
         /// Gets or sets the qbe bound controls.
         /// </summary>
@@ -152,7 +163,18 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The database connection.
         /// </value>
-        public IDbConnection DbConnection { get; set; }
+        public IDbConnection DbConnection {
+            get
+            {
+                return Repository.DbConnection;
+            }
+            set
+            {
+                Repository = new Repository<ModelClass>();
+                Repository.DbConnection = value ;
+            }
+                
+        }
         /// <summary>
         /// The qbe columns
         /// </summary>
@@ -223,6 +245,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         public QBEForm()
         {
+            
             InitializeComponent();
             TabPageDebug.Hidden = true;
             TabPageExport.Hidden = true;
@@ -231,17 +254,25 @@ namespace Passero.Framework.Controls
             bSaveQBE.Visible = false;
             bLoadQBE.Visible = false;
             bPrint.Visible = false;
-
+            
+           
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QBEForm{ModelClass}"/> class.
         /// </summary>
         /// <param name="DbConnection">The database connection.</param>
-        public QBEForm(IDbConnection DbConnection)
+        public QBEForm(IDbConnection DbConnection, Form Owner = null)
         {
+           
+            if (Owner != null)
+            {
+                this.Owner = Owner;
+            }   
             Repository = new Repository<ModelClass>();
             Repository.DbConnection = DbConnection;
+            
+            
             InitializeComponent();
             bSaveQBE.Visible = false;
             bLoadQBE.Visible = false;
@@ -254,9 +285,9 @@ namespace Passero.Framework.Controls
         /// <typeparam name="T"></typeparam>
         /// <param name="TargetRepository">The target repository.</param>
         /// <param name="CallBackAction">The call back action.</param>
-        public void SetTargetRepository<T>(T target, Action CallBackAction = null) where T : class
+        public void SetTargetRepository<T>(T Repository, Action CallBackAction = null) where T : class
         {
-            TargetRepository = target;
+            TargetRepository = Repository;
             if (CallBackAction != null)
             {
                 this.CallBackAction = CallBackAction;
@@ -267,14 +298,15 @@ namespace Passero.Framework.Controls
             }
         }
         /// <summary>
-        /// Sets the target repository.
+        /// Sets the target ViewModel.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="TargetViewModel">The target repository.</param>
+        /// <param name="TargetViewModel">The target ViewModel.</param>
         /// <param name="CallBackAction">The call back action.</param>
-        public void SetTargetViewModel<T>(T target, Action CallBackAction = null) where T : class
+        public void SetTargetViewModel<T>(T ViewModel, Action CallBackAction = null) where T : class
         {
-            TargetRepository = target;
+            TargetRepository = Passero.Framework .ReflectionHelper .GetPropertyValue(ViewModel,"Repository");
+
             if (CallBackAction != null)
             {
                 this.CallBackAction = CallBackAction;
@@ -1049,9 +1081,15 @@ namespace Passero.Framework.Controls
         /// <param name="IgnoreCallBack">if set to <c>true</c> [ignore call back].</param>
         private void CloseQBEForm(bool IgnoreCallBack = false)
         {
-            if (Owner == null && SetFocusControlAfterClose != null)
-                Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
+            if (this.Owner != null)
+            { 
+            }
 
+            else
+            {
+                if (Owner == null && SetFocusControlAfterClose != null)
+                    Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
+            }
 
             if (IgnoreCallBack == false)
             {
@@ -1236,10 +1274,10 @@ namespace Passero.Framework.Controls
                 {
                     Passero.Framework.ReflectionHelper.InvokeMethodByName(ref TargetRepository, "SetSQLQuery", sqlquery, parameters);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
 
-
+                    //MessageBox.Show("a");
                 }
 
             }
@@ -1270,10 +1308,10 @@ namespace Passero.Framework.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void XQBEForm_Shown(object sender, EventArgs e)
+        private void XQBEForm_Show(object sender, EventArgs e)
         {
-            SetupQBEForm();
-            ResultGrid.Dock = DockStyle.Fill;
+            //SetupQBEForm();
+            //ResultGrid.Dock = DockStyle.Fill;
             //this.ResultGrid.Visible = true;
             //if (this.AutoLoadData)
             //    this.LoadData();

@@ -207,9 +207,14 @@ namespace Passero.Framework
             }
         }
 
-     
+
 
         #endregion
+
+        public string GetTableName()
+        {
+            return Repository.GetTableName();   
+        }
 
 
         /// <summary>

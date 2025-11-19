@@ -68,7 +68,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(295, 18);
             this.label1.TabIndex = 5;
-            this.label1.Text = "(C) 2023 Gabriele Del Giovine";
+            this.label1.Text = "(C) 2025 Gabriele Del Giovine";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.label1.DoubleClick += new System.EventHandler(this.label1_DoubleClick);
             // 
@@ -125,7 +125,7 @@
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);
             this.Name = "LoginPage";
-            this.Size = new System.Drawing.Size(1489, 677);
+            this.Size = new System.Drawing.Size(1140, 526);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

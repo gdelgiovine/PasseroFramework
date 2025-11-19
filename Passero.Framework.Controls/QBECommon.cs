@@ -93,7 +93,9 @@ namespace Passero.Framework.Controls
             get { return mGridMode; }
             set { mGridMode = value; }
         }
-        
+        public bool UseUpdateEx { get; set; } = false;  
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DataNavigatorViewModel"/> class.
         /// </summary>

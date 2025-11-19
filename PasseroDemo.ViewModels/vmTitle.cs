@@ -9,17 +9,20 @@ using System.Threading.Tasks;
 
 namespace PasseroDemo.ViewModels
 {
-    public class Title : Passero.Framework.ViewModel<Models.Title>
+    public class vmTitle : Passero.Framework.ViewModel<Models.Title>
     {
-        public Title()
+        public vmTitle()
         {
         }
 
-        public Models.Title Get(string title_id)
+        public Models.Title GetTitle(string title_id)
         {
 
             string TableName = Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Title>();
-            return this.GetItem($"Select * FROM {this.Repository.GetTableName()} Where title_id=@ID", new { title_id = title_id }).Value ;
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@title_id", title_id);  
+            string sql = $"Select * FROM {TableName} Where title_id=@title_id";
+            return this.GetItem(sql,parameters ).Value  ;
             
         }
 

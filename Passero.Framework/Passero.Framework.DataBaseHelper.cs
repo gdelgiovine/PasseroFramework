@@ -123,16 +123,65 @@ namespace Passero.Framework
         /// <param name="SQLQuery">The SQL query.</param>
         /// <param name="SqlConnection">The SQL connection.</param>
         /// <returns></returns>
-        public static string GetUpdateSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetUpdateSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
 
-            var da = new System.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new System.Data.SqlClient.SqlCommandBuilder(da);
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetUpdateCommand().CommandText;
 
         }
 
-        
+        /// <summary>
+        /// Gets the update SQL command using only System.Data.Common interfaces where possible.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="dbConnection">The database connection.</param>
+        /// <returns>The update command text.</returns>
+        public static string GetUpdateSqlCommand(string SQLQuery, DbConnection dbConnection)
+        {
+            if (dbConnection == null)
+                throw new ArgumentNullException(nameof(dbConnection));
+
+            // Usa il tipo della connessione per determinare il provider e creare gli oggetti appropriati
+            if (dbConnection is Microsoft.Data.SqlClient.SqlConnection sqlConn)
+            {
+                var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, sqlConn);
+                using var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
+                return cmdbuilder.GetUpdateCommand().CommandText;
+            }
+            // Aggiungi supporto per altri provider decommentando e installando i pacchetti NuGet appropriati
+            // else if (dbConnection is MySql.Data.MySqlClient.MySqlConnection mySqlConn)
+            // {
+            //     var da = new MySql.Data.MySqlClient.MySqlDataAdapter(SQLQuery, mySqlConn);
+            //     using var cmdbuilder = new MySql.Data.MySqlClient.MySqlCommandBuilder(da);
+            //     return cmdbuilder.GetUpdateCommand().CommandText;
+            // }
+            // else if (dbConnection is Npgsql.NpgsqlConnection pgConn)
+            // {
+            //     var da = new Npgsql.NpgsqlDataAdapter(SQLQuery, pgConn);
+            //     using var cmdbuilder = new Npgsql.NpgsqlCommandBuilder(da);
+            //     return cmdbuilder.GetUpdateCommand().CommandText;
+            // }
+            // else if (dbConnection is Oracle.ManagedDataAccess.Client.OracleConnection oraConn)
+            // {
+            //     var da = new Oracle.ManagedDataAccess.Client.OracleDataAdapter(SQLQuery, oraConn);
+            //     using var cmdbuilder = new Oracle.ManagedDataAccess.Client.OracleCommandBuilder(da);
+            //     return cmdbuilder.GetUpdateCommand().CommandText;
+            // }
+            // else if (dbConnection is Microsoft.Data.Sqlite.SqliteConnection sqliteConn)
+            // {
+            //     var da = new Microsoft.Data.Sqlite.SqliteDataAdapter(SQLQuery, sqliteConn);
+            //     using var cmdbuilder = new Microsoft.Data.Sqlite.SqliteCommandBuilder(da);
+            //     return cmdbuilder.GetUpdateCommand().CommandText;
+            // }
+            else
+            {
+                throw new NotSupportedException($"Database provider for connection type '{dbConnection.GetType().FullName}' is not supported. Only SqlClient is implemented by default.");
+            }
+        }
+
+
 
 
         /// <summary>
@@ -141,11 +190,11 @@ namespace Passero.Framework
         /// <param name="SQLQuery">The SQL query.</param>
         /// <param name="SqlConnection">The SQL connection.</param>
         /// <returns></returns>
-        public static string GetInsertSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
 
-            var da = new System.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new System.Data.SqlClient.SqlCommandBuilder(da);
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetInsertCommand().CommandText;
 
         }
@@ -157,11 +206,11 @@ namespace Passero.Framework
         /// <param name="SQLQuery">The SQL query.</param>
         /// <param name="SqlConnection">The SQL connection.</param>
         /// <returns></returns>
-        public static string GetDeleteSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetDeleteSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
 
-            var da = new System.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new System.Data.SqlClient.SqlCommandBuilder(da);
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetDeleteCommand().CommandText;
 
         }

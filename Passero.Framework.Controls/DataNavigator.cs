@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -149,6 +150,24 @@ namespace Passero.Framework.Controls
         /// The print f key
         /// </summary>
         private int _PrintFKey = (int)Keys.F8;
+
+        /// <summary>
+        /// Occurs when the DataNavigator is maximized.
+        /// </summary>
+        public event MaximizedEventHandler Maximized;
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void MaximizedEventHandler();
+
+        /// <summary>
+        /// Occurs when the DataNavigator is minimized.
+        /// </summary>
+        public event MinimizedEventHandler Minimized;
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void MinimizedEventHandler();
 
         /// <summary>
         /// Raises the event bound completed.
@@ -716,12 +735,13 @@ namespace Passero.Framework.Controls
         /// Sets the active view model.
         /// </summary>
         /// <param name="viewModel">The view model.</param>
-        public void SetActiveViewModel(DataNavigatorViewModel viewModel)
+        private void _SetActiveViewModel(DataNavigatorViewModel viewModel)
         {
             var typename = typeof(ViewModel<>).Name; // "ViewModel`1";
             if (Equals(viewModel.ViewModel.GetType().Name, typename) || Equals(viewModel.ViewModel.GetType().BaseType.Name, typename))
             {
                 _ActiveViewModel = viewModel.ViewModel;
+
                 _ActiveDataNavigatorViewModel = viewModel;
                 //_ModelItems = ReflectionHelper.CallByName(viewModel.ViewModel, "ModelItems", Microsoft.VisualBasic.CallType.Get, null);
                 _ModelItems = viewModel.ViewModel.ModelItems;
@@ -738,6 +758,9 @@ namespace Passero.Framework.Controls
                 //ReflectionHelper.CallByName(viewModel.ViewModel, "DataNavigator", CallType.Set, this);
                 _BindingSource = viewModel.ViewModel.BindingSource;
                 viewModel.ViewModel.DataNavigator = this;
+
+                //this.Caption =viewModel .FriendlyName;  
+
 
                 switch (ActiveDataNavigatorViewModel.GridMode)
                 {
@@ -830,6 +853,8 @@ namespace Passero.Framework.Controls
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void _DataGridView_SelectionChanged(object sender, EventArgs e)
         {
+            if (DataGridView.CurrentRow == null)
+                return;
 
             CurrentModelItemIndex = DataGridView.CurrentRow.Index;
             UpdateRecordLabel();
@@ -871,17 +896,18 @@ namespace Passero.Framework.Controls
         {
             if (ViewModels.ContainsKey(viewModel))
             {
-                SetActiveViewModel(ViewModels[viewModel]);
+                _SetActiveViewModel(ViewModels[viewModel]);
+                _ActiveViewModelKey = viewModel;
             }
         }
 
 
-
+        private string _ActiveViewModelKey = "";
 
         /// <summary>
         /// The active view model
         /// </summary>
-        private dynamic   _ActiveViewModel = null;
+        private dynamic _ActiveViewModel = null;
         /// <summary>
         /// Gets the active view model.
         /// </summary>
@@ -896,10 +922,10 @@ namespace Passero.Framework.Controls
                 return _ActiveViewModel;
             }
 
-            
+
         }
-        
-        public bool ActiveViewModelIs(object viewModel)    
+
+        public bool ActiveViewModelIs(object viewModel)
         {
             if (_ActiveViewModel.Equals(viewModel))
             {
@@ -1657,11 +1683,13 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// The move first f key
         /// </summary>
-        private Keys _MoveFirstFKey = (Keys)((int)Keys.Shift + (int)Keys.F6);
+        //private Keys _MoveFirstFKey = (Keys)((int)Keys.Shift + (int)Keys.F6);
+        private Keys _MoveFirstFKey = Keys.Shift | Keys.F6;
         /// <summary>
         /// The move last f key
         /// </summary>
-        private Keys _MoveLastFKey = (Keys)((int)Keys.Shift + (int)Keys.F7);
+        //private Keys _MoveLastFKey = (Keys)((int)Keys.Shift + (int)Keys.F7);
+        private Keys _MoveLastFKey = Keys.Shift | Keys.F7;
         /// <summary>
         /// The add new f key
         /// </summary>
@@ -2092,6 +2120,99 @@ namespace Passero.Framework.Controls
             }
         }
 
+        private void HideTools(bool Hide)
+        {
+
+            this.Panel.Tools["movefirst"].Visible = !Hide;
+            this.Panel.Tools["movenext"].Visible = !Hide;
+            this.Panel.Tools["moveprevious"].Visible = !Hide;
+            this.Panel.Tools["movelast"].Visible = !Hide;
+            this.Panel.Tools["addnew"].Visible = !Hide;
+            this.Panel.Tools["delete"].Visible = !Hide;
+            this.Panel.Tools["save"].Visible = !Hide;
+            this.Panel.Tools["refresh"].Visible = !Hide;
+            this.Panel.Tools["find"].Visible = !Hide;
+            this.Panel.Tools["print"].Visible = !Hide;
+            this.Panel.Tools["undo"].Visible = !Hide;
+            this.Panel.Tools["close"].Visible = !Hide;
+
+        }
+
+
+
+
+        private bool _MiniMode = false;
+        /// <summary>
+        /// Gets or sets a value indicating whether [compact mode].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [compact mode]; otherwise, <c>false</c>.
+        /// </value>
+        public bool MiniMode
+        {
+            get
+            {
+                return _MiniMode;
+            }
+            set
+            {
+                _MiniMode = value;
+                HideTools(!value);
+
+                if (value == true)
+                {
+                    this.ToolBar.Visible = false;
+                    this.Height = this.HeaderSize;
+                    this.ToolBar.Tag = this.ToolBar.Height;
+                    Minimized?.Invoke();
+
+
+
+                }
+                else
+                {
+                    this.ToolBar.Visible = true;
+                    this.Height = this.HeaderSize + (int)this.ToolBar.Tag;
+                    Maximized?.Invoke();
+
+                }
+
+            }
+        }
+
+        public void Minimize()
+        {
+            MiniMode = true;
+        }
+
+        public void Maximize()
+        {
+            MiniMode = false;
+        }
+        public bool IsMinimized()
+        {
+            if (MiniMode == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsMaximized()
+        {
+            if (MiniMode == false)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the height of the data grid ListView default row.
         /// </summary>
@@ -2234,7 +2355,7 @@ namespace Passero.Framework.Controls
             }
         }
 
-        
+
         /// <summary>
         /// The caption
         /// </summary>
@@ -2353,7 +2474,7 @@ namespace Passero.Framework.Controls
             {
                 //ReflectionHelper.CallByName(this.ActiveViewModel, "GetAllItems", CallType.Method);
                 ActiveViewModel.GetAllItems();
-                
+
                 //_DbObject.Open(true);
             }
 
@@ -2484,12 +2605,19 @@ namespace Passero.Framework.Controls
                     }
                     else
                     {
-                        if (UseUpdateEx == false)
-                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItems", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
+                        bool _UseUpdateEx = false;
+                        if (ViewModels[_ActiveViewModelKey].UseUpdateEx == true | this.UseUpdateEx == true)
+                            _UseUpdateEx = true;
+
+
+                        if (_UseUpdateEx == false)
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItems(_ModelItems);
                         else
-                            //ER = (ExecutionResult)ReflectionHelper.CallByName(this._ActiveViewModel, "UpdateItemsEx", Microsoft.VisualBasic.CallType.Method, this._ModelItems);
                             ER = (ExecutionResult)_ActiveViewModel.UpdateItemsEx(_ModelItems);
+
+
+
+
                     }
 
                 }
@@ -2809,7 +2937,7 @@ namespace Passero.Framework.Controls
 
             if (DataGridView.DataSource != null)
             {
-                //If Me._ManageChanges = True Then
+
                 if (DataGridView.CurrentRow != null)
                 {
                     RowIndex = DataGridView.CurrentRow.Index;
@@ -2819,8 +2947,20 @@ namespace Passero.Framework.Controls
                         {
                             object item = ((IList)_ModelItems)[RowIndex];
                             ER = (ExecutionResult)Microsoft.VisualBasic.Interaction.CallByName(_ActiveViewModel, "DeleteItem", Microsoft.VisualBasic.CallType.Method, item);
-                            DataGridView.DataSource = null;
-                            DataGridView.DataSource = _ModelItems;
+                            if (ER.Success)
+                            {
+                                if (ManageChanges)
+                                    _ModelItems.RemoveAt(RowIndex);
+
+                                DataGridView.DataSource = null;
+                                DataGridView.DataSource = _ModelItems;
+                            }
+                            else
+                            {
+
+                                return ER;
+                            }
+
                         }
                     }
                 }
@@ -4912,8 +5052,8 @@ namespace Passero.Framework.Controls
             Panel.Dock = DockStyle.Fill;
             ToolBar.Dock = DockStyle.Fill;
             // Add any initialization after the InitializeComponent() call.
-
-
+            this.ToolBar.Tag = this.ToolBar.Height;
+            MiniMode = false;
 
             CompactMode = false;
             bLast.Visible = true;
@@ -4940,7 +5080,7 @@ namespace Passero.Framework.Controls
         [Description("Generato quando si clicca un qualsiasi ToolBarButton della ToolBar interna.")]
         public event EventHandler<ToolBarButtonClickEventArgs> ToolBarButtonClick;
 
-        private Collection<ToolBarButton> _CustomButtons = new Collection<ToolBarButton>();    
+        private Collection<ToolBarButton> _CustomButtons = new Collection<ToolBarButton>();
 
         [Browsable(true)]
         [Category("Behavior")]
@@ -4948,21 +5088,21 @@ namespace Passero.Framework.Controls
         [Description("Collezione dei pulsanti custom da aggiungere alla ToolBar interna.")]
         public Collection<ToolBarButton> CustomButtons
         {
-            get { return this._CustomButtons ; }
+            get { return this._CustomButtons; }
         }
 
-        public void AddCustomButtonToToolBar(string  ButtonName, int Index=-1)
+        public void AddCustomButtonToToolBar(string ButtonName, int Index = -1)
         {
-           ToolBarButton toolBarButton = _CustomButtons.FirstOrDefault(b => b.Name == ButtonName);  
-           if (toolBarButton != null && !ToolBar.Buttons.Contains(toolBarButton))
-           {
+            ToolBarButton toolBarButton = _CustomButtons.FirstOrDefault(b => b.Name == ButtonName);
+            if (toolBarButton != null && !ToolBar.Buttons.Contains(toolBarButton))
+            {
                 if (Index == -1)
                 {
                     Index = ToolBar.Buttons.Count - 1;
                 }
                 Index = NormalizeIndex(Index, ToolBar.Buttons.Count);
                 ToolBar.Buttons.Insert(Index, toolBarButton);
-           }   
+            }
         }
         public void AddCustomButtonToToolBar(ToolBarButton Button, int Index = -1)
         {
@@ -5051,6 +5191,7 @@ namespace Passero.Framework.Controls
             if (!OverrideManagedChanges && _ManageChanges)
             {
                 ER = ViewModel_AddNew(item);
+                _AddNewState = true;
                 SetButtonsForAddNew();
             }
             else
@@ -5412,7 +5553,7 @@ namespace Passero.Framework.Controls
             {
                 return ER;
             }
-            
+
             if (OverrideManagedNavigation == false && _ManageNavigation == true)
             {
                 ViewModel_MoveNextItem();
@@ -5425,7 +5566,7 @@ namespace Passero.Framework.Controls
             RaiseEventBoundCompleted();
             MoveNextDataGridListView();
             UpdateRecordLabel();
-                        ER.Context = ERContenxt;
+            ER.Context = ERContenxt;
             return ER;
 
         }
@@ -6117,14 +6258,19 @@ namespace Passero.Framework.Controls
             _NavigationEnabled = true;
         }
 
-
+        public Keys[] GetAccelerators()
+        {
+            var X = new Keys[] { _MoveFirstFKey, _MoveLastFKey, _MoveNextFKey, _MovePreviousFKey, _AddNewFKey, _DeleteFKey, _RefreshFKey, _FindKey, _UndoFKey, _SaveFKey, _CloseFKey };
+            return X;
+        }
 
         /// <summary>
         /// Sets the data navigator.
         /// </summary>
         public void SetDataNavigator()
         {
-            Accelerators = new Keys[] { _MoveFirstFKey, _MoveLastFKey, _MoveNextFKey, _MovePreviousFKey, _AddNewFKey, _DeleteFKey, _RefreshFKey, _FindKey, _UndoFKey, _SaveFKey, _CloseFKey };
+            this.Accelerators = GetAccelerators();
+            //this.Accelerators = new Keys[] { _MoveFirstFKey, _MoveLastFKey, _MoveNextFKey, _MovePreviousFKey, _AddNewFKey, _DeleteFKey, _RefreshFKey, _FindKey, _UndoFKey, _SaveFKey, _CloseFKey };
             bool RowExist = false;
             if (DataGridActive)
             {
@@ -6319,6 +6465,32 @@ namespace Passero.Framework.Controls
 
         }
 
+        private bool _EditMode = false;
+
+        public bool EditMode
+        {
+            get { return _EditMode; }
+            set
+            {
+                _EditMode = value;
+                DataBindingMode binding;
+                binding = Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "BindingBehaviour");
+                if (binding != Framework.DataBindingMode.BindingSource)
+                {
+                    BindingSource bs;
+                    bs = (BindingSource)Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "BindingSource");
+
+                    var boundControls = Passero.Framework.ControlsUtilities.GetBoundControlsFromBindingSource(bs);
+                }
+                if (binding != Framework.DataBindingMode.Passero)
+                {
+                    var controls = Passero.Framework.ReflectionHelper.GetPropertyValue(this.ActiveViewModel, "BoundControls");
+
+                }
+
+
+            }
+        }
 
 
 
@@ -6513,6 +6685,66 @@ namespace Passero.Framework.Controls
             // Rilancio esterno “trasparente”
             ToolBarButtonClick?.Invoke(this, e);
         }
+
+        private void Panel_ToolClick(object sender, ToolClickEventArgs e)
+        {
+            if (e.Tool.Name == "overflow")
+            {
+                MiniMode = !MiniMode;
+            }
+
+            if (e.Tool.Name == "movefirst")
+            {
+                bFirst_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "moveprevious")
+            {
+                bPrev_Click(this, EventArgs.Empty);
+            }
+
+            if (e.Tool.Name == "movenext")
+            {
+                bNext_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "movelast")
+            {
+                bLast_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "addnew")
+            {
+                bNew_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "delete")
+            {
+                bDelete_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "save")
+            {
+                bSave_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "undo")
+            {
+                bUndo_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "refresh")
+            {
+                bRefresh_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "find")
+            {
+                bFind_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "print")
+            {
+                bPrint_Click(this, EventArgs.Empty);
+            }
+            if (e.Tool.Name == "close")
+            {
+                bClose_Click(this, EventArgs.Empty);
+            }
+
+        }
+
     }
 
     /// <summary>

@@ -27,5 +27,12 @@ namespace PasseroDemo.ViewModels
             return this.Repository.DbConnection.Query<Models.Discount>($"Select * FROM {this.Repository.GetTableName()}");
 
         }
+
+        public IList<Models.Discount> GetDiscounts2()
+        {
+            var GetDiscounts2 = this.GetItems($"Select * FROM {this.Repository.GetTableName()}");
+            return GetDiscounts2.Value;
+
+        }
     }
 }

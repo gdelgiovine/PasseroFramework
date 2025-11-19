@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace PasseroDemo.ViewModels
 {
 
-    public class TitleAuthor : Passero.Framework.ViewModel<Models.Titleauthor >
+    public class vmTitleAuthor : Passero.Framework.ViewModel<Models.Titleauthor >
     {
-        public TitleAuthor()
+        public vmTitleAuthor()
         {
         }
 

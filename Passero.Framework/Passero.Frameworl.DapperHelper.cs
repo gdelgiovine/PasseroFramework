@@ -344,11 +344,11 @@ namespace Passero.Framework.DapperHelper
         /// <param name="SQLQuery">The SQL query.</param>
         /// <param name="SqlConnection">The SQL connection.</param>
         /// <returns></returns>
-        public static string GetInsertSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
 
-            var da = new System.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new System.Data.SqlClient.SqlCommandBuilder(da);
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetInsertCommand().CommandText;
 
         }
@@ -360,11 +360,11 @@ namespace Passero.Framework.DapperHelper
         /// <param name="SQLQuery">The SQL query.</param>
         /// <param name="SqlConnection">The SQL connection.</param>
         /// <returns></returns>
-        public static string GetDeleteSqlCommand(string SQLQuery, System.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetDeleteSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
 
-            var da = new System.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new System.Data.SqlClient.SqlCommandBuilder(da);
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetDeleteCommand().CommandText;
 
         }

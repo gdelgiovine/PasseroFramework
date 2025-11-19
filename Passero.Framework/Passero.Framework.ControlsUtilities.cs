@@ -31,6 +31,48 @@ namespace Passero.Framework
     public static class ControlsUtilities
 
     {
+        public static Image  UploadPictureBoxImage(UploadedEventArgs e)
+        {
+            if (e.Files.Count > 0)
+            {
+                using (var stream = e.Files[0].InputStream)
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    ms.Position = 0;
+                    byte[] imageBytes = ms.ToArray();
+                    // Forza la visualizzazione dell'immagine nella PictureBox
+                    var img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(imageBytes));
+                    return (Image)img.Clone();  
+                }
+            }
+
+            return null;
+        }
+
+        public static void UploadPictureBoxImage(UploadedEventArgs e, PictureBox pictureBox) 
+        {
+            if (e.Files.Count > 0)
+            {
+                using (var stream = e.Files[0].InputStream)
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    ms.Position = 0;
+                    byte[] imageBytes = ms.ToArray();
+                        // Forza la visualizzazione dell'immagine nella PictureBox
+                        using (var img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(imageBytes)))
+                        {
+                            pictureBox.Image = (System.Drawing.Image)img.Clone();
+                            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                            pictureBox.Visible = true;
+                            pictureBox.Refresh();
+                        }
+                   
+                }
+            }
+
+        }
 
         /// <summary>
         /// Verifica se una cella specifica è coperta da un'altra cella con ColSpan > 1
@@ -421,6 +463,22 @@ namespace Passero.Framework
             }
 
         }
+
+
+        public static Dictionary<string,Control> GetBoundControlsFromBindingSource(BindingSource bindingSource)
+        {
+            var boundControls = new Dictionary<string, Control>();
+            var currencyManager = bindingSource.CurrencyManager;
+            if (currencyManager != null)
+            {
+                foreach (Binding binding in currencyManager.Bindings)
+                {
+                    boundControls.Add(binding.Control.Name ,binding.Control);
+                }
+            }
+            return boundControls;
+        }
+
 
         /// <summary>
         /// Gets the name of the tree node by.
@@ -878,9 +936,6 @@ namespace Passero.Framework
                     form.Activate();
                 }
 
-
-
-
             }
         }
 
@@ -890,13 +945,23 @@ namespace Passero.Framework
         /// <param name="FormCollection">The form collection.</param>
         /// <param name="FormName">Name of the form.</param>
         /// <returns></returns>
-        public static Form GetExistingForm(Application.FormCollection FormCollection, string FormName)
+        public static Form GetExistingForm( string FormName, bool activate = false)
         {
-
-            var form = FormCollection[FormName];
+            
+            var form = Application.OpenForms[FormName];
+            if (activate && form != null)
+            {
+                if (form.WindowState == FormWindowState.Minimized)
+                    form.WindowState = FormWindowState.Normal;
+                form.Activate();
+            }   
             return form;
 
         }
+
+
+       
+
         /// <summary>
         /// Gets the existing page.
         /// </summary>
@@ -906,32 +971,66 @@ namespace Passero.Framework
         public static Page GetExistingPage(Application.PageCollection PageCollection, string PageName)
         {
 
+
             var page = PageCollection[PageName];
             return page;
 
         }
 
+
         /// <summary>
         /// Restituisce la prima istanza aperta di una form MDIChild del tipo specificato, oppure null se non esiste.
         /// </summary>
         /// <typeparam name="T">Il tipo di form da cercare</typeparam>
+        /// <param name="FormName">Name of the form.</param>
         /// <returns>La prima istanza trovata del tipo specificato, oppure null</returns>
-        public static T FindOpenForm<T>(bool CreateIfNotExist = false) where T : Form
+        public static T FormExist<T>(string FormName,bool Activate = true, bool CreateIfNotExist = false) where T : Form
         {
-            foreach (Form f in Wisej.Web.Application.OpenForms)
+
+            var form = Application.OpenForms[FormName];
+
+            if (form == null && CreateIfNotExist)
             {
-                if (f is T)
-                {
-                    return (T)f;
-                }
+                form = (T)Activator.CreateInstance(typeof(T));
             }
-            if (CreateIfNotExist)
+
+
+            if (form != null && Activate )
             {
-                return (T)Activator.CreateInstance(typeof(T));
+                if (form.WindowState == FormWindowState.Minimized)
+                    form.WindowState = FormWindowState.Normal;
+                form.Activate();
             }
-            
-            return null;
+
+            return form as T;   
+
+
         }
+
+        
+        public static T PageExist<T>(string PageName, bool Visible = false, bool CreateIfNotExist = false) where T : Page 
+        {
+
+            var page = Application.OpenPages [PageName];
+
+            if (page == null && CreateIfNotExist)
+            {
+                page = (T)Activator.CreateInstance(typeof(T));
+            }
+
+
+            if (page != null && Visible )
+            {
+                if (page.Visible  == false )
+                    page.Visible = true;   
+            }
+
+            return page as T;
+
+
+        }
+
+      
 
         /// <summary>
         /// Forms the exist.
