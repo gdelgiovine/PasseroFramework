@@ -23,7 +23,7 @@ namespace PasseroDemo.Views
             this.DbConnectionA = new Microsoft.Data.SqlClient.SqlConnection(ConfigurationManager.DBConnections["PasseroDemo"].ConnectionString);
 
 
-            vmPublishers.Init(this.DbConnectionA);
+            vmPublishers.Init(this.DbConnection);
             //vmPublishers.DataBindControlsAutoSetMaxLenght = true;
             //vmPublishers.AutoWriteControls = true;
             //vmPublishers.AutoReadControls = true;
@@ -31,8 +31,16 @@ namespace PasseroDemo.Views
             vmPublishers.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
             vmPublishers.BindingSource = this.bsPublishers;
 
-            this.dataNavigator1.ViewModels["Publishers"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmPublishers, "Publishers");
-            this.dataNavigator1.SetActiveViewModel("Publishers");
+            // Old way to add ViewModel to DataNavigator    
+            //this.dataNavigator1.ViewModels["vmPublishers"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmPublishers, "vmPublishers");
+            //this.dataNavigator1 .AddViewModel("vmPublishers", this.vmPublishers ,"Publishers", null,null );
+            //this.dataNavigator1.SetActiveViewModel("vmPublishers");
+            //this.dataNavigator1.SetActiveViewModel(nameof (this.vmPublishers));
+
+            // New way to add ViewModel to DataNavigator    
+            this.dataNavigator1.AddViewModel(this.vmPublishers, "Publishers", null, null);
+            this.dataNavigator1.SetActiveViewModel(this.vmPublishers);
+
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
             this.dataNavigator1.Init(true);

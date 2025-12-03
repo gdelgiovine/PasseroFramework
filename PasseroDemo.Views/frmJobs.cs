@@ -43,9 +43,14 @@ namespace PasseroDemo.Views
 
             //this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmJobs.Jobs , "Jobs");
 
-            this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(vm, "Jobs");
+            //this.dataNavigator1.ViewModels["Jobs"] = new Passero.Framework.Controls.DataNavigatorViewModel(vm, "Jobs");
+            //this.dataNavigator1.SetActiveViewModel("Jobs");
 
-            this.dataNavigator1.SetActiveViewModel("Jobs");
+
+            this.dataNavigator1.AddViewModel (this.vmJobs, "Jobs");
+            this.dataNavigator1.SetActiveViewModel(this.vmJobs );
+
+
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
             this.dataNavigator1.Init(true);

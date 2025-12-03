@@ -117,16 +117,926 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="ResultGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>898, 635</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="rbCSV.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="TabPageReportQuery.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;rbJSON.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Button2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Parent" xml:space="preserve">
+    <value>TabPageExport</value>
+  </data>
+  <data name="&gt;&gt;menuRecordsALL.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Button1.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="txtDebug.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;Button2.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="ResultGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="&gt;&gt;bLoadQBE.Name" xml:space="preserve">
+    <value>bLoadQBE</value>
+  </data>
+  <data name="ResultGrid.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
-  <metadata name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  </data>
+  <data name="bDelete.Text" xml:space="preserve">
+    <value>Delete Filters</value>
+  </data>
+  <data name="&gt;&gt;bNext.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Button2.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="bLast.ImageSource" xml:space="preserve">
+    <value>icon-last</value>
+  </data>
+  <data name="&gt;&gt;bPrev.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="$this.IconSource" xml:space="preserve">
+    <value>icon-search</value>
+  </data>
+  <assembly alias="Wisej.Framework" name="Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171" />
+  <data name="NavBar.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Bottom</value>
+  </data>
+  <data name="&gt;&gt;bDelete.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="dgvcNomeCampo.HeaderText" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 30</value>
+  </data>
+  <data name="&gt;&gt;rbJSON.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="cmbRecords.Items2" xml:space="preserve">
+    <value>1000</value>
+  </data>
+  <data name="rbXML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 23</value>
+  </data>
+  <data name="chkLikeOperator.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;rbXML.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="resource.BackgroundImageAlign1" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="cmbRecords.Items5" xml:space="preserve">
+    <value>10000</value>
+  </data>
+  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 23</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Parent" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="NavBar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 591</value>
+  </data>
+  <data name="PanelExport.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="Records.Text" xml:space="preserve">
+    <value>Max Rows</value>
+  </data>
+  <data name="cmbRecords.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
+  </data>
+  <data name="componentTool2.ToolTipText" xml:space="preserve">
+    <value>Autosize Grid</value>
+  </data>
+  <data name="rbXML.Text" xml:space="preserve">
+    <value>File XML</value>
+  </data>
+  <data name="bSave.Text" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="TabControl.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="bClose.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="&gt;&gt;bClose.Name" xml:space="preserve">
+    <value>bClose</value>
+  </data>
+  <data name="&gt;&gt;dgvcColumnValue.Name" xml:space="preserve">
+    <value>dgvcColumnValue</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Type" xml:space="preserve">
+    <value>Wisej.Web.TabControl, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bSave.Name" xml:space="preserve">
+    <value>bSave</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="resource.BackgroundImage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="rbCSV.Text" xml:space="preserve">
+    <value>File CSV</value>
+  </data>
+  <data name="componentTool3.ToolTipText" xml:space="preserve">
+    <value>Move to first row</value>
+  </data>
+  <data name="bPrint.ImageSource" xml:space="preserve">
+    <value>icon-print</value>
+  </data>
+  <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 150</value>
+  </data>
+  <data name="btnExport.Text" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Button1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="menuRecords100.Text" xml:space="preserve">
+    <value>100</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>Wisej.Web.Form, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;menuRecords1000.Name" xml:space="preserve">
+    <value>menuRecords1000</value>
+  </data>
+  <data name="PanelExport.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 98</value>
+  </data>
+  <data name="&gt;&gt;RecordLabel.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;menuRecords100.Name" xml:space="preserve">
+    <value>menuRecords100</value>
+  </data>
+  <data name="SplitContainer.Panel1.Text" xml:space="preserve">
+    <value>Query Results</value>
+  </data>
+  <data name="bFirst.ImageSource" xml:space="preserve">
+    <value>icon-first</value>
+  </data>
+  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 119</value>
+  </data>
+  <data name="btnExport.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Name" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;Button2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="SplitContainer.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="TabPageExport.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;menuRecords5000.Name" xml:space="preserve">
+    <value>menuRecords5000</value>
+  </data>
+  <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;bSaveQBE.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="componentTool5.ToolTipText" xml:space="preserve">
+    <value>Move to next row</value>
+  </data>
+  <data name="TabPageDebug.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;menuRecords500.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="TabControl.ItemSize" type="System.Drawing.Size, System.Drawing">
+    <value>0, 30</value>
+  </data>
+  <data name="&gt;&gt;bDelete.Name" xml:space="preserve">
+    <value>bDelete</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Name" xml:space="preserve">
+    <value>SplitContainer.Panel2</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Parent" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;menuRecords10000.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="$this.StartPosition" type="Wisej.Web.FormStartPosition, Wisej.Framework">
+    <value>CenterParent</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.Name" xml:space="preserve">
+    <value>cmbRecords</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="chkLikeOperator.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;dgvcQueryColumn.Name" xml:space="preserve">
+    <value>dgvcQueryColumn</value>
+  </data>
+  <data name="&gt;&gt;menuRecords500.Name" xml:space="preserve">
+    <value>menuRecords500</value>
+  </data>
+  <data name="&gt;&gt;bClose.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
+    <value>bFirst</value>
+  </data>
+  <data name="&gt;&gt;menuRecordsALL.Name" xml:space="preserve">
+    <value>menuRecordsALL</value>
+  </data>
+  <data name="ResultGrid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 366</value>
+  </data>
+  <data name="&gt;&gt;bRefresh.Name" xml:space="preserve">
+    <value>bRefresh</value>
+  </data>
+  <data name="&gt;&gt;Button1.Name" xml:space="preserve">
+    <value>Button1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>350, 3</value>
+  </data>
+  <data name="NavBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 44</value>
+  </data>
+  <data name="Button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>253, 4</value>
+  </data>
+  <data name="cmbRecords.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 30</value>
+  </data>
+  <data name="rbXML.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="SplitContainer.SplitterDistance" type="System.Int32, mscorlib">
+    <value>394</value>
+  </data>
+  <data name="txtDebug.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Name" xml:space="preserve">
+    <value>chkLikeOperator</value>
+  </data>
+  <data name="bNext.Text" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="bLoadQBE.ImageSource" xml:space="preserve">
+    <value>icon-open</value>
+  </data>
+  <data name="bNext.ImageSource" xml:space="preserve">
+    <value>icon-right</value>
+  </data>
+  <data name="Button2.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;rbXML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="menuRecords500.Text" xml:space="preserve">
+    <value>500</value>
+  </data>
+  <data name="resource.BackgroundImageSource1" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="&gt;&gt;menuRecords1000.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="NavBar.Margin" type="Wisej.Web.Padding, Wisej.Framework">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="txtDebug.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="bPrev.ImageSource" xml:space="preserve">
+    <value>icon-left</value>
+  </data>
+  <data name="chkLikeOperator.Text" xml:space="preserve">
+    <value>Use CONTAINS operator</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="&gt;&gt;rbXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelExport.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;menuRecords2000.Name" xml:space="preserve">
+    <value>menuRecords2000</value>
+  </data>
+  <data name="componentTool5.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-right</value>
+  </data>
+  <data name="rbXML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>94, 3</value>
+  </data>
+  <data name="&gt;&gt;bFirst.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;ResultGrid.Name" xml:space="preserve">
+    <value>ResultGrid</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="TabPageDebug.Text" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcNomeCampo.Name" xml:space="preserve">
+    <value>dgvcNomeCampo</value>
+  </data>
+  <data name="&gt;&gt;ResultGrid.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="Button1.Text" xml:space="preserve">
+    <value>Button1</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Name" xml:space="preserve">
+    <value>txtDebug</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>7, 19</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Name" xml:space="preserve">
+    <value>SplitContainer.Panel1</value>
+  </data>
+  <data name="&gt;&gt;ResultGrid.Parent" xml:space="preserve">
+    <value>SplitContainer.Panel1</value>
+  </data>
+  <data name="txtDebug.Location" type="System.Drawing.Point, System.Drawing">
+    <value>15, 6</value>
+  </data>
+  <data name="cmbRecords.Items" xml:space="preserve">
+    <value>100</value>
+  </data>
+  <data name="resource.BackgroundImageLayout" type="Wisej.Web.ImageLayout, Wisej.Framework">
+    <value>None</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Name" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="&gt;&gt;menuRecords10000.Name" xml:space="preserve">
+    <value>menuRecords10000</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Name" xml:space="preserve">
+    <value>NavBar</value>
+  </data>
+  <data name="&gt;&gt;dgvcColumnValue.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Records.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="SplitContainer.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="&gt;&gt;rbCSV.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 119</value>
+  </data>
+  <data name="dgvcColumnValue.HeaderText" xml:space="preserve">
+    <value>Value/Condition</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Parent" xml:space="preserve">
+    <value>SplitContainer.Panel2</value>
+  </data>
+  <data name="&gt;&gt;bLast.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="chkLikeOperator.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="resource.BackgroundImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="QueryGrid.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="&gt;&gt;rbJSON.Name" xml:space="preserve">
+    <value>rbJSON</value>
+  </data>
+  <data name="PanelExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 119</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBar, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Parent" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="QueryGrid.ColumnHeadersHeight" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="bSaveQBE.ImageSource" xml:space="preserve">
+    <value>icon-save</value>
+  </data>
+  <data name="&gt;&gt;bPrev.Name" xml:space="preserve">
+    <value>bPrev</value>
+  </data>
+  <data name="bPrint.Text" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="menuRecords5000.Text" xml:space="preserve">
+    <value>5000</value>
+  </data>
+  <data name="&gt;&gt;dgvcQueryColumn.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewButtonColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbCSV.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="menuRecords10000.Text" xml:space="preserve">
+    <value>10000</value>
+  </data>
+  <data name="&gt;&gt;Records.Name" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="SplitContainer.Orientation" type="Wisej.Web.Orientation, Wisej.Framework">
+    <value>Horizontal</value>
+  </data>
+  <data name="rbJSON.Size" type="System.Drawing.Size, System.Drawing">
+    <value>85, 23</value>
+  </data>
+  <data name="&gt;&gt;bSave.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="RecordLabel.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;bLast.Name" xml:space="preserve">
+    <value>bLast</value>
+  </data>
+  <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="componentTool4.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-left</value>
+  </data>
+  <data name="cmbRecords.Items4" xml:space="preserve">
+    <value>5000</value>
+  </data>
+  <data name="btnExport.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Top, Right</value>
+  </data>
+  <data name="&gt;&gt;menuRecords2000.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="componentTool6.ToolTipText" xml:space="preserve">
+    <value>Move to last row</value>
+  </data>
+  <data name="bLast.Text" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Parent" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;menuRecords100.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="btnExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 27</value>
+  </data>
+  <data name="&gt;&gt;bRefresh.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="PanelExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;bSaveQBE.Name" xml:space="preserve">
+    <value>bSaveQBE</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="componentTool1.ImageSource" xml:space="preserve">
+    <value>icon-copy</value>
+  </data>
+  <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 30</value>
+  </data>
+  <data name="&gt;&gt;Button2.Name" xml:space="preserve">
+    <value>Button2</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Name" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuRecords.Type" xml:space="preserve">
+    <value>Wisej.Web.ContextMenu, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="bSaveQBE.Text" xml:space="preserve">
+    <value>Save Filters</value>
+  </data>
+  <data name="SplitContainer.Panel2.Text" xml:space="preserve">
+    <value>Query Manager</value>
+  </data>
+  <data name="bFirst.Text" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="cmbRecords.Location" type="System.Drawing.Point, System.Drawing">
+    <value>179, 6</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Name" xml:space="preserve">
+    <value>TabPageExport</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="rbJSON.Text" xml:space="preserve">
+    <value>File JSON</value>
+  </data>
+  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 30</value>
+  </data>
+  <data name="TabPageExport.Text" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="chkLikeOperator.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 21</value>
+  </data>
+  <data name="bDelete.ImageSource" xml:space="preserve">
+    <value>tab-close</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;bLoadQBE.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="componentTool6.ImageSource" xml:space="preserve">
+    <value>icon-last</value>
+  </data>
+  <data name="bPrev.Text" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Button1.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="TabPageReportQuery.Text" xml:space="preserve">
+    <value>Query Criteria</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;Button1.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;dgvcNomeCampo.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>359, 6</value>
+  </data>
+  <data name="&gt;&gt;ContextMenuRecords.Name" xml:space="preserve">
+    <value>ContextMenuRecords</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>QBEForm</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Type" xml:space="preserve">
+    <value>Wisej.Web.CheckBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="Button1.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="bRefresh.ImageSource" xml:space="preserve">
+    <value>icon-redo</value>
+  </data>
+  <data name="cmbRecords.Items3" xml:space="preserve">
+    <value>2000</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Name" xml:space="preserve">
+    <value>btnExport</value>
+  </data>
+  <data name="TabControl.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;bPrint.Name" xml:space="preserve">
+    <value>bPrint</value>
+  </data>
+  <data name="rbExcel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>262, 3</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="componentTool3.ImageSource" xml:space="preserve">
+    <value>icon-first</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbXML.Name" xml:space="preserve">
+    <value>rbXML</value>
+  </data>
+  <data name="cmbRecords.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;rbCSV.Name" xml:space="preserve">
+    <value>rbCSV</value>
+  </data>
+  <data name="txtDebug.Text" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="&gt;&gt;TabControl.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Name" xml:space="preserve">
+    <value>rbExcel</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.Type" xml:space="preserve">
+    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="menuRecords2000.Text" xml:space="preserve">
+    <value>2000</value>
+  </data>
+  <data name="dgvcQueryColumn.HeaderText" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="TabPageDebug.Padding" type="Wisej.Web.Padding, Wisej.Framework">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="rbExcel.Text" xml:space="preserve">
+    <value>File Excel</value>
+  </data>
+  <data name="rbCSV.Size" type="System.Drawing.Size, System.Drawing">
+    <value>77, 23</value>
+  </data>
+  <data name="SplitContainer.Margin" type="Wisej.Web.Padding, Wisej.Framework">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="Button2.Text" xml:space="preserve">
+    <value>Button2</value>
+  </data>
+  <data name="SplitContainer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 588</value>
+  </data>
+  <data name="Button2.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="rbCSV.Location" type="System.Drawing.Point, System.Drawing">
+    <value>179, 3</value>
+  </data>
+  <data name="txtDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 23</value>
+  </data>
+  <data name="resource.BackgroundImage1" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="&gt;&gt;cmbRecords.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="ResultGrid.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;NavBar.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="componentTool2.ImageSource" xml:space="preserve">
+    <value>icon-preview</value>
+  </data>
+  <data name="&gt;&gt;btnExport.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="menuRecords1000.Text" xml:space="preserve">
+    <value>1000</value>
+  </data>
+  <data name="componentTool1.ToolTipText" xml:space="preserve">
+    <value>Select/Unselect all rows</value>
+  </data>
+  <data name="resource.BackgroundImageLayout1" type="Wisej.Web.ImageLayout, Wisej.Framework">
+    <value>None</value>
+  </data>
+  <data name="bRefresh.Text" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="TabPageReportQuery.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="bLoadQBE.Text" xml:space="preserve">
+    <value>Load Filters</value>
+  </data>
+  <data name="bSave.ImageSource" xml:space="preserve">
+    <value>icon-check</value>
+  </data>
+  <data name="&gt;&gt;bPrint.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="ResultGrid.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 119</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cmbRecords.Items1" xml:space="preserve">
+    <value>500</value>
+  </data>
+  <data name="QueryGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="ResultGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Name" xml:space="preserve">
+    <value>QueryGrid</value>
+  </data>
+  <data name="QueryGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 21</value>
+  </data>
+  <data name="&gt;&gt;RecordLabel.Name" xml:space="preserve">
+    <value>RecordLabel</value>
+  </data>
+  <data name="rbJSON.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="dgvcQueryColumn.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="NavBar.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="SplitContainer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="componentTool4.ToolTipText" xml:space="preserve">
+    <value>Move to previous row</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Name" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="rbJSON.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="resource.BackgroundImageSource" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="RecordLabel.Text" xml:space="preserve">
+    <value>0&lt;br&gt;0</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Name" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;bNext.Name" xml:space="preserve">
+    <value>bNext</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="bClose.ImageSource" xml:space="preserve">
+    <value>icon-exit</value>
+  </data>
+  <data name="&gt;&gt;rbCSV.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbJSON.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Button1.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="SplitContainer.SplitterWidth" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="menuRecordsALL.Text" xml:space="preserve">
+    <value>ALL</value>
+  </data>
+  <data name="&gt;&gt;ResultGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="chkLikeOperator.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Top</value>
+  </data>
+  <data name="txtDebug.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;menuRecords5000.Type" xml:space="preserve">
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
   <metadata name="ContextMenuRecords.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>39</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="ResultGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
   </metadata>
 </root>

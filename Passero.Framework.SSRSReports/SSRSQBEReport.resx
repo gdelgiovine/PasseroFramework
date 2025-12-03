@@ -409,7 +409,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="TabPageReports.Text" xml:space="preserve">
     <value>Avalaible Reports</value>
@@ -451,7 +451,7 @@
     <value>24</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>867, 61</value>
+    <value>867, 53</value>
   </data>
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -502,7 +502,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="TabPageReportQuery.Text" xml:space="preserve">
     <value>Search Criteria</value>
@@ -730,7 +730,7 @@
     <value>100</value>
   </data>
   <data name="dgv_SelectedSortColumns.Location" type="System.Drawing.Point, System.Drawing">
-    <value>278, 3</value>
+    <value>3, 110</value>
   </data>
   <data name="dgv_SelectedSortColumns.RowHeadersWidth" type="System.Int32, mscorlib">
     <value>20</value>
@@ -772,7 +772,7 @@
     <value>0, 0</value>
   </data>
   <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -796,7 +796,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="TabPageReportSort.Text" xml:space="preserve">
     <value>Report Sorting</value>
@@ -1039,7 +1039,7 @@
     <value>0, 0</value>
   </data>
   <data name="PanelExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -1063,7 +1063,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="TabPageExport.Text" xml:space="preserve">
     <value>Export</value>
@@ -1219,7 +1219,7 @@
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>890, 109</value>
+    <value>890, 101</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>
@@ -1240,7 +1240,7 @@
     <value>1, 0</value>
   </data>
   <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>892, 150</value>
+    <value>892, 142</value>
   </data>
   <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1279,7 +1279,7 @@
     <value>394</value>
   </data>
   <data name="SplitContainer.SplitterWidth" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>16</value>
   </data>
   <data name="SplitContainer.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>

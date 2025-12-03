@@ -8,7 +8,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net4.7' Or '$(TargetFramework)' == 'net4.8'">
 		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-		<PackageReference Include="ZXing.Net" Version="0.16.10" />
+		<PackageReference Include="ZXing.Net" Version="0.16.11" />
 		<!-- Aggiungi eventuali altri riferimenti specifici per .NET Framework qui -->
 	</ItemGroup>
 
@@ -22,7 +22,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="FreeSpire.Barcode" Version="6.6.0" />
-	  <PackageReference Include="QRCoder" Version="1.6.0" />
+	  <PackageReference Include="QRCoder" Version="1.7.0" />
 	</ItemGroup>
 
 </Project>

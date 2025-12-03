@@ -22,12 +22,12 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-    <PackageReference Include="MiniExcel" Version="1.41.4" />
-	<PackageReference Include="Wisej-3" Version="3.5.25-test.2" />
+    <PackageReference Include="MiniExcel" Version="1.42.0" />
+	<PackageReference Include="Wisej-3" Version="3.5.25" />
    
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="ReportViewerCore.NETCore">
       <Version>15.1.26</Version>
     </PackageReference>
@@ -35,14 +35,10 @@
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="ReportViewerCore.NETCore">
-      <Version>15.1.26</Version>
+      <Version>15.1.27</Version>
     </PackageReference>
   </ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="ReportViewerCore.NETCore">
-			<Version>15.1.26</Version>
-		</PackageReference>
-	</ItemGroup>
+	
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
 		<PackageReference Include="ReportViewerCore.NETCore">

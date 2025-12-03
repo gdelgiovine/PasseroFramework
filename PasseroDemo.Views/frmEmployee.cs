@@ -56,12 +56,14 @@ namespace PasseroDemo.Views
             this.cmb_pub_id .DisplayMember = nameof(Models.Publisher.pub_fullinfo  );    
             this.cmb_pub_id .ValueMember = nameof(Models.Publisher .pub_id);    
 
-            // Set the DataNavigator1 ViewMode 
+          
+            //this.dataNavigator1.ViewModels["Employee"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmEmployee, "Employee");
+            //this.dataNavigator1.SetActiveViewModel("Employee");
 
-            this.dataNavigator1.ViewModels["Employee"] = new Passero.Framework.Controls.DataNavigatorViewModel(this.vmEmployee, "Employee");
-            this.dataNavigator1.SetActiveViewModel("Employee");
-            // Questo Metodo invece sta nella classe base ViewModel
-            // .GetAllItems() is a built-in methos of ViewModel Class
+            this.dataNavigator1.AddViewModel(this.vmEmployee , "Employees");
+            this.dataNavigator1.SetActiveViewModel(this.vmEmployee );
+
+
             this.dataNavigator1.Init(true);
 
         }

@@ -41,8 +41,12 @@ namespace PasseroDemo.Views
 
             this.dataNavigator1 .ManageNavigation = true;   
             this.dataNavigator1 .ManageChanges = true;  
-            this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmPubIsnfo , "Authors");
-            this.dataNavigator1.SetActiveViewModel("Authors");
+            //this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmPubIsnfo , "Authors");
+            //this.dataNavigator1.SetActiveViewModel("Authors");
+
+            this.dataNavigator1.AddViewModel(this.vmPubIsnfo, "Pubs Info");
+            this.dataNavigator1.SetActiveViewModel(this.vmPubIsnfo );
+
             this.dataNavigator1.Init(true);
         }
 

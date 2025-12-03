@@ -13,8 +13,6 @@ namespace PasseroDemo.Views
 
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public IDbConnection DbConnection { get; set; }
-        
-        //public Passero.Framework.ViewModel<Models.Author> vmAuthor = new Passero.Framework.ViewModel<Models.Author>();
         public ViewModels .vmAuthor vmAuthor = new ViewModels .vmAuthor (); 
 
        
@@ -38,7 +36,8 @@ namespace PasseroDemo.Views
             this.Accelerators = this.dataNavigator1.GetAccelerators(); 
             
             this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
-            this.dataNavigator1.SetActiveViewModel("Authors");
+            this.dataNavigator1.AddViewModel(this.vmAuthor , "Authors"); 
+            this.dataNavigator1.SetActiveViewModel(this.vmAuthor);
             this.dataNavigator1.Init(true);
 
         }

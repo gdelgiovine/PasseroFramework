@@ -117,11 +117,115 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="componentTool1.ImageSource" xml:space="preserve">
-    <value>icon-copy</value>
+  <data name="SplitContainer.Panel1.Text" xml:space="preserve">
+    <value>Risultati Ricerca</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>877, 99</value>
+  <data name="componentTool1.ToolTipText" xml:space="preserve">
+    <value>Selezione/Deselezione tutte le righe</value>
+  </data>
+  <data name="componentTool2.ToolTipText" xml:space="preserve">
+    <value>Dimensione automatica colonne</value>
+  </data>
+  <data name="componentTool3.ToolTipText" xml:space="preserve">
+    <value>Vai alla prima riga</value>
+  </data>
+  <data name="componentTool4.ToolTipText" xml:space="preserve">
+    <value>Vai alla riga precedente</value>
+  </data>
+  <data name="componentTool5.ToolTipText" xml:space="preserve">
+    <value>Vai alla riga successiva</value>
+  </data>
+  <data name="componentTool6.ToolTipText" xml:space="preserve">
+    <value>Vai all'ultima riga</value>
+  </data>
+  <data name="TabPageReportQuery.Text" xml:space="preserve">
+    <value>Criteri di Ricerca</value>
+  </data>
+  <data name="dgvcNomeCampo.HeaderText" xml:space="preserve">
+    <value>Colonna</value>
+  </data>
+  <data name="dgvcColumnValue.HeaderText" xml:space="preserve">
+    <value>Valore/Condizione</value>
+  </data>
+  <data name="chkLikeOperator.Text" xml:space="preserve">
+    <value>Usa operatore CONTIENE</value>
+  </data>
+  <data name="TabPageExport.Text" xml:space="preserve">
+    <value>Esportazione</value>
+  </data>
+  <data name="bFirst.Text" xml:space="preserve">
+    <value>Inizio</value>
+  </data>
+  <data name="bFirst.ToolTipText" xml:space="preserve">
+    <value>Inizio</value>
+  </data>
+  <data name="bPrev.Text" xml:space="preserve">
+    <value>Precedente</value>
+  </data>
+  <data name="bPrev.ToolTipText" xml:space="preserve">
+    <value>Precedente</value>
+  </data>
+  <data name="bNext.Text" xml:space="preserve">
+    <value>Successiva</value>
+  </data>
+  <data name="bNext.ToolTipText" xml:space="preserve">
+    <value>Successiva</value>
+  </data>
+  <data name="bLast.Text" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="bLast.ToolTipText" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="bRefresh.Text" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="bRefresh.ToolTipText" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="bDelete.Text" xml:space="preserve">
+    <value>Elimina Criteri</value>
+  </data>
+  <data name="bDelete.ToolTipText" xml:space="preserve">
+    <value>Elimina Criteri</value>
+  </data>
+  <data name="Records.Text" xml:space="preserve">
+    <value>Righe</value>
+  </data>
+  <data name="Records.ToolTipText" xml:space="preserve">
+    <value>Righe</value>
+  </data>
+  <data name="bPrint.Text" xml:space="preserve">
+    <value>Stampa</value>
+  </data>
+  <data name="bPrint.ToolTipText" xml:space="preserve">
+    <value>Stampa</value>
+  </data>
+  <data name="bSave.Text" xml:space="preserve">
+    <value>Seleziona</value>
+  </data>
+  <data name="bSave.ToolTipText" xml:space="preserve">
+    <value>Seleziona</value>
+  </data>
+  <data name="bSaveQBE.Text" xml:space="preserve">
+    <value>Salva Criteri</value>
+  </data>
+  <data name="bSaveQBE.ToolTipText" xml:space="preserve">
+    <value>Salva Criteri</value>
+  </data>
+  <data name="bLoadQBE.Text" xml:space="preserve">
+    <value>Carica Criteri</value>
+  </data>
+  <data name="bLoadQBE.ToolTipText" xml:space="preserve">
+    <value>Carica Criteri</value>
+  </data>
+  <data name="bClose.Text" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="bClose.ToolTipText" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Ricerca</value>
   </data>
 </root>

@@ -11,6 +11,11 @@
     <AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
     <OutputPath>bin\</OutputPath>
     <StartupObject></StartupObject>
@@ -66,15 +71,18 @@
     </Content>
   </ItemGroup>
 
+	
+	
+	
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
     <PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
-    <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.25-test.2" />
-    <PackageReference Include="Wisej-3-BootstrapIcons" Version="3.5.24" />
-    <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.24" />
+    <!-- <PackageReference Include="System.Linq" Version="4.3.0" /> -->
+    <PackageReference Include="Wisej-3" Version="3.5.25" />
+    <PackageReference Include="Wisej-3-BootstrapIcons" Version="3.5.25" />
+    <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.25" />
   </ItemGroup>
 
   <ItemGroup>

@@ -418,7 +418,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
-    <value>891, 110</value>
+    <value>891, 102</value>
   </data>
   <data name="TabPageReports.Text" xml:space="preserve">
     <value>Avalaible Reports</value>
@@ -460,7 +460,7 @@
     <value>24</value>
   </data>
   <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>874, 68</value>
+    <value>874, 60</value>
   </data>
   <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -511,7 +511,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
-    <value>891, 110</value>
+    <value>891, 102</value>
   </data>
   <data name="TabPageReportQuery.Text" xml:space="preserve">
     <value>Search Criteria</value>
@@ -610,7 +610,7 @@
     <value>294, 27</value>
   </data>
   <data name="dgv_SelectedSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>463, 66</value>
+    <value>463, 58</value>
   </data>
   <data name="dgv_SelectedSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -685,7 +685,7 @@
     <value>6, 7</value>
   </data>
   <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 86</value>
+    <value>240, 78</value>
   </data>
   <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -709,7 +709,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>891, 110</value>
+    <value>891, 102</value>
   </data>
   <data name="TabPageReportSort.Text" xml:space="preserve">
     <value>Report Sorting</value>
@@ -880,7 +880,7 @@
     <value>1, 40</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
-    <value>891, 110</value>
+    <value>891, 102</value>
   </data>
   <data name="TabPageExport.Text" xml:space="preserve">
     <value>Export</value>
@@ -1036,7 +1036,7 @@
     <value>3, 3, 3, 3</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>891, 110</value>
+    <value>891, 102</value>
   </data>
   <data name="TabPageDebug.Text" xml:space="preserve">
     <value>Debug</value>
@@ -1057,7 +1057,7 @@
     <value>1, -1</value>
   </data>
   <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>893, 151</value>
+    <value>893, 143</value>
   </data>
   <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1096,7 +1096,7 @@
     <value>394</value>
   </data>
   <data name="SplitContainer.SplitterWidth" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>16</value>
   </data>
   <data name="SplitContainer.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>

@@ -71,11 +71,14 @@ namespace PasseroDemo.Views
             this.cmb_pub_id.ValueMember = nameof(vmPublisher.ModelItem.pub_id);
             this.cmb_pub_id.DisplayMember = nameof(vmPublisher.ModelItem.pub_name );
             
-            //this.vmTitle.GetTitles ();
-            //this.vmTitle.GetAllItems();
-            this.dataNavigator1.ViewModels["Title"]=new DataNavigatorViewModel(this.vmTitle,"Titles");
-            this.dataNavigator1.ViewModels["TitleAuthor"]= new DataNavigatorViewModel(this.vmTitleAuthor,"TitleAuthoe", "Title Authors", this.dgv_TitleAuthors);
-            this.dataNavigator1.SetActiveViewModel ("Title"); 
+            //this.dataNavigator1.ViewModels["Title"]=new DataNavigatorViewModel(this.vmTitle,"Titles");
+            //this.dataNavigator1.ViewModels["TitleAuthor"]= new DataNavigatorViewModel(this.vmTitleAuthor,"TitleAuthoe", "Title Authors", this.dgv_TitleAuthors);
+            //this.dataNavigator1.SetActiveViewModel ("Title"); 
+
+
+            this.dataNavigator1.AddViewModel (this.vmTitle,"Titles");
+            this.dataNavigator1.AddViewModel(this.vmTitleAuthor , "Title Authors", this.dgv_TitleAuthors );
+            this.dataNavigator1 .SetActiveViewModel (this.vmTitle );    
 
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = false;
@@ -178,14 +181,16 @@ namespace PasseroDemo.Views
                 this.pnl_TitleInfo.Enabled = true; 
                 this.dgv_TitleAuthors.ReadOnly = true;
 
-                this.dataNavigator1.SetActiveViewModel("Title");
+                
+                this.dataNavigator1.SetActiveViewModel (this.vmTitle);  
             }
 
             if (tabctlTitle.SelectedTab == tabPageTitleAuthors )
             {
                 this.pnl_TitleInfo.Enabled = false;
                 this.dgv_TitleAuthors.ReadOnly = false;
-                this.dataNavigator1.SetActiveViewModel("TitleAuthor");
+                this.dataNavigator1.SetActiveViewModel(this.vmTitleAuthor );
+                
                 
             }
 

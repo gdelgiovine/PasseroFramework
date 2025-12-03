@@ -892,6 +892,8 @@ namespace Passero.Framework.Controls
         /// Sets the active view model.
         /// </summary>
         /// <param name="viewModel">The view model.</param>
+        [Obsolete("This method is obsolete. Use the overload SetActiveViewModel(object viewModel) instead. The new version automatically infers the ViewModel name from the variable name using CallerArgumentExpression.", false)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetActiveViewModel(string viewModel)
         {
             if (ViewModels.ContainsKey(viewModel))
@@ -901,6 +903,61 @@ namespace Passero.Framework.Controls
             }
         }
 
+        /// <summary>
+        /// Sets the active view model using automatic name detection.
+        /// </summary>
+        /// <param name="viewModel">The view model.</param>
+        /// <param name="viewModelExpression">Auto-captured variable name (don't pass manually).</param>
+        public void SetActiveViewModel(
+            object viewModel,
+            [System.Runtime.CompilerServices.CallerArgumentExpression("viewModel")] string viewModelExpression = null)
+        {
+            string viewModelKey = string.Empty;
+
+            // 1. Prova a ottenere dalla proprietà Name del ViewModel
+            var nameProperty = viewModel.GetType().GetProperty("Name");
+            if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            {
+                string _Name = (string)nameProperty.GetValue(viewModel) ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(_Name))
+                {
+                    viewModelKey = _Name;
+                }
+            }
+
+            // 2. Se Name è vuoto, usa il nome della variabile catturato
+            if (string.IsNullOrWhiteSpace(viewModelKey) && !string.IsNullOrWhiteSpace(viewModelExpression))
+            {
+                // Rimuove "this." se presente (es: "this.vmPublishers" -> "vmPublishers")
+                viewModelKey = viewModelExpression.Replace("this.", "");
+            }
+
+            // 3. Fallback: cerca nel dizionario ViewModels un match con l'istanza
+            if (string.IsNullOrWhiteSpace(viewModelKey))
+            {
+                foreach (var kvp in ViewModels)
+                {
+                    if (ReferenceEquals(kvp.Value.ViewModel, viewModel))
+                    {
+                        viewModelKey = kvp.Key;
+                        break;
+                    }
+                }
+            }
+
+            // 4. Ultimo fallback: usa il nome del tipo
+            if (string.IsNullOrWhiteSpace(viewModelKey))
+            {
+                viewModelKey = viewModel.GetType().Name;
+            }
+
+            // Cerca e attiva il ViewModel nel dizionario
+            if (ViewModels.ContainsKey(viewModelKey))
+            {
+                _SetActiveViewModel(ViewModels[viewModelKey]);
+                _ActiveViewModelKey = viewModelKey;
+            }
+        }
 
         private string _ActiveViewModelKey = "";
 
@@ -5794,6 +5851,7 @@ namespace Passero.Framework.Controls
         /// <param name="DataGridView">The data grid view.</param>
         /// <param name="DataRepeater">The data repeater.</param>
         /// <returns></returns>
+        [Obsolete("This method is obsolete. Use the overload AddViewModel(object ViewModel, string FriendlyName = \"\", DataGridView DataGridView = null, DataRepeater DataRepeater = null) instead. The Name parameter is now automatically inferred from the ViewModel variable name.", false)]
         public bool AddViewModel(string Name, object ViewModel, string FriendlyName = "DataNavigator", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
 
@@ -5811,6 +5869,43 @@ namespace Passero.Framework.Controls
             }
 
         }
+
+
+        public ExecutionResult AddViewModel( object ViewModel,string FriendlyName = "",DataGridView DataGridView = null,DataRepeater DataRepeater = null,
+            [CallerArgumentExpression("ViewModel")] string viewModelExpression = null)
+        {
+            ExecutionResult ER = new ExecutionResult($"{mClassName}.AddViewModel()");
+
+            DataNavigatorViewModel DataNavigatorViewModel = null;
+
+            if (Passero.Framework.Utilities.IsViewModelType (ViewModel.GetType()) == false)
+            {
+               ER.ErrorCode = 1;    
+               ER.ResultCode = ExecutionResultCodes.Failed;
+               ER.ResultMessage = "The provided ViewModel is not a valid ViewModel type.";
+               return ER;  
+            }   
+
+            try
+            {
+                string Name = Passero.Framework.Utilities.GetViewModelName(ViewModel, viewModelExpression);
+                //string Name = Passero.Framework.Utilities.GetObjectName(ViewModel, viewModelExpression);
+                DataNavigatorViewModel = new DataNavigatorViewModel(ViewModel, Name, FriendlyName, DataGridView, DataRepeater);
+                ViewModels[Name] = DataNavigatorViewModel;
+                ER.ResultCode = ExecutionResultCodes.Success;   
+                return ER;
+            }
+            catch (Exception Ex)
+            {
+                ER.ErrorCode = 2;
+                ER.Exception = Ex;  
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = Ex.Message;
+                return ER;
+            }
+        }
+
+
 
 
         /// <summary>
@@ -6416,49 +6511,52 @@ namespace Passero.Framework.Controls
         /// <param name="Language">The language.</param>
         public void SetLanguage(string Language)
         {
+            if (Language.IsNullOrWhiteSpace())
+                return;
+            
             switch (Language.ToLower().Trim() ?? "")
             {
                 case "it-it":
                     {
                         _Language = "it";
-                        //_MovePreviousCaption = "Prec.";
-                        //_MoveNextCaption = "Succ.";
-                        //_MoveFirstCaption = "Inizio";
-                        //_MoveLastCaption = "Fine";
-                        //_AddNewCaption = "Nuovo";
-                        //_DeleteCaption = "Elimina";
-                        //_SaveCaption = "Salva";
-                        //_RefreshCaption = "Ricarica";
-                        //_UndoCaption = "Annulla";
-                        //_CloseCaption = "Chiudi";
-                        //_FindCaption = "Trova";
-                        //_PrintCaption = "Stampa";
-                        //_DeleteMessage = "Confermi la cancellazione dei dati?";
-                        //_SaveMessage = "Confermi il salvataggio dei dati?";
-                        //_RecordLabelSeparator = "di";
-                        //_RecordLabelNewRow = "Nuovo elemento";
+                        _MovePreviousCaption = "Prec.";
+                        _MoveNextCaption = "Succ.";
+                        _MoveFirstCaption = "Inizio";
+                        _MoveLastCaption = "Fine";
+                        _AddNewCaption = "Nuovo";
+                        _DeleteCaption = "Elimina";
+                        _SaveCaption = "Salva";
+                        _RefreshCaption = "Ricarica";
+                        _UndoCaption = "Annulla";
+                        _CloseCaption = "Chiudi";
+                        _FindCaption = "Trova";
+                        _PrintCaption = "Stampa";
+                        _DeleteMessage = "Confermi la cancellazione dei dati?";
+                        _SaveMessage = "Confermi il salvataggio dei dati?";
+                        _RecordLabelSeparator = "di";
+                        _RecordLabelNewRow = "Nuovo elemento";
                         break;
                     }
 
                 default:
                     {
                         _Language = "en";
-                        //_MovePreviousCaption = "Prev.";
-                        //_MoveNextCaption = "Next";
-                        //_MoveFirstCaption = "First";
-                        //_MoveLastCaption = "Last";
-                        //_AddNewCaption = "New";
-                        //_DeleteCaption = "Delete";
-                        //_SaveCaption = "Save";
-                        //_RefreshCaption = "Refresh";
-                        //_UndoCaption = "Undo";
-                        //_CloseCaption = "Close";
-                        //_FindCaption = "Find";
-                        //_PrintCaption = "Print";
-                        //_DeleteMessage = "Ok to delete data?";
-                        //_SaveMessage = "Ok to save data ?";
-                        //_RecordLabelSeparator = "of";
-                        //_RecordLabelNewRow = "New Row";
+                        _MovePreviousCaption = "Prev.";
+                        _MoveNextCaption = "Next";
+                        _MoveFirstCaption = "First";
+                        _MoveLastCaption = "Last";
+                        _AddNewCaption = "New";
+                        _DeleteCaption = "Delete";
+                        _SaveCaption = "Save";
+                        _RefreshCaption = "Refresh";
+                        _UndoCaption = "Undo";
+                        _CloseCaption = "Close";
+                        _FindCaption = "Find";
+                        _PrintCaption = "Print";
+                        _DeleteMessage = "Ok to delete data?";
+                        _SaveMessage = "Ok to save data ?";
+                        _RecordLabelSeparator = "of";
+                        _RecordLabelNewRow = "New Row";
                         break;
                     }
             }

@@ -39,9 +39,12 @@ namespace PasseroDemo.Views
 
             //this.dataGridView1.DataSource = authors;
 
-            this.dataNavigator1.ViewModels["Author"] = new Passero.Framework .Controls .DataNavigatorViewModel(this.vmAuthor, "Author","",this.dataGridView1,null);
-            this.dataNavigator1.SetActiveViewModel("Author");
-            
+            //this.dataNavigator1.ViewModels["Author"] = new Passero.Framework .Controls .DataNavigatorViewModel(this.vmAuthor, "Author","",this.dataGridView1,null);
+            //this.dataNavigator1.SetActiveViewModel("Author");
+            this.dataNavigator1.AddViewModel(this.vmAuthor,"Authors",this.dataGridView1 );
+            this.dataNavigator1.SetActiveViewModel(this.vmAuthor);
+
+
 
 
         }

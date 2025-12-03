@@ -59,11 +59,15 @@ namespace PasseroDemo.Views
             this.vmDiscount.GetAllItems();
             
             this.dataNavigator1.ManageNavigation = true;
-            this.dataNavigator1.ViewModels["Discount"] = new DataNavigatorViewModel(this.vmDiscount,"Discount","Discount");
-            this.dataNavigator1.SetActiveViewModel("Discount");
+            //this.dataNavigator1.ViewModels["Discount"] = new DataNavigatorViewModel(this.vmDiscount,"Discount","Discount");
+            //this.dataNavigator1.SetActiveViewModel("Discount");
 
-            
-           
+            this.dataNavigator1.AddViewModel(this.vmDiscount, "Discount");
+            this.dataNavigator1 .SetActiveViewModel (this.vmDiscount );
+
+
+
+
         }
 
 

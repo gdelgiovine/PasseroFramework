@@ -106,6 +106,9 @@ namespace Passero.Framework.Controls
         /// <param name="DataRepeater">The data repeater.</param>
         public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
+            if (Passero .Framework .Utilities .IsViewModelType(ViewModel ) == false)
+                throw new Exception("The ViewModel parameter is not a valid ViewModel.");   
+
             if (string.IsNullOrEmpty(Name))
                 Name = ReflectionHelper.GetPropertyValue(ViewModel, "Name").ToString();
 

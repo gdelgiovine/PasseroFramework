@@ -1,15 +1,17 @@
 ﻿using FastDeepCloner;
+using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,6 +26,204 @@ namespace Passero.Framework
     public static class Utilities
     {
 
+
+        public static string GetObjectName(object Object,
+           [CallerArgumentExpression("Object")] string ObjectExpression = null)
+        {
+
+            string Name = string.Empty;
+
+            // 1. Prova a ottenere dalla proprietà Name del ViewModel
+            var nameProperty = Object.GetType().GetProperty("Name");
+            if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            {
+                string _Name = (string)nameProperty.GetValue(Object) ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(_Name))
+                {
+                    Name = _Name;
+                }
+            }
+
+            // 2. Se Name è vuoto, usa il nome della variabile catturato
+            if (string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ObjectExpression))
+            {
+                // Rimuove "this." se presente (es: "this.vmTitles" -> "vmTitles")
+                Name = ObjectExpression.Replace("this.", "");
+            }
+
+            // 3. Fallback al nome del tipo
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                Name = Object.GetType().Name;
+            }
+            return Name;
+          
+
+        }
+        public static string GetViewModelName(object ViewModel,
+             [CallerArgumentExpression("ViewModel")] string viewModelExpression = null)
+        {
+
+            //string Name = string.Empty;
+
+            //// 1. Prova a ottenere dalla proprietà Name del ViewModel
+            //var nameProperty = ViewModel.GetType().GetProperty("Name");
+            //if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            //{
+            //    string _Name = (string)nameProperty.GetValue(ViewModel) ?? string.Empty;
+            //    if (!string.IsNullOrWhiteSpace(_Name))
+            //    {
+            //        Name = _Name;
+            //    }
+            //}
+
+            //// 2. Se Name è vuoto, usa il nome della variabile catturato
+            //if (string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(viewModelExpression))
+            //{
+            //    // Rimuove "this." se presente (es: "this.vmTitles" -> "vmTitles")
+            //    Name = viewModelExpression.Replace("this.", "");
+            //}
+
+            //// 3. Fallback al nome del tipo
+            //if (string.IsNullOrWhiteSpace(Name))
+            //{
+            //    Name = ViewModel.GetType().Name;
+            //}
+            //return Name;
+
+            return GetModelName(ViewModel, viewModelExpression);    
+        }
+
+
+        public static string GetModelName(object Model,
+           [CallerArgumentExpression("Model")] string ModelExpression = null)
+        {
+
+            //string Name = string.Empty;
+
+            //// 1. Prova a ottenere dalla proprietà Name del ViewModel
+            //var nameProperty = Model.GetType().GetProperty("Name");
+            //if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            //{
+            //    string _Name = (string)nameProperty.GetValue(Model) ?? string.Empty;
+            //    if (!string.IsNullOrWhiteSpace(_Name))
+            //    {
+            //        Name = _Name;
+            //    }
+            //}
+
+            //// 2. Se Name è vuoto, usa il nome della variabile catturato
+            //if (string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ModelExpression))
+            //{
+            //    // Rimuove "this." se presente (es: "this.vmTitles" -> "vmTitles")
+            //    Name = ModelExpression.Replace("this.", "");
+            //}
+
+            //// 3. Fallback al nome del tipo
+            //if (string.IsNullOrWhiteSpace(Name))
+            //{
+            //    Name = Model.GetType().Name;
+            //}
+            //return Name;
+
+            return GetObjectName(Model, ModelExpression);   
+        }
+
+        public static string GetRepositoryName(object Repository,
+          [CallerArgumentExpression("Repository")] string RepositoryExpression = null)
+        {
+            return GetObjectName(Repository ,RepositoryExpression );
+        }
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da Repository&lt;T&gt;.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsRepositoryType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo è generico e corrisponde a Repository<T>
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Repository<>))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsRepositoryType(type.BaseType);
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da ViewModel&lt;T&gt;.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsViewModelType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo è generico e corrisponde a ViewModel<T>
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ViewModel<>))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsViewModelType(type.BaseType);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verifica se l'oggetto è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="obj">L'oggetto da verificare.</param>
+        /// <returns>True se l'oggetto è valido, altrimenti false.</returns>
+        public static bool IsViewModelType(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            return IsViewModelType(obj.GetType());
+        }
+
+        /// <summary>
+        /// Verifica se l'oggetto è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="obj">L'oggetto da verificare.</param>
+        /// <returns>True se l'oggetto è valido, altrimenti false.</returns>
+        public static bool IsModelBaseType(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            return IsModelBaseType(obj.GetType());
+        }
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsModelBaseType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo corrisponde a ModelBase
+            if (type == typeof(ModelBase))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsModelBaseType(type.BaseType);
+
+            return false;
+        }
 
 
         /// <summary>
@@ -792,6 +992,31 @@ namespace Passero.Framework
                 throw new InvalidCastException(string.Format("Unable to cast the {0} to type {1}", value, type, exception));
             }
         }
+
+
+
+        // Aggiungi questo campo statico nella classe Utilities
+        private static readonly Dictionary<Type, DbType> _typeToDbTypeMap = new Dictionary<Type, DbType>
+{
+    { typeof(bool), DbType.Boolean },
+    { typeof(byte), DbType.Byte },
+    { typeof(sbyte), DbType.SByte },
+    { typeof(short), DbType.Int16 },
+    { typeof(ushort), DbType.UInt16 },
+    { typeof(int), DbType.Int32 },
+    { typeof(uint), DbType.UInt32 },
+    { typeof(long), DbType.Int64 },
+    { typeof(ulong), DbType.UInt64 },
+    { typeof(float), DbType.Single },
+    { typeof(double), DbType.Double },
+    { typeof(decimal), DbType.Decimal },
+    { typeof(DateTime), DbType.DateTime },
+    { typeof(string), DbType.String },
+    { typeof(char), DbType.StringFixedLength },
+    { typeof(Guid), DbType.Guid },
+    { typeof(byte[]), DbType.Binary }
+};
+
         /// <summary>
         /// Gets the type of the database.
         /// </summary>
@@ -805,13 +1030,107 @@ namespace Passero.Framework
                 runtimeType = nonNullableType;
             }
 
+            if (_typeToDbTypeMap.TryGetValue(runtimeType, out DbType dbType))
+            {
+                return dbType;
+            }
+
+            return DbType.Object;
+        }
+
+
+
+        /// <summary>
+        /// Gets the type of the database.
+        /// </summary>
+        /// <param name="runtimeType">Type of the runtime.</param>
+        /// <returns></returns>
+        /// 
+        public static DbType GetDbTypeA(Type runtimeType)
+        {
+            var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
+            if (nonNullableType != null)
+            {
+                runtimeType = nonNullableType;
+            }
+
+            // Mappatura diretta tra Type e DbType
+            if (runtimeType == typeof(string))
+                return DbType.String;
+
+            if (runtimeType == typeof(byte[]))
+                return DbType.Binary;
+
+            if (runtimeType == typeof(Guid))
+                return DbType.Guid;
+
+            switch (Type.GetTypeCode(runtimeType))
+            {
+                case TypeCode.Boolean:
+                    return DbType.Boolean;
+
+                case TypeCode.Byte:
+                    return DbType.Byte;
+
+                case TypeCode.SByte:
+                    return DbType.SByte;
+
+                case TypeCode.Int16:
+                    return DbType.Int16;
+
+                case TypeCode.UInt16:
+                    return DbType.UInt16;
+
+                case TypeCode.Int32:
+                    return DbType.Int32;
+
+                case TypeCode.UInt32:
+                    return DbType.UInt32;
+
+                case TypeCode.Int64:
+                    return DbType.Int64;
+
+                case TypeCode.UInt64:
+                    return DbType.UInt64;
+
+                case TypeCode.Single:
+                    return DbType.Single;
+
+                case TypeCode.Double:
+                    return DbType.Double;
+
+                case TypeCode.Decimal:
+                    return DbType.Decimal;
+
+                case TypeCode.DateTime:
+                    return DbType.DateTime;
+
+                case TypeCode.Char:
+                    return DbType.StringFixedLength;
+
+                case TypeCode.String:
+                    return DbType.String;
+
+                default:
+                    return DbType.Object;
+            }
+        }
+
+        public static DbType GetDbTypeDbParameter(Type runtimeType)
+        {
+            var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
+            if (nonNullableType != null)
+            {
+                runtimeType = nonNullableType;
+            }
+
             var templateValue = (Object)null;
             if (runtimeType.IsClass == false)
             {
                 templateValue = Activator.CreateInstance(runtimeType);
             }
-
-            var sqlParamter = new SqlParameter(parameterName: String.Empty, value: templateValue);
+           
+            var sqlParamter = new SqlParameter (parameterName: String.Empty, value: templateValue);
 
             return sqlParamter.DbType;
         }

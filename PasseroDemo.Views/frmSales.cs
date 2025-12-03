@@ -48,9 +48,14 @@ namespace PasseroDemo.Views
             this.dgv_SalesDetails.ReadOnly = true;
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
-            this.dataNavigator1.ViewModels["Salesmaster"] = new DataNavigatorViewModel(this.vmSalesmaster, "Salesmaster");
-            this.dataNavigator1.ViewModels["Salesdetail"] = new DataNavigatorViewModel(this.vmSalesdetail, "Salesdetail", "", this.dgv_SalesDetails);
-            this.dataNavigator1.SetActiveViewModel("Salesmaster");
+            //this.dataNavigator1.ViewModels["Salesmaster"] = new DataNavigatorViewModel(this.vmSalesmaster, "Salesmaster");
+            //this.dataNavigator1.ViewModels["Salesdetail"] = new DataNavigatorViewModel(this.vmSalesdetail, "Salesdetail", "", this.dgv_SalesDetails);
+            //this.dataNavigator1.SetActiveViewModel("Salesmaster");
+
+            this.dataNavigator1.AddViewModel(this.vmSalesmaster, "Sales Master");
+            this.dataNavigator1.AddViewModel(this.vmSalesdetail, "Sales Details", this.dgv_SalesDetails );
+            this.dataNavigator1.SetActiveViewModel(this.vmSalesmaster);
+
             this.dataNavigator1.Init(true);
 
         }
