@@ -906,23 +906,20 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// Sets the active view model using automatic name detection.
         /// </summary>
+        /// <typeparam name="T">The type of the model in the ViewModel.</typeparam>
         /// <param name="viewModel">The view model.</param>
         /// <param name="viewModelExpression">Auto-captured variable name (don't pass manually).</param>
-        public void SetActiveViewModel(
-            object viewModel,
+        public void SetActiveViewModel<T>(
+            ViewModel<T> viewModel,
             [System.Runtime.CompilerServices.CallerArgumentExpression("viewModel")] string viewModelExpression = null)
+            where T : class, new()
         {
             string viewModelKey = string.Empty;
 
             // 1. Prova a ottenere dalla proprietà Name del ViewModel
-            var nameProperty = viewModel.GetType().GetProperty("Name");
-            if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            if (!string.IsNullOrWhiteSpace(viewModel.Name))
             {
-                string _Name = (string)nameProperty.GetValue(viewModel) ?? string.Empty;
-                if (!string.IsNullOrWhiteSpace(_Name))
-                {
-                    viewModelKey = _Name;
-                }
+                viewModelKey = viewModel.Name;
             }
 
             // 2. Se Name è vuoto, usa il nome della variabile catturato
@@ -5870,35 +5867,40 @@ namespace Passero.Framework.Controls
 
         }
 
-
-        public ExecutionResult AddViewModel( object ViewModel,string FriendlyName = "",DataGridView DataGridView = null,DataRepeater DataRepeater = null,
+        /// <summary>
+        /// Adds the view model.
+        /// </summary>
+        /// <typeparam name="T">The type of the model in the ViewModel.</typeparam>
+        /// <param name="ViewModel">The view model.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
+        /// <param name="DataGridView">The data grid view.</param>
+        /// <param name="DataRepeater">The data repeater.</param>
+        /// <param name="viewModelExpression">Auto-captured variable name (don't pass manually).</param>
+        /// <returns></returns>
+        public ExecutionResult AddViewModel<T>(
+            ViewModel<T> ViewModel,
+            string FriendlyName = "",
+            DataGridView DataGridView = null,
+            DataRepeater DataRepeater = null,
             [CallerArgumentExpression("ViewModel")] string viewModelExpression = null)
+            where T : class, new()
         {
             ExecutionResult ER = new ExecutionResult($"{mClassName}.AddViewModel()");
 
             DataNavigatorViewModel DataNavigatorViewModel = null;
 
-            if (Passero.Framework.Utilities.IsViewModelType (ViewModel.GetType()) == false)
-            {
-               ER.ErrorCode = 1;    
-               ER.ResultCode = ExecutionResultCodes.Failed;
-               ER.ResultMessage = "The provided ViewModel is not a valid ViewModel type.";
-               return ER;  
-            }   
-
             try
             {
                 string Name = Passero.Framework.Utilities.GetViewModelName(ViewModel, viewModelExpression);
-                //string Name = Passero.Framework.Utilities.GetObjectName(ViewModel, viewModelExpression);
                 DataNavigatorViewModel = new DataNavigatorViewModel(ViewModel, Name, FriendlyName, DataGridView, DataRepeater);
                 ViewModels[Name] = DataNavigatorViewModel;
-                ER.ResultCode = ExecutionResultCodes.Success;   
+                ER.ResultCode = ExecutionResultCodes.Success;
                 return ER;
             }
             catch (Exception Ex)
             {
                 ER.ErrorCode = 2;
-                ER.Exception = Ex;  
+                ER.Exception = Ex;
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.ResultMessage = Ex.Message;
                 return ER;
