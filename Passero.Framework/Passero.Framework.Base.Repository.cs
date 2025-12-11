@@ -504,7 +504,20 @@ namespace Passero.Framework
         /// <value>
         /// The database connection.
         /// </value>
-        public IDbConnection DbConnection { get; set; }
+
+        private IDbConnection mDbConnection;
+        public IDbConnection DbConnection
+        {
+            get
+            {
+                return mDbConnection;
+            }
+            set
+            {
+                mDbConnection = value;
+                DbObject = new Base.DbObject<ModelClass>(mDbConnection);
+            }
+        }
         //public SqlTransaction SqlTransaction { get; set; }
         /// <summary>
         /// Gets or sets the database transaction.
@@ -529,6 +542,8 @@ namespace Passero.Framework
         ///// </value>
         //public Base.DbContext DbContext { get; set; }
         
+        
+
         /// <summary>
         /// Gets or sets the database object.
         /// </summary>
@@ -625,10 +640,12 @@ namespace Passero.Framework
             _ModelItem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
-            DbObject = new Base.DbObject<ModelClass>(DbConnection);
+            //DbObject = new Base.DbObject<ModelClass>(DbConnection);
 
 
         }
+
+        public bool UseUpdateEx { get; set; } = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Repository{ModelClass}"/> class.
@@ -639,7 +656,7 @@ namespace Passero.Framework
             _ModelItem = GetEmptyModel();
             SetModelItemShadow();
             SetModelItemsShadow();
-            DbObject = new Base.DbObject<ModelClass>(DbConnection);
+            //DbObject = new Base.DbObject<ModelClass>(DbConnection);
 
 
         }
@@ -1310,6 +1327,373 @@ namespace Passero.Framework
             return result;
         }
 
+
+        /// <summary>
+        /// Updates the item asynchronously.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> UpdateItemAsync(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemAsync()");
+            bool result = false;
+
+            if (Model == null)
+            {
+                Model = _ModelItem;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                result = await DbConnection.UpdateAsync(Model, Transaction, CommandTimeout);
+                if (result)
+                {
+                    _ModelItemShadow = Model;
+                }
+                ER.Value = result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Updates the item ex asynchronously.
+        /// </summary>
+        /// <param name="ModelItem">The model item.</param>
+        /// <param name="ModelItemShadow">The model item shadow.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> UpdateItemExAsync_OLD(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemExAsync()");
+            int result = 0;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _ModelItem;
+            }
+            if (ModelItemShadow == null)
+            {
+                ModelItemShadow = _ModelItemShadow;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                if (!_compareFunc(ModelItem, ModelItemShadow))
+                {
+                    DynamicParameters @params = new DynamicParameters();
+                    foreach (PropertyInfo k in EntityProperties)
+                    {
+                        @params.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItem, k.Name));
+                    }
+                    foreach (PropertyInfo k in EntityPrimaryKeys)
+                    {
+                        @params.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemShadow, k.Name));
+                    }
+                    result = await DbConnection.ExecuteAsync(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                    if (result > 0)
+                    {
+                        _ModelItemShadow = ModelItem;
+                    }
+                }
+                ER.Value = result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+        public async Task<ExecutionResult> UpdateItemExAsync(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemExAsync()");
+            int result = 0;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _ModelItem;
+            }
+            if (ModelItemShadow == null)
+            {
+                ModelItemShadow = _ModelItemShadow;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                // Early exit se gli oggetti sono uguali
+                if (_compareFunc(ModelItem, ModelItemShadow))
+                {
+                    ER.Value = 0;
+                    return ER;
+                }
+
+                var @params = new DynamicParameters();
+
+                // Loop ottimizzato con accesso diretto all'indice
+                var entityPropsCount = EntityProperties.Count;
+                var primaryKeysCount = EntityPrimaryKeys.Count;
+
+                for (int i = 0; i < entityPropsCount; i++)
+                {
+                    var prop = EntityProperties[i];
+                    @params.Add(prop.Name, prop.GetValue(ModelItem));
+                }
+
+                for (int i = 0; i < primaryKeysCount; i++)
+                {
+                    var prop = EntityPrimaryKeys[i];
+                    @params.Add($"{prop.Name}_shadow", prop.GetValue(ModelItemShadow));
+                }
+
+                result = await DbConnection.ExecuteAsync(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+
+                if (result > 0)
+                {
+                    _ModelItemShadow = ModelItem;
+                }
+
+                ER.Value = result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+        /// <summary>
+        /// Updates the items asynchronously.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> UpdateItemsAsync(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemsAsync()");
+            bool esito = false;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                esito = await DbConnection.UpdateAsync(ModelItems, Transaction, CommandTimeout);
+                ER.Value = esito;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+                esito = false;
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Updates the items ex asynchronously.
+        /// </summary>
+        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItemsShadow">The model items shadow.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        public async Task<ExecutionResult> UpdateItemsExAsync_OLD(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemsExAsync()");
+            int affectedrecords = 0;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+
+            if (ModelItemsShadow == null)
+            {
+                ModelItemsShadow = this.ModelItemsShadow;
+            }
+
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                DynamicParameters parameters;
+                for (int i = 0; i < ModelItems.Count(); i++)
+                {
+                    parameters = new DynamicParameters();
+                    if (!_compareFunc(ModelItems.ElementAt(i), ModelItemsShadow.ElementAt(i)))
+                    {
+                        foreach (var k in EntityProperties)
+                        {
+                            parameters.Add($"{k.Name}", ReflectionHelper.GetPropertyValue(ModelItems.ElementAt(i), k.Name));
+                        }
+                        foreach (var k in EntityPrimaryKeys)
+                        {
+                            parameters.Add($"{k.Name}_shadow", ReflectionHelper.GetPropertyValue(ModelItemsShadow.ElementAt(i), k.Name));
+                        }
+                        affectedrecords += await DbConnection.ExecuteAsync(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                        _ModelItemsShadow[i] = ModelItems.ElementAt(i);
+                    }
+                }
+                ER.Value = affectedrecords;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+                ER.Value = affectedrecords;
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+        public async Task<ExecutionResult> UpdateItemsExAsync(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemsExAsync()");
+            int affectedrecords = 0;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+
+            if (ModelItemsShadow == null)
+            {
+                ModelItemsShadow = this.ModelItemsShadow;
+            }
+
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                // Converti una sola volta a IList
+                var itemsList = ModelItems as IList<ModelClass> ?? ModelItems.ToList();
+                var shadowsList = ModelItemsShadow as IList<ModelClass> ?? ModelItemsShadow.ToList();
+
+                var entityPropsCount = EntityProperties.Count;
+                var primaryKeysCount = EntityPrimaryKeys.Count;
+
+                for (int i = 0; i < itemsList.Count; i++)
+                {
+                    // Skip se non ci sono modifiche
+                    if (_compareFunc(itemsList[i], shadowsList[i]))
+                    {
+                        continue;
+                    }
+
+                    var parameters = new DynamicParameters();
+
+                    // Loop ottimizzato con accesso diretto all'indice
+                    for (int j = 0; j < entityPropsCount; j++)
+                    {
+                        var prop = EntityProperties[j];
+                        parameters.Add(prop.Name, prop.GetValue(itemsList[i]));
+                    }
+
+                    for (int j = 0; j < primaryKeysCount; j++)
+                    {
+                        var prop = EntityPrimaryKeys[j];
+                        parameters.Add($"{prop.Name}_shadow", prop.GetValue(shadowsList[i]));
+                    }
+
+                    affectedrecords += await DbConnection.ExecuteAsync(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                    _ModelItemsShadow[i] = itemsList[i];
+                }
+
+                ER.Value = affectedrecords;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+                ER.Value = affectedrecords;
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+
         /// <summary>
         /// Updates the item.
         /// </summary>
@@ -1437,7 +1821,7 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        public ExecutionResult UpdateItemEx_OLD(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemEx()");
             //ValidateConnection();
@@ -1497,6 +1881,79 @@ namespace Passero.Framework
         }
 
 
+        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemEx()");
+            int result = 0;
+
+            if (ModelItem == null)
+            {
+                ModelItem = _ModelItem;
+            }
+            if (ModelItemShadow == null)
+            {
+                ModelItemShadow = _ModelItemShadow;
+            }
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                // Early exit se gli oggetti sono uguali
+                if (_compareFunc(ModelItem, ModelItemShadow))
+                {
+                    ER.Value = 0;
+                    return ER;
+                }
+
+                var @params = new DynamicParameters();
+
+                // Pre-calcolo della capacità per EntityProperties
+                var entityPropsCount = EntityProperties.Count;
+                var primaryKeysCount = EntityPrimaryKeys.Count;
+
+                // Loop ottimizzato con accesso diretto all'indice per List<PropertyInfo>
+                for (int i = 0; i < entityPropsCount; i++)
+                {
+                    var prop = EntityProperties[i];
+                    @params.Add(prop.Name, prop.GetValue(ModelItem));
+                }
+
+                // Loop ottimizzato per primary keys
+                for (int i = 0; i < primaryKeysCount; i++)
+                {
+                    var prop = EntityPrimaryKeys[i];
+                    @params.Add($"{prop.Name}_shadow", prop.GetValue(ModelItemShadow));
+                }
+
+                result = DbConnection.Execute(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+
+                if (result > 0)
+                {
+                    _ModelItemShadow = ModelItem;
+                }
+
+                ER.Value = result;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
+
         /// <summary>
         /// Updates the items.
         /// </summary>
@@ -1549,7 +2006,7 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        public ExecutionResult UpdateItemsEx_OLD(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
             int affectedrecords = 0;
@@ -1609,6 +2066,82 @@ namespace Passero.Framework
             LastExecutionResult = ER;
             return ER;
         }
+
+        public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.UpdateItemsEx()");
+            int affectedrecords = 0;
+
+            if (ModelItems == null)
+            {
+                ModelItems = this.ModelItems;
+            }
+
+            if (ModelItemsShadow == null)
+            {
+                ModelItemsShadow = this.ModelItemsShadow;
+            }
+
+            if (Transaction == null)
+            {
+                Transaction = DbTransaction;
+            }
+            if (CommandTimeout == null)
+            {
+                CommandTimeout = DbCommandTimeout;
+            }
+
+            try
+            {
+                // Converti una sola volta a IList
+                var itemsList = ModelItems as IList<ModelClass> ?? ModelItems.ToList();
+                var shadowsList = ModelItemsShadow as IList<ModelClass> ?? ModelItemsShadow.ToList();
+
+                var entityPropsCount = EntityProperties.Count;
+                var primaryKeysCount = EntityPrimaryKeys.Count;
+
+                for (int i = 0; i < itemsList.Count; i++)
+                {
+                    // Skip se non ci sono modifiche
+                    if (_compareFunc(itemsList[i], shadowsList[i]))
+                    {
+                        continue;
+                    }
+
+                    var parameters = new DynamicParameters();
+
+                    // Loop ottimizzato con accesso diretto all'indice
+                    for (int j = 0; j < entityPropsCount; j++)
+                    {
+                        var prop = EntityProperties[j];
+                        parameters.Add(prop.Name, prop.GetValue(itemsList[i]));
+                    }
+
+                    for (int j = 0; j < primaryKeysCount; j++)
+                    {
+                        var prop = EntityPrimaryKeys[j];
+                        parameters.Add($"{prop.Name}_shadow", prop.GetValue(shadowsList[i]));
+                    }
+
+                    affectedrecords += DbConnection.Execute(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                    _ModelItemsShadow[i] = itemsList[i];
+                }
+
+                ER.Value = affectedrecords;
+            }
+            catch (Exception ex)
+            {
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                HandleException(ER);
+                ER.Value = affectedrecords;
+            }
+            LastExecutionResult = ER;
+            return ER;
+        }
+
 
         /// <summary>
         /// Gets the empty model item.

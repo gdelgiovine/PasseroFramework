@@ -152,6 +152,13 @@ namespace Passero.Framework
                 throw new Exception(errorMessage, ex);
             }
         }
+
+
+
+
+
+
+
         public void UpdateViewModel<ModelType>(string Key, ViewModel<ModelType> viewModel) where ModelType : class
         {
             string methodName = "UpdateViewModel<ModelClass>";
@@ -919,7 +926,7 @@ namespace Passero.Framework
             if (mDataNavigator != null)
             {
                 //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "RaiseEventBoundCompleted");
-                mDataNavigator.RaiseEventBoundCompleted();
+                mDataNavigator.RaiseEventBoundCompled();
             }
         }
         /// <summary>
@@ -1698,6 +1705,21 @@ namespace Passero.Framework
             }
         }
 
+        private bool mUseUpdateEx = false;
+        public bool UseUpdateEx 
+        { 
+            get
+            {
+                return mUseUpdateEx;
+            }
+            
+            set
+            {
+                mUseUpdateEx = value;   
+                //Repository.UseUpdateEx = value; 
+            }
+        } 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModel{ModelClass}"/> class.
         /// </summary>
@@ -1706,6 +1728,7 @@ namespace Passero.Framework
         public ViewModel(string Name = "", string FriendlyName ="", string Description  = "")
         {
             Repository = new Repository<ModelClass>();
+            
             DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
             DefaultSQLQueryParameters = new DynamicParameters();
             if (Name != "")
@@ -1764,6 +1787,8 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="DbConnection">The database connection.</param>
         /// <param name="DataBindingMode">The data binding mode.</param>
+        /// <param name="Name">The name.</param>
+        /// <param name="Description">The description.</param>
         public virtual void Init(IDbConnection DbConnection, DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name="", string Description="")
         {
             mDataBindingMode = DataBindingMode;
@@ -1952,6 +1977,7 @@ namespace Passero.Framework
 
                             }
                             break;
+                            
                         case UseModelData.InternalRepository:
                             Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
                             Repository.ModelItems = x;
@@ -1961,6 +1987,7 @@ namespace Passero.Framework
 
                             }
                             break;
+                            
                         default:
                             break;
                     }
@@ -1985,6 +2012,193 @@ namespace Passero.Framework
             MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
             //DataNavigatorRaiseEventBoundCompled()
+            return ER;
+        }
+
+
+
+
+        /// <summary>
+        /// Gets the item asynchronously.
+        /// </summary>
+        /// <param name="SqlQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult<ModelClass>> GetItemAsync(string SqlQuery, object Parameters, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.GetItemAsync()";
+            ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
+            ER.Value = null;
+
+            try
+            {
+                ER = await Repository.GetItemAsync(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+
+                switch (UseModelData)
+                {
+                    case UseModelData.External:
+                        mModelItemShadow = ER.Value;
+                        break;
+                    case UseModelData.InternalRepository:
+                        Repository.ModelItem = ER.Value;
+                        break;
+                    default:
+                        break;
+                }
+
+                ModelItem = ER.Value;
+                DataNavigatorRaiseEventBoundCompled();
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+                HandleExeception(ER.ToExecutionResult());
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Gets the items asynchronously.
+        /// </summary>
+        /// <param name="SqlQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult<IList<ModelClass>>> GetItemsAsync(string SqlQuery, object Parameters = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            string ERContext = $"{mClassName}.GetItemsAsync()";
+            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContext);
+
+            IList<ModelClass> x = null;
+            try
+            {
+                mCurrentModelItemIndex = -1;
+                Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+                Repository.ErrorNotificationMode = ErrorNotificationMode;
+
+                Repository.SQLQuery = SqlQuery;
+                Repository.Parameters = DapperHelper.Utilities.GetDynamicParameters(Parameters);
+
+                ER = await Repository.GetItemsAsync(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
+
+                if (ER.Success)
+                {
+                    x = ER.Value;
+                    mCurrentModelItemIndex = 0;
+
+                    switch (UseModelData)
+                    {
+                        case UseModelData.External:
+                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            mModelItems = x;
+                            SetModelItemsShadow();
+                            SetModelItemShadow();
+                            break;
+
+                        case UseModelData.InternalRepository:
+                            Repository.ModelItems = x;
+                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            Repository.SetModelItemsShadow();
+                            Repository.SetModelItemShadow();
+                            Repository.CurrentModelItemIndex = 0;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (mDataBindingMode == DataBindingMode.BindingSource)
+                    {
+                        mBindingSource.DataSource = ModelItems;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query\n{Framework.DapperHelper.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+                HandleExeception(ER.ToExecutionResult());
+            }
+
+            MoveFirstItem();
+            LastExecutionResult = ER.ToExecutionResult();
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Gets all items asynchronously.
+        /// </summary>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult<IList<ModelClass>>> GetAllItemsAsync(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.GetAllItemsAsync()";
+            ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContext);
+            IList<ModelClass> x = null;
+            
+            try
+            {
+                ER = await Repository.GetAllItemsAsync(Transaction, Buffered, CommandTimeout);
+                
+                if (ER.Success)
+                {
+                    x = ER.Value;
+                    
+                    switch (UseModelData)
+                    {
+                        case UseModelData.External:
+                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            mModelItems = x;
+                            if (mDataBindingMode == DataBindingMode.BindingSource)
+                            {
+                                mBindingSource.DataSource = ModelItems;
+                            }
+                            break;
+                            
+                        case UseModelData.InternalRepository:
+                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                            Repository.ModelItems = x;
+                            if (mDataBindingMode == DataBindingMode.BindingSource)
+                            {
+                                mBindingSource.DataSource = Repository.ModelItems;
+                            }
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                ER.DebugInfo = $"Query = {SQLQuery}";
+                HandleExeception(ER.ToExecutionResult());
+            }
+
+            MoveFirstItem();
+            LastExecutionResult = ER.ToExecutionResult();
             return ER;
         }
 
@@ -2071,6 +2285,151 @@ namespace Passero.Framework
             return ER;
 
         }
+
+        /// <summary>
+        /// Inserts the item asynchronously.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> InsertItemAsync(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.InsertItemAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (Item == null)
+                {
+                    Item = ModelItem;
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero:
+                        if (AutoReadControls == true)
+                        {
+                            ReadControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        BindingSource.EndEdit();
+                        Item = (ModelClass)BindingSource.Current;
+                        ModelItem = Item;
+                        break;
+                    default:
+                        break;
+                }
+
+                ER = await Repository.InsertItemAsync(Item, DbTransaction, DbCommandTimeout);
+                ER.Context = ERContext;
+
+                if (ER.Success)
+                {
+                    mAddNewState = false;
+
+                    switch (mDataBindingMode)
+                    {
+                        case DataBindingMode.None:
+                            break;
+                        case DataBindingMode.Passero:
+                            if (AutoWriteControls == true)
+                            {
+                                WriteControls();
+                            }
+                            break;
+                        case DataBindingMode.BindingSource:
+                            this.BindingSource.ResetCurrentItem();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                LastExecutionResult = ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Inserts the items asynchronously.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> InsertItemsAsync(List<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.InsertItemsAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (Items == null)
+                {
+                    Items = ModelItems.ToList();
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                ER = await Repository.InsertItemsAsync(Items, DbTransaction, DbCommandTimeout);
+                ER.Context = ERContext;
+
+                long x = Convert.ToInt64(ER.Value);
+                if (x > 0)
+                {
+                    ModelItem = Items.ElementAt(0);
+                    ModelItems = Items;
+                    CurrentModelItemIndex = 0;
+                }
+
+                LastExecutionResult = ER;
+                AddNewState = false;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
 
 
         /// <summary>
@@ -2201,6 +2560,277 @@ namespace Passero.Framework
         }
 
 
+
+        /// <summary>
+        /// Updates the item asynchronously.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> UpdateItemAsync(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.UpdateItemAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (mAddNewState == true)
+                {
+                    ER = await InsertItemAsync(Item, DbTransaction, DbCommandTimeout);
+                    ER.Context = ERContext;
+                    LastExecutionResult = ER;
+                    return ER;
+                }
+
+                if (Item == null)
+                {
+                    Item = ModelItem;
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero:
+                        if (AutoReadControls == true)
+                        {
+                            ReadControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.EndEdit();
+                        ModelItem = Item;
+                        break;
+                    default:
+                        break;
+                }
+
+                ER = await Repository.UpdateItemAsync(Item, DbTransaction, DbCommandTimeout);
+
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    ModelItem = Item;
+                }
+
+                ER.Context = ERContext;
+                LastExecutionResult = ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Updates the item ex asynchronously.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="ItemShadow">The item shadow.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> UpdateItemExAsync(ModelClass Item = null, ModelClass ItemShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.UpdateItemExAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (mAddNewState == true)
+                {
+                    ER = await InsertItemAsync(Item, DbTransaction, DbCommandTimeout);
+                    ER.Context = ERContext;
+                    LastExecutionResult = ER;
+                    return ER;
+                }
+
+                if (Item == null)
+                {
+                    Item = ModelItem;
+                }
+                if (ItemShadow == null)
+                {
+                    ItemShadow = ModelItemShadow;
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        break;
+                    case DataBindingMode.Passero:
+                        if (AutoReadControls == true)
+                        {
+                            ReadControls();
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.EndEdit();
+                        ModelItem = Item;
+                        break;
+                    default:
+                        break;
+                }
+
+                ER = await Repository.UpdateItemExAsync(Item, ItemShadow, DbTransaction, DbCommandTimeout);
+
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    ModelItem = Item;
+                }
+
+                ER.Context = ERContext;
+                LastExecutionResult = ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Updates the items asynchronously.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> UpdateItemsAsync(IList<ModelClass> Items = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.UpdateItemsAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (Items == null)
+                {
+                    Items = ModelItems;
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                ER = await Repository.UpdateItemsAsync(Items, DbTransaction, DbCommandTimeout);
+                ER.Context = ERContext;
+
+                LastExecutionResult = ER;
+
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    ModelItem = Items.ElementAt(0);
+                    ModelItems = Items;
+                }
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Updates the items ex asynchronously.
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="ItemsShadow">The items shadow.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> UpdateItemsExAsync(IList<ModelClass> Items = null, IList<ModelClass> ItemsShadow = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ERContext = $"{mClassName}.UpdateItemsExAsync()";
+            var ER = new ExecutionResult(ERContext);
+
+            try
+            {
+                if (Items == null)
+                {
+                    Items = ModelItems.Clone();
+                }
+                if (ItemsShadow == null)
+                {
+                    ItemsShadow = ModelItemsShadow.Clone();
+                }
+
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                ER = await Repository.UpdateItemsExAsync(Items, ItemsShadow, DbTransaction, DbCommandTimeout);
+                ER.Context = ERContext;
+
+                LastExecutionResult = ER;
+
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    ModelItem = Items.ElementAt(0);
+                    ModelItems = Items;
+                }
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
 
 
 
@@ -2499,49 +3129,126 @@ namespace Passero.Framework
 
 
         /// <summary>
-        /// Deletes the items.
+        /// Deletes the item asynchronously.
+        /// </summary>
+        /// <param name="Item">The item.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task<ExecutionResult> DeleteItemAsync(ModelClass Item = null, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItemAsync()");
+            string Context = ER.Context;
+            
+            try
+            {
+                if (Item == null)
+                {
+                    Item = ModelItem;
+                }
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                switch (mDataBindingMode)
+                {
+                    case DataBindingMode.None:
+                        ER = await Repository.DeleteItemAsync(Item, DbTransaction, DbCommandTimeout);
+                        break;
+                    case DataBindingMode.Passero:
+                        ER = await Repository.DeleteItemAsync(Item, DbTransaction, DbCommandTimeout);
+
+                        if (Convert.ToBoolean(ER.Value))
+                        {
+                            ModelItem = ModelItems.ElementAt(0);
+                            if (AutoReadControls == true)
+                            {
+                                ReadControls();
+                            }
+                        }
+                        break;
+                    case DataBindingMode.BindingSource:
+                        mBindingSource.Remove(Item);
+                        mBindingSource.EndEdit();
+                        ER = await Repository.DeleteItemAsync(Item, DbTransaction, DbCommandTimeout);
+                        CurrentModelItemIndex = mBindingSource.CurrencyManager.Position;
+                        break;
+                    default:
+                        break;
+                }
+
+                ER.Context = Context;
+                LastExecutionResult = ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
+            return ER;
+        }
+
+
+        /// <summary>
+        /// Deletes the items asynchronously.
         /// </summary>
         /// <param name="Items">The items.</param>
         /// <param name="DbTransaction">The database transaction.</param>
         /// <param name="DbCommandTimeout">The database command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult DeleteItems(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        public async System.Threading.Tasks.Task<ExecutionResult> DeleteItemsAsync(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
+            var ER = new ExecutionResult($"{mClassName}.DeleteItemsAsync()");
             string Context = ER.Context;
 
-            if (DbTransaction == null)
+            try
             {
-                DbTransaction = this.DbTransaction;
-            }
-
-            if (DbCommandTimeout == null)
-            {
-                DbCommandTimeout = this.DbCommandTimeout;
-            }
-            ER = Repository.DeleteItems(Items, DbTransaction, DbCommandTimeout);
-            if (Convert.ToBoolean(ER.Value))
-            {
-
-                for (int  i = 0;  i < Items.Count;  i++)
+                if (DbTransaction == null)
                 {
-                    ModelItems.Remove(Items[i]);
+                    DbTransaction = this.DbTransaction;
                 }
-                //foreach (var item in Items)
-                //{
-                //    ModelItems.Remove(item);
-                //}
 
-                ModelItem = ModelItems.ElementAt(0);
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+                
+                ER = await Repository.DeleteItemsAsync(Items, DbTransaction, DbCommandTimeout);
+                
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    for (int i = 0; i < Items.Count; i++)
+                    {
+                        ModelItems.Remove(Items[i]);
+                    }
 
+                    ModelItem = ModelItems.ElementAt(0);
+                }
+                
+                ER.Context = Context;
+                LastExecutionResult = ER;
             }
-            ER.Context = Context;
-            LastExecutionResult = ER;
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+                HandleExeception(ER);
+            }
+
             return ER;
-
         }
-
-
 
 
 

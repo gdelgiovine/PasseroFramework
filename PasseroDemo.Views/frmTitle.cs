@@ -67,7 +67,8 @@ namespace PasseroDemo.Views
 
 
             //this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).Value.ToList();
-            this.cmb_pub_id.DataSource = vmPublisher.GetPublishers();
+            //this.cmb_pub_id.DataSource = vmPublisher.GetPublishers();
+            this.cmb_pub_id.DataSource = vmPublisher.GetPublishersAsync().Result ;
             this.cmb_pub_id.ValueMember = nameof(vmPublisher.ModelItem.pub_id);
             this.cmb_pub_id.DisplayMember = nameof(vmPublisher.ModelItem.pub_name );
             
@@ -78,14 +79,18 @@ namespace PasseroDemo.Views
 
             this.dataNavigator1.AddViewModel (this.vmTitle,"Titles");
             this.dataNavigator1.AddViewModel(this.vmTitleAuthor , "Title Authors", this.dgv_TitleAuthors );
-            this.dataNavigator1 .SetActiveViewModel (this.vmTitle );    
+            this.dataNavigator1.SetActiveViewModel (this.vmTitle );    
 
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = false;
-
+            this.dataNavigator1 .UseUpdateEx = false;
             this.dataNavigator1.Init(true);
 
         }
+
+       
+
+
 
         public string GetAuthorFullName(string au_id)
         {
@@ -104,7 +109,8 @@ namespace PasseroDemo.Views
 
 
 
-        
+
+
 
 
         private void dataNavigator1_eMoveFirst()

@@ -8,10 +8,29 @@
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
     <NoWarn>CA1416</NoWarn>
 	<LangVersion>Latest</LangVersion>
-	  <SignAssembly>False</SignAssembly>
-	  <AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.snk</AssemblyOriginatorKeyFile>
-	  
+    <SignAssembly>False</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.Controls</PackageId>
+		<Version>3.5.25.1</Version>
+		<Authors>Gabriele Del Giovine</Authors>
+		<Company>Gabriele Del Giovine</Company>
+		<Description>UI Controls library for Passero Framework</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>Wisej.NET;MVVM;controls;passero;framework</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<OutputPath>..\NugetPackages</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
     <Reference Include="Microsoft.CSharp" />
@@ -51,7 +70,6 @@
  
 
   <ItemGroup>
-    <ProjectReference Include="..\Passero.Framework.BusinessSystem\Passero.Framework.BusinessSystem.csproj" />
     <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
   </ItemGroup>
 

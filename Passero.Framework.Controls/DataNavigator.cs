@@ -651,6 +651,7 @@ namespace Passero.Framework.Controls
 
                     if (DataBindingMode() == Framework.DataBindingMode.BindingSource)
                     {
+                        this.BindingSource.EndEdit();
                     }
 
                     if (_AddNewState)
@@ -667,10 +668,10 @@ namespace Passero.Framework.Controls
                     {
                         if (UseUpdateEx)
                             //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItem", item);
-                            ER = (ExecutionResult)_ActiveViewModel.UpdateItem(item);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItemEx(item);
                         else
                             //ER = (ExecutionResult)ReflectionHelper.InvokeMethodByName(ref _ActiveViewModel, "UpdateItemEx", item);
-                            ER = (ExecutionResult)_ActiveViewModel.UpdateItemEx(item);
+                            ER = (ExecutionResult)_ActiveViewModel.UpdateItem(item);
                     }
                     break;
 

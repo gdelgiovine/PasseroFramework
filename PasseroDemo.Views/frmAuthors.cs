@@ -35,10 +35,17 @@ namespace PasseroDemo.Views
             //this.Accelerators = new Keys[] { Keys.F6, Keys.F7, Keys.Shift | Keys.F6, Keys.Shift | Keys.F7, Keys.F2, Keys.F3, Keys.F10, Keys.F5, Keys.F9, Keys.F12, Keys.F4 };
             this.Accelerators = this.dataNavigator1.GetAccelerators(); 
             
-            this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
-            this.dataNavigator1.AddViewModel(this.vmAuthor , "Authors"); 
+            //this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
+            //this.dataNavigator1.AddViewModel(this.vmAuthor , "Authors");
+
+            // New way to add ViewModel to DataNavigator    
+            this.dataNavigator1.AddViewModel(this.vmAuthor ,"Authors", null, null);
+            
+
             this.dataNavigator1.SetActiveViewModel(this.vmAuthor);
             this.dataNavigator1.Init(true);
+
+
 
         }
 

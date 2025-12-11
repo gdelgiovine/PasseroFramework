@@ -37,7 +37,7 @@ namespace PasseroDemo.Models
             }
         }   
 
-        public Author()
+        static  Author()
         {
             Dapper.SqlMapper.SetTypeMap(typeof(Author), new Dapper.ColumnMapper.ColumnTypeMapper(typeof(Author)));
             //oppure forma breve --- NOTA: se si passa un ColumTypeMapper nullo la mappatura viere riportata al default.
