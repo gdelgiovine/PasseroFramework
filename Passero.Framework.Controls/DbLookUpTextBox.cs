@@ -145,12 +145,12 @@ namespace Passero.Framework.Controls
         {
             //e.Handled = true;
             return;
-            {
-                if (Lock == false)
-                {
-                    this.LookUp(true);
-                }
-            }
+            //{
+            //    if (Lock == false)
+            //    {
+            //        this.LookUp(true);
+            //    }
+            //}
         }
 
         /// <summary>

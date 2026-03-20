@@ -12,20 +12,24 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework.FRReports</PackageId>
-		<Version>3.5.25.1</Version>
+		<PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>3.5.31</WisejNETVersion>
+		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
 		<Authors>Gabriele Del Giovine</Authors>
 		<Company>Gabriele Del Giovine</Company>
-		<Description>Libreria per la gestione di report FastReport nel Passero Framework</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>fastreport;reports;passero;framework</PackageTags>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.FRReports</PackageId>
+		<Description>FastReport support library for Passero Framework</Description>
+		<PackageTags>Wisej.NET;MVVM;reports;passero;framework</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<OutputPath>..\NugetPackages</OutputPath>
 	</PropertyGroup>
+
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
@@ -43,8 +47,10 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-    <PackageReference Include="Wisej-3" Version="3.5.25" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
+	  <PackageReference Include="Wisej-3" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-BootstrapIcons" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-Camera" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.31" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,28 +68,28 @@
     </Compile>
   </ItemGroup>
 
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	</PropertyGroup>
+	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 
-		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
+		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.3" />
+		<PackageReference Include="FastReport.OpenSource" Version="2026.1.3" />
+		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.3" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 		
-		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
+		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.3" />
+		<PackageReference Include="FastReport.OpenSource" Version="2026.1.3" />
+		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.3" />
 		
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 
-		<PackageReference Include="FastReport.Data.MsSql" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
-
-	</ItemGroup>
 	<ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

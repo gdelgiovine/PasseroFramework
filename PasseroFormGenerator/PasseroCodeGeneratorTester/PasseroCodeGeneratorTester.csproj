@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MyDesktop.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MyDesktop.Designer.cs">
       <DependentUpon>MyDesktop.cs</DependentUpon>
@@ -90,7 +90,7 @@
     <Reference Include="System.Windows.Forms">
       <Aliases>swf</Aliases>
     </Reference>
-    <PackageReference Include="Wisej-3" Version="3.5.*" />
+    <PackageReference Include="Wisej-3" Version="3.5.29" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

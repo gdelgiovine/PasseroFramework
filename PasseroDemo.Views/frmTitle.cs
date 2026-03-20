@@ -32,6 +32,7 @@ namespace PasseroDemo.Views
         // Oppure posso usare un ReportManager per gestire i report SSRS basati su QBE  
         Passero.Framework.SSRSReports.ReportManager xQBEReport = new Passero.Framework.SSRSReports.ReportManager();
 
+        private Passero.Framework.Base.IPasseroDbContext _dbContext;
         public frmTitle()
         {
             InitializeComponent();
@@ -47,7 +48,13 @@ namespace PasseroDemo.Views
         {
             this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
 
-            vmTitle.Init(DbConnection);
+            _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
+            Passero.Framework.Base.ORMType.Dapper ,
+            DbConnection.ConnectionString);
+
+
+            //vmTitle.Init(DbConnection);
+            vmTitle.Init(this._dbContext);
             vmTitle.DataBindControlsAutoSetMaxLenght = true;
             vmTitle.AutoWriteControls = true;
             vmTitle.AutoReadControls = true;
@@ -57,18 +64,26 @@ namespace PasseroDemo.Views
             vmTitle.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
             vmTitle.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
 
-            vmTitleAuthor.Init(DbConnection);
+            //vmTitleAuthor.Init(DbConnection);
+            vmTitleAuthor.Init(_dbContext );
             vmTitleAuthor .ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
             vmTitleAuthor.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
 
-            vmPublisher.Init(vmTitle.DbConnection);
+            //vmPublisher.Init(vmTitle.DbConnection);
+            vmPublisher.Init(_dbContext );
             //rpPublisher.DbConnection = this.DbConnection; ;
             //rpAuthor.DbConnection = this.DbConnection;
 
 
             //this.cmb_pub_id.DataSource = rpPublisher.GetItems($"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName<Models.Publisher>()}", null).Value.ToList();
-            //this.cmb_pub_id.DataSource = vmPublisher.GetPublishers();
-            this.cmb_pub_id.DataSource = vmPublisher.GetPublishersAsync().Result ;
+            this.cmb_pub_id.DataSource = vmPublisher.GetPublishers();
+            //this.cmb_pub_id.DataSource = vmPublisher.GetPublishersAsync().Result ;
+
+            //var publishers = vmPublisher.GetPublishers()?.ToList() ?? new System.Collections.Generic.List<Models.Publisher>();
+            //this.cmb_pub_id.DataSource = publishers;
+            this.cmb_pub_id.ValueMember = nameof(vmPublisher.ModelItem.pub_id);
+            this.cmb_pub_id.DisplayMember = nameof(vmPublisher.ModelItem.pub_name);
+
             this.cmb_pub_id.ValueMember = nameof(vmPublisher.ModelItem.pub_id);
             this.cmb_pub_id.DisplayMember = nameof(vmPublisher.ModelItem.pub_name );
             

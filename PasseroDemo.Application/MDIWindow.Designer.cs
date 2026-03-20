@@ -58,11 +58,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.ClientSize = new System.Drawing.Size(590, 475);
             this.Controls.Add(this.pbPasseroLogo);
             this.Controls.Add(this.lblRuntimeAppInfo);
+            this.CssStyle = resources.GetString("$this.CssStyle");
             this.IsMdiContainer = true;
             this.Margin = new Wisej.Web.Padding(0);
+            this.MdiTabProperties.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.Name = "MDIWindow";
             this.ShowInTaskbar = false;
             this.StartPosition = Wisej.Web.FormStartPosition.Manual;

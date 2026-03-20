@@ -37,7 +37,7 @@ namespace Passero.Framework
     /// <remarks></remarks>
     [Serializable]
     //public class Repository<ModelClass> : IDisposable         where ModelClass : ModelBase
-    public class Repository<ModelClass> : IDisposable
+    public class Repository<ModelClass> : Base.IPasseroRepository<ModelClass>
     where ModelClass : class   
     
     {
@@ -663,6 +663,25 @@ namespace Passero.Framework
 
 
         /// <summary>
+        /// Inizializza il repository Dapper dalla connessione esposta da un <see cref="IPasseroDbContext"/>.
+        /// Permette di condividere lo stesso DbContext tra EfRepository (LINQ) e Repository (Dapper).
+        /// La connessione viene aperta se non lo è già.
+        /// </summary>
+        /// <param name="dbContext">DbContext che implementa <see cref="IPasseroDbContext"/>.</param>
+        /// <param name="sqlTransaction">Transazione ADO.NET opzionale.</param>
+        public Repository(Passero.Framework .Base.IPasseroDbContext dbContext, IDbTransaction sqlTransaction = null)
+        {
+            if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
+            dbContext.EnsureConnectionOpen();
+            _ModelItem = GetEmptyModel();
+            SetModelItemShadow();
+            SetModelItemsShadow();
+            DbTransaction = sqlTransaction;
+            DbConnection = dbContext.DbConnection;
+            DbObject = new Base.DbObject<ModelClass>(DbConnection);
+        }
+
+        /// <summary>
         /// Resolveds the SQL query.
         /// </summary>
         /// <param name="SQLQuery">The SQL query.</param>
@@ -724,15 +743,15 @@ namespace Passero.Framework
         /// <returns>
         ///   <c>true</c> if [is model data changed] [the specified model shadow]; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsModelDataChanged(ModelClass ModelShadow = null)
+        public bool IsModelDataChanged(ModelClass modelShadow = null)
         {
 
-            if (ModelShadow is null)
+            if (modelShadow is null)
             {
-                ModelShadow = _ModelItemShadow;
+                modelShadow = _ModelItemShadow;
             }
 
-            return !Utilities.ObjectsEquals(_ModelItem, ModelShadow);
+            return !Utilities.ObjectsEquals(_ModelItem, modelShadow);
 
         }
 
@@ -799,22 +818,23 @@ namespace Passero.Framework
         /// <returns></returns>
         /// 
     
-        public ExecutionResult<ModelClass> GetItem(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<ModelClass> GetItem(
+            string query,
+            object parameters = null,
+            IDbTransaction transaction = null,
+            bool buffered = true,
+            int? commandTimeout = null)
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
             ER.Value = null;
-            
             try
             {
-                _ModelItem = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).SingleOrDefault();
+                _ModelItem = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).SingleOrDefault();
                 if (ViewModel != null)
-                {
                     ViewModel.ModelItem = _ModelItem;
-                }
                 SetModelItemShadow();
-                LastExecutionResult = ER.ToExecutionResult();
-                mSQLQuery = Query;
-                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                mSQLQuery = query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(parameters);
                 ER.Value = _ModelItem;
             }
             catch (Exception ex)
@@ -823,10 +843,11 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"SQLQuery = {Query}";
+                ER.DebugInfo = $"SQLQuery = {query}";
                 LastExecutionResult = ER.ToExecutionResult();
                 HandleException(ER.ToExecutionResult());
             }
+            LastExecutionResult = ER.ToExecutionResult();
             return ER;
         }
 
@@ -839,22 +860,24 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result with the item.</returns>
-        public async Task<ExecutionResult<ModelClass>> GetItemAsync(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public async Task<ExecutionResult<ModelClass>> GetItemAsync(
+            string query,
+            object parameters = null,
+            IDbTransaction transaction = null,
+            bool buffered = true,
+            int? commandTimeout = null)
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItemAsync()");
             ER.Value = null;
 
             try
             {
-                _ModelItem = (await DbConnection.QueryAsync<ModelClass>(Query, Params, Transaction, CommandTimeout)).SingleOrDefault();
+                _ModelItem = (await DbConnection.QueryAsync<ModelClass>(query, parameters, transaction, commandTimeout)).SingleOrDefault();
                 if (ViewModel != null)
-                {
                     ViewModel.ModelItem = _ModelItem;
-                }
                 SetModelItemShadow();
-                LastExecutionResult = ER.ToExecutionResult();
-                mSQLQuery = Query;
-                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                mSQLQuery = query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(parameters);
                 ER.Value = _ModelItem;
             }
             catch (Exception ex)
@@ -863,7 +886,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"SQLQuery = {Query}";
+                ER.DebugInfo = $"SQLQuery = {query}";
                 LastExecutionResult = ER.ToExecutionResult();
                 HandleException(ER.ToExecutionResult());
             }
@@ -879,20 +902,25 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result with the list of items.</returns>
-        public async Task<ExecutionResult<IList<ModelClass>>> GetItemsAsync(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public async Task<ExecutionResult<IList<ModelClass>>> GetItemsAsync(
+            string query,
+            object parameters = null,
+            IDbTransaction transaction = null,
+            bool buffered = true,
+            int? commandTimeout = null)
         {
             var ER = new ExecutionResult<IList<ModelClass>>($"{mClassName}.GetItemsAsync()");
-            if (Equals(Query, ""))
+            if (string.IsNullOrEmpty(query))
             {
-                Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
                 Parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;
             try
             {
                 _ModelItemsShadow = new List<ModelClass>();
-                _ModelItems = (await DbConnection.QueryAsync<ModelClass>(Query, Params, Transaction, CommandTimeout)).ToList();
-                if (_ModelItems.Count() > 0)
+                _ModelItems = (await DbConnection.QueryAsync<ModelClass>(query, parameters, transaction, commandTimeout)).ToList();
+                if (_ModelItems.Count > 0)
                 {
                     _ModelItem = _ModelItems.First();
                     _CurrentModelItemIndex = 0;
@@ -907,8 +935,8 @@ namespace Passero.Framework
                     ViewModel.MoveFirstItem();
                     _CurrentModelItemIndex = 0;
                 }
-                SQLQuery = Query;
-                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                SQLQuery = query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(parameters);
                 ER.Value = _ModelItems;
             }
             catch (Exception ex)
@@ -917,7 +945,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query = {Query}";
+                ER.DebugInfo = $"Query = {query}";
                 HandleException(ER.ToExecutionResult());
             }
             LastExecutionResult = ER.ToExecutionResult();
@@ -979,14 +1007,19 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public ExecutionResult<IList<ModelClass>> GetItems(string Query, object Params = null, IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public ExecutionResult<IList<ModelClass>> GetItems(
+            string query,
+            object parameters = null,
+            IDbTransaction transaction = null,
+            bool buffered = true,
+            int? commandTimeout = null)
         {
             var ER = new ExecutionResult<IList<ModelClass>>($"{mClassName}.GetItems()");
             //ValidateConnection();
 
-            if (Equals(Query, ""))
+            if (string.IsNullOrEmpty(query))
             {
-                Query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+                query = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
                 Parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;
@@ -994,8 +1027,8 @@ namespace Passero.Framework
             {
                 _ModelItemsShadow = new List<ModelClass>();
                 //_ModelItemsShadow.Clear();
-                _ModelItems = DbConnection.Query<ModelClass>(Query, Params, Transaction, Buffered, CommandTimeout).ToList();
-                if (_ModelItems.Count() > 0)
+                _ModelItems = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).ToList();
+                if (_ModelItems.Count > 0)
                 {
                     _ModelItem = _ModelItems.First();
                     _CurrentModelItemIndex = 0;
@@ -1010,8 +1043,8 @@ namespace Passero.Framework
                     ViewModel.MoveFirstItem();
                     _CurrentModelItemIndex = 0;
                 }
-                SQLQuery = Query;
-                Parameters = DapperHelper.Utilities.GetDynamicParameters(Params);
+                SQLQuery = query;
+                Parameters = DapperHelper.Utilities.GetDynamicParameters(parameters);
                 ER.Value = _ModelItems;
             }
             catch (Exception ex)
@@ -1020,7 +1053,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query = {Query}";
+                ER.DebugInfo = $"Query = {query}";
                 HandleException(ER.ToExecutionResult());
             }
             LastExecutionResult = ER.ToExecutionResult();
@@ -1471,16 +1504,18 @@ namespace Passero.Framework
 
                 var @params = new DynamicParameters();
 
-                // Loop ottimizzato con accesso diretto all'indice
+                // Pre-calcolo della capacità per EntityProperties
                 var entityPropsCount = EntityProperties.Count;
                 var primaryKeysCount = EntityPrimaryKeys.Count;
 
+                // Loop ottimizzato con accesso diretto all'indice per List<PropertyInfo>
                 for (int i = 0; i < entityPropsCount; i++)
                 {
                     var prop = EntityProperties[i];
                     @params.Add(prop.Name, prop.GetValue(ModelItem));
                 }
 
+                // Loop ottimizzato per primary keys
                 for (int i = 0; i < primaryKeysCount; i++)
                 {
                     var prop = EntityPrimaryKeys[i];

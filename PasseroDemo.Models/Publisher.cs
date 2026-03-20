@@ -14,21 +14,22 @@ namespace PasseroDemo.Models
     public class Publisher : Passero.Framework.ModelBase
     {
         [ExplicitKey]
+        [System.ComponentModel.DataAnnotations.Key]
         public string pub_id { get; set; }
-        public string pub_name { get; set; }
-        public string city { get; set; }
-        public string state { get; set; }
-        public string country { get; set; }
-        public string phone { get; set; }
-        public string email { get; set; }
+        public string? pub_name { get; set; }
+        public string? city { get; set; }
+        public string? state { get; set; }
+        public string? country { get; set; }
+        public string? phone { get; set; }
+        public string? email { get; set; }
+
         [Computed]
         public string pub_fullinfo
         {
             get
             {
-                return $"{pub_id} {pub_name }";
+                return $"{pub_id} {pub_name}";
             }
         }
-
     }
 }

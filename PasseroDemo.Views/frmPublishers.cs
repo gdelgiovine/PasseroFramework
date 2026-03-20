@@ -22,7 +22,6 @@ namespace PasseroDemo.Views
             this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
             this.DbConnectionA = new Microsoft.Data.SqlClient.SqlConnection(ConfigurationManager.DBConnections["PasseroDemo"].ConnectionString);
 
-
             vmPublishers.Init(this.DbConnection);
             //vmPublishers.DataBindControlsAutoSetMaxLenght = true;
             //vmPublishers.AutoWriteControls = true;

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace Passero.Framework.FRReports
@@ -641,6 +642,172 @@ namespace Passero.Framework.FRReports
         }
 
 
+        public byte[] RenderInjectedDataSet(FRRenderFormat RenderFormat = FRRenderFormat.PDF, int ImageDpi = 100)
+        {
+            LastExecutionResult.Reset();
+            LastExecutionResult.Context = $"FRReport.RenderInjectedDataSet({RenderFormat})";
+            byte[] result = null;
+
+            // Serve per deserializzare il .frx se contiene MsSqlDataConnection
+            FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
+
+            try
+            {
+                Report.Load(this.ReportPath);
+
+                // ✅ NON rompi il Dictionary: disabiliti la/e connection ma le lasci presenti (script ok, niente DB)
+                foreach (DataConnectionBase conn in Report.Dictionary.Connections)
+                    conn.Enabled = false;
+
+                // Invoke OnReportRenderRequest
+                var requestargs = new ReportRenderRequestEventArgs
+                {
+                    DataSets = new Dictionary<string, DataSet>()
+                };
+
+                foreach (string dataSetName in this.DataSetNames())
+                    requestargs.DataSets.Add(dataSetName, new DataSet { Name = dataSetName });
+
+                this.OnReportRenderRequest(requestargs);
+                if (requestargs.Cancel)
+                {
+                    LastExecutionResult.ResultMessage = "Cancelled by User";
+                    return null;
+                }
+
+                // ✅ Iniezione dati: lo schema lo decide il report (table.Columns)
+                foreach (var datasetEntry in this.DataSets)
+                {
+                    var dsDescriptor = datasetEntry.Value;
+
+                    if (dsDescriptor.Data == null)
+                    {
+                        LastExecutionResult.ResultMessage = $"DataSet '{dsDescriptor.Name}' has no data (Data is null).";
+                        LastExecutionResult.ErrorCode = 1;
+                        return null;
+                    }
+
+                    var table = Report.GetDataSource(dsDescriptor.Name) as TableDataSource;
+                    if (table == null)
+                    {
+                        LastExecutionResult.ResultMessage = $"TableDataSource '{dsDescriptor.Name}' non trovata nel report.";
+                        LastExecutionResult.ErrorCode = 2;
+                        return null;
+                    }
+
+                    // Crea DataTable con colonne IDENTICHE a quelle del report
+                    var injected = BuildDataTableUsingReportSchema(table, (System.Collections.IEnumerable)dsDescriptor.Data);
+
+                    table.Table = injected;
+                    table.Enabled = true;
+                }
+
+                if (!Report.Prepare())
+                {
+                    LastExecutionResult.ResultMessage = "Report Preparation Failed.";
+                    return null;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    switch (RenderFormat)
+                    {
+                        case FRRenderFormat.PDF:
+                            var pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport
+                            {
+                                ImageDpi = ImageDpi,
+                                ShowProgress = false
+                            };
+                            pdfExport.Export(Report, stream);
+                            break;
+
+                        case FRRenderFormat.HTML40:
+                        case FRRenderFormat.HTML32:
+                            var htmlExport = new FastReport.Export.Html.HTMLExport
+                            {
+                                Format = HTMLExportFormat.HTML,
+                                Layers = true,
+                                EmbedPictures = true
+                            };
+                            htmlExport.Export(Report, stream);
+                            break;
+
+                        case FRRenderFormat.MHTML:
+                            var mhtmlExport = new FastReport.Export.Html.HTMLExport
+                            {
+                                Format = HTMLExportFormat.MessageHTML,
+                                Layers = true,
+                                EmbedPictures = true
+                            };
+                            mhtmlExport.Export(Report, stream);
+                            break;
+
+                        default:
+                            LastExecutionResult.ResultMessage = $"RenderFormat {RenderFormat} not supported.";
+                            LastExecutionResult.ErrorCode = 4;
+                            return null;
+                    }
+
+                    result = stream.ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                LastExecutionResult.Exception = ex;
+                LastExecutionResult.ResultMessage = ex.Message;
+                LastExecutionResult.ErrorCode = 99;
+            }
+
+            return result;
+        }
+
+        private static System.Data.DataTable BuildDataTableUsingReportSchema(
+            TableDataSource table,
+            System.Collections.IEnumerable data)
+        {
+            var dt = new System.Data.DataTable(table.Name);
+
+            // Colonne: VERITÀ = table.Columns (quelle che usa [authors.xxx])
+            foreach (FastReport.Data.Column c in table.Columns)
+            {
+                var type = c.DataType ?? typeof(string);
+                dt.Columns.Add(c.Name, Nullable.GetUnderlyingType(type) ?? type);
+            }
+
+            foreach (var item in data)
+            {
+                var row = dt.NewRow();
+                var t = item?.GetType();
+
+                foreach (FastReport.Data.Column c in table.Columns)
+                {
+                    object value = null;
+
+                    if (item == null)
+                    {
+                        value = DBNull.Value;
+                    }
+                    else if (item is System.Collections.IDictionary dict)
+                    {
+                        value = dict.Contains(c.Name) ? dict[c.Name] : null;
+                    }
+                    else
+                    {
+                        var p = t.GetProperty(c.Name);
+                        value = p != null ? p.GetValue(item) : null;
+                    }
+
+                    row[c.Name] = value ?? DBNull.Value;
+                }
+
+                dt.Rows.Add(row);
+            }
+
+            return dt;
+        }
+
+
+
 
       
 
@@ -660,6 +827,13 @@ namespace Passero.Framework.FRReports
             foreach (var dataset in this.DataSets)
             {
                 if (dataset.Value.DbConnection.GetType() == typeof(System.Data.SqlClient.SqlConnection))
+                {
+                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
+            
+
+                }
+
+                if (dataset.Value.DbConnection.GetType() == typeof(Microsoft.Data.SqlClient.SqlConnection))
                 {
                     FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
                 }

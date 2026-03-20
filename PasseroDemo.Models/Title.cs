@@ -13,8 +13,7 @@ namespace PasseroDemo.Models
     [Table("titles")]
     public class Title : Passero.Framework.ModelBase
     {
-        [Dapper .Contrib .Extensions .ExplicitKey ]
-        [System.ComponentModel .DataAnnotations .Key]
+        [ExplicitKey ]
         public string title_id { get; set; }
         public string? title { get; set; }
 

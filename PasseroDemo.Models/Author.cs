@@ -14,6 +14,7 @@ namespace PasseroDemo.Models
     public class Author: Passero.Framework.ModelBase 
     {
         [ExplicitKey]
+        [System.ComponentModel.DataAnnotations.Key]
         [ColumnMapping("au_id")]
         public string? au_id { get; set; }
         [ColumnMapping("au_lname")]
@@ -27,6 +28,7 @@ namespace PasseroDemo.Models
         public bool contract { get; set; }
         public string? email { get; set; }
         [Computed]
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped ]
         public string? au_fullname
         { get
             { 

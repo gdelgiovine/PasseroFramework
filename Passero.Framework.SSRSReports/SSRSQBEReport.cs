@@ -576,7 +576,19 @@ namespace Passero.Framework.SSRSReports
                         foreach (var _Value in Values)
                         {
                             string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                            if (this.chkLikeOperator.Checked)
+                            // GESTIONE PRIORITARIA PER COLONNE BOOLEAN/BIT
+                            if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
+                            {
+                                // Converte il valore stringa in boolean
+                                bool boolValue;
+                                if (bool.TryParse(_Value, out boolValue))
+                                {
+                                    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
+                                    parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
+                                }
+                                // Se il valore non è un boolean valido, salta questa condizione
+                            }
+                            else if (this.chkLikeOperator.Checked)
                             {
                                 sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
                                 parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));

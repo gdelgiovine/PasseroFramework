@@ -1,8 +1,11 @@
-﻿using System;
-using System.Data;
-using Wisej.Web;
-using Passero.Framework;
+﻿using Passero.Framework;
+using Passero.Framework.Base;
 using Passero.Framework.Controls;
+using System;
+using System.Data;
+
+using System.Linq;
+using Wisej.Web;
 
 
 
@@ -13,47 +16,64 @@ namespace PasseroDemo.Views
 
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public IDbConnection DbConnection { get; set; }
-        public ViewModels .vmAuthor vmAuthor = new ViewModels .vmAuthor (); 
+        public ViewModels .vmAuthor vmAuthor = new ViewModels .vmAuthor ();
 
-       
+        private Passero.Framework.Base.IPasseroDbContext _dbContext;
 
         public frmAuthors()
         {
             InitializeComponent();
         }
 
-        public void Init()
+        public async void Init()
         {
             this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
-            vmAuthor.Init(this.DbConnection);
+
+            // ORMContextFactory sceglie EF6 (net48) o EF Core (net8.0+) automaticamente.
+            // ViewModel riceve il DbContext e crea internamente il repository corretto.
+            //_dbContext = Passero.Framework.Base.ORMContextFactory.Create(
+            //    Passero.Framework.Base.ORMType.EntityFramework      ,
+            //    DbConnection.ConnectionString,
+            //    new[] { typeof(Models.Author) });
+
+
+            _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
+             Passero.Framework.Base.ORMType.Dapper,
+             DbConnection.ConnectionString);
+
+
+            vmAuthor = new ViewModels.vmAuthor();
+
+            //vmAuthor = new ViewModels.vmAuthor();
+            //vmAuthor.Init();
+            //vmAuthor.Init(this.DbConnection);
+
+            vmAuthor.Init(this._dbContext);
+           
+
             vmAuthor.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
             vmAuthor.BindingSource = this.bsAuthors;
 
+            this.Accelerators = this.dataNavigator1.GetAccelerators();
 
-            //var x = this.dataNavigator1.GetAccelerators();
-
-            //this.Accelerators = new Keys[] { Keys.F6, Keys.F7, Keys.Shift | Keys.F6, Keys.Shift | Keys.F7, Keys.F2, Keys.F3, Keys.F10, Keys.F5, Keys.F9, Keys.F12, Keys.F4 };
-            this.Accelerators = this.dataNavigator1.GetAccelerators(); 
-            
-            //this.dataNavigator1.ViewModels["Authors"] = new DataNavigatorViewModel(this.vmAuthor,"Authors");
-            //this.dataNavigator1.AddViewModel(this.vmAuthor , "Authors");
-
-            // New way to add ViewModel to DataNavigator    
-            this.dataNavigator1.AddViewModel(this.vmAuthor ,"Authors", null, null);
-            
-
+            this.dataNavigator1.AddViewModel(this.vmAuthor, "Authors", null, null);
             this.dataNavigator1.SetActiveViewModel(this.vmAuthor);
             this.dataNavigator1.Init(true);
 
+            //this._dbContext.DiscardChanges(vmAuthor)    ;
 
-
+            //IQueryable<Models.Author> query = _dbContext.Set<Models.Author>();
+            //var list = await _dbContext.ToListAsync(query.Where(a => a.contract ));
         }
 
 
         private void QBE_Authors()
         {
 
-            QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(this.DbConnection);
+            //QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(this.DbConnection);
+            // Costruttore con DbContext: usa EfRepository o DapperRepository automaticamente
+            QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(_dbContext);
+
 
             QBE.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
             QBE.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
@@ -92,7 +112,10 @@ namespace PasseroDemo.Views
 
         private void FR_QBEReport_Authors()
         {
+
             Passero.Framework.FRReports.ReportManager  xQBEReport = new Passero.Framework.FRReports.ReportManager ();
+            this._dbContext.EnsureConnectionOpen();
+
             xQBEReport.QBEReports.Add("REPORT1", @"C:\Reports\REPORT1.FRX", "REPORT UNO");
             xQBEReport.QBEReports["REPORT1"].AddDataSet<Models.Author>("Authors", this.vmAuthor.Repository.DbConnection);
             xQBEReport.DefaultReport = xQBEReport.QBEReports["REPORT1"];
@@ -127,6 +150,8 @@ namespace PasseroDemo.Views
             SSRSReportManager.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_id), "", "");
             SSRSReportManager.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_fname), "", "");
             SSRSReportManager.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.au_lname), "", "");
+            SSRSReportManager.QBEColumns.AddForReport("REPORT1", nameof(Models.Author.contract ), "", "");
+
             SSRSReportManager.QBEColumns.AddForReport("REPORT2", nameof(Models.Author.au_id), "CODICE", "");
 
             SSRSReportManager.SetFocusControlAfterClose = this.txt_au_id;
@@ -141,8 +166,8 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
-            this.SSRS_QBEReport_Authors();
-            //this.FR_QBEReport_Authors();
+           //this.SSRS_QBEReport_Authors();
+           this.FR_QBEReport_Authors();
 
         }
 

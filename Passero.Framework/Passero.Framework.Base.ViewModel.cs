@@ -223,6 +223,13 @@ namespace Passero.Framework
             return Repository.GetTableName();   
         }
 
+        /// <summary>
+        /// Espone il <see cref="Base.IPasseroDbContext"/> usato per creare il repository interno.
+        /// Disponibile solo quando il ViewModel è stato inizializzato tramite
+        /// <see cref="ViewModel(Base.IPasseroDbContext, string, string, string)"/>.
+        /// Utile per operazioni avanzate (transazioni, query raw, cambio ORM a runtime).
+        /// </summary>
+        public Base.IPasseroDbContext DbContext { get; private set; }
 
         /// <summary>
         /// The m data navigator
@@ -921,12 +928,12 @@ namespace Passero.Framework
         /// <summary>
         /// Datas the navigator raise event bound compled.
         /// </summary>
-        public void DataNavigatorRaiseEventBoundCompled()
+        public void DataNavigatorRaiseEventBoundCompleted()
         {
             if (mDataNavigator != null)
             {
                 //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "RaiseEventBoundCompleted");
-                mDataNavigator.RaiseEventBoundCompled();
+                mDataNavigator.RaiseEventBoundCompleted();
             }
         }
         /// <summary>
@@ -1039,23 +1046,23 @@ namespace Passero.Framework
                     {
                         case NavigationOperation.MoveFirst:
                             mBindingSource.MoveFirst();
-                            DataNavigatorRaiseEventBoundCompled();
+                            DataNavigatorRaiseEventBoundCompleted();
                             break;
                         case NavigationOperation.MoveLast:
                             mBindingSource.MoveLast();
-                            DataNavigatorRaiseEventBoundCompled();
+                            DataNavigatorRaiseEventBoundCompleted();
                             break;
                         case NavigationOperation.MovePrevious:
                             mBindingSource.MovePrevious();
-                            DataNavigatorRaiseEventBoundCompled();
+                            DataNavigatorRaiseEventBoundCompleted();
                             break;
                         case NavigationOperation.MoveNext:
                             mBindingSource.MoveNext();
-                            DataNavigatorRaiseEventBoundCompled();
+                            DataNavigatorRaiseEventBoundCompleted();
                             break;
                         case NavigationOperation.MoveAt:
                             mBindingSource.Position = CurrentModelItemIndex;
-                            DataNavigatorRaiseEventBoundCompled();
+                            DataNavigatorRaiseEventBoundCompleted();
                             break;
                     }
                     break;
@@ -1122,7 +1129,7 @@ namespace Passero.Framework
                         break;
                     case DataBindingMode.BindingSource:
                         mBindingSource.MoveFirst();
-                        DataNavigatorRaiseEventBoundCompled();
+                        DataNavigatorRaiseEventBoundCompleted();
                         break;
                     default:
                         break;
@@ -1573,24 +1580,41 @@ namespace Passero.Framework
         /// <value>
         ///   <c>true</c> if [data bind controls automatic set maximum lenght]; otherwise, <c>false</c>.
         /// </value>
+        //public bool DataBindControlsAutoSetMaxLenght
+        //{
+        //    get
+        //    {
+        //        return mDataBindControlsAutoSetMaxLenght;
+        //    }
+        //    set
+        //    {
+        //        mDataBindControlsAutoSetMaxLenght = value;
+        //        if (value == true)
+        //        {
+        //            if (Repository.DbObject.DbColumns.Count == 0)
+        //            {
+        //                Repository.DbObject.DbConnection = Repository.DbConnection;
+        //                Repository.DbObject.GetSchema();
+        //            }
+        //        }
+
+        //    }
+        //}
+
         public bool DataBindControlsAutoSetMaxLenght
         {
-            get
-            {
-                return mDataBindControlsAutoSetMaxLenght;
-            }
+            get { return mDataBindControlsAutoSetMaxLenght; }
             set
             {
                 mDataBindControlsAutoSetMaxLenght = value;
-                if (value == true)
+                if (value && DapperRepository != null)
                 {
-                    if (Repository.DbObject.DbColumns.Count == 0)
+                    if (DapperRepository.DbObject.DbColumns.Count == 0)
                     {
-                        Repository.DbObject.DbConnection = Repository.DbConnection;
-                        Repository.DbObject.GetSchema();
+                        DapperRepository.DbObject.DbConnection = Repository.DbConnection;
+                        DapperRepository.DbObject.GetSchema();
                     }
                 }
-
             }
         }
 
@@ -1604,35 +1628,65 @@ namespace Passero.Framework
         /// <value>
         ///   <c>true</c> if [automatic fit columns lenght]; otherwise, <c>false</c>.
         /// </value>
+        //public bool AutoFitColumnsLenght
+        //{
+        //    get
+        //    {
+        //        return mAutoFitColumnsLenght;
+        //    }
+        //    set
+        //    {
+        //        mAutoFitColumnsLenght = value;
+        //        if (value == true)
+        //        {
+        //            if (Repository.DbObject.DbColumns.Count == 0)
+        //            {
+        //                Repository.DbObject.DbConnection = Repository.DbConnection;
+        //                Repository.DbObject.GetSchema();
+        //            }
+        //        }
+
+        //    }
+        //}
         public bool AutoFitColumnsLenght
         {
-            get
-            {
-                return mAutoFitColumnsLenght;
-            }
+            get { return mAutoFitColumnsLenght; }
             set
             {
                 mAutoFitColumnsLenght = value;
-                if (value == true)
+                if (value && DapperRepository != null)
                 {
-                    if (Repository.DbObject.DbColumns.Count == 0)
+                    if (DapperRepository.DbObject.DbColumns.Count == 0)
                     {
-                        Repository.DbObject.DbConnection = Repository.DbConnection;
-                        Repository.DbObject.GetSchema();
+                        DapperRepository.DbObject.DbConnection = Repository.DbConnection;
+                        DapperRepository.DbObject.GetSchema();
                     }
                 }
-
             }
         }
 
+        ///// <summary>
+        ///// Gets or sets the repository.
+        ///// </summary>
+        ///// <value>
+        ///// The repository.
+        ///// </value>
+        //public Repository<ModelClass> Repository { get; set; }
 
         /// <summary>
-        /// Gets or sets the repository.
+        /// Repository interno del ViewModel. Può essere un <see cref="Repository{ModelClass}"/>
+        /// (Dapper) oppure un <see cref="EfRepository{ModelClass}"/> (EF Core / EF6),
+        /// a seconda del costruttore o dell'assegnazione esterna.
         /// </summary>
-        /// <value>
-        /// The repository.
-        /// </value>
-        public Repository<ModelClass> Repository { get; set; }
+        public Base.IPasseroRepository<ModelClass> Repository { get; set; }
+
+        /// <summary>
+        /// Restituisce il repository interno come <see cref="Repository{ModelClass}"/> (Dapper)
+        /// se il repository corrente è di quel tipo, altrimenti null.
+        /// Utile per accedere a funzionalità Dapper-specific (DbObject, ecc.).
+        /// </summary>
+        public Repository<ModelClass> DapperRepository => Repository as Repository<ModelClass>;
+
 
         //public ModelClass GetEmptyModel()
         //{
@@ -1718,42 +1772,139 @@ namespace Passero.Framework
                 mUseUpdateEx = value;   
                 //Repository.UseUpdateEx = value; 
             }
-        } 
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModel{ModelClass}"/> class.
         /// </summary>
         /// <param name="Name">ViewModel Name</param>
         /// <param name="Description">ViewModel Description</param>
-        public ViewModel(string Name = "", string FriendlyName ="", string Description  = "")
+        //public ViewModel(string Name = "", string FriendlyName ="", string Description  = "")
+        //{
+        //    Repository = new Repository<ModelClass>();
+
+        //    DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+        //    DefaultSQLQueryParameters = new DynamicParameters();
+        //    if (Name != "")
+        //        this.Name = Name;
+        //    else
+        //        this.Name = $"{typeof(ModelClass).Name}_{this.GetHashCode():X}";
+
+        //    if (FriendlyName  != "")
+        //        this.FriendlyName = FriendlyName;
+        //    else
+        //        this.FriendlyName = Name;
+
+        //    if (Description != "")
+        //        this.Description = Description;
+        //    else
+        //        this.Description = Name;
+
+        //    Repository.ViewModel = this;
+        //    Repository.Name = $"Repository<{typeof(ModelClass).Name}>";
+        //    Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+        //    Repository.ErrorNotificationMode = ErrorNotificationMode;
+        //    mModelItemShadow = GetEmptyModelItem();
+
+
+        //}
+
+
+
+        public ViewModel(Base.IPasseroRepository<ModelClass> repository, string Name = "", string FriendlyName = "", string Description = "")
         {
-            Repository = new Repository<ModelClass>();
-            
+            Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+
             DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
             DefaultSQLQueryParameters = new DynamicParameters();
-            if (Name != "")
-                this.Name = Name;
-            else
-                this.Name = $"{typeof(ModelClass).Name}_{this.GetHashCode():X}";
-            
-            if (FriendlyName  != "")
-                this.FriendlyName = FriendlyName;
-            else
-                this.FriendlyName = Name;
 
-            if (Description != "")
-                this.Description = Description;
-            else
-                this.Description = Name;
+            this.Name = Name != "" ? Name : $"{typeof(ModelClass).Name}_{GetHashCode():X}";
+            this.FriendlyName = FriendlyName != "" ? FriendlyName : this.Name;
+            this.Description = Description != "" ? Description : this.Name;
 
-            Repository.ViewModel = this;
+            // Collega il ViewModel al Repository Dapper se applicabile
+            if (Repository is Repository<ModelClass> dapperRepo)
+                dapperRepo.ViewModel = this;
+
             Repository.Name = $"Repository<{typeof(ModelClass).Name}>";
             Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
             Repository.ErrorNotificationMode = ErrorNotificationMode;
             mModelItemShadow = GetEmptyModelItem();
-
-
         }
+
+        /// <summary>
+        /// Costruttore statico: registra automaticamente <typeparamref name="ModelClass"/>
+        /// nei DbContext EF Core ed EF6, eliminando la necessità di passare
+        /// <c>entityTypes[]</c> esplicitamente a <see cref="Base.ORMContextFactory.Create"/>.
+        /// </summary>
+        static ViewModel()
+        {
+            //Passero.Framework.Base.ORMContextFactory.RegisterEntity(typeof(ModelClass));
+        }
+
+        /// <summary>
+        /// Costruttore con IPasseroDbContext: crea automaticamente il repository
+        /// del tipo corretto in base all'<see cref="Base.ORMType"/> esposto dal contesto.
+        /// <list type="bullet">
+        ///   <item><see cref="Base.ORMType.Dapper"/> → <see cref="Repository{ModelClass}"/></item>
+        ///   <item><see cref="Base.ORMType.EntityFrameworkCore"/> → <see cref="EfRepository{ModelClass}"/></item>
+        ///   <item><see cref="Base.ORMType.EntityFramework6"/> → <see cref="EfRepository{ModelClass}"/></item>
+        ///   <item><see cref="Base.ORMType.EntityFramework"/> → <see cref="EfRepository{ModelClass}"/></item>
+        /// </list>
+        /// </summary>
+        public ViewModel(Base.IPasseroDbContext dbContext, string Name = "", string FriendlyName = "", string Description = "")
+            : this(CreateRepositoryFromContext(dbContext), Name, FriendlyName, Description)
+        {
+            DbContext = dbContext;
+        }
+
+        /// <summary>
+        /// Crea il repository appropriato in base all'ORMType del DbContext fornito.
+        /// </summary>
+        private static Base.IPasseroRepository<ModelClass> CreateRepositoryFromContext(Base.IPasseroDbContext dbContext)
+        {
+            if (dbContext == null)
+                throw new ArgumentNullException(nameof(dbContext));
+
+            switch (dbContext.ORMType)
+            {
+                case Base.ORMType.EntityFrameworkCore:
+                case Base.ORMType.EntityFramework6:
+                case Base.ORMType.EntityFramework:
+                    return new EfRepository<ModelClass>(dbContext);
+
+                case Base.ORMType.Dapper:
+                default:
+                    return new Repository<ModelClass>(dbContext);
+            }
+        }
+
+
+               
+
+
+        public ViewModel(string Name = "", string FriendlyName = "", string Description = "")
+        {
+            var dapperRepo = new Repository<ModelClass>();
+            Repository = dapperRepo;
+
+            DefaultSQLQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            DefaultSQLQueryParameters = new DynamicParameters();
+
+            this.Name = Name != "" ? Name : $"{typeof(ModelClass).Name}_{GetHashCode():X}";
+            this.FriendlyName = FriendlyName != "" ? FriendlyName : this.Name;
+            this.Description = Description != "" ? Description : this.Name;
+
+            // Solo Repository Dapper ha la property ViewModel
+            dapperRepo.ViewModel = this;
+            Repository.Name = $"Repository<{typeof(ModelClass).Name}>";
+            Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+            Repository.ErrorNotificationMode = ErrorNotificationMode;
+            mModelItemShadow = GetEmptyModelItem();
+        }
+
+
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModel{ModelClass}"/> class.
@@ -1781,7 +1932,68 @@ namespace Passero.Framework
             mModelItemShadow = GetEmptyModelItem();
             this.Repository = Repository;
         }
-        
+
+
+
+        /// <summary>
+        /// Initializes the specified database context.
+        /// Reinstanzia il repository interno in base all'<see cref="Base.ORMType"/>
+        /// esposto dal <paramref name="DbContext"/> fornito.
+        /// </summary>
+        /// <param name="DbContext">The database context.</param>
+        /// <param name="DataBindingMode">The data binding mode.</param>
+        /// <param name="Name">The name.</param>
+        /// <param name="Description">The description.</param>
+        public virtual void Init(Base.IPasseroDbContext DbContext, DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name = "", string Description = "")
+        {
+            if (DbContext == null)
+                throw new ArgumentNullException(nameof(DbContext));
+
+
+            // Registra EF solo se effettivamente necessario,
+            // evitando il caricamento di EntityFramework.dll in scenari Dapper-only.
+            if (DbContext.ORMType != Base.ORMType.Dapper)
+            {
+                Base.ORMContextFactory.RegisterEntity(typeof(ModelClass));
+            }
+
+
+            mDataBindingMode = DataBindingMode;
+            this.DbContext = DbContext;
+            this.DbContext.EnsureConnectionOpen();
+            this.Name = Name;
+            this.Description = Description;
+
+            // Reinstanzia il repository corretto in base all'ORMType del DbContext
+            Repository = CreateRepositoryFromContext(DbContext);
+
+            // Propaga le impostazioni correnti al nuovo repository
+            Repository.Name = $"Repository<{typeof(ModelClass).Name}>";
+            Repository.ErrorNotificationMessageBox = ErrorNotificationMessageBox;
+            Repository.ErrorNotificationMode = ErrorNotificationMode;
+
+            // DefaultSQLQuery e SQLQuery devono essere allineate su tutti i tipi di repository:
+            // - Dapper: GetAllItems usa il campo privato mSQLQuery (aggiornato da SQLQuery setter)
+            // - EfRepository: GetAllItems usa SQLQuery ?? DefaultSQLQuery
+            // Impostando entrambe qui si garantisce il comportamento uniforme.
+            string defaultQuery = $"SELECT * FROM {DapperHelper.Utilities.GetTableName<ModelClass>()}";
+            Repository.DefaultSQLQuery = defaultQuery;
+            Repository.DefaultSQLQueryParameters = new DynamicParameters();
+            Repository.SQLQuery = defaultQuery;
+            Repository.Parameters = new DynamicParameters();
+
+            Repository.ViewModel = this;
+
+            // Per Dapper: collega il ViewModel e imposta la connessione esplicitamente
+            if (Repository is Repository<ModelClass> dapperRepo)
+            {
+                dapperRepo.ViewModel = this;
+                dapperRepo.DbConnection = DbContext.DbConnection;
+            }
+        }
+
+
+
         /// <summary>
         /// Initializes the specified database connection.
         /// </summary>
@@ -1799,7 +2011,28 @@ namespace Passero.Framework
        
         }
 
-       
+
+
+
+        /// <summary>
+        /// Initializes the specified database connection.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
+        /// <param name="DataBindingMode">The data binding mode.</param>
+        /// <param name="Name">The name.</param>
+        /// <param name="Description">The description.</param>
+        public virtual void Init(DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name = "", string Description = "")
+        {
+            mDataBindingMode = DataBindingMode;
+            this.DbConnection = this.DbContext.DbConnection;
+            this.DbContext.EnsureConnectionOpen();
+            this.Name = Name;
+            this.Description = Description;
+            Repository.DbConnection = this.DbConnection;
+
+        }
+
+
         /// <summary>
         /// Reloads the items.
         /// </summary>
@@ -1848,7 +2081,7 @@ namespace Passero.Framework
             //    ER.ResultCode = ExecutionResultCodes.Failed;
             //    ER.ResultMessage = $"No data for query\n{Framework .DapperHelper .Utilities .ResolveSQL (SqlQuery,(DynamicParameters)Parameters)}";
             //}
-            DataNavigatorRaiseEventBoundCompled();
+            DataNavigatorRaiseEventBoundCompleted();
             return ER;
         }
 
@@ -1925,7 +2158,7 @@ namespace Passero.Framework
             }
             MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
-            //DataNavigatorRaiseEventBoundCompled();
+            //DataNavigatorRaiseEventBoundCompleted();
             return ER;
         }
         /// <summary>
@@ -2011,7 +2244,7 @@ namespace Passero.Framework
 
             MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
-            //DataNavigatorRaiseEventBoundCompled()
+            //DataNavigatorRaiseEventBoundCompleted()
             return ER;
         }
 
@@ -2050,7 +2283,7 @@ namespace Passero.Framework
                 }
 
                 ModelItem = ER.Value;
-                DataNavigatorRaiseEventBoundCompled();
+                DataNavigatorRaiseEventBoundCompleted();
             }
             catch (Exception ex)
             {
@@ -3292,7 +3525,43 @@ namespace Passero.Framework
         /// <param name="ModelPropertyName">Name of the model property.</param>
         /// <param name="BindingBehaviour">The binding behaviour.</param>
         /// <returns></returns>
-        public bool AddControl(Control Control, string ControlPropertyName, string ModelPropertyName, BindingBehaviour BindingBehaviour = (BindingBehaviour)((int)BindingBehaviour.Insert + (int)BindingBehaviour.Update + (int)BindingBehaviour.Select))
+        //public bool AddControl(Control Control, string ControlPropertyName, string ModelPropertyName, BindingBehaviour BindingBehaviour = (BindingBehaviour)((int)BindingBehaviour.Insert + (int)BindingBehaviour.Update + (int)BindingBehaviour.Select))
+        //{
+        //    string Key = GetBoundControlKey(Control, ControlPropertyName);
+
+        //    var _DataBindControl = new DataBindControl();
+        //    _DataBindControl.Control = Control;
+        //    _DataBindControl.ControlPropertyName = ControlPropertyName;
+        //    _DataBindControl.ModelPropertyName = ModelPropertyName;
+        //    _DataBindControl.BindingBehaviour = BindingBehaviour;
+
+        //    DataBindControls[Key] = _DataBindControl;
+
+        //    if (DataBindControlsAutoSetMaxLenght == true)
+        //    {
+        //        if (Utilities.ObjectPropertyExist(_DataBindControl.Control, "MaxLength"))
+        //        {
+        //            if (Repository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
+        //            {
+        //                int maxlength = Repository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
+        //                Interaction.CallByName(_DataBindControl.Control, "MaxLength", CallType.Set, maxlength);
+        //            }
+        //        }
+        //    }
+
+        //    //if (mDataBindingMode == DataBindingMode.BindingSource)
+        //    //{
+        //    //    Control.DataBindings.Add(ControlPropertyName, mBindingSource , ModelPropertyName);
+        //    //}
+
+        //    return true;
+        //    // Else
+        //    // Return False
+        //    // End If
+        //}
+
+        public bool AddControl(Control Control, string ControlPropertyName, string ModelPropertyName,
+         BindingBehaviour BindingBehaviour = (BindingBehaviour)((int)BindingBehaviour.Insert + (int)BindingBehaviour.Update + (int)BindingBehaviour.Select))
         {
             string Key = GetBoundControlKey(Control, ControlPropertyName);
 
@@ -3304,28 +3573,21 @@ namespace Passero.Framework
 
             DataBindControls[Key] = _DataBindControl;
 
-            if (DataBindControlsAutoSetMaxLenght == true)
+            if (DataBindControlsAutoSetMaxLenght == true && DapperRepository != null)
             {
                 if (Utilities.ObjectPropertyExist(_DataBindControl.Control, "MaxLength"))
                 {
-                    if (Repository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
+                    if (DapperRepository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
                     {
-                        int maxlength = Repository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
+                        int maxlength = DapperRepository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
                         Interaction.CallByName(_DataBindControl.Control, "MaxLength", CallType.Set, maxlength);
                     }
                 }
             }
 
-            //if (mDataBindingMode == DataBindingMode.BindingSource)
-            //{
-            //    Control.DataBindings.Add(ControlPropertyName, mBindingSource , ModelPropertyName);
-            //}
-
             return true;
-            // Else
-            // Return False
-            // End If
         }
+
 
         /// <summary>
         /// Removes the control.
@@ -3575,6 +3837,55 @@ namespace Passero.Framework
         /// <param name="Value">The value.</param>
         /// <param name="ModelPropertyName">Name of the model property.</param>
         /// <returns></returns>
+        //private object CheckControlValue(object Value, string ModelPropertyName)
+        //{
+        //    if (Value is not null)
+        //    {
+        //        switch (Value.GetType())
+        //        {
+        //            case var @case when @case == typeof(DateTime):
+        //                {
+        //                    DateTime d = Conversions.ToDate(Value);
+        //                    if (d < MinDateTime | d > MaxDateTime)
+        //                    {
+        //                        Value = new DateTime?();
+        //                    }
+
+        //                    break;
+        //                }
+        //            case var case1 when case1 == typeof(string):
+        //                {
+        //                    if (mAutoFitColumnsLenght == true)
+        //                    {
+        //                        if (Repository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
+        //                        {
+        //                            string s = Conversions.ToString(Value);
+        //                            int maxlength = Repository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
+        //                            if (s.Length > maxlength)
+        //                            {
+        //                                //s = s.Substring(0, maxlength);
+        //                                // Sostituzione di Substring con AsSpan
+        //                                s = s.AsSpan(0, maxlength).ToString();
+
+        //                                Value = s;
+        //                            }
+        //                        }
+        //                    }
+
+        //                    break;
+        //                }
+
+        //            default:
+        //                {
+        //                    break;
+        //                }
+
+        //        }
+        //    }
+
+        //    return Value;
+        //}
+
         private object CheckControlValue(object Value, string ModelPropertyName)
         {
             if (Value is not null)
@@ -3588,41 +3899,32 @@ namespace Passero.Framework
                             {
                                 Value = new DateTime?();
                             }
-
                             break;
                         }
                     case var case1 when case1 == typeof(string):
                         {
-                            if (mAutoFitColumnsLenght == true)
+                            if (mAutoFitColumnsLenght == true && DapperRepository != null)
                             {
-                                if (Repository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
+                                if (DapperRepository.DbObject.DbColumns.ContainsKey(ModelPropertyName))
                                 {
                                     string s = Conversions.ToString(Value);
-                                    int maxlength = Repository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
+                                    int maxlength = DapperRepository.DbObject.DbColumns[ModelPropertyName].DataColumn.MaxLength;
                                     if (s.Length > maxlength)
                                     {
-                                        //s = s.Substring(0, maxlength);
-                                        // Sostituzione di Substring con AsSpan
                                         s = s.AsSpan(0, maxlength).ToString();
-
                                         Value = s;
                                     }
                                 }
                             }
-
                             break;
                         }
-
                     default:
-                        {
-                            break;
-                        }
-
+                        break;
                 }
             }
-
             return Value;
         }
+
         //public ModelClass SetModelShadow()
         //{
         //    return Repository.SetModelShadow();

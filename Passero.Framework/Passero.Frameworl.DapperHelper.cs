@@ -288,7 +288,7 @@ namespace Passero.Framework.DapperHelper
             {
                 case "VB$AnonymousType_0`1":
                     return null;
-                    break;
+                    
                 case "DynamicParameters":
                     return (DynamicParameters)Params;
             }

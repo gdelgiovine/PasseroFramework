@@ -31,16 +31,12 @@ namespace PasseroDemo.Views
 
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
-            //this.dataNavigator1.ViewModels["Title"] = new DataNavigatorViewModel(this.vmTitle , "Titles");
-            //this.dataNavigator1.ViewModels["RoySched"] = new DataNavigatorViewModel(this.vmRoysched, "RoySched","",this.dgvRoyalties);
-            //this.dataNavigator1.SetActiveViewModel("Title");
-
-
+           
             this.dataNavigator1.AddViewModel(this.vmTitle , "Title");
             this.dataNavigator1.AddViewModel(this.vmRoysched , "Royalties", this.dgvRoyalties );
             this.dataNavigator1.SetActiveViewModel(this.vmTitle);
 
-
+            this.dataNavigator1 .UseUpdateEx = false;    
             this.dataNavigator1.Init(true);
             this.dataNavigator1.SetButtonsForReadOnly();
         }   
@@ -86,13 +82,14 @@ namespace PasseroDemo.Views
             {
                 this.flowLayoutPanel1.Parent = this.tabPageRoyalties;
                 this.dgvRoyalties.ReadOnly = false;
-                this.dataNavigator1.SetActiveViewModel("RoySched");
+                this.dataNavigator1 .SetActiveViewModel (this.vmRoysched );
                 this.dataNavigator1.SetButtonsForReadWrite    ();  
             }
             else
             {
                 this.flowLayoutPanel1.Parent = this.tabPageTitles;
-                this.dataNavigator1.SetActiveViewModel("Title");
+                
+                this.dataNavigator1.SetActiveViewModel(this.vmTitle );
                 this.dgvRoyalties.ReadOnly = true;
                 this.dataNavigator1.SetButtonsForReadOnly ();
             }

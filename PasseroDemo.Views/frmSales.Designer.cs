@@ -100,6 +100,7 @@
             // tabPageSalesMaster
             // 
             this.tabPageSalesMaster.AutoScroll = true;
+            this.tabPageSalesMaster.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.tabPageSalesMaster.Controls.Add(this.flowLayoutPanel1);
             this.tabPageSalesMaster.Location = new System.Drawing.Point(0, 40);
             this.tabPageSalesMaster.Name = "tabPageSalesMaster";
@@ -108,6 +109,7 @@
             // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.flowLayoutPanel1.Controls.Add(this.pnl_SalesMaster);
             this.flowLayoutPanel1.Controls.Add(this.dgv_SalesDetails);
             this.flowLayoutPanel1.Dock = Wisej.Web.DockStyle.Fill;
@@ -266,6 +268,7 @@
             // dgv_SalesDetails
             // 
             this.dgv_SalesDetails.AutoGenerateColumns = false;
+            this.dgv_SalesDetails.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.dgv_SalesDetails.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
             this.dgvc_ord_num,
             this.dgvc_title_id,
@@ -342,6 +345,7 @@
             // tabPageSalesDetails
             // 
             this.tabPageSalesDetails.AutoScroll = true;
+            this.tabPageSalesDetails.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.tabPageSalesDetails.Location = new System.Drawing.Point(0, 40);
             this.tabPageSalesDetails.Name = "tabPageSalesDetails";
             this.tabPageSalesDetails.Size = new System.Drawing.Size(1006, 368);

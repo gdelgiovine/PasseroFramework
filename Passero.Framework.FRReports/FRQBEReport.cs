@@ -12,7 +12,7 @@ using FastReport;
 using FastReport.Export.PdfSimple.PdfObjects;
 using System.Collections.Generic;
 using System.Drawing.Printing;
-using System.Reflection.Metadata;
+
 using MiniExcelLibs;
 using FastReport.Export;
 using System.Net.Http;
@@ -396,6 +396,8 @@ namespace Passero.Framework.FRReports
                    
 
             byte[] ReportBytes = FRReport.Render(Format,ImageDpi );
+            //byte[] ReportBytes = FRReport.RenderInjectedDataSet(Format, ImageDpi);
+
             if (FRReport.LastExecutionResult.Exception != null)
             {
                 this.RenderError = FRReport.LastExecutionResult.ResultMessage + "\n" + FRReport.LastExecutionResult.Exception.ToString();
@@ -581,15 +583,38 @@ namespace Passero.Framework.FRReports
                     foreach (var _Value in Values)
                     {
                         string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                        if (this.chkLikeOperator.Checked)
+                        //if (this.chkLikeOperator.Checked)
+                        //{
+                        //    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
+                        //    parameters.Add(parametername, "%"+_Value+"%", Passero.Framework.Utilities.GetDbType(PropertyType));
+                        //}
+                        //else
+                        //{
+                        //    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
+                        //    parameters.Add(parametername,RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
+                        //}
+
+                        // GESTIONE PRIORITARIA PER COLONNE BOOLEAN/BIT
+                        if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
+                        {
+                            // Converte il valore stringa in boolean
+                            bool boolValue;
+                            if (bool.TryParse(_Value, out boolValue))
+                            {
+                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
+                                parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
+                            }
+                            // Se il valore non è un boolean valido, salta questa condizione
+                        }
+                        else if (this.chkLikeOperator.Checked)
                         {
                             sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                            parameters.Add(parametername, "%"+_Value+"%", Passero.Framework.Utilities.GetDbType(PropertyType));
+                            parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
                         }
                         else
                         {
                             sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                            parameters.Add(parametername,RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
+                            parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
                         }
 
                         if (sqlwhereitem.Length > 0)

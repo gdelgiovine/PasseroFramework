@@ -12,19 +12,21 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework.SSRSReports</PackageId>
-		<Version>3.5.25.1</Version>
+		<PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>3.5.31</WisejNETVersion>
+		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
 		<Authors>Gabriele Del Giovine</Authors>
 		<Company>Gabriele Del Giovine</Company>
-		<Description>Libreria per la gestione di report Microsoft SSRS nel Passero Framework</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Reporting Sevices;SSRS;reports;passero;framework</PackageTags>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.SSRSReports</PackageId>
+		<Description>SSRS support library for Passero Framework</Description>
+		<PackageTags>Wisej.NET;MVVM;SSRS;reports;passero;framework</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		
 		<OutputPath>..\NugetPackages</OutputPath>
 	</PropertyGroup>
 
@@ -44,28 +46,20 @@
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
     <PackageReference Include="MiniExcel" Version="1.42.0" />
-	<PackageReference Include="Wisej-3" Version="3.5.25" />
+	  <PackageReference Include="Wisej-3" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-BootstrapIcons" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-Camera" Version="3.5.31" />
+	  <PackageReference Include="Wisej-3-NavigationBar" Version="3.5.31" />
    
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="ReportViewerCore.NETCore">
-      <Version>15.1.26</Version>
-    </PackageReference>
-  </ItemGroup>
+  
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="ReportViewerCore.NETCore">
-      <Version>15.1.27</Version>
-    </PackageReference>
+		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" /> 
+		<PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
+
   </ItemGroup>
-	
-	
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="ReportViewerCore.NETCore">
-			<Version>15.1.25</Version>
-		</PackageReference>
-	</ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1652.0" />

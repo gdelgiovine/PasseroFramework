@@ -46,7 +46,9 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// The m repository
         /// </summary>
-        private Repository<ModelClass> mRepository = new Repository<ModelClass>();
+        //private Repository<ModelClass> mRepository = new Repository<ModelClass>();
+        private Base.IPasseroRepository<ModelClass> mRepository = new Repository<ModelClass>();
+
         /// <summary>
         /// The SQL query parameters
         /// </summary>
@@ -112,36 +114,75 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The repository.
         /// </value>
-        private Repository<ModelClass> Repository
-        {
-            get
-            {
+        //private Repository<ModelClass> Repository
+        //{
+        //    get
+        //    {
 
-                return mRepository;
-            }
+        //        return mRepository;
+        //    }
+        //    set
+        //    {
+
+        //        mRepository = value;
+        //        var ModelPropertiesInfo = mRepository.GetProperties();
+        //        ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
+        //        foreach (var item in ModelPropertiesInfo)
+        //        {
+        //            ModelProperties.Add(item.Name, item);
+        //        }
+        //    }
+        //}
+
+        private Base.IPasseroRepository<ModelClass> Repository
+        {
+            get => mRepository as Repository<ModelClass>;
             set
             {
-
                 mRepository = value;
-                var ModelPropertiesInfo = mRepository.GetProperties();
-                ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
-                foreach (var item in ModelPropertiesInfo)
-                {
-                    ModelProperties.Add(item.Name, item);
-                }
+                LoadModelProperties();
             }
         }
 
+        /// <summary>
+        /// Espone il repository interno come <see cref="IPasseroRepository{ModelClass}"/>.
+        /// Usare questa proprietà quando il repository può essere EF o Dapper.
+        /// </summary>
+        public Base.IPasseroRepository<ModelClass> InternalRepository
+        {
+            get => mRepository;
+            set
+            {
+                mRepository = value;
+                LoadModelProperties();
+            }
+        }
+
+        //private void LoadModelProperties()
+        //{
+        //    var ModelPropertiesInfo = mRepository.GetProperties();
+        //    ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
+        //    foreach (var item in ModelPropertiesInfo)
+        //    {
+        //        ModelProperties.Add(item.Name, item);
+        //    }
+        //}   
         private void LoadModelProperties()
         {
-            var ModelPropertiesInfo = mRepository.GetProperties();
+            // Legge le proprietà direttamente dal tipo ModelClass via reflection,
+            // senza dipendere dall'implementazione concreta del repository (Dapper o EF).
             ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
-            foreach (var item in ModelPropertiesInfo)
+            foreach (var prop in typeof(ModelClass).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
             {
-                ModelProperties.Add(item.Name, item);
+                // Esclude le proprietà [Computed] e [NotMapped] come fa EfRepository
+                bool isComputed = prop.GetCustomAttribute<Dapper.Contrib.Extensions.ComputedAttribute>() != null;
+                bool isNotMapped = prop.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.NotMappedAttribute>() != null;
+                if (!isComputed && !isNotMapped)
+                {
+                    ModelProperties[prop.Name] = prop;
+                }
             }
-        }   
-
+        }
 
         /// <summary>
         /// Gets or sets the qbe bound controls.
@@ -259,6 +300,45 @@ namespace Passero.Framework.Controls
         }
 
         /// <summary>
+        /// Costruttore con <see cref="IPasseroDbContext"/>: istanzia automaticamente
+        /// il repository corretto (<see cref="EfRepository{ModelClass}"/> o <see cref="Repository{ModelClass}"/>)
+        /// in base all'<see cref="ORMType"/> del DbContext fornito.
+        /// </summary>
+        /// <param name="dbContext">Il DbContext che definisce l'ORM da usare.</param>
+        /// <param name="owner">Form proprietaria opzionale.</param>
+        public QBEForm(Base.IPasseroDbContext dbContext, Form owner = null)
+        {
+            if (dbContext == null)
+                throw new ArgumentNullException(nameof(dbContext));
+
+            if (owner != null)
+                this.Owner = owner;
+
+            // Crea il repository corretto in base all'ORMType del DbContext
+            dbContext.EnsureConnectionOpen();
+            switch (dbContext.ORMType)
+            {
+                case Base.ORMType.EntityFrameworkCore:
+                case Base.ORMType.EntityFramework6:
+                case Base.ORMType.EntityFramework:
+                    mRepository = new EfRepository<ModelClass>(dbContext);
+                    break;
+                default:
+                    // Dapper: usa la connessione esposta dal DbContext
+                    var dapperRepo = new Repository<ModelClass>();
+                    dapperRepo.DbConnection = dbContext.DbConnection;
+                    mRepository = dapperRepo;
+                    break;
+            }
+
+            LoadModelProperties();
+            InitializeComponent();
+            bSaveQBE.Visible = false;
+            bLoadQBE.Visible = false;
+            bPrint.Visible = false;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="QBEForm{ModelClass}"/> class.
         /// </summary>
         /// <param name="DbConnection">The database connection.</param>
@@ -324,7 +404,6 @@ namespace Passero.Framework.Controls
         /// </summary>
         public void ExportResultGrid()
         {
-
             string filename = "";
             filename = System.IO.Path.GetTempPath() + @"\" + System.Guid.NewGuid().ToString();
             string exportfilename = Passero.Framework.FileHelper.GetSafeFileName(Text);
@@ -333,7 +412,7 @@ namespace Passero.Framework.Controls
 
             if (rbExcel.Checked)
             {
-                MiniExcelLibs.MiniExcel.SaveAs(filename, Repository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.XLSX);
+                MiniExcelLibs.MiniExcel.SaveAs(filename, mRepository.ModelItems, true, "Sheet1", MiniExcelLibs.ExcelType.XLSX);
                 expofilenameextension = ".xlsx";
             }
 
@@ -345,14 +424,15 @@ namespace Passero.Framework.Controls
 
             if (rbJSON.Checked)
             {
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(Repository.ModelItems, Newtonsoft.Json.Formatting.Indented);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(mRepository.ModelItems, Newtonsoft.Json.Formatting.Indented);
                 System.IO.File.WriteAllText(filename, json);
                 expofilenameextension = ".json";
             }
+
             if (rbXML.Checked)
             {
                 DataTable dt;
-                dt = Passero.Framework.DataBaseHelper.ListToDataTable(Repository.ModelItems);
+                dt = Passero.Framework.DataBaseHelper.ListToDataTable(mRepository.ModelItems);
                 dt.TableName = "Row";
                 dt.WriteXml(filename, XmlWriteMode.WriteSchema, true);
                 dt.Dispose();
@@ -365,6 +445,7 @@ namespace Passero.Framework.Controls
                 Application.Download(Stream, exportfilename + expofilenameextension);
                 Stream.Close();
             }
+
             if (System.IO.File.Exists(filename))
             {
                 System.IO.File.Delete(filename);
@@ -778,15 +859,15 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// Builds the query3.
         /// </summary>
+        /// 
+
         private void BuildQuery3()
         {
-
             StringBuilder sqlwhere = new StringBuilder();
             string _WhereAND = "";
             OrderBy = OrderBy.Trim();
             QueryGrid.EndEdit();
             DynamicParameters parameters = new DynamicParameters();
-
 
             foreach (var item in QueryGrid.Rows)
             {
@@ -799,10 +880,10 @@ namespace Passero.Framework.Controls
                 string[] Values;
                 Type PropertyType = ModelProperties[item.Tag.ToString()].PropertyType;
                 Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
+
                 if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
                 {
                     Value = Value.Trim();
-
 
                     if (Value != ";")
                     {
@@ -818,9 +899,21 @@ namespace Passero.Framework.Controls
                     foreach (var _Value in Values)
                     {
                         string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                        if (chkLikeOperator.Checked)
-                        {
 
+                        // ✅ GESTIONE SPECIFICA PER COLONNE BOOLEAN/BIT
+                        if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
+                        {
+                            // Converte il valore stringa in boolean
+                            bool boolValue;
+                            if (bool.TryParse(_Value, out boolValue))
+                            {
+                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
+                                parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
+                            }
+                            // Se il valore non è un boolean valido, salta questa condizione
+                        }
+                        else if (chkLikeOperator.Checked)
+                        {
                             // controlla il tipo di dato della colonna
                             if (Passero.Framework.Utilities.IsNumericType(ModelProperties[item.Tag.ToString()].GetMethod.ReturnType))
                             {
@@ -832,7 +925,6 @@ namespace Passero.Framework.Controls
                                 sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
                                 parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
                             }
-
                         }
                         else
                         {
@@ -846,19 +938,16 @@ namespace Passero.Framework.Controls
                         }
                         i++;
                     }
+
                     if (sqlwhere.Length > 0)
                     {
                         _WhereAND = " AND ";
                     }
                     sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
-
                 }
-
-
             }
 
             string sTopRows = "";
-
             if (TopRows > 0)
             {
                 sTopRows = $"TOP ({TopRows})";
@@ -886,7 +975,7 @@ namespace Passero.Framework.Controls
 
             string rSQL = Framework.DapperHelper.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
-
+      
 
         /// <summary>
         /// Gets the comparision operator.
@@ -1214,7 +1303,79 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// Qbes the result mode selected rows.
         /// </summary>
+        /// 
         private void QBEResultMode_SelectedRows()
+        {
+            if (ResultGrid.SelectedRows.Count == 0)
+                return;
+            if (QBEModelPropertiesMapping.Count == 0)
+                return;
+
+            object targetModel = Passero.Framework.ReflectionHelper.GetPropertyValue(TargetRepository, "ModelItem");
+            if (targetModel is null)
+                targetModel = GetEmptyModel();
+
+            Type targetModelType = targetModel.GetType();
+            var targetModelProperties = new Dictionary<string, PropertyInfo>();
+            foreach (var item in targetModelType.GetProperties())
+                targetModelProperties.Add(item.Name, item);
+
+            DynamicParameters parameters = new DynamicParameters();
+            string _AND = "";
+            string _OR = "";
+            int i = 1;
+            StringBuilder sqlwhere = new StringBuilder();
+
+            foreach (DataGridViewRow row in ResultGrid.SelectedRows)
+            {
+                StringBuilder sqlwhererow = new StringBuilder();
+                _AND = "";
+                foreach (ModelPropertyMapping mapping in QBEModelPropertiesMapping)
+                {
+                    object propertyvalue = row[mapping.QBEModelProperty].Value;
+                    string propertyname = mapping.TargetModelProperty;
+                    Type type = targetModelProperties[propertyname].PropertyType;
+                    DbType dbType = Passero.Framework.Utilities.GetDbType(type);
+                    string parametername = $"@{propertyname}_{i}";
+                    parameters.Add(parametername, propertyvalue, dbType);
+                    sqlwhererow.Append($"{_AND} {propertyname} = {parametername} ");
+                    _AND = " AND ";
+                    i++;
+                }
+                sqlwhere.Append($" {_OR} ( {sqlwhererow} )");
+                _OR = " OR ";
+            }
+
+            string sqlquery = $"SELECT * FROM {Passero.Framework.DapperHelper.Utilities.GetTableName(targetModel)}";
+            if (sqlwhere.Length > 0)
+                sqlquery = sqlquery + " WHERE " + sqlwhere;
+
+            if (TargetRepository != null)
+            {
+                try
+                {
+                    // Usa l'interfaccia IPasseroRepository<T> direttamente se disponibile,
+                    // evitando la reflection che può fallire silenziosamente su EfRepository.
+                    if (TargetRepository is Passero.Framework.Base.IPasseroRepository<ModelClass> typedRepo)
+                    {
+                        typedRepo.SetSQLQuery(sqlquery, parameters);
+                    }
+                    else
+                    {
+                        // Fallback reflection per repository non tipizzati (retrocompatibilità)
+                        Passero.Framework.ReflectionHelper.InvokeMethodByName(
+                            ref TargetRepository, "SetSQLQuery", sqlquery, parameters);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Silenzioso: il QBE si chiude comunque
+                }
+            }
+
+            CloseQBEForm();
+        }
+        private void QBEResultMode_SelectedRows_OLD()
         {
             if (ResultGrid.SelectedRows.Count == 0)
                 return;

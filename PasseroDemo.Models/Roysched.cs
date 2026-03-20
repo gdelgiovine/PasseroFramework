@@ -18,7 +18,7 @@ namespace PasseroDemo.Models
         [ExplicitKey]
         
         public int lorange { get; set; }
-       
+        [ExplicitKey]
         public int hirange { get; set; }
         public int? royalty { get; set; }
     }
