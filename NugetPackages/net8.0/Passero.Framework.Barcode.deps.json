@@ -6,14 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "Passero.Framework.Barcode/1.0.0-3.5.31": {
+      "Passero.Framework.Barcode/1.0.0-3.5.32": {
         "dependencies": {
           "FreeSpire.Barcode": "6.6.0",
+          "Microsoft.VisualBasic": "10.3.0",
           "QRCoder": "1.7.0",
-          "Wisej-3": "3.5.31",
-          "Wisej-3-BootstrapIcons": "3.5.31",
-          "Wisej-3-Camera": "3.5.31",
-          "Wisej-3-NavigationBar": "3.5.31",
+          "Wisej-3": "3.5.32",
+          "Wisej-3-BootstrapIcons": "3.5.32",
+          "Wisej-3-Camera": "3.5.32",
+          "Wisej-3-NavigationBar": "3.5.32",
           "ZXing.Net": "0.16.11",
           "ZXing.Net.Bindings.SkiaSharp": "0.16.22"
         },
@@ -23,7 +24,8 @@
       },
       "FreeSpire.Barcode/6.6.0": {
         "dependencies": {
-          "System.Drawing.Common": "6.0.0"
+          "System.Drawing.Common": "6.0.0",
+          "System.Text.Encoding.CodePages": "6.0.0"
         },
         "runtime": {
           "lib/net6.0/Spire.Barcode.dll": {
@@ -32,6 +34,8 @@
           }
         }
       },
+      "Microsoft.CSharp/4.7.0": {},
+      "Microsoft.VisualBasic/10.3.0": {},
       "Microsoft.Win32.SystemEvents/6.0.0": {
         "runtime": {
           "lib/net6.0/Microsoft.Win32.SystemEvents.dll": {
@@ -185,6 +189,7 @@
           }
         }
       },
+      "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
       "System.Security.Cryptography.ProtectedData/8.0.0": {
         "runtime": {
           "lib/net8.0/System.Security.Cryptography.ProtectedData.dll": {
@@ -193,8 +198,14 @@
           }
         }
       },
-      "Wisej-3/3.5.31": {
+      "System.Text.Encoding.CodePages/6.0.0": {
         "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
+      "Wisej-3/3.5.32": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0",
           "System.Drawing.Common": "6.0.0",
           "System.Resources.Extensions": "8.0.0",
           "System.Runtime.Caching": "8.0.0"
@@ -202,7 +213,7 @@
         "runtime": {
           "lib/net8.0/Wisej.Framework.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         },
         "resources": {
@@ -250,36 +261,36 @@
           }
         }
       },
-      "Wisej-3-BootstrapIcons/3.5.31": {
+      "Wisej-3-BootstrapIcons/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Ext.BootstrapIcons.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
-      "Wisej-3-Camera/3.5.31": {
+      "Wisej-3-Camera/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Web.Ext.Camera.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
-      "Wisej-3-NavigationBar/3.5.31": {
+      "Wisej-3-NavigationBar/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Web.Ext.NavigationBar.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
@@ -306,7 +317,7 @@
     }
   },
   "libraries": {
-    "Passero.Framework.Barcode/1.0.0-3.5.31": {
+    "Passero.Framework.Barcode/1.0.0-3.5.32": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -317,6 +328,20 @@
       "sha512": "sha512-q3zcUS83luETbc/rSQuuGhf3oSJewBjXsJYts8VD+tHpy5UBbIVwps/KZS+vO23mWd237MOSeSrepv4txz4szQ==",
       "path": "freespire.barcode/6.6.0",
       "hashPath": "freespire.barcode.6.6.0.nupkg.sha512"
+    },
+    "Microsoft.CSharp/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
+      "path": "microsoft.csharp/4.7.0",
+      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
+    },
+    "Microsoft.VisualBasic/10.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-AvMDjmJHjz9bdlvxiSdEHHcWP+sZtp7zwule5ab6DaUbgoBnwCsd7nymj69vSz18ypXuEv3SI7ZUNwbIKrvtMA==",
+      "path": "microsoft.visualbasic/10.3.0",
+      "hashPath": "microsoft.visualbasic.10.3.0.nupkg.sha512"
     },
     "Microsoft.Win32.SystemEvents/6.0.0": {
       "type": "package",
@@ -388,6 +413,13 @@
       "path": "system.runtime.caching/8.0.0",
       "hashPath": "system.runtime.caching.8.0.0.nupkg.sha512"
     },
+    "System.Runtime.CompilerServices.Unsafe/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
+      "path": "system.runtime.compilerservices.unsafe/6.0.0",
+      "hashPath": "system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    },
     "System.Security.Cryptography.ProtectedData/8.0.0": {
       "type": "package",
       "serviceable": true,
@@ -395,33 +427,40 @@
       "path": "system.security.cryptography.protecteddata/8.0.0",
       "hashPath": "system.security.cryptography.protecteddata.8.0.0.nupkg.sha512"
     },
-    "Wisej-3/3.5.31": {
+    "System.Text.Encoding.CodePages/6.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5IzL4NzWz1l6f+q/VWgN5G+v+hUbZp+NK1UIprCTKGsHIDNs2FIPcLBqBwNBRnL8qGxtb6wEIlp+31jZ9bSATg==",
-      "path": "wisej-3/3.5.31",
-      "hashPath": "wisej-3.3.5.31.nupkg.sha512"
+      "sha512": "sha512-ZFCILZuOvtKPauZ/j/swhvw68ZRi9ATCfvGbk1QfydmcXBkIWecWKn/250UH7rahZ5OoDBaiAudJtPvLwzw85A==",
+      "path": "system.text.encoding.codepages/6.0.0",
+      "hashPath": "system.text.encoding.codepages.6.0.0.nupkg.sha512"
     },
-    "Wisej-3-BootstrapIcons/3.5.31": {
+    "Wisej-3/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7mPkOqI3th+aManbXsCjpRyRCtS15b/iHHRVBt8Nm4o66RohFDdrnhR/SzohGsl4fCtNgAIjfBAUigNKMH0vbQ==",
-      "path": "wisej-3-bootstrapicons/3.5.31",
-      "hashPath": "wisej-3-bootstrapicons.3.5.31.nupkg.sha512"
+      "sha512": "sha512-/d1rS9TpQI6cNWl99k9gnJR1BR/yEyo9RqUucOGTt0J1GfzZ2Lfir5CqS/ANJESAYdeDq9ZwgbMxmjSTqc4zJw==",
+      "path": "wisej-3/3.5.32",
+      "hashPath": "wisej-3.3.5.32.nupkg.sha512"
     },
-    "Wisej-3-Camera/3.5.31": {
+    "Wisej-3-BootstrapIcons/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nk8mZm4OnGpjuUe0sxcV+UrgxxMBDu5oV8NVQJlPywOi7FkxyMDqLPj+gb45g9F4ZObrpG8y1o7FJGwusc+CMg==",
-      "path": "wisej-3-camera/3.5.31",
-      "hashPath": "wisej-3-camera.3.5.31.nupkg.sha512"
+      "sha512": "sha512-zUOQBuFIEFo8VLM8Gj1RZZvNgga2ZXK9TU3wQVyiuxOxC4crdmlEBuND2eI9syuu6Z6N7/PPb/W8m9Utd1fiag==",
+      "path": "wisej-3-bootstrapicons/3.5.32",
+      "hashPath": "wisej-3-bootstrapicons.3.5.32.nupkg.sha512"
     },
-    "Wisej-3-NavigationBar/3.5.31": {
+    "Wisej-3-Camera/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DyuM1Y9vshEvkQKU1zcxI+nyvKjV3Y8ESzBeH9Mv4PjTQEA2rOwHEKf3S6ezXaQjq3FYdRPIcijvJAbp1IUDsg==",
-      "path": "wisej-3-navigationbar/3.5.31",
-      "hashPath": "wisej-3-navigationbar.3.5.31.nupkg.sha512"
+      "sha512": "sha512-EoHQBwopD+FJGGMnE9YxyNCVil47cHQfOu/JdABNEl63qUf+TDAtQk8xV+G3dRKjG7bFzDyGdOhAGwwpoalRMQ==",
+      "path": "wisej-3-camera/3.5.32",
+      "hashPath": "wisej-3-camera.3.5.32.nupkg.sha512"
+    },
+    "Wisej-3-NavigationBar/3.5.32": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5VVzE/ZV/S3Ul4FRznJKC9rPL2++z86npU4eFXgX+2UJZsQeALPQqs/jlbAiYV2NMcxyB6Xu7YG0o3eqqz+MSQ==",
+      "path": "wisej-3-navigationbar/3.5.32",
+      "hashPath": "wisej-3-navigationbar.3.5.32.nupkg.sha512"
     },
     "ZXing.Net/0.16.11": {
       "type": "package",

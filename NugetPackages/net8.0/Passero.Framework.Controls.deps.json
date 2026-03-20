@@ -6,18 +6,18 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "Passero.Framework.Controls/1.0.0-3.5.31": {
+      "Passero.Framework.Controls/1.0.0-3.5.32": {
         "dependencies": {
-          "Dapper": "2.1.66",
+          "Dapper": "2.1.72",
           "Dapper.ColumnMapper": "1.3.0",
           "Microsoft.VisualBasic": "10.3.0",
-          "MiniExcel": "1.42.0",
-          "Passero.Framework": "1.0.0-3.5.31",
+          "MiniExcel": "1.43.0",
+          "Passero.Framework": "1.0.0-3.5.32",
           "System.ComponentModel.Primitives": "4.3.0",
-          "Wisej-3": "3.5.31",
-          "Wisej-3-BootstrapIcons": "3.5.31",
-          "Wisej-3-Camera": "3.5.31",
-          "Wisej-3-NavigationBar": "3.5.31"
+          "Wisej-3": "3.5.32",
+          "Wisej-3-BootstrapIcons": "3.5.32",
+          "Wisej-3-Camera": "3.5.32",
+          "Wisej-3-NavigationBar": "3.5.32"
         },
         "runtime": {
           "Passero.Framework.Controls.dll": {}
@@ -54,17 +54,17 @@
           }
         }
       },
-      "Dapper/2.1.66": {
+      "Dapper/2.1.72": {
         "runtime": {
           "lib/net8.0/Dapper.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.1.66.48463"
+            "fileVersion": "2.1.72.10375"
           }
         }
       },
       "Dapper.ColumnMapper/1.3.0": {
         "dependencies": {
-          "Dapper": "2.1.66"
+          "Dapper": "2.1.72"
         },
         "runtime": {
           "lib/netstandard2.0/Dapper.ColumnMapper.dll": {
@@ -75,7 +75,7 @@
       },
       "Dapper.Contrib/2.0.78": {
         "dependencies": {
-          "Dapper": "2.1.66"
+          "Dapper": "2.1.72"
         },
         "runtime": {
           "lib/net5.0/Dapper.Contrib.dll": {
@@ -461,11 +461,11 @@
           }
         }
       },
-      "MiniExcel/1.42.0": {
+      "MiniExcel/1.43.0": {
         "runtime": {
           "lib/net8.0/MiniExcel.dll": {
-            "assemblyVersion": "1.42.0.0",
-            "fileVersion": "1.42.0.0"
+            "assemblyVersion": "1.43.0.0",
+            "fileVersion": "1.43.0.0"
           }
         }
       },
@@ -695,7 +695,7 @@
         }
       },
       "System.ValueTuple/4.5.0": {},
-      "Wisej-3/3.5.31": {
+      "Wisej-3/3.5.32": {
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "System.Drawing.Common": "6.0.0",
@@ -705,7 +705,7 @@
         "runtime": {
           "lib/net8.0/Wisej.Framework.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         },
         "resources": {
@@ -753,42 +753,42 @@
           }
         }
       },
-      "Wisej-3-BootstrapIcons/3.5.31": {
+      "Wisej-3-BootstrapIcons/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Ext.BootstrapIcons.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
-      "Wisej-3-Camera/3.5.31": {
+      "Wisej-3-Camera/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Web.Ext.Camera.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
-      "Wisej-3-NavigationBar/3.5.31": {
+      "Wisej-3-NavigationBar/3.5.32": {
         "dependencies": {
-          "Wisej-3": "3.5.31"
+          "Wisej-3": "3.5.32"
         },
         "runtime": {
           "lib/net8.0/Wisej.Web.Ext.NavigationBar.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.5.31.5"
+            "fileVersion": "3.5.32.3"
           }
         }
       },
-      "Passero.Framework/1.0.0-3.5.31": {
+      "Passero.Framework/1.0.0-3.5.32": {
         "dependencies": {
-          "Dapper": "2.1.66",
+          "Dapper": "2.1.72",
           "Dapper.ColumnMapper": "1.3.0",
           "Dapper.Contrib": "2.0.78",
           "FastDeepCloner": "1.3.6",
@@ -796,12 +796,12 @@
           "Microsoft.EntityFrameworkCore": "8.0.24",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.24",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.24",
-          "MiniExcel": "1.42.0",
+          "MiniExcel": "1.43.0",
           "Newtonsoft.Json": "13.0.4",
-          "Wisej-3": "3.5.31",
-          "Wisej-3-BootstrapIcons": "3.5.31",
-          "Wisej-3-Camera": "3.5.31",
-          "Wisej-3-NavigationBar": "3.5.31"
+          "Wisej-3": "3.5.32",
+          "Wisej-3-BootstrapIcons": "3.5.32",
+          "Wisej-3-Camera": "3.5.32",
+          "Wisej-3-NavigationBar": "3.5.32"
         },
         "runtime": {
           "Passero.Framework.dll": {
@@ -813,7 +813,7 @@
     }
   },
   "libraries": {
-    "Passero.Framework.Controls/1.0.0-3.5.31": {
+    "Passero.Framework.Controls/1.0.0-3.5.32": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -832,12 +832,12 @@
       "path": "azure.identity/1.17.1",
       "hashPath": "azure.identity.1.17.1.nupkg.sha512"
     },
-    "Dapper/2.1.66": {
+    "Dapper/2.1.72": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/q77jUgDOS+bzkmk3Vy9SiWMaetTw+NOoPAV0xPBsGVAyljd5S6P+4RUW7R3ZUGGr9lDRyPKgAMj2UAOwvqZYw==",
-      "path": "dapper/2.1.66",
-      "hashPath": "dapper.2.1.66.nupkg.sha512"
+      "sha512": "sha512-ns4mGqQd9a/MhP8m6w556vVlZIa0/MfUu03zrxjZC/jlr1uVCsUac8bkdB+Fs98Llbd56rRSo1eZH5VVmeGZyw==",
+      "path": "dapper/2.1.72",
+      "hashPath": "dapper.2.1.72.nupkg.sha512"
     },
     "Dapper.ColumnMapper/1.3.0": {
       "type": "package",
@@ -1077,12 +1077,12 @@
       "path": "microsoft.win32.systemevents/6.0.0",
       "hashPath": "microsoft.win32.systemevents.6.0.0.nupkg.sha512"
     },
-    "MiniExcel/1.42.0": {
+    "MiniExcel/1.43.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Jx0mLBJNcSJ7QThxtGoVAWBmEybUf6krVkI4iu+IF3vXwmUQeqAhveuwhk3YxStaHqASeHd8Sc8wlPhfVXY92g==",
-      "path": "miniexcel/1.42.0",
-      "hashPath": "miniexcel.1.42.0.nupkg.sha512"
+      "sha512": "sha512-ImtWDO4zpjNKuNdFlK5LeNcpVtN/8aWp8M0rd8LPjrCU87ND2qbUEfvIcuS9RDGw+9OxS4ZZaDI0PcHiLtb8qg==",
+      "path": "miniexcel/1.43.0",
+      "hashPath": "miniexcel.1.43.0.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.4": {
       "type": "package",
@@ -1252,35 +1252,35 @@
       "path": "system.valuetuple/4.5.0",
       "hashPath": "system.valuetuple.4.5.0.nupkg.sha512"
     },
-    "Wisej-3/3.5.31": {
+    "Wisej-3/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5IzL4NzWz1l6f+q/VWgN5G+v+hUbZp+NK1UIprCTKGsHIDNs2FIPcLBqBwNBRnL8qGxtb6wEIlp+31jZ9bSATg==",
-      "path": "wisej-3/3.5.31",
-      "hashPath": "wisej-3.3.5.31.nupkg.sha512"
+      "sha512": "sha512-/d1rS9TpQI6cNWl99k9gnJR1BR/yEyo9RqUucOGTt0J1GfzZ2Lfir5CqS/ANJESAYdeDq9ZwgbMxmjSTqc4zJw==",
+      "path": "wisej-3/3.5.32",
+      "hashPath": "wisej-3.3.5.32.nupkg.sha512"
     },
-    "Wisej-3-BootstrapIcons/3.5.31": {
+    "Wisej-3-BootstrapIcons/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7mPkOqI3th+aManbXsCjpRyRCtS15b/iHHRVBt8Nm4o66RohFDdrnhR/SzohGsl4fCtNgAIjfBAUigNKMH0vbQ==",
-      "path": "wisej-3-bootstrapicons/3.5.31",
-      "hashPath": "wisej-3-bootstrapicons.3.5.31.nupkg.sha512"
+      "sha512": "sha512-zUOQBuFIEFo8VLM8Gj1RZZvNgga2ZXK9TU3wQVyiuxOxC4crdmlEBuND2eI9syuu6Z6N7/PPb/W8m9Utd1fiag==",
+      "path": "wisej-3-bootstrapicons/3.5.32",
+      "hashPath": "wisej-3-bootstrapicons.3.5.32.nupkg.sha512"
     },
-    "Wisej-3-Camera/3.5.31": {
+    "Wisej-3-Camera/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nk8mZm4OnGpjuUe0sxcV+UrgxxMBDu5oV8NVQJlPywOi7FkxyMDqLPj+gb45g9F4ZObrpG8y1o7FJGwusc+CMg==",
-      "path": "wisej-3-camera/3.5.31",
-      "hashPath": "wisej-3-camera.3.5.31.nupkg.sha512"
+      "sha512": "sha512-EoHQBwopD+FJGGMnE9YxyNCVil47cHQfOu/JdABNEl63qUf+TDAtQk8xV+G3dRKjG7bFzDyGdOhAGwwpoalRMQ==",
+      "path": "wisej-3-camera/3.5.32",
+      "hashPath": "wisej-3-camera.3.5.32.nupkg.sha512"
     },
-    "Wisej-3-NavigationBar/3.5.31": {
+    "Wisej-3-NavigationBar/3.5.32": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DyuM1Y9vshEvkQKU1zcxI+nyvKjV3Y8ESzBeH9Mv4PjTQEA2rOwHEKf3S6ezXaQjq3FYdRPIcijvJAbp1IUDsg==",
-      "path": "wisej-3-navigationbar/3.5.31",
-      "hashPath": "wisej-3-navigationbar.3.5.31.nupkg.sha512"
+      "sha512": "sha512-5VVzE/ZV/S3Ul4FRznJKC9rPL2++z86npU4eFXgX+2UJZsQeALPQqs/jlbAiYV2NMcxyB6Xu7YG0o3eqqz+MSQ==",
+      "path": "wisej-3-navigationbar/3.5.32",
+      "hashPath": "wisej-3-navigationbar.3.5.32.nupkg.sha512"
     },
-    "Passero.Framework/1.0.0-3.5.31": {
+    "Passero.Framework/1.0.0-3.5.32": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
