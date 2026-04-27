@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net48;net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>10.0</LangVersion>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+		<DelaySign>False</DelaySign>
+	</PropertyGroup>
+
+
+	<PropertyGroup>
+		<PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>3.5.32</WisejNETVersion>
+		<WisejNETFamily>Wisej-3</WisejNETFamily>
+		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
+		<Authors>Gabriele Del Giovine</Authors>
+		<Company>Gabriele Del Giovine</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.BusinessSystem</PackageId>
+		<Description>ERP Base support library for Passero Framework</Description>
+		<PackageTags>Wisej.NET;MVVM;ERP;passero;framework</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<OutputPath>..\NugetPackages</OutputPath>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Wisej-3" Version="$(WisejNETVersion)" />
+		
+	</ItemGroup>
+
+</Project>

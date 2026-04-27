@@ -1,0 +1,39 @@
+using Passero.Framework;
+using System.Collections.Generic;
+using {{ Namespace }};
+
+namespace {{ Namespace }}.ViewModels
+{
+    public partial class vm{{ Entity }} : ViewModel<{{ Namespace }}.{{ Entity }}>
+    {
+        private readonly {{ Namespace }}.Repository.{{ Entity }}Repository repo;
+
+        public vm{{ Entity }}()
+        {
+            repo = new {{ Namespace }}.Repository.{{ Entity }}Repository(this.Repository.DbConnection);
+        }
+
+        public {{ Namespace }}.{{ Entity }} GetById(object id)
+        {
+            return repo.GetById(id);
+        }
+
+        public IEnumerable<{{ Namespace }}.{{ Entity }}> GetAll()
+        {
+            return repo.GetAll();
+        }
+
+        public void Save({{ Namespace }}.{{ Entity }} entity)
+        {
+            if (entity.{{ PrimaryKey }} == 0)
+                repo.Insert(entity);
+            else
+                repo.Update(entity);
+        }
+
+        public void Delete(object id)
+        {
+            repo.Delete(id);
+        }
+    }
+}

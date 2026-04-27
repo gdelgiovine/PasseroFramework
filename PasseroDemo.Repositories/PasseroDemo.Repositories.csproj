@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+	<WisejNETVersion>3.5.32</WisejNETVersion>
+	<WisejNETFamily>Wisej-3</WisejNETFamily>
+	  
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
+    <NoWarn>CA1416</NoWarn>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+	</PropertyGroup>
+	
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
+    <Reference Include="Microsoft.CSharp" />
+    
+    <Reference Include="System.Data.DataSetExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.72" />
+	<PackageReference Include="Wisej-3" Version="3.5.32" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
+    <ProjectReference Include="..\PasseroDemo.Models\PasseroDemo.Models.csproj" />
+  </ItemGroup>
+
+</Project>

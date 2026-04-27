@@ -1,0 +1,1965 @@
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
+using FastDeepCloner;
+using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.CompilerServices;
+using MiniExcelLibs;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Common;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Wisej.Core;
+using Wisej.Web;
+
+namespace Passero.Framework
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class Utilities
+    {
+
+        /// <summary>
+        /// Crea DynamicParameters da un oggetto anonimo o qualsiasi oggetto
+        /// </summary>
+        /// <param name="obj">Oggetto contenente i parametri</param>
+        /// <returns>DynamicParameters</returns>
+        public static Dapper.DynamicParameters CreateDynamicParameters(object obj)
+        {
+            var parameters = new Dapper.DynamicParameters();
+
+            if (obj == null)
+                return parameters;
+
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(obj);
+                parameters.Add(property.Name, value);
+            }
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Crea DynamicParameters da un dizionario
+        /// </summary>
+        /// <param name="dictionary">Dizionario chiave-valore</param>
+        /// <returns>DynamicParameters</returns>
+        public static Dapper.DynamicParameters CreateDynamicParameters(IDictionary<string, object> dictionary)
+        {
+            var parameters = new Dapper.DynamicParameters();
+
+            if (dictionary == null)
+                return parameters;
+
+            foreach (var kvp in dictionary)
+            {
+                parameters.Add(kvp.Key, kvp.Value);
+            }
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Aggiunge parametri da oggetto anonimo a DynamicParameters esistenti
+        /// </summary>
+        /// <param name="parameters">DynamicParameters esistenti</param>
+        /// <param name="obj">Oggetto contenente parametri da aggiungere</param>
+        public static void AddParameters(Dapper.DynamicParameters parameters, object obj)
+        {
+            if (obj == null || parameters == null)
+                return;
+
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(obj);
+                parameters.Add(property.Name, value);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets the dynamic parameters.
+        /// </summary>
+        /// <param name="Params">The parameters.</param>
+        /// <returns></returns>
+        public static DynamicParameters GetDynamicParameters(object Params)
+        {
+            if (Params == null)
+                return null;
+
+            switch (Params.GetType().Name)
+            {
+                case "VB$AnonymousType_0`1":
+                    return null;
+
+                case "DynamicParameters":
+                    return (DynamicParameters)Params;
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// Gets the properties information.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="ExcludeComputed">if set to <c>true</c> [exclude computed].</param>
+        /// <returns></returns>
+        public static List<PropertyInfo> GetModelPropertiesInfo(Type ModelClass, bool ExcludeComputed = false)
+        {
+            var properties = ModelClass.GetProperties();
+
+            List<PropertyInfo> x = new List<PropertyInfo>();
+            foreach (PropertyInfo p in properties)
+            {
+                if (p.GetCustomAttribute<Dapper.Contrib.Extensions.ComputedAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.WriteAttribute>() != null)
+                {
+                    if (ExcludeComputed == false)
+                    {
+                        x.Add(p);
+                    }
+                }
+                else
+                {
+                    x.Add(p);
+                }
+            }
+            return x;
+        }
+
+        /// <summary>
+        /// Gets the primary keys properties information.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        public static List<PropertyInfo> GetModelPrimaryKeysPropertiesInfo(Type ModelClass)
+        {
+            var properties = ModelClass.GetProperties();
+            List<PropertyInfo> x = new List<PropertyInfo>();
+            foreach (PropertyInfo p in properties)
+            {
+                if (p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null)
+                {
+                    x.Add(p);
+                }
+            }
+            return x;
+        }
+
+
+        /// <summary>
+        /// Gets the primary key names.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        public static string GetModelPrimaryKeyNames(Type ModelClass)
+        {
+            var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+
+            var values = string.Join(",", properties.Select((p) => $"{p.Name}"));
+            return values;
+
+        }
+        /// <summary>
+        /// Gets the primary key names list.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        public static List<string> GetModelPrimaryKeyNamesList(Type ModelClass)
+        {
+            List<string> x = new List<string>();
+            var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+
+            var values = string.Join(",", properties.Select((p) => $"{p.Name}"));
+            x = values.Split(',').ToList();
+            return x;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Properties the is writeable.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
+        public static bool PropertyIsWriteable(PropertyInfo pi)
+        {
+
+            var attributes = pi.GetCustomAttributes(typeof(WriteAttribute), false).AsList();
+            if (attributes.Count != 1)
+            {
+                return true;
+            }
+            WriteAttribute writeAttribute = (WriteAttribute)attributes[0];
+            return writeAttribute.Write;
+        }
+
+        /// <summary>
+        /// Properties the is explicit key.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
+        public static bool PropertyIsExplicitKey(PropertyInfo pi)
+        {
+            var attributes = pi.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        /// <summary>
+        /// Properties the is identity key.
+        /// </summary>
+        /// <param name="pi">The pi.</param>
+        /// <returns></returns>
+        public static bool PropertyIsIdentityKey(PropertyInfo pi)
+        {
+            var attributes = pi.GetCustomAttributes(typeof(KeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        /// <summary>
+        /// Properties the is explicit key.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
+        public static bool PropertyIsExplicitKey(Type ModelClass, string PropertyName)
+        {
+            if (string.IsNullOrEmpty(PropertyName.Trim()))
+            {
+                return false;
+            }
+
+            var pi = ModelClass.GetProperty(PropertyName);
+            if (pi == null)
+            {
+                return false;
+            }
+            var attributes = pi.GetCustomAttributes(typeof(ExplicitKeyAttribute), false).AsList();
+
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// Properties the is identity key.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
+        public static bool PropertyIsIdentityKey(Type ModelClass, string PropertyName)
+        {
+            if (string.IsNullOrEmpty(PropertyName.Trim()))
+            {
+                return false;
+            }
+
+            var pi = ModelClass.GetProperty(PropertyName);
+            if (pi == null)
+            {
+                return false;
+            }
+
+            var attributes = pi.GetCustomAttributes(typeof(KeyAttribute), false).AsList();
+            if (attributes.Count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+
+        /// <summary>
+        /// Gets the update SQL command.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        /// 
+
+        /// <summary>
+        /// Returns the mapped column name for a property, respecting <see cref="Dapper.ColumnMapper.ColumnMappingAttribute"/> when present.
+        /// Falls back to the property name if no mapping attribute is found.
+        /// </summary>
+        /// <param name="pi">The property info.</param>
+        /// <returns>The column name to use in SQL statements.</returns>
+        public static string GetMappedColumnName(PropertyInfo pi)
+        {
+            var attr = pi.GetCustomAttribute<Dapper.ColumnMapper.ColumnMappingAttribute>();
+            return attr != null ? attr.ColumnName : pi.Name;
+        }
+
+        /// <summary>
+        /// Gets the update SQL command, respecting column name mappings via <see cref="Dapper.ColumnMapper.ColumnMappingAttribute"/>.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        public static string GetUpdateSqlCommand(Type ModelClass)
+        {
+            List<PropertyInfo> properties;
+            StringBuilder sbset = new StringBuilder();
+            StringBuilder sbwhere = new StringBuilder();
+            string setlist;
+            string wherelist;
+            string sql;
+            properties = Utilities.GetModelPropertiesInfo(ModelClass, true);
+            foreach (PropertyInfo pi in properties)
+            {
+                var colName = GetMappedColumnName(pi);
+                if (!Utilities.PropertyIsIdentityKey(pi))
+                {
+                    sbset.Append($"{colName}=@{pi.Name}, ");
+                }
+                if (Utilities.PropertyIsExplicitKey(pi) ||  Utilities.PropertyIsIdentityKey(pi))
+                {
+                    sbwhere.Append($"{colName}=@{pi.Name}_shadow AND ");
+                }
+            }
+            setlist = sbset.ToString().Trim();
+            wherelist = sbwhere.ToString().Trim();
+            if (setlist.EndsWith(","))
+            {
+                setlist = setlist.Substring(0, setlist.Length - 1);
+            }
+            if (wherelist.EndsWith("AND"))
+            {
+                wherelist = wherelist.Substring(0, wherelist.Length - 3);
+            }
+            sql = $"UPDATE {Utilities.GetModelTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
+            return sql;
+        }
+
+        public static string GetUpdateSqlCommand_OLD(Type ModelClass)
+        {
+            List<PropertyInfo> properties;
+            StringBuilder sbset = new StringBuilder();
+            StringBuilder sbwhere = new StringBuilder();
+            string setlist;
+            string wherelist;
+            string sql;
+            properties = Utilities.GetModelPropertiesInfo(ModelClass, true);
+            foreach (PropertyInfo pi in properties)
+            {
+                if (! Utilities.PropertyIsIdentityKey   (pi))
+                {
+                    sbset.Append($"{pi.Name}=@{pi.Name}, ");
+                }
+                if (Utilities.PropertyIsExplicitKey(pi) ||  PropertyIsIdentityKey(pi))
+                {
+                    sbwhere.Append($"{pi.Name}=@{pi.Name}_shadow AND ");
+                }
+            }
+            setlist = sbset.ToString().Trim();
+            wherelist = sbwhere.ToString().Trim();
+            if (setlist.EndsWith(","))
+            {
+                setlist = setlist.Substring(0, setlist.Length - 1);
+            }
+            if (wherelist.EndsWith("AND"))
+            {
+                wherelist = wherelist.Substring(0, wherelist.Length - 3);
+            }
+            sql = $"UPDATE {Utilities.GetModelTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
+            return sql;
+        }
+
+
+
+        /// <summary>
+        /// Gets the INSERT SQL command for the given model type,
+        /// respecting column name mappings via <see cref="Dapper.ColumnMapper.ColumnMappingAttribute"/>.
+        /// Identity keys ([Key]) are excluded from the column list; explicit keys ([ExplicitKey]) are included.
+        /// Computed and non-writable properties are excluded.
+        /// Appends SELECT CAST(SCOPE_IDENTITY() AS BIGINT) to allow retrieving the generated identity value.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>A parameterized INSERT SQL string.</returns>
+        public static string GetInsertSqlCommand(Type ModelClass)
+        {
+            var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
+                .Where(pi => !Utilities.PropertyIsIdentityKey(pi))
+                .ToList();
+
+            var columns = string.Join(", ", properties.Select(pi => GetMappedColumnName(pi)));
+            var parameters = string.Join(", ", properties.Select(pi => $"@{pi.Name}"));
+
+            return $"INSERT INTO {  Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters}); SELECT CAST(SCOPE_IDENTITY() AS BIGINT)";
+        }
+
+        /// <summary>
+        /// Gets the insert SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
+        /// 
+
+        public static string GetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
+        {
+
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
+            return cmdbuilder.GetInsertCommand().CommandText;
+
+        }
+
+
+
+
+        /// <summary>
+        /// Gets the DELETE SQL command for the given model type,
+        /// respecting column name mappings via <see cref="Dapper.ColumnMapper.ColumnMappingAttribute"/>.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>A parameterized DELETE SQL string.</returns>
+        public static string GetDeleteSqlCommand(Type ModelClass)
+        {
+            var keys = Utilities.GetModelPrimaryKeysPropertiesInfo(ModelClass);
+            var where = string.Join(" AND ", keys.Select(pi => $"{GetMappedColumnName(pi)}=@{pi.Name}"));
+            return $"DELETE FROM {Utilities.GetModelTableName(ModelClass)} WHERE ({where})";
+        }
+
+
+        /// <summary>
+        /// Gets the delete SQL command.
+        /// </summary>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="SqlConnection">The SQL connection.</param>
+        /// <returns></returns>
+        public static string GetDeleteSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
+        {
+
+            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
+            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
+            return cmdbuilder.GetDeleteCommand().CommandText;
+
+        }
+
+
+
+        /// <summary>
+        /// Gets the property names.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
+        public static string GetModelPropertyNames(Type ModelClass, bool excludeKey = false)
+        {
+
+            var properties = ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
+            string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
+            return values;
+        }
+
+        /// <summary>
+        /// Gets the properties info2.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <param name="excludeKey">if set to <c>true</c> [exclude key].</param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> GetModelPropertiesInfo2(Type ModelClass, bool excludeKey = false)
+        {
+            var properties = ModelClass.GetProperties().Where(p => !excludeKey || p.GetCustomAttribute<System.ComponentModel.DataAnnotations.KeyAttribute>() is null);
+            return properties;
+        }
+
+        /// <summary>
+        /// is the list to CSV file.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <param name="filename">The filename.</param>
+        /// <param name="PrintHeader">if set to <c>true</c> [print header].</param>
+        /// <param name="SheetName">Name of the sheet.</param>
+        /// <returns></returns>
+        public static bool IListToCSVFile<T>(IList<T> data, string filename, bool PrintHeader = true, string SheetName = "")
+        {
+            bool save = false;
+            try
+            {
+                MiniExcel.SaveAs(filename, data, PrintHeader, SheetName, ExcelType.CSV);
+                save = true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return save;
+
+        }
+
+        /// <summary>
+        /// Objects the list to data table.
+        /// </summary>
+        /// <param name="ObjectList">The object list.</param>
+        /// <returns></returns>
+        public static DataTable ObjectListToDataTable(object ObjectList)
+        {
+
+            IList collection = (IList)ObjectList;
+            Type T = Passero.Framework.ReflectionHelper.GetListType(ObjectList);
+
+            DataTable dataTable = new DataTable(T.Name);
+            //Get all the properties
+            PropertyInfo[] Props = T.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name);
+            }
+            foreach (var item in collection)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
+        /// <summary>
+        /// Lists to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        public static DataTable ListToDataTable<T>(List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name);
+            }
+            foreach (T item in items)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item, null);
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
+
+        /// <summary>
+        /// is the list to data table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        public static DataTable IListToDataTable<T>(IList<T> data)
+        {
+            PropertyDescriptorCollection properties =
+                TypeDescriptor.GetProperties(typeof(T));
+            DataTable table = new DataTable();
+            foreach (PropertyDescriptor prop in properties)
+                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            foreach (T item in data)
+            {
+                DataRow row = table.NewRow();
+                foreach (PropertyDescriptor prop in properties)
+                    row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
+        /// <summary>
+        /// Gets the name of the column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ColumnName">Name of the column.</param>
+        /// <returns></returns>
+        public static string GetModelColumnName<T>(string ColumnName)
+        {
+            var pInfo = typeof(T).GetProperty(ColumnName).GetCustomAttribute<Dapper.ColumnMapper.ColumnMappingAttribute>();
+            string _ColumnName = pInfo.ColumnName;
+            return _ColumnName;
+        }
+
+        /// <summary>
+        /// Gets the name of the column.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="PropertyName">Name of the property.</param>
+        /// <returns></returns>
+        public static string GetModelColumnName<T>(object PropertyName)
+        {
+            string ColumnName = nameof(PropertyName);
+            var pInfo = typeof(T).GetProperty(ColumnName).GetCustomAttribute<Dapper.ColumnMapper.ColumnMappingAttribute>();
+            string _ColumnName = pInfo.ColumnName;
+            return _ColumnName;
+        }
+
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        /// <summary>
+        /// Gets the data table from dapper query.
+        /// </summary>
+        /// <param name="DbConnection">The database connection.</param>
+        /// <param name="SQLQuery">The SQL query.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <returns></returns>
+        public static DataTable GetDataTableFromDapperQuery(IDbConnection DbConnection, string SQLQuery, DynamicParameters? Parameters = null)
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+        {
+            DataTable dataTable = new DataTable();
+            IDataReader dataReader;
+            dataReader = DbConnection.ExecuteReader(SQLQuery, Parameters);
+            dataTable.Load(dataReader);
+            return dataTable;
+        }
+
+
+        /// <summary>
+        /// Dappers the select.
+        /// </summary>
+        /// <param name="dbConnection">The database connection.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        public static List<IDictionary<string, object>> DapperSelect(IDbConnection dbConnection, string query, object parameters)
+        {
+
+            {
+                var result = dbConnection.Query(query, parameters).ToList();
+
+                return result.Select(x => (IDictionary<string, object>)x).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Resolves the SQL.
+        /// </summary>
+        /// <param name="SQL">The SQL.</param>
+        /// <param name="Parameters">The parameters.</param>
+        /// <returns></returns>
+        public static string ResolveSQL(string SQL, Dapper.DynamicParameters Parameters)
+        {
+            string _SQL = SQL;
+
+            if (_SQL.Trim() == "" | _SQL == null)
+                return "";
+
+            if (Parameters == null)
+                return _SQL;
+
+
+            foreach (var Name in Parameters.ParameterNames)
+            {
+                var value = Parameters.Get<dynamic>(Name);
+                string ParamName = "@" + Name;
+                string ParamValue = "";
+                if (value is not null)
+                {
+                    if (
+                        value.GetType() == typeof(string) |
+                        value.GetType() == typeof(DateTime)
+
+                        )
+                    {
+
+                        ParamValue = $"'{value.ToString()}'";
+                    }
+                    else
+                    {
+                        ParamValue = $"{value.ToString()}";
+                    }
+                    _SQL = Regex.Replace(_SQL, ParamName, ParamValue, RegexOptions.IgnoreCase);
+                }
+            }
+
+            return _SQL;
+        }
+
+
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
+        public static string GetModelTableName<T>()
+        {
+            // Check if we've already set our custom table mapper to TableNameMapper.
+            if (SqlMapperExtensions.TableNameMapper != null)
+                return SqlMapperExtensions.TableNameMapper(typeof(T));
+
+            // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
+            string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+            MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+            if (getTableNameMethod == null)
+                throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
+
+#pragma warning disable CS8603 // Possibile restituzione di riferimento Null.
+            return getTableNameMethod.Invoke(null, new object[] { typeof(T) }) as string;
+#pragma warning restore CS8603 // Possibile restituzione di riferimento Null.
+
+
+        }
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <param name="ModelClass">The model class.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
+        public static string GetModelTableName(Type ModelClass)
+        {
+            // Check if we've already set our custom table mapper to TableNameMapper.
+            if (SqlMapperExtensions.TableNameMapper != null)
+                return SqlMapperExtensions.TableNameMapper(ModelClass);
+
+            // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
+            string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+            MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+            if (getTableNameMethod == null)
+                throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
+
+#pragma warning disable CS8603 // Possibile restituzione di riferimento Null.
+            return getTableNameMethod.Invoke(null, new object[] { ModelClass }) as string;
+#pragma warning restore CS8603 // Possibile restituzione di riferimento Null.
+
+
+        }
+
+
+
+
+        /// <summary>
+        /// Gets the name of the table.
+        /// </summary>
+        /// <param name="Model">The model.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
+        public static string GetModelTableName(object Model)
+        {
+            // Check if we've already set our custom table mapper to TableNameMapper.
+            if (SqlMapperExtensions.TableNameMapper != null)
+                return SqlMapperExtensions.TableNameMapper(Model.GetType());
+
+            // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
+            string getTableName = "GetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+            MethodInfo? getTableNameMethod = typeof(SqlMapperExtensions).GetMethod(getTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+            if (getTableNameMethod == null)
+                throw new ArgumentOutOfRangeException($"Method '{getTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
+
+#pragma warning disable CS8603 // Possibile restituzione di riferimento Null.
+            return getTableNameMethod.Invoke(null, new object[] { Model.GetType() }) as string;
+#pragma warning restore CS8603 // Possibile restituzione di riferimento Null.
+
+
+        }
+
+
+        /// <summary>
+        /// Sets the name of the table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Model">The model.</param>
+        /// <param name="TableName">Name of the table.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Method '{setTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.</exception>
+        public static string SetModelTableName<T>(T Model, string TableName)
+        {
+
+            // If not, we can use Dapper default method "SqlMapperExtensions.GetTableName(Type type)" which is unfortunately private, that's why we have to call it via reflection.
+            string setTableName = "SetTableName";
+#pragma warning disable CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+            MethodInfo? setTableNameMethod = typeof(SqlMapperExtensions).GetMethod(setTableName, BindingFlags.NonPublic | BindingFlags.Static);
+#pragma warning restore CS8632 // L'annotazione per i tipi riferimento nullable deve essere usata solo nel codice in un contesto di annotations '#nullable'.
+
+            if (setTableNameMethod == null)
+                throw new ArgumentOutOfRangeException($"Method '{setTableName}' is not found in '{nameof(SqlMapperExtensions)}' class.");
+
+            Interaction.CallByName(Model, setTableName, CallType.Set, TableName);
+            return setTableName;
+
+
+        }
+
+    
+
+
+
+
+        public static string GetObjectName(object obj,
+                  [CallerArgumentExpression("obj")] string objectExpression = null)
+        {
+            if (obj == null)
+                return string.Empty;
+
+            string name = string.Empty;
+
+            // 1. Prova a ottenere dalla proprietà Name dell'oggetto
+            var nameProperty = obj.GetType().GetProperty("Name");
+            if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            {
+                string propertyName = (string)nameProperty.GetValue(obj);
+                if (!string.IsNullOrWhiteSpace(propertyName))
+                {
+                    name = propertyName;
+                }
+            }
+
+            // 2. Se Name è vuoto, usa il nome della variabile catturato
+            if (string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(objectExpression))
+            {
+                // Rimuove "this." solo se è all'inizio (es: "this.vmTitles" -> "vmTitles")
+                name = objectExpression.StartsWith("this.")
+                    ? objectExpression.Substring(5)
+                    : objectExpression;
+            }
+
+            // 3. Fallback al nome del tipo
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = obj.GetType().Name;
+            }
+
+            return name;
+        }
+        public static string GetViewModelName(object ViewModel,
+             [CallerArgumentExpression("ViewModel")] string viewModelExpression = null)
+        {
+
+            //string Name = string.Empty;
+
+            //// 1. Prova a ottenere dalla proprietà Name del ViewModel
+            //var nameProperty = ViewModel.GetType().GetProperty("Name");
+            //if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            //{
+            //    string _Name = (string)nameProperty.GetValue(ViewModel) ?? string.Empty;
+            //    if (!string.IsNullOrWhiteSpace(_Name))
+            //    {
+            //        Name = _Name;
+            //    }
+            //}
+
+            //// 2. Se Name è vuoto, usa il nome della variabile catturato
+            //if (string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(viewModelExpression))
+            //{
+            //    // Rimuove "this." se presente (es: "this.vmTitles" -> "vmTitles")
+            //    Name = viewModelExpression.Replace("this.", "");
+            //}
+
+            //// 3. Fallback al nome del tipo
+            //if (string.IsNullOrWhiteSpace(Name))
+            //{
+            //    Name = ViewModel.GetType().Name;
+            //}
+            //return Name;
+
+            return GetModelName(ViewModel, viewModelExpression);    
+        }
+
+
+        public static string GetModelName(object Model,
+           [CallerArgumentExpression("Model")] string ModelExpression = null)
+        {
+
+            //string Name = string.Empty;
+
+            //// 1. Prova a ottenere dalla proprietà Name del ViewModel
+            //var nameProperty = Model.GetType().GetProperty("Name");
+            //if (nameProperty != null && nameProperty.PropertyType == typeof(string))
+            //{
+            //    string _Name = (string)nameProperty.GetValue(Model) ?? string.Empty;
+            //    if (!string.IsNullOrWhiteSpace(_Name))
+            //    {
+            //        Name = _Name;
+            //    }
+            //}
+
+            //// 2. Se Name è vuoto, usa il nome della variabile catturato
+            //if (string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(ModelExpression))
+            //{
+            //    // Rimuove "this." se presente (es: "this.vmTitles" -> "vmTitles")
+            //    Name = ModelExpression.Replace("this.", "");
+            //}
+
+            //// 3. Fallback al nome del tipo
+            //if (string.IsNullOrWhiteSpace(Name))
+            //{
+            //    Name = Model.GetType().Name;
+            //}
+            //return Name;
+
+            return GetObjectName(Model, ModelExpression);   
+        }
+
+        public static string GetRepositoryName(object Repository,
+          [CallerArgumentExpression("Repository")] string RepositoryExpression = null)
+        {
+            return GetObjectName(Repository ,RepositoryExpression );
+        }
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da Repository&lt;T&gt;.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsRepositoryType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo è generico e corrisponde a Repository<T>
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Repository<>))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsRepositoryType(type.BaseType);
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da ViewModel&lt;T&gt;.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsViewModelType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo è generico e corrisponde a ViewModel<T>
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ViewModel<>))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsViewModelType(type.BaseType);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verifica se l'oggetto è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="obj">L'oggetto da verificare.</param>
+        /// <returns>True se l'oggetto è valido, altrimenti false.</returns>
+        public static bool IsViewModelType(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            return IsViewModelType(obj.GetType());
+        }
+
+        /// <summary>
+        /// Verifica se l'oggetto è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="obj">L'oggetto da verificare.</param>
+        /// <returns>True se l'oggetto è valido, altrimenti false.</returns>
+        public static bool IsModelBaseType(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            return IsModelBaseType(obj.GetType());
+        }
+
+        /// <summary>
+        /// Verifica se il tipo è o deriva da ModelBase.
+        /// </summary>
+        /// <param name="type">Il tipo da verificare.</param>
+        /// <returns>True se il tipo è valido, altrimenti false.</returns>
+        public static bool IsModelBaseType(Type type)
+        {
+            if (type == null)
+                return false;
+
+            // Controlla se il tipo corrisponde a ModelBase
+            if (type == typeof(ModelBase))
+                return true;
+
+            // Controlla ricorsivamente la classe base
+            if (type.BaseType != null)
+                return IsModelBaseType(type.BaseType);
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Disposes the wisej session.
+        /// </summary>
+        [WebMethod]
+        public static void DisposeWisejSession()
+        {
+#pragma warning disable CS0168 // La variabile è dichiarata, ma non viene mai usata
+            try
+            {
+            }
+
+            catch (Exception ex)
+            {
+                throw;
+            }
+#pragma warning restore CS0168 // La variabile è dichiarata, ma non viene mai usata
+
+        }
+        /// <summary>
+        /// Objects the property exist.
+        /// </summary>
+        /// <param name="Object">The object.</param>
+        /// <param name="Property">The property.</param>
+        /// <returns></returns>
+        public static bool ObjectPropertyExist(object Object, string Property)
+        {
+            if (Object is not null)
+            {
+                var type = Object.GetType();
+
+                if (type.GetProperty(Property) is null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+
+
+        /// <summary>
+        /// Gets the application runtime information.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetApplicationRuntimeInfo()
+        {
+
+
+            var wisejVersion = typeof(Wisej.Web.Application).Assembly
+                .GetName()
+                .Version
+                ?.ToString() ?? "N/A";
+
+            var sb = new StringBuilder();
+            sb.Append($"Wisej.NET Version: {wisejVersion}\n");
+            sb.Append($"OSArchitecture: {System.Runtime.InteropServices.RuntimeInformation.OSArchitecture}\n");
+            sb.Append($"OSDescription: {System.Runtime.InteropServices.RuntimeInformation.OSDescription}\n");
+            sb.Append($"ProcessArchitecture: {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}\n");
+#if NET
+            sb.Append($"RuntimeIdentifier: {System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier.ToString()}\n");
+#endif
+            sb.Append($"FrameworkDescription: {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}\n");
+            sb.Append($"Browser Device: {Application.Browser.Device}\n");
+            sb.Append($"Browser Version: {Application.Browser.Version}\n");
+            sb.Append($"Browser ScreenSize: {Application.Browser.ScreenSize.ToString()}\n");
+            return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Saves the byte array to file.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="filePath">The file path.</param>
+        public static void SaveByteArrayToFile(byte[] data, string filePath)
+        {
+            using (var writer = new BinaryWriter(File.OpenWrite(filePath)))
+            {
+                writer.Write(data);
+            }
+        }
+
+
+        /// <summary>
+        /// Determines whether [is valid date time] [the specified date time].
+        /// </summary>
+        /// <param name="DateTime">The date time.</param>
+        /// <returns>
+        ///   <c>true</c> if [is valid date time] [the specified date time]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsValidDateTime(DateTime DateTime)
+        {
+
+            if (DateTime.Date != new DateTime(1, 1, 1))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /// <summary>
+        /// Gets the type of the parent of.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
+        public static T GetParentOfType<T>(this Control control) where T : class
+        {
+            if (control?.Parent == null)
+                return null;
+
+            if (control.Parent is T parent)
+                return parent;
+
+            return GetParentOfType<T>(control.Parent);
+        }
+
+        /// <summary>
+        /// Determines whether [is valid json] [the specified string input].
+        /// </summary>
+        /// <param name="strInput">The string input.</param>
+        /// <returns>
+        ///   <c>true</c> if [is valid json] [the specified string input]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsValidJson(string strInput)
+        {
+            if (string.IsNullOrWhiteSpace(strInput))
+            {
+                return false;
+            }
+
+            strInput = strInput.Trim();
+
+            if (strInput.StartsWith("{") && strInput.EndsWith("}") || strInput.StartsWith("[") && strInput.EndsWith("]"))
+            {
+
+                try
+                {
+                    var obj = Newtonsoft.Json.Linq.JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    Console.WriteLine(jex.Message);
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Assigns the specified target.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target">The target.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [DebuggerStepThrough]
+        public static T Assign<T>(ref T target, T value)
+        {
+            target = value;
+            return value;
+        }
+
+
+        /// <summary>
+        /// Delays the process.
+        /// </summary>
+        /// <param name="Milliseconds">The milliseconds.</param>
+        public static void DelayProcess(int Milliseconds)
+        {
+            Task.Run(async () => await _DelayProcess(Milliseconds)).Wait();
+        }
+        /// <summary>
+        /// Delays the process.
+        /// </summary>
+        /// <param name="Milliseconds">The milliseconds.</param>
+        public async static Task _DelayProcess(int Milliseconds)
+        {
+            // Wait for 5 seconds
+            await Task.Delay(Milliseconds);
+        }
+        
+
+   
+
+
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        public static T WisejClone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            T newObject = Conversions.ToGenericParameter<T>(Activator.CreateInstance(source.GetType()));
+            newObject = Wisej.Core.WisejSerializer .Parse(Wisej.Core.WisejSerializer.Serialize(source));
+            return newObject;
+        }
+
+
+
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        /// 
+
+        public static T Clone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            // Usa FastDeepCloner per creare una copia profonda
+            return (T)FastDeepCloner.DeepCloner.Clone(source);
+        }
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        /// 
+        public static T JsonClone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+            T newObject = Conversions.ToGenericParameter<T>(Activator.CreateInstance(source.GetType()));
+            var deserializeSettings = new JsonSerializerSettings()
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+                //, ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                //, PreserveReferencesHandling = PreserveReferencesHandling.All 
+            };
+
+
+            newObject = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source), deserializeSettings);
+            return newObject;
+        }
+
+        /// <summary>
+        /// Objectses the equals.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="another">Another.</param>
+        /// <returns></returns>
+        public static bool ObjectsEquals(object obj, object another)
+        {
+            if (ReferenceEquals(obj, another))
+                return true;
+            if (obj is null || another is null)
+                return false;
+            if (obj.GetType() != another.GetType())
+                return false;
+            string objJson = JsonConvert.SerializeObject(obj);
+            string anotherJson = JsonConvert.SerializeObject(another);
+            return (objJson ?? "") == (anotherJson ?? "");
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// The get random static random generator
+        /// </summary>
+        private static Random GetRandom_staticRandomGenerator;
+
+        /// <summary>
+        /// Initializes the <see cref="Utilities"/> class.
+        /// </summary>
+        static Utilities()
+        {
+            GetRandom_staticRandomGenerator = new Random();
+        }
+
+        /// <summary>
+        /// Designs the mode.
+        /// </summary>
+        /// <returns></returns>
+        public static bool DesignMode()
+        {
+            return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+        }
+
+
+
+
+        /// <summary>
+        /// Gets the random.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">The maximum.</param>
+        /// <returns></returns>
+        public static int GetRandom(int min, int max)
+        {
+            max += 1;
+            return GetRandom_staticRandomGenerator.Next(min > max ? max : min, min > max ? min : max);
+        }
+
+
+        /// <summary>
+        /// Gets the true false data table for ComboBox.
+        /// </summary>
+        /// <param name="TrueDescription">The true description.</param>
+        /// <param name="FalseDescription">The false description.</param>
+        /// <returns></returns>
+        public static DataTable GetTrueFalseDataTableForComboBox(string TrueDescription = "True", string FalseDescription = "False")
+        {
+            var table = new DataTable();
+            table.Columns.Add("Id", typeof(bool));
+            table.Columns.Add("Desc", typeof(string));
+            table.Rows.Add(new object[] { false, FalseDescription });
+            table.Rows.Add(new object[] { true, TrueDescription });
+            return table;
+        }
+
+        /// <summary>
+        /// Gets the yes no data table for ComboBox.
+        /// </summary>
+        /// <param name="YesDescription">The yes description.</param>
+        /// <param name="NoDescription">The no description.</param>
+        /// <returns></returns>
+        public static DataTable GetYesNoDataTableForComboBox(string YesDescription = "Yes", string NoDescription = "No")
+        {
+            return GetTrueFalseDataTableForComboBox(YesDescription, NoDescription);
+        }
+
+
+        /// <summary>
+        /// Safes the image from file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        public static System.Drawing.Image SafeImageFromFile(string path)
+        {
+
+            byte[] bytesArr = null;
+            bytesArr = File.ReadAllBytes(path);
+
+            var memstr = new MemoryStream(bytesArr);
+            return System.Drawing.Image.FromStream(memstr);
+
+
+        }
+
+        /// <summary>
+        /// Creates new guid.
+        /// </summary>
+        /// <returns></returns>
+        public static string NewGUID()
+        {
+            var guid = Guid.NewGuid();
+            string upper = guid.ToString().Replace("-", "").ToUpper();
+            return upper;
+        }
+
+        /// <summary>
+        /// Reflections the get fields.
+        /// </summary>
+        /// <param name="t">The t.</param>
+        public static void Reflection_GetFields(Type t)
+        {
+            Console.WriteLine("***** Fields *****");
+            FieldInfo[] fields = t.GetFields();
+            for (int i = 0, loopTo = fields.Length - 1; i <= loopTo; i++)
+                Console.WriteLine("->{0}", fields[i].Name);
+            Console.WriteLine("");
+        }
+
+        /// <summary>
+        /// Reflections the get properties.
+        /// </summary>
+        /// <param name="t">The t.</param>
+        public static void Reflection_GetProperties(Type t)
+        {
+            Console.WriteLine("***** Properties *****");
+            PropertyInfo[] properties = t.GetProperties();
+            for (int i = 0, loopTo = properties.Length - 1; i <= loopTo; i++)
+                Console.WriteLine("->{0}", properties[i].Name);
+            Console.WriteLine("");
+        }
+
+        /// <summary>
+        /// Reflections the get valid filename.
+        /// </summary>
+        /// <param name="Filename">The filename.</param>
+        /// <returns></returns>
+        public static string Reflection_GetValidFilename(string Filename)
+        {
+            string regex = string.Format("[{0}]", Regex.Escape(new string(Path.GetInvalidFileNameChars())));
+            var removeInvalidChars = new Regex(regex, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+            return regex;
+        }
+
+
+        /// <summary>
+        /// Determines whether the specified expression is numeric.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified expression is numeric; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsNumeric(object expression)
+        {
+            if (expression == null)
+                return false;
+
+            double number;
+            return Double.TryParse(Convert.ToString(expression
+                                                    , CultureInfo.InvariantCulture)
+                                  , System.Globalization.NumberStyles.Any
+                                  , NumberFormatInfo.InvariantInfo
+                                  , out number);
+        }
+
+
+        /// <summary>
+        /// Determines whether [is numeric type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is numeric type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsNumericType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether [is list type] [the specified type].
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is list type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsListType(Type type)
+        {
+            if (null == type)
+                return false;
+
+            if (typeof(System.Collections.IList).IsAssignableFrom(type))
+                return true;
+            foreach (var it in type.GetInterfaces())
+                if (it.IsGenericType && typeof(IList<>) == it.GetGenericTypeDefinition())
+                    return true;
+            return false;
+        }
+        /// <summary>
+        /// Determines whether [is string type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is string type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsStringType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.String:
+                case TypeCode.Char:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether [is date time type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is date time type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsDateTimeType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.DateTime:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        /// <summary>
+        /// Determines whether [is boolean type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is boolean type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsBooleanType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.Boolean:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        /// <summary>
+        /// Determines whether [is object type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is object type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsObjectType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.Object:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether [is empty type] [the specified type].
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns>
+        ///   <c>true</c> if [is empty type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsEmptyType(Type Type)
+        {
+            switch (Type.GetTypeCode(Type))
+            {
+                case TypeCode.Empty:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the system type is.
+        /// </summary>
+        /// <param name="Type">The type.</param>
+        /// <returns></returns>
+        public static EnumSystemTypeIs GetSystemTypeIs(Type Type)
+        {
+            if (IsStringType(Type))
+                return EnumSystemTypeIs.String;
+            if (IsNumericType(Type))
+                return EnumSystemTypeIs.Numeric;
+            if (IsDateTimeType(Type))
+                return EnumSystemTypeIs.DateTime;
+            if (IsBooleanType(Type))
+                return EnumSystemTypeIs.Boolean;
+            if (IsObjectType(Type))
+                return EnumSystemTypeIs.Object;
+
+            return EnumSystemTypeIs.Empty;
+        }
+
+        //public enum EnumToDataTableDisplayItem
+        //{
+        //    Name,
+        //    Value,
+        //    Description,
+        //    ValueName,
+        //    ValueDescription,
+        //    NameDescription
+
+        //}
+        //public class EnumItem
+        //{
+        //    public string Name = "";
+        //    public string Value = "";
+        //    public string Description = "";
+        //    public EnumItem()
+        //    {
+        //    }
+        //}
+
+
+
+        //public enum SystemTypeIs
+        //{
+        //    Empty=0,
+        //    String=1,
+        //    Numeric=2,
+        //    DateTime=3,
+        //    Boolean=4,
+        //    Object=5
+        //}
+        //public enum EnumToDataTableValueItem
+        //{
+        //    Name,
+        //    Value
+
+
+        //}
+
+
+        /// <summary>
+        /// Databases the type of the type to.
+        /// </summary>
+        /// <param name="dbType">Type of the database.</param>
+        /// <returns></returns>
+        public static Type DbTypeToType(DbType dbType)
+        {
+            Type toReturn = typeof(DBNull);
+
+            switch (dbType)
+            {
+                case DbType.String:
+                    toReturn = typeof(string);
+                    break;
+
+                case DbType.UInt64:
+                    toReturn = typeof(UInt64);
+                    break;
+
+                case DbType.Int64:
+                    toReturn = typeof(Int64);
+                    break;
+
+                case DbType.Int32:
+                    toReturn = typeof(Int32);
+                    break;
+
+                case DbType.UInt32:
+                    toReturn = typeof(UInt32);
+                    break;
+
+                case DbType.Single:
+                    toReturn = typeof(float);
+                    break;
+
+                case DbType.Date:
+                    toReturn = typeof(DateTime);
+                    break;
+
+                case DbType.DateTime:
+                    toReturn = typeof(DateTime);
+                    break;
+
+                case DbType.Time:
+                    toReturn = typeof(DateTime);
+                    break;
+
+                case DbType.StringFixedLength:
+                    toReturn = typeof(string);
+                    break;
+
+                case DbType.UInt16:
+                    toReturn = typeof(UInt16);
+                    break;
+
+                case DbType.Int16:
+                    toReturn = typeof(Int16);
+                    break;
+
+                case DbType.SByte:
+                    toReturn = typeof(byte);
+                    break;
+
+                case DbType.Object:
+                    toReturn = typeof(object);
+                    break;
+
+                case DbType.AnsiString:
+                    toReturn = typeof(string);
+                    break;
+
+                case DbType.AnsiStringFixedLength:
+                    toReturn = typeof(string);
+                    break;
+
+                case DbType.VarNumeric:
+                    toReturn = typeof(decimal);
+                    break;
+
+                case DbType.Currency:
+                    toReturn = typeof(double);
+                    break;
+
+                case DbType.Binary:
+                    toReturn = typeof(byte[]);
+                    break;
+
+                case DbType.Decimal:
+                    toReturn = typeof(decimal);
+                    break;
+
+                case DbType.Double:
+                    toReturn = typeof(Double);
+                    break;
+
+                case DbType.Guid:
+                    toReturn = typeof(Guid);
+                    break;
+
+                case DbType.Boolean:
+                    toReturn = typeof(bool);
+                    break;
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Converts the type of the string to.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        /// <exception cref="System.InvalidCastException"></exception>
+        public static object ConvertStringToType(string value, Type type)
+        {
+            object result;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(type);
+                result = converter.ConvertFromString(value);
+                return result;
+            }
+            catch (Exception exception)
+            {
+                // Log this exception if required.
+                throw new InvalidCastException(string.Format("Unable to cast the {0} to type {1}", value, type, exception));
+            }
+        }
+
+
+
+        // Aggiungi questo campo statico nella classe Utilities
+        private static readonly Dictionary<Type, DbType> _typeToDbTypeMap = new Dictionary<Type, DbType>
+{
+    { typeof(bool), DbType.Boolean },
+    { typeof(byte), DbType.Byte },
+    { typeof(sbyte), DbType.SByte },
+    { typeof(short), DbType.Int16 },
+    { typeof(ushort), DbType.UInt16 },
+    { typeof(int), DbType.Int32 },
+    { typeof(uint), DbType.UInt32 },
+    { typeof(long), DbType.Int64 },
+    { typeof(ulong), DbType.UInt64 },
+    { typeof(float), DbType.Single },
+    { typeof(double), DbType.Double },
+    { typeof(decimal), DbType.Decimal },
+    { typeof(DateTime), DbType.DateTime },
+    { typeof(string), DbType.String },
+    { typeof(char), DbType.StringFixedLength },
+    { typeof(Guid), DbType.Guid },
+    { typeof(byte[]), DbType.Binary }
+};
+
+        /// <summary>
+        /// Gets the type of the database.
+        /// </summary>
+        /// <param name="runtimeType">Type of the runtime.</param>
+        /// <returns></returns>
+        public static DbType GetDbType(Type runtimeType)
+        {
+            var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
+            if (nonNullableType != null)
+            {
+                runtimeType = nonNullableType;
+            }
+
+            if (_typeToDbTypeMap.TryGetValue(runtimeType, out DbType dbType))
+            {
+                return dbType;
+            }
+
+            return DbType.Object;
+        }
+
+
+
+        /// <summary>
+        /// Gets the type of the database.
+        /// </summary>
+        /// <param name="runtimeType">Type of the runtime.</param>
+        /// <returns></returns>
+        /// 
+        public static DbType GetDbTypeA(Type runtimeType)
+        {
+            var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
+            if (nonNullableType != null)
+            {
+                runtimeType = nonNullableType;
+            }
+
+            // Mappatura diretta tra Type e DbType
+            if (runtimeType == typeof(string))
+                return DbType.String;
+
+            if (runtimeType == typeof(byte[]))
+                return DbType.Binary;
+
+            if (runtimeType == typeof(Guid))
+                return DbType.Guid;
+
+            switch (Type.GetTypeCode(runtimeType))
+            {
+                case TypeCode.Boolean:
+                    return DbType.Boolean;
+
+                case TypeCode.Byte:
+                    return DbType.Byte;
+
+                case TypeCode.SByte:
+                    return DbType.SByte;
+
+                case TypeCode.Int16:
+                    return DbType.Int16;
+
+                case TypeCode.UInt16:
+                    return DbType.UInt16;
+
+                case TypeCode.Int32:
+                    return DbType.Int32;
+
+                case TypeCode.UInt32:
+                    return DbType.UInt32;
+
+                case TypeCode.Int64:
+                    return DbType.Int64;
+
+                case TypeCode.UInt64:
+                    return DbType.UInt64;
+
+                case TypeCode.Single:
+                    return DbType.Single;
+
+                case TypeCode.Double:
+                    return DbType.Double;
+
+                case TypeCode.Decimal:
+                    return DbType.Decimal;
+
+                case TypeCode.DateTime:
+                    return DbType.DateTime;
+
+                case TypeCode.Char:
+                    return DbType.StringFixedLength;
+
+                case TypeCode.String:
+                    return DbType.String;
+
+                default:
+                    return DbType.Object;
+            }
+        }
+
+        public static DbType GetDbTypeDbParameter(Type runtimeType)
+        {
+            var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
+            if (nonNullableType != null)
+            {
+                runtimeType = nonNullableType;
+            }
+
+            var templateValue = (Object)null;
+            if (runtimeType.IsClass == false)
+            {
+                templateValue = Activator.CreateInstance(runtimeType);
+            }
+           
+            var sqlParamter = new SqlParameter (parameterName: String.Empty, value: templateValue);
+
+            return sqlParamter.DbType;
+        }
+
+        // Public Function __Assign(Of T)(ByRef target As T, value As T) As T
+        // target = value
+        // Return value
+        // End Function
+
+
+
+    }
+}

@@ -1,0 +1,19 @@
+using Passero.Framework;
+using Dapper;
+using System.Collections.Generic;
+using System.Linq;
+using System.Data;
+using {{Namespace}};
+
+namespace {{BaseNamespace}}.Repositories    
+{
+    public class rp{{Entity}} : Passero.Framework.Repository<{{FullEntityName}}>
+    {
+        
+
+        public rp{{Entity}}()
+        {
+            
+        }
+    }
+}

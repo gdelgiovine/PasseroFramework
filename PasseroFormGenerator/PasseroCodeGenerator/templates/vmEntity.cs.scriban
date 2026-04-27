@@ -1,0 +1,26 @@
+
+// PROPERTIES TO REPLACE:
+
+// EntityName
+// Title
+// PrimaryKey
+// Namespace
+// BaseNamespace
+// FullEntityName
+
+using Passero.Framework;
+using System.Collections.Generic;
+using {{Namespace}};
+
+namespace {{BaseNamespace}}.ViewModels
+{
+    public class vm{{EntityName}} : Passero.Framework.ViewModel<{{FullEntityName}}>
+    {
+        
+
+        public vm{{EntityName}}()
+        {
+            
+        }
+    }
+}

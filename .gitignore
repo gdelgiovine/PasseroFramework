@@ -1,0 +1,27 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.assets.json
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

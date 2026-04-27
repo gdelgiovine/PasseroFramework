@@ -1,0 +1,1937 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="Wisej.Framework" name="Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171" />
+  <data name="SplitContainer.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="SplitContainer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="SplitContainer.Orientation" type="Wisej.Web.Orientation, Wisej.Framework">
+    <value>Horizontal</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="PanelReportInfo.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtReportTitle.LabelText" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="txtReportTitle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 30</value>
+  </data>
+  <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Name" xml:space="preserve">
+    <value>txtReportTitle</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportTitle.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtReportDescription.LabelText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
+    <value>167, 3</value>
+  </data>
+  <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
+    <value>190, 30</value>
+  </data>
+  <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Name" xml:space="preserve">
+    <value>txtReportDescription</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.Parent" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 36</value>
+  </data>
+  <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Name" xml:space="preserve">
+    <value>PanelReportInfo</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;PanelReportInfo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtRenderError.Location" type="System.Drawing.Point, System.Drawing">
+    <value>428, 44</value>
+  </data>
+  <data name="txtRenderError.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtRenderError.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 30</value>
+  </data>
+  <data name="txtRenderError.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="txtRenderError.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;txtRenderError.Name" xml:space="preserve">
+    <value>txtRenderError</value>
+  </data>
+  <data name="&gt;&gt;txtRenderError.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtRenderError.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;txtRenderError.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="AspNetPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 43</value>
+  </data>
+  <data name="AspNetPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 64</value>
+  </data>
+  <data name="AspNetPanel.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="AspNetPanel.Text" xml:space="preserve">
+    <value>AspNetPanel</value>
+  </data>
+  <data name="AspNetPanel.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;AspNetPanel.Name" xml:space="preserve">
+    <value>AspNetPanel</value>
+  </data>
+  <data name="&gt;&gt;AspNetPanel.Type" xml:space="preserve">
+    <value>Wisej.Web.AspNetPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;AspNetPanel.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;AspNetPanel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="WebBrowser.Location" type="System.Drawing.Point, System.Drawing">
+    <value>167, 44</value>
+  </data>
+  <data name="WebBrowser.Size" type="System.Drawing.Size, System.Drawing">
+    <value>95, 64</value>
+  </data>
+  <data name="WebBrowser.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="WebBrowser.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;WebBrowser.Name" xml:space="preserve">
+    <value>WebBrowser</value>
+  </data>
+  <data name="&gt;&gt;WebBrowser.Type" xml:space="preserve">
+    <value>Wisej.Web.WebBrowser, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;WebBrowser.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;WebBrowser.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="PdfViewer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>268, 44</value>
+  </data>
+  <data name="PdfViewer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>154, 64</value>
+  </data>
+  <data name="PdfViewer.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;PdfViewer.Name" xml:space="preserve">
+    <value>PdfViewer</value>
+  </data>
+  <data name="&gt;&gt;PdfViewer.Type" xml:space="preserve">
+    <value>Wisej.Web.PdfViewer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PdfViewer.Parent" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;PdfViewer.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="PanelReportViewer.Location" type="System.Drawing.Point, System.Drawing">
+    <value>16, 18</value>
+  </data>
+  <data name="PanelReportViewer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>548, 120</value>
+  </data>
+  <data name="PanelReportViewer.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="PanelReportViewer.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;PanelReportViewer.Name" xml:space="preserve">
+    <value>PanelReportViewer</value>
+  </data>
+  <data name="&gt;&gt;PanelReportViewer.Type" xml:space="preserve">
+    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelReportViewer.Parent" xml:space="preserve">
+    <value>SplitContainer.Panel1</value>
+  </data>
+  <data name="&gt;&gt;PanelReportViewer.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="SplitContainer.Panel1.Text" xml:space="preserve">
+    <value>Report Viewer</value>
+  </data>
+  <data name="componentTool1.ImageSource" xml:space="preserve">
+    <value>icon-refresh</value>
+  </data>
+  <data name="componentTool1.ToolTipText" xml:space="preserve">
+    <value>Refresh Report Data</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Name" xml:space="preserve">
+    <value>SplitContainer.Panel1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.Parent" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="ReportGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="ReportGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="dgvcReportName.HeaderText" xml:space="preserve">
+    <value>Report Name</value>
+  </data>
+  <data name="dgvcReportDescription.HeaderText" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="dgvcReportFileName.HeaderText" xml:space="preserve">
+    <value>Report FileName</value>
+  </data>
+  <data name="dgvcReportFileName.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="ReportGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 5</value>
+  </data>
+  <data name="ReportGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="ReportGrid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>887, 98</value>
+  </data>
+  <data name="ReportGrid.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;ReportGrid.Name" xml:space="preserve">
+    <value>ReportGrid</value>
+  </data>
+  <data name="&gt;&gt;ReportGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;ReportGrid.Parent" xml:space="preserve">
+    <value>TabPageReports</value>
+  </data>
+  <data name="&gt;&gt;ReportGrid.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPageReports.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPageReports.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="TabPageReports.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 110</value>
+  </data>
+  <data name="TabPageReports.Text" xml:space="preserve">
+    <value>Avalaible Reports</value>
+  </data>
+  <data name="&gt;&gt;TabPageReports.Name" xml:space="preserve">
+    <value>TabPageReports</value>
+  </data>
+  <data name="&gt;&gt;TabPageReports.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageReports.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageReports.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="QueryGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="dgvcNomeCampo.HeaderText" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="dgvcValoreCampo.HeaderText" xml:space="preserve">
+    <value>Value/Conditions</value>
+  </data>
+  <data name="dgvcQueryColumn.HeaderText" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="dgvcQueryColumn.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="QueryGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>5, 30</value>
+  </data>
+  <data name="QueryGrid.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="QueryGrid.Size" type="System.Drawing.Size, System.Drawing">
+    <value>882, 72</value>
+  </data>
+  <data name="QueryGrid.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Name" xml:space="preserve">
+    <value>QueryGrid</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.Parent" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="&gt;&gt;QueryGrid.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="chkLikeOperator.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="chkLikeOperator.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="chkLikeOperator.Size" type="System.Drawing.Size, System.Drawing">
+    <value>194, 21</value>
+  </data>
+  <data name="chkLikeOperator.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="chkLikeOperator.Text" xml:space="preserve">
+    <value>Use CONTAINS operator</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Name" xml:space="preserve">
+    <value>chkLikeOperator</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Type" xml:space="preserve">
+    <value>Wisej.Web.CheckBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.Parent" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="&gt;&gt;chkLikeOperator.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="TabPageReportQuery.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 110</value>
+  </data>
+  <data name="TabPageReportQuery.Text" xml:space="preserve">
+    <value>Search Criteria</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Name" xml:space="preserve">
+    <value>TabPageReportQuery</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportQuery.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="flowLayoutPanel1.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lstSortColumns.LabelText" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="lstSortColumns.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="lstSortColumns.Size" type="System.Drawing.Size, System.Drawing">
+    <value>173, 101</value>
+  </data>
+  <data name="lstSortColumns.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="componentTool2.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-left</value>
+  </data>
+  <data name="componentTool2.ToolTipText" xml:space="preserve">
+    <value>Remove from Sort List</value>
+  </data>
+  <data name="componentTool3.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-right</value>
+  </data>
+  <data name="componentTool3.ToolTipText" xml:space="preserve">
+    <value>Add to Sort List</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Name" xml:space="preserve">
+    <value>lstSortColumns</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Type" xml:space="preserve">
+    <value>Wisej.Web.ListBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;lstSortColumns.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnSortRemove.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-left</value>
+  </data>
+  <data name="btnSortRemove.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="btnSortRemove.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortRemove.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;btnSortRemove.Name" xml:space="preserve">
+    <value>btnSortRemove</value>
+  </data>
+  <data name="&gt;&gt;btnSortRemove.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortRemove.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;btnSortRemove.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnSortAdd.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-right</value>
+  </data>
+  <data name="btnSortAdd.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 31</value>
+  </data>
+  <data name="btnSortAdd.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortAdd.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Name" xml:space="preserve">
+    <value>btnSortAdd</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;btnSortAdd.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>182, 3</value>
+  </data>
+  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 61</value>
+  </data>
+  <data name="panel1.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;panel1.Name" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;panel1.Type" xml:space="preserve">
+    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="btnSortUp.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-up</value>
+  </data>
+  <data name="btnSortUp.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="btnSortUp.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortUp.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;btnSortUp.Name" xml:space="preserve">
+    <value>btnSortUp</value>
+  </data>
+  <data name="&gt;&gt;btnSortUp.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortUp.Parent" xml:space="preserve">
+    <value>panel2</value>
+  </data>
+  <data name="&gt;&gt;btnSortUp.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnSortDown.ImageSource" xml:space="preserve">
+    <value>scrollbar-arrow-down</value>
+  </data>
+  <data name="btnSortDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 31</value>
+  </data>
+  <data name="btnSortDown.Size" type="System.Drawing.Size, System.Drawing">
+    <value>36, 25</value>
+  </data>
+  <data name="btnSortDown.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Name" xml:space="preserve">
+    <value>btnSortDown</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.Parent" xml:space="preserve">
+    <value>panel2</value>
+  </data>
+  <data name="&gt;&gt;btnSortDown.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>230, 3</value>
+  </data>
+  <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>42, 59</value>
+  </data>
+  <data name="panel2.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="panel2.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;panel2.Name" xml:space="preserve">
+    <value>panel2</value>
+  </data>
+  <data name="&gt;&gt;panel2.Type" xml:space="preserve">
+    <value>Wisej.Web.Panel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;panel2.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;panel2.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <metadata name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="dgvc_SelectedSortColumns_position.HeaderText" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_name.HeaderText" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_name.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_friendlyname.HeaderText" xml:space="preserve">
+    <value>FriendlyName</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_friendlyname.MinimumWidth" type="System.Int32, mscorlib">
+    <value>200</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_friendlyname.Width" type="System.Int32, mscorlib">
+    <value>200</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_ascdesc.HeaderText" xml:space="preserve">
+    <value>AscDesc</value>
+  </data>
+  <data name="dgvc_SelectedSortColumns_ascdesc.MinimumWidth" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="dgv_SelectedSortColumns.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 110</value>
+  </data>
+  <data name="dgv_SelectedSortColumns.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="dgv_SelectedSortColumns.Size" type="System.Drawing.Size, System.Drawing">
+    <value>607, 101</value>
+  </data>
+  <data name="dgv_SelectedSortColumns.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="componentTool4.ImageSource" xml:space="preserve">
+    <value>spinner-up</value>
+  </data>
+  <data name="componentTool4.ToolTipText" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="componentTool5.ImageSource" xml:space="preserve">
+    <value>spinner-down</value>
+  </data>
+  <data name="componentTool5.ToolTipText" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="&gt;&gt;dgv_SelectedSortColumns.Name" xml:space="preserve">
+    <value>dgv_SelectedSortColumns</value>
+  </data>
+  <data name="&gt;&gt;dgv_SelectedSortColumns.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgv_SelectedSortColumns.Parent" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;dgv_SelectedSortColumns.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="flowLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="flowLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>890, 101</value>
+  </data>
+  <data name="flowLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Name" xml:space="preserve">
+    <value>flowLayoutPanel1</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.Parent" xml:space="preserve">
+    <value>TabPageReportSort</value>
+  </data>
+  <data name="&gt;&gt;flowLayoutPanel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPageReportSort.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPageReportSort.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="TabPageReportSort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 110</value>
+  </data>
+  <data name="TabPageReportSort.Text" xml:space="preserve">
+    <value>Report Sorting</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportSort.Name" xml:space="preserve">
+    <value>TabPageReportSort</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportSort.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportSort.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageReportSort.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="rbExcel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="rbExcel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 23</value>
+  </data>
+  <data name="rbExcel.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="rbExcel.Text" xml:space="preserve">
+    <value>Excel  (.xls)</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Name" xml:space="preserve">
+    <value>rbExcel</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbExcel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="rbEXCELXML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>100, 3</value>
+  </data>
+  <data name="rbEXCELXML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 23</value>
+  </data>
+  <data name="rbEXCELXML.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="rbEXCELXML.Text" xml:space="preserve">
+    <value>Excel (.xlsx)</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Name" xml:space="preserve">
+    <value>rbEXCELXML</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbEXCELXML.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="rbWord.Location" type="System.Drawing.Point, System.Drawing">
+    <value>200, 3</value>
+  </data>
+  <data name="rbWord.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 23</value>
+  </data>
+  <data name="rbWord.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="rbWord.Text" xml:space="preserve">
+    <value>Word (.doc)</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Name" xml:space="preserve">
+    <value>rbWord</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbWord.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbWord.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="rbWORDXML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>304, 3</value>
+  </data>
+  <data name="rbWORDXML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>104, 23</value>
+  </data>
+  <data name="rbWORDXML.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="rbWORDXML.Text" xml:space="preserve">
+    <value>Word (.docx)</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Name" xml:space="preserve">
+    <value>rbWORDXML</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbWORDXML.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="rbHTML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>414, 3</value>
+  </data>
+  <data name="rbHTML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 23</value>
+  </data>
+  <data name="rbHTML.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="rbHTML.Text" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Name" xml:space="preserve">
+    <value>rbHTML</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbHTML.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="rbMHTML.Location" type="System.Drawing.Point, System.Drawing">
+    <value>484, 3</value>
+  </data>
+  <data name="rbMHTML.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 23</value>
+  </data>
+  <data name="rbMHTML.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="rbMHTML.Text" xml:space="preserve">
+    <value>MHTML</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Name" xml:space="preserve">
+    <value>rbMHTML</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbMHTML.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="rbIMAGEEMF.Location" type="System.Drawing.Point, System.Drawing">
+    <value>566, 3</value>
+  </data>
+  <data name="rbIMAGEEMF.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 23</value>
+  </data>
+  <data name="rbIMAGEEMF.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="rbIMAGEEMF.Text" xml:space="preserve">
+    <value>Image (.emf)</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Name" xml:space="preserve">
+    <value>rbIMAGEEMF</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGEEMF.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="rbIMAGETIFF.Location" type="System.Drawing.Point, System.Drawing">
+    <value>675, 3</value>
+  </data>
+  <data name="rbIMAGETIFF.Size" type="System.Drawing.Size, System.Drawing">
+    <value>96, 23</value>
+  </data>
+  <data name="rbIMAGETIFF.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="rbIMAGETIFF.Text" xml:space="preserve">
+    <value>Image (.tiff)</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Name" xml:space="preserve">
+    <value>rbIMAGETIFF</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Type" xml:space="preserve">
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;rbIMAGETIFF.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="btnExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 32</value>
+  </data>
+  <data name="btnExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 27</value>
+  </data>
+  <data name="btnExport.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="btnExport.Text" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Name" xml:space="preserve">
+    <value>btnExport</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;btnExport.Parent" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;btnExport.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="PanelExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="PanelExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>890, 101</value>
+  </data>
+  <data name="PanelExport.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Name" xml:space="preserve">
+    <value>PanelExport</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Type" xml:space="preserve">
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.Parent" xml:space="preserve">
+    <value>TabPageExport</value>
+  </data>
+  <data name="&gt;&gt;PanelExport.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPageExport.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 110</value>
+  </data>
+  <data name="TabPageExport.Text" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Name" xml:space="preserve">
+    <value>TabPageExport</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageExport.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>359, 6</value>
+  </data>
+  <data name="Button2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="Button2.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="Button2.Text" xml:space="preserve">
+    <value>Button2</value>
+  </data>
+  <data name="Button2.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;Button2.Name" xml:space="preserve">
+    <value>Button2</value>
+  </data>
+  <data name="&gt;&gt;Button2.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Button2.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;Button2.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtDebug.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="txtDebug.Location" type="System.Drawing.Point, System.Drawing">
+    <value>15, 6</value>
+  </data>
+  <data name="txtDebug.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 23</value>
+  </data>
+  <data name="txtDebug.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="txtDebug.Text" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="txtDebug.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Name" xml:space="preserve">
+    <value>txtDebug</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Type" xml:space="preserve">
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;txtDebug.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Button1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>253, 4</value>
+  </data>
+  <data name="Button1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 28</value>
+  </data>
+  <data name="Button1.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="Button1.Text" xml:space="preserve">
+    <value>Button1</value>
+  </data>
+  <data name="Button1.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;Button1.Name" xml:space="preserve">
+    <value>Button1</value>
+  </data>
+  <data name="&gt;&gt;Button1.Type" xml:space="preserve">
+    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Button1.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;Button1.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="cmbRecords.Items" xml:space="preserve">
+    <value>100</value>
+  </data>
+  <data name="cmbRecords.Items1" xml:space="preserve">
+    <value>500</value>
+  </data>
+  <data name="cmbRecords.Items2" xml:space="preserve">
+    <value>1000</value>
+  </data>
+  <data name="cmbRecords.Items3" xml:space="preserve">
+    <value>2000</value>
+  </data>
+  <data name="cmbRecords.Items4" xml:space="preserve">
+    <value>5000</value>
+  </data>
+  <data name="cmbRecords.Items5" xml:space="preserve">
+    <value>10000</value>
+  </data>
+  <data name="cmbRecords.Location" type="System.Drawing.Point, System.Drawing">
+    <value>179, 6</value>
+  </data>
+  <data name="cmbRecords.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 30</value>
+  </data>
+  <data name="cmbRecords.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="cmbRecords.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.Name" xml:space="preserve">
+    <value>cmbRecords</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.Type" xml:space="preserve">
+    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.Parent" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;cmbRecords.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="TabPageDebug.Hidden" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 40</value>
+  </data>
+  <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 110</value>
+  </data>
+  <data name="TabPageDebug.Text" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Name" xml:space="preserve">
+    <value>TabPageDebug</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageDebug.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="TabControl.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="TabControl.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="TabControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 151</value>
+  </data>
+  <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Name" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Type" xml:space="preserve">
+    <value>Wisej.Web.TabControl, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabControl.Parent" xml:space="preserve">
+    <value>SplitContainer.Panel2</value>
+  </data>
+  <data name="&gt;&gt;TabControl.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="SplitContainer.Panel2.Text" xml:space="preserve">
+    <value>Report Manager</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Name" xml:space="preserve">
+    <value>SplitContainer.Panel2</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.Parent" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="SplitContainer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 584</value>
+  </data>
+  <data name="SplitContainer.SplitterDistance" type="System.Int32, mscorlib">
+    <value>389</value>
+  </data>
+  <data name="SplitContainer.SplitterWidth" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="SplitContainer.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Name" xml:space="preserve">
+    <value>SplitContainer</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Type" xml:space="preserve">
+    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;SplitContainer.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="bFirst.ImageSource" xml:space="preserve">
+    <value>icon-first</value>
+  </data>
+  <data name="bFirst.Text" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="bPrev.ImageSource" xml:space="preserve">
+    <value>icon-left</value>
+  </data>
+  <data name="bPrev.Text" xml:space="preserve">
+    <value>Prev.</value>
+  </data>
+  <data name="RecordLabel.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="RecordLabel.Text" xml:space="preserve">
+    <value>0&lt;br&gt;0</value>
+  </data>
+  <data name="bNext.ImageSource" xml:space="preserve">
+    <value>icon-right</value>
+  </data>
+  <data name="bNext.Text" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="bLast.ImageSource" xml:space="preserve">
+    <value>icon-last</value>
+  </data>
+  <data name="bLast.Text" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="bRefresh.ImageSource" xml:space="preserve">
+    <value>icon-redo</value>
+  </data>
+  <data name="bRefresh.Text" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="bDelete.ImageSource" xml:space="preserve">
+    <value>tab-close</value>
+  </data>
+  <data name="bDelete.Text" xml:space="preserve">
+    <value>Delete Filter</value>
+  </data>
+  <data name="Records.Text" xml:space="preserve">
+    <value>Max Rows</value>
+  </data>
+  <data name="bPrint.ImageSource" xml:space="preserve">
+    <value>icon-print</value>
+  </data>
+  <data name="bPrint.Text" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="bSave.ImageSource" xml:space="preserve">
+    <value>icon-check</value>
+  </data>
+  <data name="bSave.Text" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="bSaveQBE.ImageSource" xml:space="preserve">
+    <value>icon-save</value>
+  </data>
+  <data name="bSaveQBE.Text" xml:space="preserve">
+    <value>Save Filter</value>
+  </data>
+  <data name="bLoadQBE.ImageSource" xml:space="preserve">
+    <value>icon-open</value>
+  </data>
+  <data name="bLoadQBE.Text" xml:space="preserve">
+    <value>Load Filter</value>
+  </data>
+  <data name="bClose.ImageSource" xml:space="preserve">
+    <value>icon-exit</value>
+  </data>
+  <data name="bClose.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="NavBar.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Bottom</value>
+  </data>
+  <data name="NavBar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 591</value>
+  </data>
+  <data name="NavBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>898, 44</value>
+  </data>
+  <data name="NavBar.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Name" xml:space="preserve">
+    <value>NavBar</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBar, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;NavBar.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;NavBar.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pbEngineLogo.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
+    <value>Bottom, Right</value>
+  </data>
+  <data name="pbEngineLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <data name="pbEngineLogo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>812, 591</value>
+  </data>
+  <data name="pbEngineLogo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 37</value>
+  </data>
+  <data name="pbEngineLogo.SizeMode" type="Wisej.Web.PictureBoxSizeMode, Wisej.Framework">
+    <value>Zoom</value>
+  </data>
+  <data name="&gt;&gt;pbEngineLogo.Name" xml:space="preserve">
+    <value>pbEngineLogo</value>
+  </data>
+  <data name="&gt;&gt;pbEngineLogo.Type" xml:space="preserve">
+    <value>Wisej.Web.PictureBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;pbEngineLogo.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;pbEngineLogo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>7, 19</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>898, 635</value>
+  </data>
+  <data name="$this.IconSource" xml:space="preserve">
+    <value>icon-print</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportName.Name" xml:space="preserve">
+    <value>dgvcReportName</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportName.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportDescription.Name" xml:space="preserve">
+    <value>dgvcReportDescription</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportDescription.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportFileName.Name" xml:space="preserve">
+    <value>dgvcReportFileName</value>
+  </data>
+  <data name="&gt;&gt;dgvcReportFileName.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcNomeCampo.Name" xml:space="preserve">
+    <value>dgvcNomeCampo</value>
+  </data>
+  <data name="&gt;&gt;dgvcNomeCampo.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcValoreCampo.Name" xml:space="preserve">
+    <value>dgvcValoreCampo</value>
+  </data>
+  <data name="&gt;&gt;dgvcValoreCampo.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvcQueryColumn.Name" xml:space="preserve">
+    <value>dgvcQueryColumn</value>
+  </data>
+  <data name="&gt;&gt;dgvcQueryColumn.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewButtonColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_position.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_position</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_position.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_name.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_name</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_name.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_friendlyname</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
+    <value>bFirst</value>
+  </data>
+  <data name="&gt;&gt;bFirst.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bPrev.Name" xml:space="preserve">
+    <value>bPrev</value>
+  </data>
+  <data name="&gt;&gt;bPrev.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;RecordLabel.Name" xml:space="preserve">
+    <value>RecordLabel</value>
+  </data>
+  <data name="&gt;&gt;RecordLabel.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bNext.Name" xml:space="preserve">
+    <value>bNext</value>
+  </data>
+  <data name="&gt;&gt;bNext.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bLast.Name" xml:space="preserve">
+    <value>bLast</value>
+  </data>
+  <data name="&gt;&gt;bLast.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bRefresh.Name" xml:space="preserve">
+    <value>bRefresh</value>
+  </data>
+  <data name="&gt;&gt;bRefresh.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bDelete.Name" xml:space="preserve">
+    <value>bDelete</value>
+  </data>
+  <data name="&gt;&gt;bDelete.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;Records.Name" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="&gt;&gt;Records.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bPrint.Name" xml:space="preserve">
+    <value>bPrint</value>
+  </data>
+  <data name="&gt;&gt;bPrint.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bSave.Name" xml:space="preserve">
+    <value>bSave</value>
+  </data>
+  <data name="&gt;&gt;bSave.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bSaveQBE.Name" xml:space="preserve">
+    <value>bSaveQBE</value>
+  </data>
+  <data name="&gt;&gt;bSaveQBE.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bLoadQBE.Name" xml:space="preserve">
+    <value>bLoadQBE</value>
+  </data>
+  <data name="&gt;&gt;bLoadQBE.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;bClose.Name" xml:space="preserve">
+    <value>bClose</value>
+  </data>
+  <data name="&gt;&gt;bClose.Type" xml:space="preserve">
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_ascdesc</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>ReportManager</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>Wisej.Web.Form, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+</root>

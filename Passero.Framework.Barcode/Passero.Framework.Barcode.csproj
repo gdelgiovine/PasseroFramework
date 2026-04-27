@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>3.5.32</WisejNETVersion>
+		<WisejNETFamily>Wisej-3</WisejNETFamily	>
+		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
+		<Authors>Gabriele Del Giovine</Authors>
+		<Company>Gabriele Del Giovine</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.Barcode</PackageId>
+		<Description>Barcode support library for Passero Framework</Description>
+		<PackageTags>Wisej.NET;MVVM;barcode;reports;passero;framework</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<OutputPath>..\NugetPackages</OutputPath>
+	</PropertyGroup>
+	
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+		<PackageReference Include="FreeSpire.Barcode" Version="6.6.0" />
+		<PackageReference Include="QRCoder" Version="1.7.0" />
+		<PackageReference Include="ZXing.Net" Version="0.16.11" />
+		
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Wisej-3" Version="$(WisejNETVersion)"/>
+		<PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.22" />
+	</ItemGroup>
+
+
+
+</Project>
