@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Specialized;
+using Passero.Framework.JwtAuthHandler;
 using Wisej.Web;
 
 namespace PasseroDemo.Application
@@ -7,20 +8,14 @@ namespace PasseroDemo.Application
     {
         /// <summary>
         /// The main entry point for the application.
+        /// Intercetta l'autenticazione JWT quando la URL contiene /JWTAUTH.
         /// </summary>
-        static void Main()
+        static void Main(NameValueCollection args)
         {
-            //Environment.SetEnvironmentVariable("ITEXT_BOUNCY_CASTLE_FACTORY_NAME", "bouncy-castle");
-            Application.LoginPage LoginPage  = new Application.LoginPage ();   
-            LoginPage .Show();
+       
+       
+            var loginPage = new LoginPage();
+            loginPage.Show();
         }
-
-        //
-        // You can use the entry method below
-        // to receive the parameters from the URL in the args collection.
-        //
-        //static void Main(NameValueCollection args)
-        //{
-        //}
     }
 }

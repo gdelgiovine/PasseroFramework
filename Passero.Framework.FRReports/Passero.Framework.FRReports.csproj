@@ -13,8 +13,8 @@
 
 	<PropertyGroup>
 		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>3.5.32</WisejNETVersion>
-		<WisejNETFamily>Wisej-3</WisejNETFamily>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
 		<Authors>Gabriele Del Giovine</Authors>
@@ -28,7 +28,7 @@
 		<Description>FastReport support library for Passero Framework</Description>
 		<PackageTags>Wisej.NET;MVVM;reports;passero;framework</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<OutputPath>..\NugetPackages</OutputPath>
+		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
 	</PropertyGroup>
 
 
@@ -48,8 +48,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-	  <PackageReference Include="Wisej-3" Version="$(WisejNETVersion)" />
-	  <PackageReference Include="Wisej-3-BootstrapIcons" Version="$(WisejNETVersion)" />
+	  <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+	  <PackageReference Include="Wisej-4-BootstrapIcons" Version="$(WisejNETVersion)" />
   </ItemGroup>
 
   <ItemGroup>

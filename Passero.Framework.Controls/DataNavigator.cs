@@ -1368,6 +1368,18 @@ namespace Passero.Framework.Controls
         public delegate void eSaveCompletedEventHandler();
 
 
+
+        /// <summary>
+        /// Occurs when [e DataChanged].
+        /// </summary>
+        public event eDataChangedEventHandler eDataChanged  ;
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void eDataChangedEventHandler(ref bool Cancel);
+
+
+
         /// <summary>
         /// Occurs when [e move previous].
         /// </summary>
@@ -4718,56 +4730,6 @@ namespace Passero.Framework.Controls
             // LockWindow(Me.ParentForm.Handle, TrueFalse)
         }
 
-        // Public Sub HandleUserInput(ByVal sender As Object, ByVal e As Object)
-
-        // Dim Key As KeyEventArgs = e
-
-        // Select Case CInt(Key.KeyData)
-        // Case _MovePreviousFKey
-        // MovePrevious()
-        // Case _MoveNextFKey
-        // e.suppresskeypress = True
-        // MoveNext()
-        // Case _MoveFirstFKey
-        // e.suppresskeypress = True
-        // MoveFirst()
-        // Case _MoveLastFKey
-        // e.suppresskeypress = True
-        // MoveLast()
-        // Case _AddNewFKey
-        // e.suppresskeypress = True
-        // AddNew()
-        // Case _DeleteFKey
-        // e.suppresskeypress = True
-        // Delete()
-        // Case _SaveFKey
-        // e.suppresskeypress = True
-        // Save()
-        // Case _RefreshFKey
-        // e.suppresskeypress = True
-        // RefreshData()
-        // Case _PrintFKey
-        // e.suppresskeypress = True
-
-        // If Me.PrintEnabled = True And Me.PrintVisible = True Then
-        // RaiseEvent ePrint()
-        // End If
-
-        // Case _UndoFKey
-        // e.suppresskeypress = True
-        // Undo()
-        // Case _FindKey
-        // e.suppressKeypress = True
-        // If Me.FindEnabled = True And Me.FindVisible = True Then
-        // RaiseEvent eFind()
-        // End If
-
-        // Case _CloseFKey
-        // e.suppresskeypress = True
-        // RaiseEvent eClose()
-        // Case Else
-
-        // End Select
 
 
 
@@ -6846,6 +6808,10 @@ namespace Passero.Framework.Controls
 
         }
 
+    }
+
+    public class eDataChangedEventHandler
+    {
     }
 
     /// <summary>

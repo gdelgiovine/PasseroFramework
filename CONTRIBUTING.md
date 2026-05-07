@@ -79,3 +79,10 @@ public partial class frmSales : Form
 ```
 
 Grazie per mantenere il progetto pulito e mantenibile.
+
+### 8. Architettura e riuso del codice
+- Preferire codice condiviso e racchiuso in classi riusabili.
+- Minimizzare la duplicazione tra target multipli (`net48`, `net8.0`) usando servizi comuni e adapter sottili per le differenze di piattaforma.
+- Lasciare nei punti di ingresso (`Startup`, `Program`, hook HTTP) solo il wiring minimo; spostare la logica applicativa in classi dedicate.
+- Incapsulare la logica di intercettazione richieste, parsing URL, lettura header/body e decisioni di routing in classi dedicate, testabili e indipendenti dall'host.
+- Preferire metodi piccoli e responsabilità singole rispetto a logica distribuita in file di bootstrap o code-behind.

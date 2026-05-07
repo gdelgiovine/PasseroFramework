@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net48;net8.0</TargetFrameworks>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Passero.Framework.JwtAuthHandler</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <NoWarn>CA1416;NU5039</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETFamily>Wisej-4</WisejNETFamily>
+        <CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+        <Version>$(CompleteVersion)</Version>
+        <Authors>Gabriele Del Giovine</Authors>
+        <Company>Gabriele Del Giovine</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Passero.Framework.JwtAuthHandler</PackageId>
+        <Description>Wisej.NET JWT Authentication Handler for Passero Framework</Description>
+        <PackageTags>JWT;Wisej.NET;Authentication;passero;framework</PackageTags>
+     <PackageOutputPath>..\NugetPackages</PackageOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Passero.Framework.HttpHelper\Passero.Framework.HttpHelper.csproj" />
+        <ProjectReference Include="..\Passero.Framework.Jwt\Passero.Framework.Jwt.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <LangVersion>latest</LangVersion>
+	<Nullable>enable</Nullable>	  
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
+    <NoWarn>CA1416</NoWarn>
+	<SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+	<DelaySign>False</DelaySign>	  
+  </PropertyGroup>
+
+	
+	<PropertyGroup>
+		<PasseroVersion>1.0.0</PasseroVersion>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETFamily>Wisej-4</WisejNETFamily>
+		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
+		<Authors>Gabriele Del Giovine</Authors>
+		<Company>Gabriele Del Giovine</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Passero.Framework.HttpHelper</PackageId>
+		<Description>Http support library for Passero Framework</Description>
+		<PackageTags>Wisej.NET;MVVM;http;passero;framework</PackageTags>
+		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
+	</PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows.Forms"><Aliases>swf</Aliases></Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
+	  <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+  </ItemGroup>
+
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+		<Reference Include="System.Web" />
+  </ItemGroup>
+
+</Project>

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            //System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MDIWindow));
+            //Wisej.Resources.ComponentResourceManager resources = new Wisej.Resources.ComponentResourceManager(typeof(MDIWindow));
             Wisej.Resources.ComponentResourceManager resources = new Wisej.Resources.ComponentResourceManager(typeof(MDIWindow));
             this.lblRuntimeAppInfo = new Wisej.Web.Label();
             this.pbPasseroLogo = new Wisej.Web.PictureBox();

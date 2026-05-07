@@ -18,6 +18,9 @@ namespace PasseroDemo.Application
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+
+        
+
             ConfigurationManager.AddSessionConfigurationKeyValue("General", "CurrentUser", this.txtUserName.Text.Trim());
             MainPage maiPage = new MainPage();
             maiPage .ConfigurationManager = ConfigurationManager;
@@ -29,6 +32,15 @@ namespace PasseroDemo.Application
         private void label1_DoubleClick(object sender, EventArgs e)
         {
             Wisej.Web.Application.Navigate("https://www.gabrieledelgiovine.it", "_blank");
+        }
+
+        private void LoginPage_Load(object sender, EventArgs e)
+        {
+
+         
+
+
+            
         }
     }
 }

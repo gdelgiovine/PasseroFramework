@@ -13,8 +13,8 @@
 
 	<PropertyGroup>
 		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>3.5.32</WisejNETVersion>
-		<WisejNETFamily>Wisej-3</WisejNETFamily>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
 		<Authors>Gabriele Del Giovine</Authors>
@@ -28,7 +28,7 @@
 		<Description>SSRS support library for Passero Framework</Description>
 		<PackageTags>Wisej.NET;MVVM;SSRS;reports;passero;framework</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<OutputPath>..\NugetPackages</OutputPath>
+		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -49,6 +49,7 @@
     <PackageReference Include="MiniExcel" Version="1.43.0" />
 	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
 	  <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
+	  <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
    
   </ItemGroup>
 
@@ -85,6 +86,10 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Update="Wisej-4" Version="$(WisejNETVersion)" />
 	</ItemGroup>
 	
 </Project>

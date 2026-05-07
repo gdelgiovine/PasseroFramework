@@ -1,20 +1,28 @@
 {
-    "iisSettings": {
-        "windowsAuthentication": false,
-        "anonymousAuthentication": true,
-        "iisExpress": {
-            "applicationUrl": "http://localhost:54429",
-            "sslPort": 0
-        }
+  "profiles": {
+    "Passero.Application": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "WEBSITE_PATH": "$(MSBuildProjectDirectory)"
+      },
+      "applicationUrl": "http://localhost:5000",
+      "nativeDebugging": true
     },
-    "profiles": {
-        "Passero.Application": {
-            "commandName": "Project",
-            "launchBrowser": true,
-            "applicationUrl": "http://localhost:5000",
-                "environmentVariables": {
-                "WEBSITE_PATH": "$(MSBuildProjectDirectory)"
-            }
-        }
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:54429",
+      "sslPort": 0
+    }
+  }
 }

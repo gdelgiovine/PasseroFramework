@@ -88,7 +88,7 @@ namespace Passero.Framework
         /// <value>
         /// The use model data.
         /// </value>
-        public UseModelData UseModelData { get; set; } = UseModelData.InternalRepository;
+        //public UseModelData UseModelData { get; set; } = UseModelData.InternalRepository;
         /// <summary>
         /// Gets or sets the binding behaviour.
         /// </summary>
@@ -111,7 +111,7 @@ namespace Passero.Framework
         /// <summary>
         /// The external model shadow
         /// </summary>
-        private ModelClass ExternalModelShadow;
+        //private ModelClass ExternalModelShadow;
         /// <summary>
         /// The m add new current model item index
         /// </summary>

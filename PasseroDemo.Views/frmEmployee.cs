@@ -76,17 +76,15 @@ namespace PasseroDemo.Views
 
 
             // Here we customize the Result Grid and the Query Grid adding Columns to display in Result and in Query Criteria
-            QBE.QBEColumns.Add(nameof(Models.Employee .emp_id), "Employee ID", "Employee Identification");
-            QBE.QBEColumns.Add(nameof(Models.Employee .fname), "First Name", "Employee First Name");
-            QBE.QBEColumns.Add(nameof(Models.Employee .lname), "Last Name", "Employee Last Name");  
-            QBE.QBEColumns.Add(nameof(Models.Employee .hire_date), "Hire Date", "Employee Hire Date");  
-            QBE.QBEColumns.Add(nameof(Models.Employee .job_id), "Job", "Employee Job"); 
-            QBE.QBEColumns.Add(nameof(Models.Employee .pub_id), "Publisher", "Employee Publisher"); 
-
+            QBE.QBEColumns.Add(nameof(Models.Employee .emp_id),"Employee ID",null,null,true,true,-1 );
+            QBE.QBEColumns.Add(nameof(Models.Employee .fname), "First Name");
+            QBE.QBEColumns.Add(nameof(Models.Employee .lname), "Last Name");  
+            QBE.QBEColumns.Add(nameof(Models.Employee .hire_date),"Hire Date");  
+            QBE.QBEColumns.Add(nameof(Models.Employee .job_id), "Job"); 
+            QBE.QBEColumns.Add(nameof(Models.Employee .pub_id), "Publisher");
             // Here we customize aspect of Result Grid
             //QBE.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
-            
-
+         
             // Here we Build the Result Grid and the Query Grid.
             QBE.SetupQBEForm();
             // After the SetupQEBForm we have the ResultGrid Object (a DataGridView) and we can access/change any property
@@ -122,6 +120,7 @@ namespace PasseroDemo.Views
             // We can invoke the ShowQBE Method. This method can be Sync or Async using the Wait parameter
             // When Wait is true the flow control remain inside the current method 
             
+
             QBE.ShowQBE(true);
             //QBE.ShowQBEWait() is a shortcut to ShowQBE(true)
 

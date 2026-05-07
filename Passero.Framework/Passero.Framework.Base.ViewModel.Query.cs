@@ -48,20 +48,20 @@ namespace Passero.Framework
             ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContenxt);
             ER.Value = null;
             ER = Repository.GetItem(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
-            
-           
 
-            switch (UseModelData)
-            {
-                case UseModelData.External:
-                    mModelItemShadow = ER.Value;
-                    break;
-                case UseModelData.InternalRepository:
-                    Repository.ModelItem = ER.Value;
-                    break;
-                default:
-                    break;
-            }
+            Repository.ModelItem = ER.Value;
+
+            //switch (UseModelData)
+            //{
+            //    case UseModelData.External:
+            //        mModelItemShadow = ER.Value;
+            //        break;
+            //    case UseModelData.InternalRepository:
+            //        Repository.ModelItem = ER.Value;
+            //        break;
+            //    default:
+            //        break;
+            //}
             ModelItem = ER.Value;
             //if (ModelItem == null)
             //{
@@ -109,28 +109,38 @@ namespace Passero.Framework
                 {
                     x = ER.Value;
                     mCurrentModelItemIndex = 0;
-                    switch (UseModelData)
-                    {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            //If (AutoUpdateModelItemsShadows) Then
-                            SetModelItemsShadow();
-                            //End If
-                            SetModelItemShadow();
-                            break;
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItems = x;
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            //If (AutoUpdateModelItemsShadows) Then
-                            Repository.SetModelItemsShadow();
-                            //End If
-                            Repository.SetModelItemShadow();
-                            Repository.CurrentModelItemIndex = 0;
-                            break;
-                        default:
-                            break;
-                    }
+
+
+                    Repository.ModelItems = x;
+                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //If (AutoUpdateModelItemsShadows) Then
+                    Repository.SetModelItemsShadow();
+                    //End If
+                    Repository.SetModelItemShadow();
+                    Repository.CurrentModelItemIndex = 0;
+
+                    //switch (UseModelData)
+                    //{
+                    //    case UseModelData.External:
+                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        mModelItems = x;
+                    //        //If (AutoUpdateModelItemsShadows) Then
+                    //        SetModelItemsShadow();
+                    //        //End If
+                    //        SetModelItemShadow();
+                    //        break;
+                    //    case UseModelData.InternalRepository:
+                    //        Repository.ModelItems = x;
+                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        //If (AutoUpdateModelItemsShadows) Then
+                    //        Repository.SetModelItemsShadow();
+                    //        //End If
+                    //        Repository.SetModelItemShadow();
+                    //        Repository.CurrentModelItemIndex = 0;
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
 
                     if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
@@ -164,17 +174,19 @@ namespace Passero.Framework
         {
             if (mDataBindingMode == DataBindingMode.BindingSource)
             {
-                switch (UseModelData)
-                {
-                    case UseModelData.External:
-                        mBindingSource.DataSource = ModelItems;
-                        break;
-                    case UseModelData.InternalRepository:
-                        mBindingSource.DataSource = Repository.ModelItems;
-                        break;
-                    default:
-                        break;
-                }
+                mBindingSource.DataSource = Repository.ModelItems;
+
+                //switch (UseModelData)
+                //{
+                //    case UseModelData.External:
+                //        mBindingSource.DataSource = ModelItems;
+                //        break;
+                //    case UseModelData.InternalRepository:
+                //        mBindingSource.DataSource = Repository.ModelItems;
+                //        break;
+                //    default:
+                //        break;
+                //}
             }
         }
         /// <summary>
@@ -195,31 +207,41 @@ namespace Passero.Framework
                 if (ER.Success)
                 {
                     x = ER.Value;
-                    switch (UseModelData)
+
+                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    Repository.ModelItems = x;
+                    if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = ModelItems;
+                        mBindingSource.DataSource = Repository.ModelItems;
 
-                            }
-                            break;
-                            
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            Repository.ModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = Repository.ModelItems;
-
-                            }
-                            break;
-                            
-                        default:
-                            break;
                     }
+
+
+                    //switch (UseModelData)
+                    //{
+                    //    case UseModelData.External:
+                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        mModelItems = x;
+                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
+                    //        {
+                    //            mBindingSource.DataSource = ModelItems;
+
+                    //        }
+                    //        break;
+                            
+                    //    case UseModelData.InternalRepository:
+                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        Repository.ModelItems = x;
+                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
+                    //        {
+                    //            mBindingSource.DataSource = Repository.ModelItems;
+
+                    //        }
+                    //        break;
+                            
+                    //    default:
+                    //        break;
+                    //}
 
                 }
                 else
@@ -269,18 +291,19 @@ namespace Passero.Framework
             try
             {
                 ER = await Repository.GetItemAsync(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
-              
-                switch (UseModelData)
-                {
-                    case UseModelData.External:
-                        mModelItemShadow = ER.Value;
-                        break;
-                    case UseModelData.InternalRepository:
-                        Repository.ModelItem = ER.Value;
-                        break;
-                    default:
-                        break;
-                }
+                Repository.ModelItem = ER.Value;
+
+                //switch (UseModelData)
+                //{
+                //    case UseModelData.External:
+                //        mModelItemShadow = ER.Value;
+                //        break;
+                //    case UseModelData.InternalRepository:
+                //        Repository.ModelItem = ER.Value;
+                //        break;
+                //    default:
+                //        break;
+                //}
 
                 ModelItem = ER.Value;
                 DataNavigatorRaiseEventBoundCompleted();
@@ -333,27 +356,32 @@ namespace Passero.Framework
                 {
                     x = ER.Value;
                     mCurrentModelItemIndex = 0;
+                    Repository.ModelItems = x;
+                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    Repository.SetModelItemsShadow();
+                    Repository.SetModelItemShadow();
+                    Repository.CurrentModelItemIndex = 0;
 
-                    switch (UseModelData)
-                    {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            SetModelItemsShadow();
-                            SetModelItemShadow();
-                            break;
+                    //switch (UseModelData)
+                    //{
+                    //    case UseModelData.External:
+                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        mModelItems = x;
+                    //        SetModelItemsShadow();
+                    //        SetModelItemShadow();
+                    //        break;
 
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItems = x;
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            Repository.SetModelItemsShadow();
-                            Repository.SetModelItemShadow();
-                            Repository.CurrentModelItemIndex = 0;
-                            break;
+                    //    case UseModelData.InternalRepository:
+                    //        Repository.ModelItems = x;
+                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        Repository.SetModelItemsShadow();
+                    //        Repository.SetModelItemShadow();
+                    //        Repository.CurrentModelItemIndex = 0;
+                    //        break;
 
-                        default:
-                            break;
-                    }
+                    //    default:
+                    //        break;
+                    //}
 
                     if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
@@ -402,30 +430,36 @@ namespace Passero.Framework
                 if (ER.Success)
                 {
                     x = ER.Value;
-                    
-                    switch (UseModelData)
-                    {
-                        case UseModelData.External:
-                            mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            mModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = ModelItems;
-                            }
-                            break;
-                            
-                        case UseModelData.InternalRepository:
-                            Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
                             Repository.ModelItems = x;
                             if (mDataBindingMode == DataBindingMode.BindingSource)
                             {
                                 mBindingSource.DataSource = Repository.ModelItems;
                             }
-                            break;
+                    
+                    //switch (UseModelData)
+                    //{
+                    //    case UseModelData.External:
+                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        mModelItems = x;
+                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
+                    //        {
+                    //            mBindingSource.DataSource = ModelItems;
+                    //        }
+                    //        break;
                             
-                        default:
-                            break;
-                    }
+                    //    case UseModelData.InternalRepository:
+                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
+                    //        Repository.ModelItems = x;
+                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
+                    //        {
+                    //            mBindingSource.DataSource = Repository.ModelItems;
+                    //        }
+                    //        break;
+                            
+                    //    default:
+                    //        break;
+                    //}
                 }
                 else
                 {

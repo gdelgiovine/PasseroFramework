@@ -26,8 +26,8 @@ namespace PasseroDemo.Models
         public string? state { get; set; }
         public string? zip { get; set; }
         public bool contract { get; set; }
-        [ColumnMapping("email_a")]
-        [System.ComponentModel.DataAnnotations.Schema.Column("email_a")]
+        //[ColumnMapping("email_a")]
+        //[System.ComponentModel.DataAnnotations.Schema.Column("email_a")]
         public string? email { get; set; }
         [Computed]
         [System.ComponentModel.DataAnnotations.Schema.NotMapped ]

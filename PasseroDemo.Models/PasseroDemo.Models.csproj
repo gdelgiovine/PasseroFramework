@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
-    <WisejNETVersion>3.5.32</WisejNETVersion>
-    <WisejNETFamily>Wisej-3</WisejNETFamily>
+	  <WisejNETVersion>4.0.11</WisejNETVersion>
+	  <WisejNETFamily>Wisej-4</WisejNETFamily>
 	  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<RootNamespace>PasseroDemo.Models</RootNamespace>
 	  <LangVersion>latest</LangVersion>
 	  <SignAssembly>False</SignAssembly>
-	  <AssemblyOriginatorKeyFile>C:\DEV\PasseroFramework\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
+	  <AssemblyOriginatorKeyFile>..\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

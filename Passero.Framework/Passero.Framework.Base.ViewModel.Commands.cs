@@ -28,6 +28,15 @@ namespace Passero.Framework
         {
             var ERContenxt = $"{mClassName}.UndoChanges()";
             var ER = new ExecutionResult(ERContenxt);
+
+          
+            if (!RaiseRequest(UndoRequest ))
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = "UndoChanges cancelled by UndoRequest handler.";
+                return ER;
+            }
+
             try
             {
                 if (AddNewState == false)
@@ -82,10 +91,10 @@ namespace Passero.Framework
                         break;
                 }
                 if (mAddNewState == true)
-                {
                     mAddNewState = false;
-                }
-
+                
+                if (ER.Success)
+                    UndoCompleted?.Invoke();
             }
             catch (Exception ex)
             {
@@ -267,20 +276,11 @@ namespace Passero.Framework
         {
             var ERContext = $"{mClassName}.InsertItem()";
             var ER = new ExecutionResult(ERContext);
-            if (Item == null)
-            {
-                Item = ModelItem;
-            }
 
-            if (DbTransaction == null)
-            {
-                DbTransaction = this.DbTransaction;
-            }
 
-            if (DbCommandTimeout == null)
-            {
-                DbCommandTimeout = this.DbCommandTimeout;
-            }
+            if (Item == null) Item = ModelItem;
+            if (DbTransaction == null) DbTransaction = this.DbTransaction;
+            if (DbCommandTimeout == null) DbCommandTimeout = this.DbCommandTimeout;
 
 
             switch (mDataBindingMode)
@@ -325,12 +325,12 @@ namespace Passero.Framework
                         }
                         break;
                     case DataBindingMode.BindingSource:
-
                         this.BindingSource.ResetCurrentItem();
                         break;
                     default:
                         break;
                 }
+                SaveCompleted?.Invoke();
             }
             
 
@@ -703,6 +703,14 @@ namespace Passero.Framework
         {
             var ERcontext = $"{mClassName}.UpdateItem()";
             var ER = new ExecutionResult(ERcontext);
+
+            if (!RaiseRequest(SaveRequest ))
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = "Save cancelled by SaveRequest handler.";
+                return ER;
+            }
+
             if (mAddNewState == true)
             {
                 //long r= this.Repository.InsertItem(Item);
@@ -761,6 +769,10 @@ namespace Passero.Framework
             ER.Context = ERcontext;
             
             LastExecutionResult = ER;
+
+            if (ER.Success)
+                SaveCompleted?.Invoke();
+
             if (!ER.Success)
             {
                 HandleExeception(ER);
@@ -961,6 +973,14 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
             string Context = ER.Context;
+
+            if (!RaiseRequest(DeleteRequest ))
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.ResultMessage = "DeleteItem cancelled by DeleteRequest handler.";
+                return ER;
+            }
+
             if (Item == null)
             {
                 Item = ModelItem;
@@ -1005,6 +1025,12 @@ namespace Passero.Framework
 
             ER.Context = Context;
             LastExecutionResult = ER;
+
+
+            if (ER.Success)
+                DeleteCompleted?.Invoke();
+
+
             if (!ER.Success)
             {
                 HandleExeception(ER);

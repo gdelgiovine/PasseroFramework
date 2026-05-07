@@ -4,12 +4,13 @@
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+	  
   </PropertyGroup>
 
 	<PropertyGroup>
 		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>3.5.32</WisejNETVersion>
-		<WisejNETFamily>Wisej-3</WisejNETFamily	>
+		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
 		<Authors>Gabriele Del Giovine</Authors>
@@ -23,7 +24,7 @@
 		<Description>Barcode support library for Passero Framework</Description>
 		<PackageTags>Wisej.NET;MVVM;barcode;reports;passero;framework</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<OutputPath>..\NugetPackages</OutputPath>
+		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
 	</PropertyGroup>
 	
 
@@ -41,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Wisej-3" Version="$(WisejNETVersion)"/>
+		<PackageReference Include="Wisej-4" Version="4.0.11" />
 		<PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.22" />
 	</ItemGroup>
 

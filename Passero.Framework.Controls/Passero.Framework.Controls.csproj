@@ -7,58 +7,52 @@
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
     <NoWarn>CA1416</NoWarn>
-	<LangVersion>Latest</LangVersion>
+    <LangVersion>Latest</LangVersion>
     <SignAssembly>False</SignAssembly>
-	<AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>3.5.32</WisejNETVersion>
-		<WisejNETFamily>Wisej-3</WisejNETFamily>
-		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
-		<Version>$(CompleteVersion)</Version>
-		<Authors>Gabriele Del Giovine</Authors>
-		<Company>Gabriele Del Giovine</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework.Controls</PackageId>
-		<Description>UI Controls library for Passero Framework</Description>
-		<PackageTags>Wisej.NET;MVVM;controls;passero;framework</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<OutputPath>..\NugetPackages</OutputPath>
-	</PropertyGroup>
+  <PropertyGroup>
+    <PasseroVersion>1.0.0</PasseroVersion>
+	<WisejNETVersion>4.0.11</WisejNETVersion>
+	<WisejNETFamily>Wisej-4</WisejNETFamily>
+    <CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
+    <Version>$(CompleteVersion)</Version>
+    <Authors>Gabriele Del Giovine</Authors>
+    <Company>Gabriele Del Giovine</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Passero.Framework.Controls</PackageId>
+    <Description>UI Controls library for Passero Framework</Description>
+    <PackageTags>Wisej.NET;MVVM;controls;passero;framework</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>..\NugetPackages</PackageOutputPath>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.DataSetExtensions" />
-	  <Reference Include="System.Windows.Forms">
-		  <Aliases>swf</Aliases>
-	  </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Aliases>swf</Aliases>
+    </Reference>
   </ItemGroup>
 
-
-
-	<ItemGroup>
-    <Compile Remove="XQBEReport.cs" />
-    <Compile Remove="XQBEReport.Designer.cs" />
-  </ItemGroup>
-<!--
   <ItemGroup>
     <Compile Remove="XQBEReport.cs" />
     <Compile Remove="XQBEReport.Designer.cs" />
   </ItemGroup>
--->
-	
- 
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
@@ -66,25 +60,13 @@
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="MiniExcel" Version="1.43.0" />
-	  <PackageReference Include="Wisej-3" Version="$(WisejNETVersion)" />
-	  <PackageReference Include="Wisej-3-BootstrapIcons" Version="$(WisejNETVersion)" />
-	  <PackageReference Include="Wisej-3-Camera" Version="$(WisejNETVersion)" />
-	  <PackageReference Include="Wisej-3-NavigationBar" Version="$(WisejNETVersion)" />
-
-
+    <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
+    <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
+    <PackageReference Include="$(WisejNETFamily)-Camera" Version="$(WisejNETVersion)" />
+    <PackageReference Include="$(WisejNETFamily)-NavigationBar" Version="$(WisejNETVersion)" />
   </ItemGroup>
 
-	
-
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-	</PropertyGroup>
-
-	
-
-
-	<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
   </ItemGroup>
 
@@ -94,5 +76,8 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Wisej-4" Version="4.0.11" />
+  </ItemGroup>
 
 </Project>
