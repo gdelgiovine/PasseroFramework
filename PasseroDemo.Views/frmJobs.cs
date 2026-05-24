@@ -1,8 +1,12 @@
-﻿using System;
-using Wisej.Web;
-using Passero.Framework;
+﻿using Passero.Framework;
+using Passero.Framework.Base;
 using Passero.Framework.Controls;
+using Passero.Framework.Controls.Models;
 using PasseroDemo.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Wisej.Web;
 
 namespace PasseroDemo.Views
 {
@@ -55,7 +59,150 @@ namespace PasseroDemo.Views
             this.dataNavigator1.ManageChanges = true;
             this.dataNavigator1.Init(true);
 
+            queryBuilderControl1.SetViewModel(new ViewModel<Models .Job >(),this.DbConnection );
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
+            //queryBuilderControl1.EnsureQueryBuilder();
+
+            queryBuilderControl1.LoadColumnsFromQBE();
+            //queryBuilderControl1.SetColumns(CreateDemoColumns());
+            //queryBuilderControl1.LoadRules(CreateInitialRules());
+
+
+
+
+            //DbObject<Models.Job> DbObjectJob = new DbObject<Models.Job>(this.DbConnection);  
         }
+
+
+        private static IEnumerable<QueryBuilderColumn> CreateDemoColumns()
+        {
+            return new[]
+            {
+            new QueryBuilderColumn
+            {
+                Field = "CustomerName",
+                Label = "Cliente",
+                Type = QueryBuilderFieldType.String ,
+                SqlFieldName = "Customers.CustomerName"
+            },
+            new QueryBuilderColumn
+            {
+                Field = "City",
+                Label = "Città",
+                Type = QueryBuilderFieldType.String,
+                SqlFieldName = "Customers.City"
+            },
+            new QueryBuilderColumn
+            {
+                Field = "Amount",
+                Label = "Importo",
+                Type = QueryBuilderFieldType.Number,
+                SqlFieldName = "Orders.Amount"
+            },
+            new QueryBuilderColumn
+            {
+                Field = "OrderDate",
+                Label = "Data ordine",
+                Type = QueryBuilderFieldType.Date,
+                SqlFieldName = "Orders.OrderDate"
+            },
+            new QueryBuilderColumn
+            {
+                Field = "IsActive",
+                Label = "Attivo",
+                Type = QueryBuilderFieldType.Boolean,
+                SqlFieldName = "Customers.IsActive"
+            },
+            new QueryBuilderColumn
+            {
+                Field = "CustomerType",
+                Label = "Tipo cliente",
+                Type = QueryBuilderFieldType.Enum,
+                SqlFieldName = "Customers.CustomerType",
+                Values =
+                {
+                    new QueryBuilderLookupItem { Text = "Retail", Value = "RETAIL" },
+                    new QueryBuilderLookupItem { Text = "Business", Value = "BUSINESS" },
+                    new QueryBuilderLookupItem { Text = "Pubblica Amministrazione", Value = "PA" }
+                }
+            }
+        };
+        }
+
+        private static QueryBuilderRuleSet CreateInitialRules()
+        {
+            return new QueryBuilderRuleSet
+            {
+                Condition = "and",
+                Rules =
+                {
+                    new QueryBuilderRuleNode
+                    {
+                        Field = "CustomerName",
+                        Label = "Cliente",
+                        Type = "string",
+                        Operator = "contains",
+                        Value = "rossi"
+                    },
+                    new QueryBuilderRuleNode
+                    {
+                        Condition = "or",
+                        Rules = new List<QueryBuilderRuleNode>
+                        {
+                            new QueryBuilderRuleNode
+                            {
+                                Field = "Amount",
+                                Label = "Importo",
+                                Type = "number",
+                                Operator = "greaterthan",
+                                Value = 100
+                            },
+                            new QueryBuilderRuleNode
+                            {
+                                Field = "CustomerType",
+                                Label = "Tipo cliente",
+                                Type = "enum",
+                                Operator = "equal",
+                                Value = "BUSINESS"
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private void QueryBuilderControl_RulesChanged(object? sender, QueryBuilderChangedEventArgs e)
+        {
+            RefreshPreview();
+        }
+
+        private void ButtonGenerateSql_Click(object? sender, EventArgs e)
+        {
+            RefreshPreview();
+        }
+
+        private void RefreshPreview()
+        {
+            textBoxJson.Text = queryBuilderControl1 .GetRulesJson();
+
+            var sql = queryBuilderControl1.GetParameterizedSqlWhere();
+            var builder = new StringBuilder();
+
+            builder.AppendLine("WHERE " + sql.WhereClause);
+            builder.AppendLine();
+            builder.AppendLine("PARAMETERS:");
+
+            foreach (var parameter in sql.Parameters)
+            {
+                builder.AppendLine($"{parameter.Key} = {parameter.Value}");
+            }
+
+            textBoxSql.Text = builder.ToString();
+        }
+
 
         public void Reload()
         {
@@ -66,27 +213,28 @@ namespace PasseroDemo.Views
             Init();
         }
 
+     
         private void QBEJobs()
         {
             QBEForm<Models.Job > QBE = new QBEForm<Models.Job>(this.DbConnection);
 
+            QBE.QBEColumns.Add(nameof(Models.Job.job_id), "Job Id", "", "", true, true,  20);
+            //QBE.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
+            //QBE.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
+            //QBE.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
+            //QBE.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
 
-            //QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
-            //QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
-            //QBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
-            //QBEForm_Author.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
-            ////xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
-            //QBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
-            ////xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
-            ////xQBEForm_Author.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
+            //QBE.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
+            ////QBE.QBEColumns["au_id"].FontSize = 10;
+            ////QBE.QBEColumns[nameof(Models.Author.contract)].Aligment = DataGridViewContentAlignment.MiddleCenter ;
 
-            //QBEForm_Author.SetupQBEForm();
-            //            xQBEForm_Author .ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
+            //QBE.SetupQBEForm();
+            //QBE.ResultGrid.Columns["au_id"].DefaultCellStyle .BackColor = System.Drawing.Color.Magenta ;
 
-            //xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
-            //xQBEForm_Author.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
-            //xQBEForm_Author.QBEResultMode = QBEResultMode.AllRowsItems;
-            //xQBEForm_Author.QBEResultMode = QBEResultMode.MultipleRowsItems;
+            //QBE.QBEResultMode = QBEResultMode.BoundControls;
+            //QBE.QBEResultMode = QBEResultMode.SingleRowSQLQuery;
+            //QBE.QBEResultMode = QBEResultMode.AllRowsItems;
+            //QBE.QBEResultMode = QBEResultMode.MultipleRowsItems;
             QBE.QBEResultMode = QBEResultMode.MultipleRowsSQLQuery;
             QBE.Owner = this;
             QBE.SetFocusControlAfterClose = this.txt_job_id ;
@@ -95,7 +243,7 @@ namespace PasseroDemo.Views
             QBE.SetTargetRepository((Repository<Models.Job>)this.vmJobs.Repository, () => { this.Reload(); });
             //xQBEForm_Author.SetTargetRepository(this.vmAuthor.Repository);
 
-
+         
             //xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), this.txt_au_id, "text");
             QBE.QBEModelPropertiesMapping.Add(nameof(Models.Job .job_id), nameof(Models.Job.job_id));
             //xQBEForm_Author.QBEModelPropertiesMapping.Add(nameof(Models.Author.au_fname ), nameof(Models.Author.au_fname ));
@@ -116,6 +264,17 @@ namespace PasseroDemo.Views
 
         }
 
-      
+        private void queryBuilderControl1_RulesChanged(object sender, QueryBuilderChangedEventArgs e)
+        {
+            RefreshPreview();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var sql = this.queryBuilderControl1 .GetParameterizedSqlWhere();  
+            var parameters = sql.Parameters;    
+            var whereClause = sql.WhereClause;
+
+        }
     }
 }

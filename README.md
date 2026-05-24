@@ -26,6 +26,14 @@ Un **framework MVVM (Model-View-ViewModel)** moderno e completo per **Wisej.NET*
 - **DbLookUpTextBox**: Controllo lookup con ricerca intelligente
 - **ErrorNotificationMessageBox**: Gestione errori centralizzata
 - **QBEForm**: Form di ricerca dinamico basato su model
+- **QueryBuilderControl**: Controllo per costruire query in modo interattivo
+  - Il controllo può auto-seedare la prima regola quando `Columns` contiene campi disponibili e `RootGroup` non ha regole. Questo evita un builder vuoto all'inizio.
+  - Il comportamento deve rimanere opzionale se è richiesta una stato root completamente vuoto.
+  - **UI del QueryBuilderControl**: Il controllo deve mostrare una toolbar visibile a livello root con azioni rapide per:
+    - aggiungere una rule
+    - aggiungere un group
+    - cancellare il contenuto corrente
+    Questo aiuta a rendere l’inserimento interattivo immediatamente accessibile anche quando il builder è vuoto.
 
 ### Report
 - **FastReport Integration** (OpenSource)
@@ -47,7 +55,6 @@ Un **framework MVVM (Model-View-ViewModel)** moderno e completo per **Wisej.NET*
 
 ## 📦 Struttura Progetti
 
-```
 PasseroFramework/
 │
 ├── Passero.Framework/                    # Core framework
@@ -60,7 +67,8 @@ PasseroFramework/
 ├── Passero.Framework.Controls/          # UI Controls per Wisej
 │   ├── DataNavigator.cs                 # Toolbar navigazione
 │   ├── DbLookUpTextBox.cs               # Controllo lookup
-│   └── ErrorNotificationMessageBox.cs   # Gestione errori
+│   ├── ErrorNotificationMessageBox.cs   # Gestione errori
+│   └── QueryBuilderControl.cs            # Controllo per costruire query
 │
 ├── Passero.Framework.FRReports/         # FastReport support
 │   └── FRQBEReport.cs                   # Report con QBE
@@ -80,29 +88,23 @@ PasseroFramework/
 ├── PasseroDemo.Repositories/            # Repositories (esempio)
 ├── PasseroDemo.Reports/                 # Reports (esempio)
 └── PasseroDemo.Application/             # Applicazione demo
-```
 
 ## 🎯 Quick Start
 
 ### 1. Installazione Pacchetti NuGet
 
-```bash
 dotnet add package Passero.Framework
 dotnet add package Passero.Framework.Controls
 dotnet add package Passero.Framework.FRReports  # Opzionale per FastReport
-```
 
 ### 2. Configurazione Database
 
-```csharp
 // Configurare connection string in ConfigurationManager
 var config = new Passero.Framework.ConfigurationManager();
 config.DBConnections.Add("MyApp", myDbConnection);
-```
 
 ### 3. Creare un Model
 
-```csharp
 [Table("publishers")]
 public class Publisher
 {
@@ -116,11 +118,9 @@ public class Publisher
     [Column("city")]
     public string City { get; set; }
 }
-```
 
 ### 4. Creare un ViewModel
 
-```csharp
 public class vmPublisher : ViewModel<Publisher>
 {
     // Logica business personalizzata (opzionale)
@@ -129,11 +129,9 @@ public class vmPublisher : ViewModel<Publisher>
         // ...
     }
 }
-```
 
 ### 5. Utilizzare nella View (Wisej Form)
-
-```csharp
+ 
 public partial class frmPublishers : Form
 {
     private vmPublisher vmPublisher = new vmPublisher();
@@ -158,22 +156,18 @@ public partial class frmPublishers : Form
         dgvPublishers.DataSource = vmPublisher.ModelItems;
     }
 }
-```
 
 ## 🔧 Funzionalità Avanzate
 
 ### Data Binding Automatico
 
-```csharp
 // Crea binding automatico dai controlli con naming convention
 vmPublisher.CreatePasseroBindingFromBindingSource(this);
 
 // I controlli con nomi come txt_<PropertyName> vengono automaticamente bindati
-```
 
 ### Operazioni CRUD
 
-```csharp
 // Inserimento
 var newItem = new Publisher { PubId = "9999", PubName = "New Publisher" };
 var result = vmPublisher.InsertItem(newItem);
@@ -188,20 +182,16 @@ result = vmPublisher.DeleteItem(vmPublisher.ModelItem);
 // Query personalizzate
 var items = vmPublisher.Repository.Query("SELECT * FROM publishers WHERE city = @City", 
     new { City = "Boston" });
-```
 
 ### QBE (Query By Example)
 
-```csharp
 // Form di ricerca dinamico basato su model
 QBEForm<Publisher> qbeForm = new QBEForm<Publisher>(dbConnection);
 qbeForm.SetTargetRepository(vmPublisher.Repository, () => RefreshData());
 qbeForm.ShowQBE();
-```
 
 ### DataNavigator Events
 
-```csharp
 // Eventi del ciclo di vita
 dataNavigator1.eAddNewRequest += (ref bool cancel) => {
     // Validazione prima dell'inserimento
@@ -215,17 +205,14 @@ dataNavigator1.eSaveRequest += (ref bool cancel) => {
 dataNavigator1.eDeleteRequest += (ref bool cancel) => {
     // Conferma eliminazione
 };
-```
 
 ### Gestione Barcode
 
-```csharp
 // Genera barcode Code 128
 var barcodeImage = BarcodeHelper.GenerateCode128("123456789");
 
 // Genera QR Code
 var qrCode = BarcodeHelper.GenerateQRCode("https://example.com");
-```
 
 ## 📚 Target Framework
 
@@ -248,7 +235,6 @@ var qrCode = BarcodeHelper.GenerateQRCode("https://example.com");
 
 ## 🛠️ Build e Deploy
 
-```bash
 # Build soluzione
 dotnet build -c Release
 
@@ -256,7 +242,6 @@ dotnet build -c Release
 dotnet pack -c Release
 
 # I pacchetti .nupkg saranno in bin/Release/
-```
 
 ### Pacchetti NuGet Disponibili
 
@@ -288,10 +273,8 @@ Per il data binding automatico, seguire queste convenzioni:
 - **DateTimePicker**: `dtp_<PropertyName>`
 
 Esempio:
-```csharp
 // Il controllo txt_pub_name verrà automaticamente bindato alla proprietà PubName
 private TextBox txt_pub_name;
-```
 
 ## 🎥 Video Tutorial
 

@@ -13,7 +13,7 @@
 
 	<PropertyGroup>
 		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>4.0.11</WisejNETVersion>
+		<WisejNETVersion>4.0.12</WisejNETVersion>
 		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>

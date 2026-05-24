@@ -3,6 +3,9 @@ using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.Common;
+using System.Linq;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls
@@ -479,7 +482,16 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// The text box
         /// </summary>
-        TextBox = 4
+        TextBox = 4,
+        /// <summary>
+        /// The date time picker    
+        /// </summary>
+        DatePicker = 5,
+        /// <summary>
+        /// The date time picker    
+        /// </summary>
+        DateTimePicker = 6
+
 
 
     }
@@ -566,11 +578,8 @@ namespace Passero.Framework.Controls
     }
 
 
-    /// <summary>
-    /// 
-    /// </summary>
     [Serializable]
-    public class DbColumn
+    public class QBEDbColumn
     {
         /// <summary>
         /// The name
@@ -580,32 +589,63 @@ namespace Passero.Framework.Controls
         /// The friendly name
         /// </summary>
         public string FriendlyName = "";
+
+        /// <summary>
+        /// Tipo CLR della property mappata (può essere impostato da metadata/reflect)
+        /// </summary>
+        public Type Type { get; set; } = null;
+
+        private Type GetEffectiveType()
+        {
+            if (Type == null)
+                return null;
+            return Nullable.GetUnderlyingType(Type) ?? Type;
+        }
+
         /// <summary>
         /// The is boolean
         /// </summary>
-        public bool IsBoolean = false;
+        public bool IsBoolean => GetEffectiveType() == typeof(bool);
+
         /// <summary>
         /// The is date
         /// </summary>
-        public bool IsDate = false;
+        public bool IsDate => GetEffectiveType() == typeof(DateTime);
+
         /// <summary>
         /// The is time
         /// </summary>
-        public bool IsTime = false;
+        public bool IsTime => GetEffectiveType() == typeof(TimeSpan);
+
         /// <summary>
         /// The is date time
         /// </summary>
-        public bool IsDateTime = false;
+        public bool IsDateTime => GetEffectiveType() == typeof(DateTime);
+
         /// <summary>
         /// The is string
         /// </summary>
-        public bool IsString = false;
+        public bool IsString => GetEffectiveType() == typeof(string);
+
         /// <summary>
         /// The is numeric
         /// </summary>
-        public bool IsNumeric = false;
+        public bool IsNumeric
+        {
+            get
+            {
+                var t = GetEffectiveType();
+                if (t == null) return false;
+                var numericTypes = new[]
+                {
+                    typeof(byte), typeof(sbyte), typeof(short), typeof(ushort),
+                    typeof(int), typeof(uint), typeof(long), typeof(ulong),
+                    typeof(float), typeof(double), typeof(decimal)
+                };
+                return numericTypes.Contains(t);
+            }
+        }
     }
-
 
     /// <summary>
     /// 
@@ -653,6 +693,10 @@ namespace Passero.Framework.Controls
         /// The m qbe column type
         /// </summary>
         private QBEColumnsTypes mQBEColumnType = QBEColumnsTypes.TextBox;
+        /// <summary>
+        /// The m DBcolumn type
+        /// </summary>
+        private QBEDbColumn mQBEDbColumn;
         /// <summary>
         /// The m column size
         /// </summary>
@@ -778,6 +822,30 @@ namespace Passero.Framework.Controls
                 mQBEColumnType = value;
             }
         }
+
+
+        /// <summary>
+        /// Gets or sets the type of the qbe column.
+        /// </summary>
+        /// <value>
+        /// The type of the qbe column.
+        /// </value>
+        public QBEDbColumn QBEDbColumn
+        {
+            get
+            {
+                QBEDbColumn QBEDbColumnTypeRet = default;
+                QBEDbColumnTypeRet = mQBEDbColumn;
+                return QBEDbColumnTypeRet;
+
+            }
+            set
+            {
+                mQBEDbColumn = value;
+            }
+        }
+
+
         /// <summary>
         /// Gets or sets the font.
         /// </summary>
@@ -895,7 +963,7 @@ namespace Passero.Framework.Controls
                 string FriendlyNameRet = default;
                 FriendlyNameRet = mFriendlyName;
                 if (mFriendlyName == null)
-                    mFriendlyName = DbColumn;
+                    mFriendlyName = DbColumnName;
                 return FriendlyNameRet;
             }
             set
@@ -968,7 +1036,7 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The database column.
         /// </value>
-        public string DbColumn
+        public string DbColumnName
         {
             get
             {
@@ -1036,14 +1104,19 @@ namespace Passero.Framework.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="QBEColumns"/> class.
         /// </summary>
-        public QBEColumns() : base(StringComparer.InvariantCultureIgnoreCase)
+        public QBEColumns(object Parent =null) : base(StringComparer.InvariantCultureIgnoreCase)
         {
+            if (Parent != null)
+                this.Parent = Parent;
         }
+
+
+        public Object Parent { get; set; }  
 
         /// <summary>
         /// Adds the specified database column.
         /// </summary>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="DisplayFormat">The display format.</param>
         /// <param name="QBEValue">The qbe value.</param>
@@ -1051,16 +1124,16 @@ namespace Passero.Framework.Controls
         /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumn, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, int ColumnWidth = 0)
+        public QBEColumn Add(string DbColumnName, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, int ColumnWidth = 0)
         {
             var x = new QBEColumn();
-            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth);
 
         }
         /// <summary>
         /// Adds the specified database column.
         /// </summary>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="DisplayFormat">The display format.</param>
         /// <param name="QBEValue">The qbe value.</param>
@@ -1069,9 +1142,9 @@ namespace Passero.Framework.Controls
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
         {
-            return Add("", DbColumn, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth);
         }
 
 
@@ -1079,47 +1152,47 @@ namespace Passero.Framework.Controls
         /// Adds for report.
         /// </summary>
         /// <param name="ReportName">Name of the report.</param>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="QBEValue">The qbe value.</param>
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <returns></returns>
-        public QBEColumn AddForReport(string ReportName, string DbColumn, string FriendlyName, object QBEValue, QBEColumnsTypes QBEColumnType)
+        public QBEColumn AddForReport(string ReportName, string DbColumnName, string FriendlyName, object QBEValue, QBEColumnsTypes QBEColumnType)
         {
-            return Add(ReportName, DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnType, 0);
+            return Add(ReportName, DbColumnName, FriendlyName, "", QBEValue, true, false, QBEColumnType, 0);
         }
 
         /// <summary>
         /// Adds for report.
         /// </summary>
         /// <param name="ReportName">Name of the report.</param>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="QBEValue">The qbe value.</param>
         /// <returns></returns>
-        public QBEColumn AddForReport(string ReportName, string DbColumn, string FriendlyName, object QBEValue = null)
+        public QBEColumn AddForReport(string ReportName, string DbColumnName, string FriendlyName, object QBEValue = null)
         {
-            return Add(ReportName, DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
+            return Add(ReportName, DbColumnName, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
         }
 
         /// <summary>
         /// Adds for report.
         /// </summary>
         /// <param name="Report">The report.</param>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="QBEValue">The qbe value.</param>
         /// <returns></returns>
-        public QBEColumn AddForReport(object Report, string DbColumn, string FriendlyName, object QBEValue = null)
+        public QBEColumn AddForReport(object Report, string DbColumnName, string FriendlyName, object QBEValue = null)
         {
-            return Add(DbColumn, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
+            return Add(DbColumnName, FriendlyName, "", QBEValue, true, false, QBEColumnsTypes.TextBox, 0);
         }
 
         /// <summary>
         /// Adds the specified report name.
         /// </summary>
         /// <param name="ReportName">Name of the report.</param>
-        /// <param name="DbColumn">The database column.</param>
+        /// <param name="DbColumnName">The database column.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
         /// <param name="DisplayFormat">The display format.</param>
         /// <param name="QBEValue">The qbe value.</param>
@@ -1128,14 +1201,14 @@ namespace Passero.Framework.Controls
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        private QBEColumn Add(string ReportName, string DbColumn, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
+        private QBEColumn Add(string ReportName, string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
         {
             var x = new QBEColumn();
 
             x.ReportName = ReportName;
             //x.QBEForm = QBEForm;
             x.OrdinalPosition = Count;
-            x.DbColumn = DbColumn;
+            x.DbColumnName = DbColumnName;
             x.UseInQBE = UseInQBE;
             x.QBEValue = QBEValue;
             x.FriendlyName = FriendlyName;
@@ -1146,35 +1219,22 @@ namespace Passero.Framework.Controls
             x.Aligment = Wisej.Web.DataGridViewContentAlignment.TopLeft;
             x.QBEInitialValue = QBEValue;
 
-            //if (DbColumn.IsNumeric() | DbColumn.IsDate())
-            //{
-            //    x.Aligment = DataGridViewContentAlignment.TopRight;
-            //}
-            //if (DbColumn.IsString())
-            //{
-            //    x.Aligment = DataGridViewContentAlignment.TopLeft;
-            //}
-            //if (DbColumn.IsTime() | DbColumn.IsDate())
-            //{
-            //    x.Aligment = DataGridViewContentAlignment.TopRight;
-            //}
-            //if (DbColumn.IsBoolean())
-            //{
-            //    x.Aligment = DataGridViewContentAlignment.MiddleCenter;
-            //}
 
+           x.QBEDbColumn = new QBEDbColumn();  
+           x.QBEDbColumn.Name = DbColumnName;
+            
+          
             if (string.IsNullOrEmpty(Strings.Trim(x.FriendlyName)))
-                x.FriendlyName = x.DbColumn;
+                x.FriendlyName = x.DbColumnName;
             if (ReportName.Trim() != "")
             {
-                Add(ReportName.Trim().ToUpper() + "|" + DbColumn.Trim().ToUpper(), x);
+                Add(ReportName.Trim().ToUpper() + "|" + DbColumnName.Trim().ToUpper(), x);
             }
             else
             {
-                Add(DbColumn.Trim().ToUpper(), x);
+                Add(DbColumnName.Trim().ToUpper(), x);
             }
-
-            //List.Add(x);
+            
             return x;
         }
 

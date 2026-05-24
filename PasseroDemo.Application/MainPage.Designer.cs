@@ -48,8 +48,8 @@
             this.ToolBar = new Wisej.Web.ToolBar();
             this.tbMenuOwerFlow = new Wisej.Web.ToolBarButton();
             this.tbAppLogo = new Wisej.Web.ToolBarControl();
-            this.pbAppLogo = new Wisej.Web.PictureBox();
             this.tbAppTitle = new Wisej.Web.ToolBarControl();
+            this.pbAppLogo = new Wisej.Web.PictureBox();
             this.lbAppTitle = new Wisej.Web.Label();
             this.txtSearchBox = new Wisej.Web.TextBox();
             this.pbGDGLogo = new Wisej.Web.PictureBox();
@@ -72,7 +72,7 @@
             this.mnuStores,
             this.mnuSales,
             this.mnuLanguage});
-            this.NavigationBar.Location = new System.Drawing.Point(14, 46);
+            this.NavigationBar.Location = new System.Drawing.Point(3, 46);
             this.NavigationBar.Logo = "Images\\Passero.png";
             this.NavigationBar.Margin = new Wisej.Web.Padding(0);
             this.NavigationBar.Name = "NavigationBar";
@@ -175,7 +175,7 @@
             this.tbAppTitle});
             this.ToolBar.Location = new System.Drawing.Point(0, 0);
             this.ToolBar.Name = "ToolBar";
-            this.ToolBar.Size = new System.Drawing.Size(1184, 35);
+            this.ToolBar.Size = new System.Drawing.Size(1363, 35);
             this.ToolBar.TabIndex = 1;
             this.ToolBar.TabStop = false;
             this.ToolBar.ButtonClick += new Wisej.Web.ToolBarButtonClickEventHandler(this.ToolBar_ButtonClick);
@@ -190,6 +190,10 @@
             // 
             this.tbAppLogo.Name = "tbAppLogo";
             // 
+            // tbAppTitle
+            // 
+            this.tbAppTitle.Name = "tbAppTitle";
+            // 
             // pbAppLogo
             // 
             this.pbAppLogo.Enabled = false;
@@ -198,10 +202,6 @@
             this.pbAppLogo.Name = "pbAppLogo";
             this.pbAppLogo.Size = new System.Drawing.Size(40, 40);
             this.pbAppLogo.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
-            // 
-            // tbAppTitle
-            // 
-            this.tbAppTitle.Name = "tbAppTitle";
             // 
             // lbAppTitle
             // 
@@ -217,7 +217,7 @@
             // txtSearchBox
             // 
             this.txtSearchBox.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
-            this.txtSearchBox.Location = new System.Drawing.Point(944, 3);
+            this.txtSearchBox.Location = new System.Drawing.Point(1123, 3);
             this.txtSearchBox.Name = "txtSearchBox";
             this.txtSearchBox.Size = new System.Drawing.Size(180, 30);
             this.txtSearchBox.TabIndex = 2;
@@ -237,7 +237,7 @@
             // 
             this.pbGDGLogo.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
             this.pbGDGLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbGDGLogo.Image")));
-            this.pbGDGLogo.Location = new System.Drawing.Point(1130, 0);
+            this.pbGDGLogo.Location = new System.Drawing.Point(1309, 0);
             this.pbGDGLogo.Name = "pbGDGLogo";
             this.pbGDGLogo.Size = new System.Drawing.Size(51, 35);
             this.pbGDGLogo.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
@@ -255,7 +255,7 @@
             this.Controls.Add(this.ToolBar);
             this.Controls.Add(this.NavigationBar);
             this.Name = "MainPage";
-            this.Size = new System.Drawing.Size(1184, 656);
+            this.Size = new System.Drawing.Size(1363, 283);
             this.Load += new System.EventHandler(this.MaiPage_Load);
             this.Resize += new System.EventHandler(this.MaiPage_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pbAppLogo)).EndInit();

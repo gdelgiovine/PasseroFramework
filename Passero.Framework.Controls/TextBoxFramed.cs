@@ -6,6 +6,7 @@ using Wisej.Web;
 
 namespace Passero.Framework.Controls
 {
+    [DefaultBindingProperty("Text")]
     [ToolboxItem(true)]
     public partial class TextBoxFramed : Wisej.Web.TextBox
     {
@@ -16,7 +17,7 @@ namespace Passero.Framework.Controls
         private int rightToolsWidth = 0;
         private int toolsWidth = 0; 
 
-        [Category("Appearance")]
+        [Category("Custom Appearance")]
         [Description("Ottiene o imposta l'altezza della linea verticale (0-100).")]
         public int VerticalLineHeight
         {
@@ -32,7 +33,7 @@ namespace Passero.Framework.Controls
 
         private Color _penColor = Color.LightGray;
 
-        [Category("Appearance")]
+        [Category("Custom Appearance")]
         [Description("Specifies the color of the pen used to draw lines or rectangles.")]
         public Color PenColor
         {
@@ -48,7 +49,7 @@ namespace Passero.Framework.Controls
 
         private float _penSize = 1f;
 
-        [Category("Appearance")]
+        [Category("Custom Appearance")]
         [Description("Specifies the thickness of the pen used to draw lines.")]
         public float PenSize
         {
@@ -115,7 +116,7 @@ namespace Passero.Framework.Controls
 
         private System.Drawing.Drawing2D.DashStyle _penStyle = System.Drawing.Drawing2D.DashStyle.Solid;
 
-        [Category("Appearance")]
+        [Category("Custom Appearance")]
         [Description("Specifies the style of the pen used to draw lines.")]
         public System.Drawing.Drawing2D.DashStyle PenStyle
         {
@@ -131,7 +132,7 @@ namespace Passero.Framework.Controls
 
         private int _VerticalLineStep = 1;
 
-        [Category("Appearance")]
+        [Category("Custom Appearance")]
         [Description("Specifies the number of characters after which a vertical line should be drawn.")]
 
         public int VerticalLineStep

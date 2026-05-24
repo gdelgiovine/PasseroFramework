@@ -4,7 +4,7 @@
     <TargetFrameworks>net48;net9.0</TargetFrameworks>
     <PlatformTarget>AnyCPU</PlatformTarget>
 	<LangVersion>latest</LangVersion>
-	  <WisejNETVersion>4.0.11</WisejNETVersion>
+	  <WisejNETVersion>4.0.12</WisejNETVersion>
 	  <WisejNETFamily>Wisej-4</WisejNETFamily>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>

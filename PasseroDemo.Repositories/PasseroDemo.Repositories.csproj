@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
-	  <WisejNETVersion>4.0.11</WisejNETVersion>
-	  <WisejNETFamily>Wisej-4</WisejNETFamily>
-	  
+    <WisejNETVersion>4.0.12</WisejNETVersion>
+    <WisejNETFamily>Wisej-4</WisejNETFamily>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -14,9 +13,6 @@
     <AssemblyOriginatorKeyFile>..\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<WisejNETVersion>4.0.11</WisejNETVersion>
-	</PropertyGroup>
 	
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))'=='net'">
     <Reference Include="Microsoft.CSharp" />

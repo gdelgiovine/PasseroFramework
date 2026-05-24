@@ -215,5 +215,21 @@ namespace PasseroDemo.Views
         {
             //ControlsUtilities.SetPrimaryKeyControlsReadOnly<Models.Author>(bsAuthors);
         }
+
+        private void serialBarcodeReader1_OnBarcodeScanned(object sender, SerialBarcodeReader.BarcodeScannedEventArgs e)
+        {
+            if (e.BarcodeDecodeResult.HasApplicationIdentifiers)
+            {
+                // Process GS1 barcode data
+                string gtin = e.BarcodeDecodeResult.GetAiValue("01"); // GTIN  
+                string batchNumber = e.BarcodeDecodeResult.GetAiValue("10"); // Batch/Lot Number
+                string expirationDate = e.BarcodeDecodeResult.GetAiValue("17"); // Expiration Date
+                MessageBox.Show($"GTIN: {gtin}\nBatch Number: {batchNumber}\nExpiration Date: {expirationDate}");
+            }
+            else
+            {
+                MessageBox.Show(e.BarcodeData);
+            }
+        }
     }
 }

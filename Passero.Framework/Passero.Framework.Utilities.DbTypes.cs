@@ -193,6 +193,8 @@ namespace Passero.Framework
         }
 
 
+
+
         public static DbType GetDbTypeA(Type runtimeType)
         {
             var nonNullableType = Nullable.GetUnderlyingType(runtimeType);
@@ -281,6 +283,53 @@ namespace Passero.Framework
             var sqlParamter = new SqlParameter (parameterName: String.Empty, value: templateValue);
 
             return sqlParamter.DbType;
+        }
+
+
+        public static EnumSystemTypeIs GetSystemTypeCategory(Type t)
+        {
+            if (t == null)
+                return EnumSystemTypeIs.Empty;
+
+            var effective = Nullable.GetUnderlyingType(t) ?? t;
+
+            // Usa Utilities.GetDbType che mappa i Type su DbType
+            var dbType = Utilities.GetDbType(effective);
+
+            switch (dbType)
+            {
+                case DbType.String:
+                case DbType.AnsiString:
+                case DbType.AnsiStringFixedLength:
+                case DbType.StringFixedLength:
+                    return EnumSystemTypeIs.String;
+
+                case DbType.Byte:
+                case DbType.SByte:
+                case DbType.Int16:
+                case DbType.UInt16:
+                case DbType.Int32:
+                case DbType.UInt32:
+                case DbType.Int64:
+                case DbType.UInt64:
+                case DbType.Decimal:
+                case DbType.Double:
+                case DbType.Single:
+                case DbType.VarNumeric:
+                case DbType.Currency:
+                    return EnumSystemTypeIs.Numeric;
+
+                case DbType.Date:
+                case DbType.DateTime:
+                case DbType.Time:
+                    return EnumSystemTypeIs.DateTime;
+
+                case DbType.Boolean:
+                    return EnumSystemTypeIs.Boolean;
+
+                default:
+                    return EnumSystemTypeIs.Object;
+            }
         }
 
     }

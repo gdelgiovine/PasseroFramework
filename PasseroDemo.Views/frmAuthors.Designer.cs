@@ -43,6 +43,7 @@
             this.txt_au_lname = new Wisej.Web.TextBox();
             this.flpAuthors = new Wisej.Web.FlowLayoutPanel();
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.serialBarcodeReader1 = new Passero.Framework.Controls.SerialBarcodeReader();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.flpAuthors.SuspendLayout();
             this.SuspendLayout();
@@ -174,6 +175,7 @@
             this.flpAuthors.Controls.Add(this.txt_phone);
             this.flpAuthors.Controls.Add(this.txt_email);
             this.flpAuthors.Controls.Add(this.chk_Contract);
+            this.flpAuthors.Controls.Add(this.serialBarcodeReader1);
             this.flpAuthors.Location = new System.Drawing.Point(3, 7);
             this.flpAuthors.Name = "flpAuthors";
             this.flpAuthors.Padding = new Wisej.Web.Padding(3);
@@ -193,6 +195,13 @@
             this.dataNavigator1.ePrint += new Passero.Framework.Controls.DataNavigator.ePrintEventHandler(this.dataNavigator1_ePrint);
             this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
             this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
+            // 
+            // serialBarcodeReader1
+            // 
+            this.serialBarcodeReader1.Location = new System.Drawing.Point(6, 162);
+            this.serialBarcodeReader1.Name = "serialBarcodeReader1";
+            this.serialBarcodeReader1.TabIndex = 10;
+            this.serialBarcodeReader1.OnBarcodeScanned += new System.EventHandler<Passero.Framework.Controls.SerialBarcodeReader.BarcodeScannedEventArgs>(this.serialBarcodeReader1_OnBarcodeScanned);
             // 
             // frmAuthors
             // 
@@ -231,5 +240,6 @@
         internal Wisej.Web.TextBox txt_au_fname;
         internal Wisej.Web.TextBox txt_au_lname;
         private Wisej.Web.FlowLayoutPanel flpAuthors;
+        private Passero.Framework.Controls.SerialBarcodeReader serialBarcodeReader1;
     }
 }

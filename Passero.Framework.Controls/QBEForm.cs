@@ -531,10 +531,10 @@ namespace Passero.Framework.Controls
                 foreach (var item in ModelProperties.Values)
                 {
                     QBEColumn column = new QBEColumn();
-                    column.DbColumn = item.Name;
+                    column.DbColumnName = item.Name;
                     column.FriendlyName = item.Name;
                     column.UseInQBE = true;
-                    QBEColumns.Add(column.DbColumn, column);
+                    QBEColumns.Add(column.DbColumnName, column);
                 }
 
             }
@@ -555,11 +555,11 @@ namespace Passero.Framework.Controls
                 foreach (var item in ModelProperties.Values)
                 {
                     QBEColumn column = new QBEColumn();
-                    column.DbColumn = item.Name;
+                    column.DbColumnName = item.Name;
                     column.FriendlyName = item.Name;
                     column.UseInQBE = true;
                     column.DisplayInQBEResult = true;
-                    QBEColumns.Add(column.DbColumn, column);
+                    QBEColumns.Add(column.DbColumnName, column);
                 }
 
             }
@@ -571,7 +571,7 @@ namespace Passero.Framework.Controls
                 {
                     int i;
                     i = QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
-                    if (Passero.Framework.Utilities.GetSystemTypeIs(ModelProperties[QBEColumn.DbColumn].PropertyType) == EnumSystemTypeIs.Boolean)
+                    if (Passero.Framework.Utilities.GetSystemTypeIs(ModelProperties[QBEColumn.DbColumnName].PropertyType) == EnumSystemTypeIs.Boolean)
                     {
                         DataGridViewCheckBoxCell ncell = new DataGridViewCheckBoxCell();
                         ncell.ThreeState = true;
@@ -596,7 +596,7 @@ namespace Passero.Framework.Controls
                         QueryGrid.Rows[i].Cells[1] = ncell;
                         QueryGrid.Rows[i].Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
                     }
-                    QueryGrid.Rows[i].Tag = QBEColumn.DbColumn;
+                    QueryGrid.Rows[i].Tag = QBEColumn.DbColumnName;
 
                     if (QBEColumn.QBEValue != null)
                     {
@@ -653,7 +653,7 @@ namespace Passero.Framework.Controls
             {
                 //if (QBEColumn.DisplayInQBEResult)
                 {
-                    ResultColumns.Add(QBEColumn.DbColumn, QBEColumn);
+                    ResultColumns.Add(QBEColumn.DbColumnName, QBEColumn);
                 }
             }
 
@@ -670,14 +670,14 @@ namespace Passero.Framework.Controls
                 {
                     DataGridViewColumn nc;
                     bool newcolumn = false;
-                    if (ResultGrid.Columns[column.DbColumn] == null)
+                    if (ResultGrid.Columns[column.DbColumnName] == null)
                     {
                         nc = new DataGridViewColumn();
                         newcolumn = true;
                     }
                     else
                     {
-                        nc = ResultGrid.Columns[column.DbColumn];
+                        nc = ResultGrid.Columns[column.DbColumnName];
                     }
 
                     switch (column.QBEColumnType)
@@ -709,7 +709,7 @@ namespace Passero.Framework.Controls
 
                     if (newcolumn == true)
                     {
-                        nc.Name = column.DbColumn;
+                        nc.Name = column.DbColumnName;
                         nc.HeaderText = column.FriendlyName;
                         nc.DataPropertyName = nc.Name;
                         nc.Visible = column.DisplayInQBEResult;

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
-	  <WisejNETVersion>4.0.11</WisejNETVersion>
+	  <WisejNETVersion>4.0.12</WisejNETVersion>
 	  <WisejNETFamily>Wisej-4</WisejNETFamily>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,10 +12,7 @@
 	  <AssemblyOriginatorKeyFile>..\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<WisejNETVersion>4.0.11</WisejNETVersion>
-	</PropertyGroup>
-
+	
 	<ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />

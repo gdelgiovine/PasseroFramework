@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <PasseroVersion>1.0.0</PasseroVersion>
-	<WisejNETVersion>4.0.11</WisejNETVersion>
+	<WisejNETVersion>4.0.12</WisejNETVersion>
 	<WisejNETFamily>Wisej-4</WisejNETFamily>
     <CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
     <Version>$(CompleteVersion)</Version>
@@ -55,6 +55,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="BarcodeReader\webserialbarcodecore.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BarcodeReader\webserialbarcodecore.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
@@ -64,6 +72,7 @@
     <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
     <PackageReference Include="$(WisejNETFamily)-Camera" Version="$(WisejNETVersion)" />
     <PackageReference Include="$(WisejNETFamily)-NavigationBar" Version="$(WisejNETVersion)" />
+    <PackageReference Include="Wisej-4-VisualStudioIcons" Version="4.0.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -77,7 +86,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Wisej-4" Version="4.0.11" />
+    <PackageReference Update="Wisej-4" Version="4.0.12" />
   </ItemGroup>
 
 </Project>
