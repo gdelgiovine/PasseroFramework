@@ -11,19 +11,20 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>4.0.13</WisejNETVersion>
+		<PasseroVersion>1.0.0</PasseroVersion>
 		<WisejNETFamily>Wisej-4</WisejNETFamily>
-        <CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
-        <Version>$(CompleteVersion)</Version>
-        <Authors>Gabriele Del Giovine</Authors>
-        <Company>Gabriele Del Giovine</Company>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
+		<WisejNETVersion>4.0.13</WisejNETVersion>
+		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
+		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
+		<Authors>Gabriele Del Giovine</Authors>
+		<Company>Gabriele Del Giovine</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>Passero.Framework.JwtAuthHandler</PackageId>
+        <PackageId>Passero.Framework.40.JwtAuthHandler</PackageId>
         <Description>Wisej.NET JWT Authentication Handler for Passero Framework</Description>
         <PackageTags>JWT;Wisej.NET;Authentication;passero;framework</PackageTags>
      <PackageOutputPath>..\NugetPackages</PackageOutputPath>

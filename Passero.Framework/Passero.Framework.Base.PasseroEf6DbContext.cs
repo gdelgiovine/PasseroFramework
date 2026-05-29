@@ -39,7 +39,7 @@ namespace Passero.Framework.Base
 
     
 
-        // ✅ ConcurrentDictionary garantisce unicità e thread-safety senza LINQ
+        //ConcurrentDictionary garantisce unicità e thread-safety senza LINQ
         private static readonly ConcurrentDictionary<Type, byte> _dynamicEntityTypes
             = new ConcurrentDictionary<Type, byte>();
 
@@ -72,7 +72,7 @@ namespace Passero.Framework.Base
             modelBuilder.Conventions.Remove<
                 System.Data.Entity.ModelConfiguration.Conventions.PluralizingTableNameConvention>();
 
-            // ✅ Unione di entità esplicite e dinamiche — tutte distinte
+            //  Unione di entità esplicite e dinamiche — tutte distinte
             var allTypes = (_entityTypes ?? Array.Empty<Type>())
                 .Union(_dynamicEntityTypes.Keys)
                 .Distinct()
