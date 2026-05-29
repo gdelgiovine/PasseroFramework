@@ -4,7 +4,7 @@
 	<PropertyGroup>
 		<RootNamespace>PasseroDemo.Reports</RootNamespace>
 		<TargetFrameworks>net48;net8.0</TargetFrameworks>
-		<WisejNETVersion>4.0.12</WisejNETVersion>
+		<WisejNETVersion>4.0.13</WisejNETVersion>
 		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<LangVersion>latest</LangVersion>
 		<SignAssembly>False</SignAssembly>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+	  <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <LangVersion>latest</LangVersion>
 	<Nullable>enable</Nullable>	  
@@ -17,7 +17,7 @@
 	
 	<PropertyGroup>
 		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETVersion>4.0.12</WisejNETVersion>
+		<WisejNETVersion>4.0.13</WisejNETVersion>
 		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<CompleteVersion>$(PasseroVersion)-$(WisejNETVersion)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>

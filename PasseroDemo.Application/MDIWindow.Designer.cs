@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            //Wisej.Resources.ComponentResourceManager resources = new Wisej.Resources.ComponentResourceManager(typeof(MDIWindow));
-            Wisej.Resources.ComponentResourceManager resources = new Wisej.Resources.ComponentResourceManager(typeof(MDIWindow));
             this.lblRuntimeAppInfo = new Wisej.Web.Label();
             this.pbPasseroLogo = new Wisej.Web.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbPasseroLogo)).BeginInit();
@@ -37,9 +35,9 @@
             // 
             // lblRuntimeAppInfo
             // 
-            this.lblRuntimeAppInfo.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Left)));
+            this.lblRuntimeAppInfo.Anchor = Wisej.Web.AnchorStyles.None;
             this.lblRuntimeAppInfo.AutoSize = true;
-            this.lblRuntimeAppInfo.Location = new System.Drawing.Point(13, 325);
+            this.lblRuntimeAppInfo.Location = new System.Drawing.Point(237, 349);
             this.lblRuntimeAppInfo.Name = "lblRuntimeAppInfo";
             this.lblRuntimeAppInfo.Size = new System.Drawing.Size(99, 18);
             this.lblRuntimeAppInfo.TabIndex = 1;
@@ -49,7 +47,7 @@
             // 
             this.pbPasseroLogo.Anchor = Wisej.Web.AnchorStyles.None;
             this.pbPasseroLogo.BackColor = System.Drawing.Color.Transparent;
-            this.pbPasseroLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbPasseroLogo.Image")));
+            this.pbPasseroLogo.ImageSource = "Images\\Passero.JPG";
             this.pbPasseroLogo.Location = new System.Drawing.Point(165, 136);
             this.pbPasseroLogo.Name = "pbPasseroLogo";
             this.pbPasseroLogo.Size = new System.Drawing.Size(236, 207);
@@ -57,16 +55,13 @@
             // 
             // MDIWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.ClientSize = new System.Drawing.Size(590, 475);
-            this.Controls.Add(this.pbPasseroLogo);
             this.Controls.Add(this.lblRuntimeAppInfo);
-            this.CssStyle = resources.GetString("$this.CssStyle");
+            this.Controls.Add(this.pbPasseroLogo);
             this.IsMdiContainer = true;
             this.Margin = new Wisej.Web.Padding(0);
-            this.MdiTabProperties.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.Name = "MDIWindow";
             this.ShowInTaskbar = false;
             this.StartPosition = Wisej.Web.FormStartPosition.Manual;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Passero.Framework
 {
@@ -355,7 +356,11 @@ namespace Passero.Framework
                 {
                     if (ConfigurationDictionary[Section].ContainsKey(Key))
                     {
+
                         value = ConfigurationDictionary[Section][Key];
+                        value = value.Trim().Trim('"', '\'');
+                            
+                            
                         ok = true;
                     }
                     else
@@ -408,6 +413,7 @@ namespace Passero.Framework
                     if (SessionConfigurationDictionary[Section].ContainsKey(Key))
                     {
                         value = SessionConfigurationDictionary[Section][Key];
+                        value = value.Trim().Trim('"', '\'');
                         ok = true;
                     }
                     else

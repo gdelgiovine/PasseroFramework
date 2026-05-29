@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
-	  <WisejNETVersion>4.0.12</WisejNETVersion>
+	  <WisejNETVersion>4.0.13</WisejNETVersion>
 	  <WisejNETFamily>Wisej-4</WisejNETFamily>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

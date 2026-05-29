@@ -50,9 +50,9 @@ namespace PasseroDemo.Views
 
             //vmAuthor = new ViewModels.vmAuthor();
             //vmAuthor.Init();
-            //vmAuthor.Init(this.DbConnection);
+            vmAuthor.Init(this.DbConnection);
 
-            vmAuthor.Init(this._dbContext);
+            //vmAuthor.Init(this._dbContext);
 
           
             vmAuthor.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
