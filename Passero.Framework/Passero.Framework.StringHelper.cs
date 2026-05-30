@@ -166,7 +166,7 @@ namespace Passero.Framework
             for (i = x; i >= 1; i -= 1)
             {
                 //a = SequenceMask.Substring(i - 1, 1);
-                a= SequenceMask.AsSpan(i - 1, 1).ToString();    
+                a = SequenceMask.AsSpan(i - 1, 1).ToString();
                 if (!Equals(a, "F"))
                 {
                     c = Convert.ToInt32(value[i - 1]);

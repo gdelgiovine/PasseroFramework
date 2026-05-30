@@ -1,19 +1,10 @@
-using Dapper;
 using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -29,8 +20,8 @@ namespace Passero.Framework
             var ERContenxt = $"{mClassName}.UndoChanges()";
             var ER = new ExecutionResult(ERContenxt);
 
-          
-            if (!RaiseRequest(UndoRequest ))
+
+            if (!RaiseRequest(UndoRequest))
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.ResultMessage = "UndoChanges cancelled by UndoRequest handler.";
@@ -92,7 +83,7 @@ namespace Passero.Framework
                 }
                 if (mAddNewState == true)
                     mAddNewState = false;
-                
+
                 if (ER.Success)
                     UndoCompleted?.Invoke();
             }
@@ -182,7 +173,7 @@ namespace Passero.Framework
                             break;
                     }
                 }
-             
+
 
                 LastExecutionResult = ER;
             }
@@ -307,8 +298,8 @@ namespace Passero.Framework
 
             ER = Repository.InsertItem(Item, DbTransaction, DbCommandTimeout);
             ER.Context = ERContext;
-            
-            
+
+
 
             if (ER.Success)
             {
@@ -332,7 +323,7 @@ namespace Passero.Framework
                 }
                 SaveCompleted?.Invoke();
             }
-            
+
 
             LastExecutionResult = ER;
 
@@ -372,8 +363,8 @@ namespace Passero.Framework
 
             long x = 0;
             ER = Repository.InsertItems(Items, DbTransaction, DbCommandTimeout);
-            
-            
+
+
             ER.Context = ERContenxt;
             x = Convert.ToInt64(ER.Value);
             if (x > 0)
@@ -455,14 +446,14 @@ namespace Passero.Framework
                 }
 
                 ER = await Repository.UpdateItemAsync(Item, DbTransaction, DbCommandTimeout);
-                
+
                 if (Convert.ToBoolean(ER.Value))
                 {
                     ModelItem = Item;
                 }
 
                 ER.Context = ERContext;
-               
+
                 LastExecutionResult = ER;
             }
             catch (Exception ex)
@@ -554,7 +545,7 @@ namespace Passero.Framework
 
                 ER.Context = ERContext;
                 LastExecutionResult = ER;
-              
+
             }
             catch (Exception ex)
             {
@@ -611,7 +602,7 @@ namespace Passero.Framework
                     ModelItem = Items.ElementAt(0);
                     ModelItems = Items;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -673,7 +664,7 @@ namespace Passero.Framework
                     ModelItem = Items.ElementAt(0);
                     ModelItems = Items;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -681,7 +672,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                
+
             }
             if (!ER.Success)
             {
@@ -704,7 +695,7 @@ namespace Passero.Framework
             var ERcontext = $"{mClassName}.UpdateItem()";
             var ER = new ExecutionResult(ERcontext);
 
-            if (!RaiseRequest(SaveRequest ))
+            if (!RaiseRequest(SaveRequest))
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.ResultMessage = "Save cancelled by SaveRequest handler.";
@@ -767,7 +758,7 @@ namespace Passero.Framework
             }
 
             ER.Context = ERcontext;
-            
+
             LastExecutionResult = ER;
 
             if (ER.Success)
@@ -856,7 +847,7 @@ namespace Passero.Framework
                 ModelItem = Item;
             }
 
-            
+
             ER.Context = ERcontext;
             LastExecutionResult = ER;
             if (!ER.Success)
@@ -974,7 +965,7 @@ namespace Passero.Framework
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
             string Context = ER.Context;
 
-            if (!RaiseRequest(DeleteRequest ))
+            if (!RaiseRequest(DeleteRequest))
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 ER.ResultMessage = "DeleteItem cancelled by DeleteRequest handler.";
@@ -1051,7 +1042,7 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItemAsync()");
             string Context = ER.Context;
-            
+
             try
             {
                 if (Item == null)
@@ -1104,7 +1095,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-              
+
             }
             if (!ER.Success)
             {
@@ -1137,9 +1128,9 @@ namespace Passero.Framework
                 {
                     DbCommandTimeout = this.DbCommandTimeout;
                 }
-                
+
                 ER = await Repository.DeleteItemsAsync(Items, DbTransaction, DbCommandTimeout);
-                
+
                 if (Convert.ToBoolean(ER.Value))
                 {
                     for (int i = 0; i < Items.Count; i++)
@@ -1149,7 +1140,7 @@ namespace Passero.Framework
 
                     ModelItem = ModelItems.ElementAt(0);
                 }
-                
+
                 ER.Context = Context;
                 LastExecutionResult = ER;
             }
@@ -1159,7 +1150,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-             
+
             }
 
             if (!ER.Success)

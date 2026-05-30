@@ -1,19 +1,8 @@
-using Dapper;
-using FastDeepCloner;
 using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -65,7 +54,7 @@ namespace Passero.Framework
         {
             return Utilities.Clone(this);
         }
-       
+
         /// <summary>
         /// Sets the property value and raises the appropriate change notifications.
         /// </summary>
@@ -100,17 +89,17 @@ namespace Passero.Framework
                 {
                     throw new ArgumentNullException(nameof(viewModel), "The view model instance cannot be null.");
                 }
-               
-                if(Key.IsNullOrWhiteSpace())
+
+                if (Key.IsNullOrWhiteSpace())
                 {
                     throw new ArgumentNullException(Key, "The ViewModel Key be empty or null.");
-                }   
+                }
                 if (_ViewModels.ContainsKey(Key))
                 {
                     throw new ArgumentException($"A view model with the key '{Key}' already exists in the collection.");
                 }
                 _ViewModels[Key] = viewModel;
-                
+
             }
             catch (Exception ex)
             {
@@ -158,7 +147,7 @@ namespace Passero.Framework
                 {
                     throw new ArgumentNullException(nameof(viewModel), "The ViewModel instance cannot be null.");
                 }
-                
+
                 if (_ViewModels.ContainsKey(Key))
                 {
                     _ViewModels[Key] = viewModel;
@@ -186,7 +175,7 @@ namespace Passero.Framework
                 {
                     throw new ArgumentNullException("The ViewModel Key cannot be null.");
                 }
-               
+
                 if (_ViewModels.ContainsKey(Key))
                 {
                     _ViewModels.Remove(Key);

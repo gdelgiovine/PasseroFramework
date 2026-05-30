@@ -1,17 +1,10 @@
 ﻿using Dapper;
-using Dapper.ColumnMapper;
-using Dapper.Contrib.Extensions;
 using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Passero.Framework.Extensions;
 using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
@@ -26,7 +19,7 @@ namespace Passero.Framework
             if (SQLQuery != null && Parameters != null)
                 return Utilities.ResolveSQL(SQLQuery, Parameters);
             else
-                return  Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
         }
 
         /// <summary>
@@ -153,7 +146,7 @@ namespace Passero.Framework
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
         /// 
-    
+
         public ExecutionResult<ModelClass> GetItem(
             string query,
             object parameters = null,
@@ -323,7 +316,7 @@ namespace Passero.Framework
         /// <param name="Buffered">if set to <c>true</c> [buffered].</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
-        public async Task<ExecutionResult<IList<ModelClass>>>GetAllItemsAsync(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
+        public async Task<ExecutionResult<IList<ModelClass>>> GetAllItemsAsync(IDbTransaction Transaction = null, bool Buffered = true, int? CommandTimeout = null)
         {
             string query = mSQLQuery;
             if (string.IsNullOrWhiteSpace(query))
@@ -380,7 +373,7 @@ namespace Passero.Framework
                     _CurrentModelItemIndex = 0;
                 }
                 SQLQuery = query;
-                Parameters =    Utilities.GetDynamicParameters(parameters);
+                Parameters = Utilities.GetDynamicParameters(parameters);
                 ER.Value = _ModelItems;
             }
             catch (Exception ex)

@@ -34,7 +34,7 @@ namespace Passero.Framework.Base
         /// <param name="userId">L'ID utente (opzionale).</param>
         /// <param name="password">La password (opzionale).</param>
         /// <returns></returns>
-        public DbContextOptionsBuilder UseSqlServer(string server, string database, string userId = null, string password = null, string otherparams =null)
+        public DbContextOptionsBuilder UseSqlServer(string server, string database, string userId = null, string password = null, string otherparams = null)
         {
             if (string.IsNullOrEmpty(server))
                 throw new ArgumentException("Sever Name cannot be empty.", nameof(server));

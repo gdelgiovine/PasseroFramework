@@ -7,19 +7,19 @@ namespace Passero.Framework
 
     public class DTOBase<ModelClass> : ModelBase
     {
-        public Type ModelClassType => typeof(ModelClass);   
+        public Type ModelClassType => typeof(ModelClass);
     }
 
 
 
-        /// <summary>
-        /// Base class for models that supports property change notifications and cloning
-        /// </summary>
-        /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
-        /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
-        /// <typeparam name="ModelClass">The type of the model class.</typeparam>
+    /// <summary>
+    /// Base class for models that supports property change notifications and cloning
+    /// </summary>
+    /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
+    /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
+    /// <typeparam name="ModelClass">The type of the model class.</typeparam>
 
-        public class DTOBaseX<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging
+    public class DTOBaseX<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>
         /// Generato quando il valore di una proprietà cambia.

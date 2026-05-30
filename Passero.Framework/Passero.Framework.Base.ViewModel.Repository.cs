@@ -1,19 +1,9 @@
 using Dapper;
-using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -314,16 +304,16 @@ namespace Passero.Framework
         }
 
         private bool mUseUpdateEx = false;
-        public bool UseUpdateEx 
-        { 
+        public bool UseUpdateEx
+        {
             get
             {
                 return mUseUpdateEx;
             }
-            
+
             set
             {
-                mUseUpdateEx = value;   
+                mUseUpdateEx = value;
                 //Repository.UseUpdateEx = value; 
             }
         }
@@ -369,7 +359,7 @@ namespace Passero.Framework
         {
             Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-            DefaultSQLQuery = $"SELECT * FROM { Utilities.GetModelTableName<ModelClass>()}";
+            DefaultSQLQuery = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
             DefaultSQLQueryParameters = new DynamicParameters();
 
             this.Name = Name != "" ? Name : $"{typeof(ModelClass).Name}_{GetHashCode():X}";
@@ -435,7 +425,7 @@ namespace Passero.Framework
         }
 
 
-               
+
 
 
         public ViewModel(string Name = "", string FriendlyName = "", string Description = "")
@@ -443,7 +433,7 @@ namespace Passero.Framework
             var dapperRepo = new Repository<ModelClass>();
             Repository = dapperRepo;
 
-            DefaultSQLQuery = $"SELECT * FROM { Utilities.GetModelTableName<ModelClass>()}";
+            DefaultSQLQuery = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
             DefaultSQLQueryParameters = new DynamicParameters();
 
             this.Name = Name != "" ? Name : $"{typeof(ModelClass).Name}_{GetHashCode():X}";
@@ -467,7 +457,7 @@ namespace Passero.Framework
         /// <param name="Repository">The repository.</param>
         /// <param name="Name">The name.</param>
         /// <param name="FriendlyName">Name of the friendly.</param>
-        public ViewModel(ref Repository<ModelClass> Repository, string Name = "", string FriendlyName="", string Description = "")
+        public ViewModel(ref Repository<ModelClass> Repository, string Name = "", string FriendlyName = "", string Description = "")
         {
 
             if (Name != "")
@@ -546,14 +536,14 @@ namespace Passero.Framework
         /// <param name="DataBindingMode">The data binding mode.</param>
         /// <param name="Name">The name.</param>
         /// <param name="Description">The description.</param>
-        public virtual void Init(IDbConnection DbConnection, DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name="", string Description="")
+        public virtual void Init(IDbConnection DbConnection, DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name = "", string Description = "")
         {
             mDataBindingMode = DataBindingMode;
             this.DbConnection = DbConnection;
-            this.Name = Name;   
-            this.Description = Description; 
+            this.Name = Name;
+            this.Description = Description;
             Repository.DbConnection = DbConnection;
-       
+
         }
 
 

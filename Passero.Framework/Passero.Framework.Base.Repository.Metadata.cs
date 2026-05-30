@@ -1,18 +1,11 @@
 ﻿using Dapper;
-using Dapper.ColumnMapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Passero.Framework.Extensions;
-using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
 
@@ -201,7 +194,7 @@ namespace Passero.Framework
         }
 
 
-        private void ValidateConnection(bool OpenIfNotOpen=false)
+        private void ValidateConnection(bool OpenIfNotOpen = false)
         {
             if (DbConnection == null)
                 throw new InvalidOperationException($"{mClassName}: Database connection not initialized");

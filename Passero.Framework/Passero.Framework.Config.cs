@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Passero.Framework
 {
@@ -300,7 +299,7 @@ namespace Passero.Framework
                     if (s.StartsWith("["))
                     {
                         CurrentSectionName = s.Split(new[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries)[0];
-                        CurrentSectionName = CurrentSectionName.Trim(); 
+                        CurrentSectionName = CurrentSectionName.Trim();
                         if (ConfigurationDictionary.ContainsKey(CurrentSectionName))
                         {
                             CurrentSection = ConfigurationDictionary[CurrentSectionName];
@@ -315,7 +314,7 @@ namespace Passero.Framework
                     {
                         // Dim res = s.Split("=", 2).[Select](Function(x) x.Trim()).ToArray()
                         string[] res = s.Split(new char[] { '=' }, 2);
-                        CurrentSection[res[0].Trim() ] = res[1].Trim ();
+                        CurrentSection[res[0].Trim()] = res[1].Trim();
                     }
                     else
                     {
@@ -359,8 +358,8 @@ namespace Passero.Framework
 
                         value = ConfigurationDictionary[Section][Key];
                         value = value.Trim().Trim('"', '\'');
-                            
-                            
+
+
                         ok = true;
                     }
                     else

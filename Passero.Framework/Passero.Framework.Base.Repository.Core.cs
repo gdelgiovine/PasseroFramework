@@ -1,34 +1,23 @@
 ﻿using Dapper;
-using Dapper.ColumnMapper;
-using Dapper.Contrib.Extensions;
-using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Passero.Framework.Extensions;
-using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
 
 namespace Passero.Framework
 {
     //public interface IRepository<ModelClass> where ModelClass : ModelBase
-    public interface  IRepository<ModelClass> : IDisposable
-    where ModelClass : class  
-    
+    public interface IRepository<ModelClass> : IDisposable
+    where ModelClass : class
+
     {
         IList<ModelClass> GetAllItems();
         void SaveItems(IList<ModelClass> items);
     }
 
     [Serializable]
-        public partial class Repository<ModelClass> : Base.IPasseroRepository<ModelClass>
+    public partial class Repository<ModelClass> : Base.IPasseroRepository<ModelClass>
         where ModelClass : class
     {
         //public BindingSource BindingSource { get; set; }
@@ -60,8 +49,8 @@ namespace Passero.Framework
         /// <value>
         /// The view model.
         /// </value>
-        public ViewModel<ModelClass > ViewModel { get; set; }
-        
+        public ViewModel<ModelClass> ViewModel { get; set; }
+
         /// <summary>
         /// Gets or sets the error notification mode.
         /// </summary>
@@ -143,7 +132,7 @@ namespace Passero.Framework
             _disposed = true;
         }
 
-       
+
 
 
         /// <summary>

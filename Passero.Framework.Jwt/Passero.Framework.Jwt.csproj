@@ -14,26 +14,33 @@
 
 
 	<PropertyGroup>
-		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETFamily>Wisej-4</WisejNETFamily>
-		<WisejNETVersion>4.0.13</WisejNETVersion>
+		<PasseroVersion>$(Solution_PasseroVersion)</PasseroVersion>
+		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
+		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
-		<Authors>Gabriele Del Giovine</Authors>
-		<Company>Gabriele Del Giovine</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+		<Authors>$(Solution_Authors)</Authors>
+		<Company>$(Solution_Company)</Company>
+		<PackageLicenseExpression>$(Solution_PackageLicenseExpression)</PackageLicenseExpression>
+		<PackageProjectUrl>$(Solution_PackageProjectUrl)</PackageProjectUrl>
+		<RepositoryUrl>$(Solution_RepositoryUrl)</RepositoryUrl>
+		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework.40.Jwt</PackageId>
-		<Description>JWT Library for Passero Framework</Description>
-		<PackageTags>JWT;MVVM;Wisej.NET;ORM;passero;framework</PackageTags>
-		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
+		<PackageId>$(Solution_PackageId).Jwt</PackageId>
+		<Description>JWT Library for Passero.Framework</Description>
+		<PackageTags>$(Solution_PackageTags)</PackageTags>
+		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
+		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
 	</PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
         <PackageReference Include="System.Text.Json" Version="9.0.4" />

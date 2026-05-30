@@ -289,7 +289,7 @@ namespace Passero.Framework.DapperHelper
             {
                 case "VB$AnonymousType_0`1":
                     return null;
-                    
+
                 case "DynamicParameters":
                     return (DynamicParameters)Params;
             }
@@ -336,7 +336,7 @@ namespace Passero.Framework.DapperHelper
                 {
                     sbset.Append($"{colName}=@{pi.Name}, ");
                 }
-                if (Utilities.PropertyIsExplicitKey(pi) ||  Utilities.PropertyIsIdentityKey(pi))
+                if (Utilities.PropertyIsExplicitKey(pi) || Utilities.PropertyIsIdentityKey(pi))
                 {
                     sbwhere.Append($"{colName}=@{pi.Name}_shadow AND ");
                 }
@@ -430,7 +430,7 @@ namespace Passero.Framework.DapperHelper
         }
 
 
-      
+
 
         /// <summary>
         /// Gets the DELETE SQL command for the given model type,
@@ -690,8 +690,8 @@ namespace Passero.Framework.DapperHelper
                 {
                     if (
                         value.GetType() == typeof(string) |
-                        value.GetType() == typeof(DateTime) 
-                        
+                        value.GetType() == typeof(DateTime)
+
                         )
                     {
 

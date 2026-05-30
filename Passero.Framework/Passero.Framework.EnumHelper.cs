@@ -491,7 +491,7 @@ namespace Passero.Framework
                 table.Rows.Add(new object[] { value, enumvalue, description });
             }
 
-           
+
             comboBox.DataSource = table;
             comboBox.DisplayMember = "Description";
             if (UseIntValue)
@@ -554,7 +554,7 @@ namespace Passero.Framework
                     Value = value
 
                 })
-               
+
                 .ToList();
             }
 
@@ -566,10 +566,10 @@ namespace Passero.Framework
                {
                    Description = (Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description ?? value.ToString(),
                    Value = (Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(DefaultValueAttribute)) as DefaultValueAttribute)?.Value ?? value.ToString()
-                   
+
 
                })
-                
+
                  .ToList();
             }
 
@@ -583,12 +583,12 @@ namespace Passero.Framework
                     Value = (Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(DefaultValueAttribute)) as DefaultValueAttribute)?.Value ?? value.ToString()
 
                 })
-                
+
                 .ToList();
             }
 
             var table = new DataTable();
-            table.Columns.Add("Value", typeof(object ));
+            table.Columns.Add("Value", typeof(object));
             table.Columns.Add("EnumValue", typeof(string));
             table.Columns.Add("Description", typeof(string));
             for (int i = 0; i < list.Count; i++)
@@ -600,7 +600,7 @@ namespace Passero.Framework
                 string description = ReflectionHelper.GetPropertyValue(item, "Description").ToString();
                 table.Rows.Add(new object[] { value, enumvalue, description });
             }
-                       
+
             comboBox.DataSource = table;
             comboBox.DisplayMember = "Description";
             comboBox.ValueMember = "EnumValue";
@@ -610,7 +610,7 @@ namespace Passero.Framework
             {
                 for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    
+
                     {
                         if (table.Rows[i]["EnumValue"].ToString() == defaultSelection.ToString())
                         {
@@ -642,7 +642,7 @@ namespace Passero.Framework
         /// <param name="comboBox">The combo box.</param>
         /// <param name="defaultSelection">The default selection.</param>
         /// <param name="ResourceFileName">Name of the resource file.</param>
-        public static void BindEnumValueToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn comboBox,  object defaultSelection = null, string ResourceFileName = "Resources")
+        public static void BindEnumValueToDataGridViewComboBoxColumn<T>(ref Wisej.Web.DataGridViewComboBoxColumn comboBox, object defaultSelection = null, string ResourceFileName = "Resources")
         {
             BindEnumToDataGridViewComboBoxColumn<T>(ref comboBox, false, defaultSelection, ResourceFileName);
         }
@@ -707,7 +707,7 @@ namespace Passero.Framework
                 //.OrderBy(item => item.Value.ToString())
                 .ToList();
             }
-            
+
             var table = new DataTable();
             table.Columns.Add("Value", typeof(int));
             table.Columns.Add("EnumValue", typeof(string));
@@ -835,7 +835,7 @@ namespace Passero.Framework
             //if (UseIntValue)
             //    comboBox.ValueMember = "Value";
             //else
-                comboBox.ValueMember = "EnumValue";
+            comboBox.ValueMember = "EnumValue";
 
 
             if (defaultSelection != null)

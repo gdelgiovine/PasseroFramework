@@ -1,4 +1,3 @@
-using Passero.Framework;
 using System;
 using System.Collections.Generic;
 
@@ -15,25 +14,25 @@ namespace Passero.Framework
     {
         public ViewModel<ModelClass> ModelViewModel { get; set; }
         public ViewModel<DTOClass> DTOViewModel { get; set; }
-    
+
         public ViewModelWrapper(ViewModel<ModelClass> modelViewModel, ViewModel<DTOClass> dtoViewModel)
         {
-        ModelViewModel = modelViewModel ?? throw new ArgumentNullException(nameof(modelViewModel));
-        DTOViewModel = dtoViewModel ?? throw new ArgumentNullException(nameof(dtoViewModel));
-    }
+            ModelViewModel = modelViewModel ?? throw new ArgumentNullException(nameof(modelViewModel));
+            DTOViewModel = dtoViewModel ?? throw new ArgumentNullException(nameof(dtoViewModel));
+        }
 
-    // Esporre ModelItem di ModelViewModel
-    public ModelClass ModelItem
-    {
-        get => ModelViewModel?.ModelItem;
-        set
+        // Esporre ModelItem di ModelViewModel
+        public ModelClass ModelItem
         {
-            if (ModelViewModel != null)
+            get => ModelViewModel?.ModelItem;
+            set
             {
-                ModelViewModel.ModelItem = value;
+                if (ModelViewModel != null)
+                {
+                    ModelViewModel.ModelItem = value;
+                }
             }
         }
-    }
 
         public ModelClass ModelItemShadow
         {
@@ -59,7 +58,7 @@ namespace Passero.Framework
             }
         }
 
-        public IList<ModelClass> ModelItemsShadow   
+        public IList<ModelClass> ModelItemsShadow
         {
             get => ModelViewModel?.ModelItemsShadow;
             set
@@ -86,7 +85,7 @@ namespace Passero.Framework
             }
         }
 
-        public DTOClass DTOItemShadow   
+        public DTOClass DTOItemShadow
         {
             get => DTOViewModel?.ModelItemShadow;
             set

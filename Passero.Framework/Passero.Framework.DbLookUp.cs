@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,9 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Wisej.Web;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Passero.Framework
 {
@@ -81,36 +78,36 @@ namespace Passero.Framework
 
 
 
-    private Expression<Func<object, bool>> _linqExpression;
+        private Expression<Func<object, bool>> _linqExpression;
 
         private Func<object> mLookupFunction;
 
 
-    [Browsable(false)]
-    public Func<object> LookUpFunction
-    {
-        get { return mLookupFunction; }
-        set { mLookupFunction = value; }
-    }
+        [Browsable(false)]
+        public Func<object> LookUpFunction
+        {
+            get { return mLookupFunction; }
+            set { mLookupFunction = value; }
+        }
 
-    public void SetFilter(Expression<Func<object, bool>> linqExpression)
-    {
-        _linqExpression = linqExpression;
-    }
+        public void SetFilter(Expression<Func<object, bool>> linqExpression)
+        {
+            _linqExpression = linqExpression;
+        }
 
-    public void ClearFilter()
-    {
-        _linqExpression = null;
-    }
-
-
+        public void ClearFilter()
+        {
+            _linqExpression = null;
+        }
 
 
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
-    /// </summary>
-    public DbLookUp()
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbLookUp{ModelClass}"/> class.
+        /// </summary>
+        public DbLookUp()
         {
 
         }
@@ -127,14 +124,14 @@ namespace Passero.Framework
 
         private Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value)
         {
-            if (Model== null)
+            if (Model == null)
             {
                 throw new ArgumentException("ModelClass must be set before building a LINQ query");
             }
 
             // Create the parameter of type Object
             var parameter = Expression.Parameter(typeof(object), "x");
-            var modelType = Model.GetType();    
+            var modelType = Model.GetType();
             // Convert the Object parameter to the model type
             var convertedParameter = Expression.Convert(parameter, modelType);
 
@@ -177,7 +174,7 @@ namespace Passero.Framework
                         }
                         var _value = "";
                         var _propertyName = "";
-                        _linqExpression = BuildDynamicLinqQuery(_propertyName  , _value);
+                        _linqExpression = BuildDynamicLinqQuery(_propertyName, _value);
                         break;
 
                     case IList list:
@@ -194,7 +191,7 @@ namespace Passero.Framework
                         // Se il risultato è un oggetto singolo, lo mettiamo in una lista   
                         if (extResult != null && extResult.GetType().IsClass)
                         {
-                            Model = (ModelClass )extResult;
+                            Model = (ModelClass)extResult;
                             Items = new List<object> { extResult };
                         }
                         else
@@ -204,9 +201,9 @@ namespace Passero.Framework
                         break;
 
 
-                        default:
+                    default:
                         // Altri casi
-                        
+
                         break;
                 }
 
@@ -233,7 +230,7 @@ namespace Passero.Framework
                         }
                         else
                         {
-                            
+
                             //Model = Item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                             //    .Where(p => p.CanRead)
                             //    .ToDictionary(p => p.Name, p => p.GetValue(Item) ?? null);
@@ -264,7 +261,7 @@ namespace Passero.Framework
         {
             LastExecutionResult.Reset();
             bool result = false;
-                       
+
 
 
 

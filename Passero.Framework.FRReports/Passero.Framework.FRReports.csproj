@@ -11,27 +11,27 @@
 	  <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+
 	<PropertyGroup>
-		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETFamily>Wisej-4</WisejNETFamily>
-		<WisejNETVersion>4.0.13</WisejNETVersion>
+		<PasseroVersion>$(Solution_PasseroVersion)</PasseroVersion>
+		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
+		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
-		<Authors>Gabriele Del Giovine</Authors>
-		<Company>Gabriele Del Giovine</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+		<Authors>$(Solution_Authors)</Authors>
+		<Company>$(Solution_Company)</Company>
+		<PackageLicenseExpression>$(Solution_PackageLicenseExpression)</PackageLicenseExpression>
+		<PackageProjectUrl>$(Solution_PackageProjectUrl)</PackageProjectUrl>
+		<RepositoryUrl>$(Solution_RepositoryUrl)</RepositoryUrl>
+		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework.40.FRReports</PackageId>
-		<Description>FastReport support library for Passero Framework</Description>
-		<PackageTags>Wisej.NET;MVVM;reports;passero;framework</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
+		<PackageId>$(Solution_PackageId).FRReports</PackageId>
+		<Description>FastReport support library for Passero.Framework</Description>
+		<PackageTags>$(Solution_PackageTags)</PackageTags>
+		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
+		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
 	</PropertyGroup>
-
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />

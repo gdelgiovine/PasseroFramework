@@ -1,18 +1,11 @@
 ﻿using Dapper;
-using Dapper.ColumnMapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Passero.Framework.Extensions;
-using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
 
@@ -65,15 +58,15 @@ namespace Passero.Framework
                 {
                     ModelItems = new List<ModelClass>();
                 }
-                
+
 
                 if (ModelItemsShadow == null)
                 {
                     ModelItemsShadow = new List<ModelClass>();
                 }
-                
+
                 ModelItemsShadow.Add(Model);
-                
+
 
                 mAddNewState = false;
 
@@ -163,7 +156,7 @@ namespace Passero.Framework
         /// <summary>
         /// Inserts the item using a parameterized SQL command that respects column name mappings.
         /// </summary>
-     
+
         public ExecutionResult InsertItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItem()");
@@ -185,7 +178,7 @@ namespace Passero.Framework
                 //var scalar = DbConnection.ExecuteScalar(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
                 var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
                 var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                
+
                 long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
 
                 // Write back the generated identity key into the model before setting the shadow,
@@ -252,7 +245,7 @@ namespace Passero.Framework
                 }
 
                 //var scalar = await DbConnection.ExecuteScalarAsync(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                
+
                 var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
                 var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 

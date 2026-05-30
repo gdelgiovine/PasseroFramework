@@ -9,7 +9,7 @@ namespace Passero.Framework
     /// </summary>
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanging" />
-    public abstract  class ModelBase : INotifyPropertyChanged, INotifyPropertyChanging
+    public abstract class ModelBase : INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>
         /// Generato quando il valore di una proprietà cambia.

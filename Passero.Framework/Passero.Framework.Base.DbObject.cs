@@ -1,8 +1,6 @@
-﻿using Microsoft .Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 
@@ -83,7 +81,7 @@ namespace Passero.Framework.Base
         public string ProviderName
         {
             get
-            { 
+            {
                 return this.mProviderName;
             }
         }
@@ -113,7 +111,7 @@ namespace Passero.Framework.Base
         /// <value>
         /// The SQL schema query.
         /// </value>
-        public string SQLSchemaQuery { get; set; } 
+        public string SQLSchemaQuery { get; set; }
 
         public SqlCommands SqlCommands { get; set; } = new SqlCommands();
 
@@ -129,7 +127,7 @@ namespace Passero.Framework.Base
         {
             Model = (ModelClass)Activator.CreateInstance(typeof(ModelClass));
             this.mDbConnection = DbConnection;
-            this.SQLSchemaQuery = $"SELECT * FROM {Utilities .GetModelTableName(Model)} WHERE 1=0";
+            this.SQLSchemaQuery = $"SELECT * FROM {Utilities.GetModelTableName(Model)} WHERE 1=0";
             this.GetSchema();
         }
         /// <summary>
@@ -172,7 +170,7 @@ namespace Passero.Framework.Base
 
             try
             {
-         
+
                 var dbConnection = this.mDbConnection as System.Data.Common.DbConnection;
                 if (dbConnection is null)
                 {
@@ -184,7 +182,7 @@ namespace Passero.Framework.Base
                 var providerFactory = System.Data.Common.DbProviderFactories.GetFactory(dbConnection);
                 this.mProviderName = providerFactory.GetType().Namespace;
 
-              
+
                 DataAdapter = providerFactory.CreateDataAdapter();
                 var command = providerFactory.CreateCommand();
                 command.CommandText = SQLSchemaQuery;
@@ -224,10 +222,10 @@ namespace Passero.Framework.Base
         /// Gets the SQL INSERT, UPDATE, DELETE commands using DbCommandBuilder.
         /// </summary>
         /// <returns>ExecutionResult with generated commands.</returns>
-        public ExecutionResult<SqlCommands>  GetSqlCommands()
+        public ExecutionResult<SqlCommands> GetSqlCommands()
         {
             var ER = new ExecutionResult<SqlCommands>($"{mClassName}.GetSqlCommands()");
-            ER.Value = new SqlCommands();   
+            ER.Value = new SqlCommands();
             if (mDbConnection is null)
             {
                 ER.ErrorCode = 2;
@@ -265,8 +263,8 @@ namespace Passero.Framework.Base
                 ER.Value.UpdateCommand = commandBuilder.GetUpdateCommand().CommandText;
                 ER.Value.DeleteCommand = commandBuilder.GetDeleteCommand().CommandText;
                 ER.Value.SelectCommand = SQLSchemaQuery;
-                this.SqlCommands = ER.Value;    
-                ER.ResultCode = ExecutionResultCodes.Success ;
+                this.SqlCommands = ER.Value;
+                ER.ResultCode = ExecutionResultCodes.Success;
             }
             catch (Exception ex)
             {
@@ -286,7 +284,7 @@ namespace Passero.Framework.Base
         public string GetInsertCommand()
         {
             var result = GetSqlCommands();
-            return result.ResultCode == ExecutionResultCodes.Success  ? result.Value.InsertCommand : string.Empty;
+            return result.ResultCode == ExecutionResultCodes.Success ? result.Value.InsertCommand : string.Empty;
         }
 
         /// <summary>

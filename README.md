@@ -2,6 +2,8 @@
 
 Un **framework MVVM (Model-View-ViewModel)** moderno e completo per **Wisej.NET**, progettato per semplificare lo sviluppo di applicazioni web enterprise con supporto multi-target (.NET Framework 4.8, .NET 8).
 
+A framework built on top of [Wisej.NET](https://wisej.com/) for building enterprise web applications with a .NET-first approach.
+
 ## 🚀 Caratteristiche Principali
 
 ### Architettura MVVM
@@ -55,39 +57,14 @@ Un **framework MVVM (Model-View-ViewModel)** moderno e completo per **Wisej.NET*
 
 ## 📦 Struttura Progetti
 
-PasseroFramework/
-│
-├── Passero.Framework/                    # Core framework
-│   ├── Base.ViewModel.cs                # ViewModel generico
-│   ├── Base.Repository.cs               # Repository pattern
-│   ├── Base.DbSet.cs                    # Gestione collezioni
-│   ├── ConfigurationManager.cs          # Configurazione DB
-│   └── ReflectionHelper.cs              # Utility reflection
-│
-├── Passero.Framework.Controls/          # UI Controls per Wisej
-│   ├── DataNavigator.cs                 # Toolbar navigazione
-│   ├── DbLookUpTextBox.cs               # Controllo lookup
-│   ├── ErrorNotificationMessageBox.cs   # Gestione errori
-│   └── QueryBuilderControl.cs            # Controllo per costruire query
-│
-├── Passero.Framework.FRReports/         # FastReport support
-│   └── FRQBEReport.cs                   # Report con QBE
-│
-├── Passero.Framework.SSRSReports/       # SSRS support
-│   └── ReportManager.cs                 # Gestione SSRS
-│
-├── Passero.Framework.Barcode/           # Barcode generation
-│   └── BarcodeHelper.cs                 # Generazione barcode
-│
-├── Passero.Framework.BusinessSystem/    # Business system framework
-│   └── BusinessSystemCore.cs            # Core business logic
-│
-├── PasseroDemo.Models/                  # Modelli dati (esempio)
-├── PasseroDemo.ViewModels/              # ViewModels (esempio)
-├── PasseroDemo.Views/                   # Views Wisej (esempio)
-├── PasseroDemo.Repositories/            # Repositories (esempio)
-├── PasseroDemo.Reports/                 # Reports (esempio)
-└── PasseroDemo.Application/             # Applicazione demo
+| Project | Target | Description |
+|---|---|---|
+| `Passero.Framework` | .NET 8 / .NET 9 | Core framework library |
+| `Passero.Framework.Controls` | .NET 8 / .NET 9 | Custom UI controls |
+| `Passero.Framework.FRReports` | .NET Framework 4.8 | FastReport integration |
+| `PasseroDemo.Application` | .NET 8 / .NET 9 | Demo application layer |
+| `PasseroDemo.Repositories` | .NET 8 / .NET 9 | Demo repository layer |
+| `PasseroDemo.Views` | .NET 8 / .NET 9 | Demo views layer |
 
 ## 🎯 Quick Start
 
@@ -131,7 +108,7 @@ public class vmPublisher : ViewModel<Publisher>
 }
 
 ### 5. Utilizzare nella View (Wisej Form)
- 
+
 public partial class frmPublishers : Form
 {
     private vmPublisher vmPublisher = new vmPublisher();
@@ -164,7 +141,6 @@ public partial class frmPublishers : Form
 // Crea binding automatico dai controlli con naming convention
 vmPublisher.CreatePasseroBindingFromBindingSource(this);
 
-// I controlli con nomi come txt_<PropertyName> vengono automaticamente bindati
 
 ### Operazioni CRUD
 
@@ -235,13 +211,13 @@ var qrCode = BarcodeHelper.GenerateQRCode("https://example.com");
 
 ## 🛠️ Build e Deploy
 
-# Build soluzione
+### Build soluzione
 dotnet build -c Release
 
-# Genera pacchetti NuGet (già configurati in .csproj)
+### Genera pacchetti NuGet (già configurati in .csproj)
 dotnet pack -c Release
 
-# I pacchetti .nupkg saranno in bin/Release/
+### I pacchetti .nupkg saranno in bin/Release/
 
 ### Pacchetti NuGet Disponibili
 

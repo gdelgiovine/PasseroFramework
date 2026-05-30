@@ -2,10 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-// Aggiungi riferimenti per altri provider se necessari
-// using MySql.Data.MySqlClient;
-// using Npgsql;
+
 
 namespace Passero.Framework.Base
 {
@@ -37,7 +34,7 @@ namespace Passero.Framework.Base
         private IDbConnection mDbConnection { get; set; }
         private IDbTransaction mDbTransaction { get; set; }
 
-        public Dictionary<string, ViewModel<ModelBase >> ViewModels { get; set; } = new Dictionary<string, ViewModel<ModelBase >>();
+        public Dictionary<string, ViewModel<ModelBase>> ViewModels { get; set; } = new Dictionary<string, ViewModel<ModelBase>>();
         public string ConnectionString { get; set; }
 
         /// <summary>
@@ -50,7 +47,7 @@ namespace Passero.Framework.Base
 
         protected virtual void OnConfiguring()
         {
-            
+
             ConnectionString = "DefaultConnectionString";
         }
 
@@ -123,7 +120,7 @@ namespace Passero.Framework.Base
             set
             {
                 mDbConnection = value;
-                foreach (ViewModel<ModelBase > _ViewModel in ViewModels.Values)
+                foreach (ViewModel<ModelBase> _ViewModel in ViewModels.Values)
                     _ViewModel.Repository.DbConnection = DbConnection;
             }
         }
@@ -134,7 +131,7 @@ namespace Passero.Framework.Base
             set
             {
                 mDbTransaction = value;
-                foreach (ViewModel<ModelBase > _ViewModel in ViewModels.Values)
+                foreach (ViewModel<ModelBase> _ViewModel in ViewModels.Values)
                     _ViewModel.Repository.DbTransaction = DbTransaction;
             }
         }
@@ -172,7 +169,7 @@ namespace Passero.Framework.Base
             return ER;
         }
 
-        public bool AddViewModel(ViewModel<ModelBase > ViewModel)
+        public bool AddViewModel(ViewModel<ModelBase> ViewModel)
         {
             if (!ViewModels.ContainsKey(ViewModel.Name))
             {
@@ -187,7 +184,7 @@ namespace Passero.Framework.Base
             }
         }
 
-        public bool RemoveViewModel(ViewModel<ModelBase > ViewModel)
+        public bool RemoveViewModel(ViewModel<ModelBase> ViewModel)
         {
             if (ViewModels.ContainsKey(ViewModel.Name))
             {

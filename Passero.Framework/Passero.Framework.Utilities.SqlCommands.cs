@@ -1,28 +1,12 @@
 using Dapper;
-using Dapper.Contrib.Extensions;
-using FastDeepCloner;
-using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using MiniExcelLibs;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Wisej.Core;
-using Wisej.Web;
 
 namespace Passero.Framework
 {
@@ -45,7 +29,7 @@ namespace Passero.Framework
                 {
                     sbset.Append($"{colName}=@{pi.Name}, ");
                 }
-                if (Utilities.PropertyIsExplicitKey(pi) ||  Utilities.PropertyIsIdentityKey(pi))
+                if (Utilities.PropertyIsExplicitKey(pi) || Utilities.PropertyIsIdentityKey(pi))
                 {
                     sbwhere.Append($"{colName}=@{pi.Name}_shadow AND ");
                 }
@@ -76,11 +60,11 @@ namespace Passero.Framework
             properties = Utilities.GetModelPropertiesInfo(ModelClass, true);
             foreach (PropertyInfo pi in properties)
             {
-                if (! Utilities.PropertyIsIdentityKey   (pi))
+                if (!Utilities.PropertyIsIdentityKey(pi))
                 {
                     sbset.Append($"{pi.Name}=@{pi.Name}, ");
                 }
-                if (Utilities.PropertyIsExplicitKey(pi) ||  PropertyIsIdentityKey(pi))
+                if (Utilities.PropertyIsExplicitKey(pi) || PropertyIsIdentityKey(pi))
                 {
                     sbwhere.Append($"{pi.Name}=@{pi.Name}_shadow AND ");
                 }
@@ -109,7 +93,7 @@ namespace Passero.Framework
             var columns = string.Join(", ", properties.Select(pi => GetMappedColumnName(pi)));
             var parameters = string.Join(", ", properties.Select(pi => $"@{pi.Name}"));
 
-            return $"INSERT INTO {  Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters}); SELECT CAST(SCOPE_IDENTITY() AS BIGINT)";
+            return $"INSERT INTO {Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters}); SELECT CAST(SCOPE_IDENTITY() AS BIGINT)";
         }
 
 

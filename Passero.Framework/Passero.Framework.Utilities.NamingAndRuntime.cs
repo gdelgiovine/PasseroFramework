@@ -1,26 +1,10 @@
-using Dapper.Contrib.Extensions;
-using FastDeepCloner;
-using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Wisej.Core;
 using Wisej.Web;
 
 namespace Passero.Framework
@@ -97,7 +81,7 @@ namespace Passero.Framework
             //}
             //return Name;
 
-            return GetModelName(ViewModel, viewModelExpression);    
+            return GetModelName(ViewModel, viewModelExpression);
         }
 
 
@@ -132,14 +116,14 @@ namespace Passero.Framework
             //}
             //return Name;
 
-            return GetObjectName(Model, ModelExpression);   
+            return GetObjectName(Model, ModelExpression);
         }
 
 
         public static string GetRepositoryName(object Repository,
           [CallerArgumentExpression("Repository")] string RepositoryExpression = null)
         {
-            return GetObjectName(Repository ,RepositoryExpression );
+            return GetObjectName(Repository, RepositoryExpression);
         }
 
 

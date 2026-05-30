@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -37,7 +36,7 @@ namespace Passero.Framework.Base
         /// <summary>Restituisce il contesto attivo: esterno se impostato, altrimenti this.</summary>
         private Ef6.DbContext ActiveContext => _externalContext ?? this;
 
-    
+
 
         //ConcurrentDictionary garantisce unicità e thread-safety senza LINQ
         private static readonly ConcurrentDictionary<Type, byte> _dynamicEntityTypes
@@ -56,7 +55,7 @@ namespace Passero.Framework.Base
         public PasseroEf6DbContext(string nameOrConnectionString, Type[] entityTypes = null)
             : base(nameOrConnectionString)
         {
-            
+
             _entityTypes = entityTypes ?? Array.Empty<Type>();
         }
 

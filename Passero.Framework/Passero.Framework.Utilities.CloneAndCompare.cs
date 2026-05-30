@@ -1,32 +1,22 @@
-using Dapper.Contrib.Extensions;
-using FastDeepCloner;
-using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
-using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Wisej.Core;
-using Wisej.Web;
 
 namespace Passero.Framework
 {
     public static partial class Utilities
     {
+
+        public static T Clone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            // Usa FastCloner per creare una copia profonda
+            //return (T)FastCloner.FastCloner.DeepClone(source);
+            return (T)FastCloner.FastCloner.DeepClone(source);
+        }
+
 
         public static T WisejClone<T>(T source)
         {
@@ -34,12 +24,22 @@ namespace Passero.Framework
                 return default;
 
             T newObject = Conversions.ToGenericParameter<T>(Activator.CreateInstance(source.GetType()));
-            newObject = Wisej.Core.WisejSerializer .Parse(Wisej.Core.WisejSerializer.Serialize(source));
+            newObject = Wisej.Core.WisejSerializer.Parse(Wisej.Core.WisejSerializer.Serialize(source));
             return newObject;
         }
 
 
-        public static T Clone<T>(T source)
+
+        public static T FastClonerClone<T>(T source)
+        {
+            if (ReferenceEquals(source, null))
+                return default;
+
+            // Usa FastCloner per creare una copia profonda
+            return (T)FastCloner.FastCloner.DeepClone(source);
+        }
+
+        public static T FastDeepClonerClone<T>(T source)
         {
             if (ReferenceEquals(source, null))
                 return default;

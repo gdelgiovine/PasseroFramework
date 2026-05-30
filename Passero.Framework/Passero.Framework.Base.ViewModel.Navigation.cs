@@ -1,19 +1,8 @@
-﻿using Dapper;
-using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -514,7 +503,7 @@ namespace Passero.Framework
             var ERContext = $"{mClassName}.{operation}()";
             var ER = new ExecutionResult(ERContext);
 
-           
+
 
             try
             {
@@ -591,7 +580,7 @@ namespace Passero.Framework
 
                 if (ER.Success)
                 {
-                    
+
                     SetModelItemShadow();
                     HandleDataBindingMode(operation);
                     // Raise MoveCompleted
@@ -691,8 +680,8 @@ namespace Passero.Framework
         public ExecutionResult AddNew(object newItem = null)
         {
             var ER = new ExecutionResult($"{mClassName}.AddNew()");
-            
- 
+
+
             if (!RaiseRequest(AddNewRequest))
             {
                 ER.ResultCode = ExecutionResultCodes.Failed;

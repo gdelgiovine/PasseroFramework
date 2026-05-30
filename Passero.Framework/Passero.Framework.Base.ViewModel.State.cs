@@ -1,19 +1,11 @@
 using Dapper;
-using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -21,7 +13,7 @@ namespace Passero.Framework
     {
         public string GetTableName()
         {
-            return Repository.GetTableName();   
+            return Repository.GetTableName();
         }
 
         /// <summary>
@@ -268,7 +260,7 @@ namespace Passero.Framework
         // Cacheare i PropertyInfo per reflection
         private static readonly ConcurrentDictionary<string, PropertyInfo> _propertyCache =
             new ConcurrentDictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
-        
+
 
         /// <summary>
         /// Resolveds the SQL query.
@@ -281,7 +273,7 @@ namespace Passero.Framework
             if (SQLQuery != null && Parameters != null)
                 return Passero.Framework.Utilities.ResolveSQL(SQLQuery, Parameters);
             else
-                return Passero.Framework.   Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Passero.Framework.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
         }
 
         /// <summary>

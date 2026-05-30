@@ -7,37 +7,44 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <NoWarn>CA1416;NU5039</NoWarn>
+		<NoWarn>CA1416</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup>
-		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETFamily>Wisej-4</WisejNETFamily>
-		<WisejNETVersion>4.0.13</WisejNETVersion>
+
+	<PropertyGroup>
+		<PasseroVersion>$(Solution_PasseroVersion)</PasseroVersion>
+		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
+		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
-		<Authors>Gabriele Del Giovine</Authors>
-		<Company>Gabriele Del Giovine</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>Passero.Framework.40.JwtAuthHandler</PackageId>
-        <Description>Wisej.NET JWT Authentication Handler for Passero Framework</Description>
-        <PackageTags>JWT;Wisej.NET;Authentication;passero;framework</PackageTags>
-     <PackageOutputPath>..\NugetPackages</PackageOutputPath>
-    </PropertyGroup>
+		<Authors>$(Solution_Authors)</Authors>
+		<Company>$(Solution_Company)</Company>
+		<PackageLicenseExpression>$(Solution_PackageLicenseExpression)</PackageLicenseExpression>
+		<PackageProjectUrl>$(Solution_PackageProjectUrl)</PackageProjectUrl>
+		<RepositoryUrl>$(Solution_RepositoryUrl)</RepositoryUrl>
+		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>$(Solution_PackageId).JwtAuthHandler</PackageId>
+		<Description>Wisej.NET JWT Authentication Handler for Passero Framework</Description>
+		<PackageTags>$(Solution_PackageTags)</PackageTags>
+		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
+		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
+	</PropertyGroup>
+	
 
     <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
-    </ItemGroup>
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+	</ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Passero.Framework.HttpHelper\Passero.Framework.HttpHelper.csproj" />

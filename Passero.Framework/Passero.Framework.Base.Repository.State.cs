@@ -1,17 +1,8 @@
-﻿using Dapper;
-using Dapper.ColumnMapper;
-using Dapper.Contrib.Extensions;
-using Microsoft.Ajax.Utilities;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Passero.Framework.Extensions;
 using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
@@ -126,7 +117,7 @@ namespace Passero.Framework
             return ER;
 
         }
-     
+
         private ExecutionResult MoveToIndex(int index)
         {
             var ERContext = $"{mClassName}.MoveToIndex()";
@@ -159,7 +150,7 @@ namespace Passero.Framework
         }
 
 
-       
+
 
         /// <summary>
         /// Moves to the first item.
@@ -377,7 +368,7 @@ namespace Passero.Framework
             {
                 mDbConnection = value;
                 DbObject = new Base.DbObject<ModelClass>(mDbConnection);
-                SqlDialect =DetectSqlDialect();
+                SqlDialect = DetectSqlDialect();
                 EnsureTypeMapRegistered();
             }
         }
@@ -435,8 +426,8 @@ namespace Passero.Framework
         ///// The database context.
         ///// </value>
         //public Base.DbContext DbContext { get; set; }
-        
-        
+
+
 
         /// <summary>
         /// Gets or sets the database object.
@@ -563,7 +554,7 @@ namespace Passero.Framework
         /// </summary>
         /// <param name="dbContext">DbContext che implementa <see cref="IPasseroDbContext"/>.</param>
         /// <param name="sqlTransaction">Transazione ADO.NET opzionale.</param>
-        public Repository(Passero.Framework .Base.IPasseroDbContext dbContext, IDbTransaction sqlTransaction = null)
+        public Repository(Passero.Framework.Base.IPasseroDbContext dbContext, IDbTransaction sqlTransaction = null)
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
             dbContext.EnsureConnectionOpen();

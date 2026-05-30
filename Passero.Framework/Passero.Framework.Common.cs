@@ -9,8 +9,8 @@ namespace Passero.Framework
 
     public enum ViewModelTypes
     {
-        Base = 0, 
-        Enhanced = 1 
+        Base = 0,
+        Enhanced = 1
     }
 
     //    Public Class BasicDALMessageBox

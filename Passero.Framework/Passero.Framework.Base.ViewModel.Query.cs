@@ -1,19 +1,9 @@
 using Dapper;
-using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Wisej.Web;
-using Wisej.Web.Data;
 
 namespace Passero.Framework
 {
@@ -147,7 +137,7 @@ namespace Passero.Framework
                         mBindingSource.DataSource = ModelItems;
                     }
                 }
-              
+
             }
             catch (Exception ex)
             {
@@ -156,7 +146,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
-               
+
             }
             MoveFirstItem();
             LastExecutionResult = ER.ToExecutionResult();
@@ -228,7 +218,7 @@ namespace Passero.Framework
 
                     //        }
                     //        break;
-                            
+
                     //    case UseModelData.InternalRepository:
                     //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
                     //        Repository.ModelItems = x;
@@ -238,7 +228,7 @@ namespace Passero.Framework
 
                     //        }
                     //        break;
-                            
+
                     //    default:
                     //        break;
                     //}
@@ -247,7 +237,7 @@ namespace Passero.Framework
                 else
                 {
                     HandleExeception(ER.ToExecutionResult());
-                }   
+                }
             }
             catch (Exception ex)
             {
@@ -315,7 +305,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
-               
+
             }
             if (!ER.Success)
             {
@@ -388,7 +378,7 @@ namespace Passero.Framework
                         mBindingSource.DataSource = ModelItems;
                     }
                 }
-           
+
             }
             catch (Exception ex)
             {
@@ -397,7 +387,7 @@ namespace Passero.Framework
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
                 ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
-               //HandleExeception(ER.ToExecutionResult());
+                //HandleExeception(ER.ToExecutionResult());
             }
 
             MoveFirstItem();
@@ -422,21 +412,21 @@ namespace Passero.Framework
             var ERContext = $"{mClassName}.GetAllItemsAsync()";
             ExecutionResult<IList<ModelClass>> ER = new ExecutionResult<IList<ModelClass>>(ERContext);
             IList<ModelClass> x = null;
-            
+
             try
             {
                 ER = await Repository.GetAllItemsAsync(Transaction, Buffered, CommandTimeout);
-                
+
                 if (ER.Success)
                 {
                     x = ER.Value;
                     Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                            Repository.ModelItems = x;
-                            if (mDataBindingMode == DataBindingMode.BindingSource)
-                            {
-                                mBindingSource.DataSource = Repository.ModelItems;
-                            }
-                    
+                    Repository.ModelItems = x;
+                    if (mDataBindingMode == DataBindingMode.BindingSource)
+                    {
+                        mBindingSource.DataSource = Repository.ModelItems;
+                    }
+
                     //switch (UseModelData)
                     //{
                     //    case UseModelData.External:
@@ -447,7 +437,7 @@ namespace Passero.Framework
                     //            mBindingSource.DataSource = ModelItems;
                     //        }
                     //        break;
-                            
+
                     //    case UseModelData.InternalRepository:
                     //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
                     //        Repository.ModelItems = x;
@@ -456,7 +446,7 @@ namespace Passero.Framework
                     //            mBindingSource.DataSource = Repository.ModelItems;
                     //        }
                     //        break;
-                            
+
                     //    default:
                     //        break;
                     //}

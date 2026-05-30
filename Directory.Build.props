@@ -1,0 +1,29 @@
+<Project>
+  <PropertyGroup>
+
+
+	  <Solution_PasseroVersion>1.0.0</Solution_PasseroVersion>
+	  <Solution_WisejNETFamily>Wisej-4</Solution_WisejNETFamily>
+	  <Solution_WisejNETVersion>4.0.13</Solution_WisejNETVersion>
+	  <Solution_WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</Solution_WisejNETVersionFlat>
+	  <Solution_CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</Solution_CompleteVersion>
+	  <Solution_Version>$(CompleteVersion)</Solution_Version>
+	  <Solution_Authors>Gabriele Del Giovine</Solution_Authors>
+	  <Solution_Company>Gabriele Del Giovine</Solution_Company>
+	  <Solution_PackageLicenseExpression>MIT</Solution_PackageLicenseExpression>
+	  <Solution_PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_PackageProjectUrl>
+	  <Solution_RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_RepositoryUrl>
+	  <Solution_RepositoryType>git</Solution_RepositoryType>
+	  <Solution_GeneratePackageOnBuild>true</Solution_GeneratePackageOnBuild>
+	  <Solution_PackageId>Passero.Framework40</Solution_PackageId>
+	  <Solution_Description>A MVVM Framework for Wisej.NET</Solution_Description>
+	  <Solution_PackageTags>MVVM;Wisej.NET;ORM;passero;framework</Solution_PackageTags>
+	  <Solution_PackageReadmeFile>README.md</Solution_PackageReadmeFile>
+	  <Solution_PackageOutputPath>..\NugetPackages</Solution_PackageOutputPath>
+
+
+  </PropertyGroup>
+</Project>
+
+
+

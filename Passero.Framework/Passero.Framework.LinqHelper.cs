@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
-    public class LinqHelper   
+    public class LinqHelper
     {
-        public static  Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value, Type ModelType)
+        public static Expression<Func<object, bool>> BuildDynamicLinqQuery(string propertyName, object value, Type ModelType)
         {
 
             if (ModelType == null)

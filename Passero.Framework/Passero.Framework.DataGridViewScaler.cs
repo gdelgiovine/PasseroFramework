@@ -91,7 +91,7 @@ namespace Passero.Framework.Controls
                     foreach (DataGridViewCell cell in row.Cells)
                     {
                         string cellKey = $"{row.Index}_{cell.ColumnIndex}";
-                        
+
                         // Memorizza il font della cella
                         if (cell.Style?.Font != null)
                         {
@@ -291,7 +291,7 @@ namespace Passero.Framework.Controls
                         }
 
                         // Scala la larghezza della colonna (se non è AutoSize)
-                        if (column.AutoSizeMode == DataGridViewAutoSizeColumnMode.None || 
+                        if (column.AutoSizeMode == DataGridViewAutoSizeColumnMode.None ||
                             column.AutoSizeMode == DataGridViewAutoSizeColumnMode.NotSet)
                         {
                             int newWidth = (int)(columnData.Width * scaleFactor);
@@ -309,7 +309,7 @@ namespace Passero.Framework.Controls
                     foreach (DataGridViewCell cell in row.Cells)
                     {
                         string cellKey = $"{row.Index}_{cell.ColumnIndex}";
-                        
+
                         // Scala il font della cella
                         if (originalData.CellsData.ContainsKey(cellKey) && originalData.CellsData[cellKey].StyleFont != null)
                         {

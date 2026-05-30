@@ -6,9 +6,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Passero.Framework
 {
@@ -50,23 +47,23 @@ namespace Passero.Framework
         public static DataTable ListToDataTable(object data)
         {
             Type type = Passero.Framework.ReflectionHelper.GetListType(data);
-            if (type == null)   
-                return null;    
+            if (type == null)
+                return null;
 
-            PropertyDescriptorCollection properties =TypeDescriptor.GetProperties(type);
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(type);
             DataTable table = new DataTable();
             foreach (PropertyDescriptor prop in properties)
                 table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-           
+
             IList objectList = data as IList;
-            foreach (var item in objectList )
+            foreach (var item in objectList)
             {
                 DataRow row = table.NewRow();
                 foreach (PropertyDescriptor prop in properties)
                     row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
                 table.Rows.Add(row);
             }
-            
+
             return table;
         }
 
@@ -94,9 +91,9 @@ namespace Passero.Framework
             var er = new Framework.ExecutionResult();
             er.Context = "PingDB";
 
-           
 
-            var _DBConnection = (System.Data.Common .DbConnection) Activator.CreateInstance(DBConnection.GetType());
+
+            var _DBConnection = (System.Data.Common.DbConnection)Activator.CreateInstance(DBConnection.GetType());
             _DBConnection.ConnectionString = DBConnection.ConnectionString;
             //_DBConnection.Credential = DBConnection.Credential;
 
@@ -112,7 +109,7 @@ namespace Passero.Framework
                 er.Exception = ex;
             }
             _DBConnection.Close();
-            _DBConnection.Dispose();    
+            _DBConnection.Dispose();
             return er;
         }
 

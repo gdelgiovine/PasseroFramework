@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace Passero.Framework
 {
@@ -51,20 +50,20 @@ namespace Passero.Framework
         /// Invokes a cancellable request delegate.
         /// Returns true if the operation should proceed, false if a handler cancelled it.
         /// </summary>
-        private bool RaiseRequest(UndoRequestEventHandler handler)    => Raise(handler);
-        private bool RaiseRequest(AddNewRequestEventHandler handler)  => Raise(handler);
-        private bool RaiseRequest(SaveRequestEventHandler handler)    => Raise(handler);
-        private bool RaiseRequest(DeleteRequestEventHandler handler)  => Raise(handler);
+        private bool RaiseRequest(UndoRequestEventHandler handler) => Raise(handler);
+        private bool RaiseRequest(AddNewRequestEventHandler handler) => Raise(handler);
+        private bool RaiseRequest(SaveRequestEventHandler handler) => Raise(handler);
+        private bool RaiseRequest(DeleteRequestEventHandler handler) => Raise(handler);
 
         private static bool Raise<TDelegate>(TDelegate handler) where TDelegate : class
         {
             bool cancel = false;
             switch (handler)
             {
-                case AddNewRequestEventHandler h:  h.Invoke(ref cancel); break;
-                case SaveRequestEventHandler h:    h.Invoke(ref cancel); break;
-                case DeleteRequestEventHandler h:  h.Invoke(ref cancel); break;
-                case UndoRequestEventHandler h:    h.Invoke(ref cancel); break;
+                case AddNewRequestEventHandler h: h.Invoke(ref cancel); break;
+                case SaveRequestEventHandler h: h.Invoke(ref cancel); break;
+                case DeleteRequestEventHandler h: h.Invoke(ref cancel); break;
+                case UndoRequestEventHandler h: h.Invoke(ref cancel); break;
             }
             return !cancel;
         }

@@ -77,7 +77,7 @@ namespace Passero.Framework.Base
 #else
                 case ORMType.EntityFramework6:
 
-                   
+
 
                     return new PasseroEf6DbContext(connectionString, entityTypes);
 #endif

@@ -11,27 +11,28 @@
     <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-
-  <PropertyGroup>
-	  <PasseroVersion>1.0.0</PasseroVersion>
-	  <WisejNETFamily>Wisej-4</WisejNETFamily>
-	  <WisejNETVersion>4.0.13</WisejNETVersion>
-	  <WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
-	  <CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
-	  <Version>$(CompleteVersion)</Version>
-	  <Authors>Gabriele Del Giovine</Authors>
-	  <Company>Gabriele Del Giovine</Company>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>Passero.Framework.40.Controls</PackageId>
-    <Description>UI Controls library for Passero Framework</Description>
-    <PackageTags>Wisej.NET;MVVM;controls;passero;framework</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageOutputPath>..\NugetPackages</PackageOutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<PasseroVersion>$(Solution_PasseroVersion)</PasseroVersion>
+		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
+		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
+		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
+		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
+		<Version>$(CompleteVersion)</Version>
+		<Authors>$(Solution_Authors)</Authors>
+		<Company>$(Solution_Company)</Company>
+		<PackageLicenseExpression>$(Solution_PackageLicenseExpression)</PackageLicenseExpression>
+		<PackageProjectUrl>$(Solution_PackageProjectUrl)</PackageProjectUrl>
+		<RepositoryUrl>$(Solution_RepositoryUrl)</RepositoryUrl>
+		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>$(Solution_PackageId).Controls</PackageId>
+		<Description>UI Controls library for Passero Framework</Description>
+		<PackageTags>$(Solution_PackageTags)</PackageTags>
+		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
+		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
+	</PropertyGroup>
+	
+	
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

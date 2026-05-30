@@ -45,7 +45,7 @@ namespace Passero.Framework
             //Loop through each properties inside class and get values for the property from both the objects and compare
             foreach (System.Reflection.PropertyInfo property in type.GetProperties())
             {
-               
+
 
                 if (property.Name != "ExtensionData")
                 {
@@ -62,7 +62,7 @@ namespace Passero.Framework
         }
 
 
-      
+
 
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace Passero.Framework
             return (IList)instance;
         }
 
-                
+
         /// <summary>
         /// Determines whether [is binding list] [the specified list].
         /// </summary>

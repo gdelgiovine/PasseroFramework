@@ -1,18 +1,12 @@
 ﻿using Dapper;
-using Dapper.ColumnMapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Passero.Framework.Extensions;
-using Wisej.Web;
 //using Passero.Framework.Base;
 #nullable enable
 
@@ -28,7 +22,7 @@ namespace Passero.Framework
             if (ModelItemShadow != null)
             {
                 ModelItem = Utilities.Clone(ModelItemShadow);
-                ModelItem = Utilities .WisejClone(ModelItemShadow); 
+                //ModelItem = Utilities.WisejClone(ModelItemShadow);
             }
             //ModelItem = ModelItemShadow;
             if (AddNewState == true)
@@ -92,7 +86,7 @@ namespace Passero.Framework
             LastExecutionResult = ER;
             return ER;
         }
-    
+
 
 
 
@@ -148,7 +142,7 @@ namespace Passero.Framework
             LastExecutionResult = ER;
             return ER;
         }
-        
+
 
 
         /// <summary>
@@ -198,8 +192,8 @@ namespace Passero.Framework
         }
 
 
-  
-    
+
+
         /// <summary>
         /// Updates the items asynchronously.
         /// </summary>
@@ -243,7 +237,7 @@ namespace Passero.Framework
             return ER;
         }
 
-             
+
         public async Task<ExecutionResult> UpdateItemsExAsync(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemsExAsync()");
@@ -328,7 +322,7 @@ namespace Passero.Framework
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
         /// 
-        
+
 
 
         public ExecutionResult UpdateItemContrib(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
@@ -452,7 +446,7 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
-        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null,  IDbTransaction Transaction = null, int? CommandTimeout = null)
+        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             return UpdateItem(ModelItem, Transaction, CommandTimeout);
         }
@@ -490,7 +484,7 @@ namespace Passero.Framework
         public ExecutionResult UpdateItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
-           
+
             bool esito = false;
 
             if (ModelItems == null)
@@ -610,7 +604,7 @@ namespace Passero.Framework
         }
 
 
-                /// <summary>
+        /// <summary>
         /// The m SQL delete command
         /// </summary>
     }

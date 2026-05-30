@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Reflection;
 using Wisej.Web;
@@ -33,7 +32,7 @@ namespace Passero.Framework
 
     {
 
-       
+
 
 
         public static Dictionary<string, Control> GetBoundControlsFromBindingSource(BindingSource bindingSource)
@@ -69,7 +68,7 @@ namespace Passero.Framework
             bool readOnly = true)
             where T : class
         {
-            return SetPrimaryKeyControlsReadOnly(bindingSource, typeof(T),     readOnly);
+            return SetPrimaryKeyControlsReadOnly(bindingSource, typeof(T), readOnly);
         }
 
         public static IReadOnlyList<Control> SetPrimaryKeyControlsReadWrite<T>(
@@ -111,7 +110,7 @@ namespace Passero.Framework
                 return affected;
 
             // Nomi delle proprietà PK: [Key] (identity) o [ExplicitKey] (Dapper)
-            var pkNames =   Utilities
+            var pkNames = Utilities
                 .GetModelPrimaryKeysPropertiesInfo(modelType)
                 .Select(p => p.Name)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -164,7 +163,7 @@ namespace Passero.Framework
         }
 
 
-        public static Image  UploadPictureBoxImage(UploadedEventArgs e)
+        public static Image UploadPictureBoxImage(UploadedEventArgs e)
         {
             if (e.Files.Count > 0)
             {
@@ -176,14 +175,14 @@ namespace Passero.Framework
                     byte[] imageBytes = ms.ToArray();
                     // Forza la visualizzazione dell'immagine nella PictureBox
                     var img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(imageBytes));
-                    return (Image)img.Clone();  
+                    return (Image)img.Clone();
                 }
             }
 
             return null;
         }
 
-        public static void UploadPictureBoxImage(UploadedEventArgs e, PictureBox pictureBox) 
+        public static void UploadPictureBoxImage(UploadedEventArgs e, PictureBox pictureBox)
         {
             if (e.Files.Count > 0)
             {
@@ -193,15 +192,15 @@ namespace Passero.Framework
                     stream.CopyTo(ms);
                     ms.Position = 0;
                     byte[] imageBytes = ms.ToArray();
-                        // Forza la visualizzazione dell'immagine nella PictureBox
-                        using (var img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(imageBytes)))
-                        {
-                            pictureBox.Image = (System.Drawing.Image)img.Clone();
-                            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                            pictureBox.Visible = true;
-                            pictureBox.Refresh();
-                        }
-                   
+                    // Forza la visualizzazione dell'immagine nella PictureBox
+                    using (var img = System.Drawing.Image.FromStream(new System.IO.MemoryStream(imageBytes)))
+                    {
+                        pictureBox.Image = (System.Drawing.Image)img.Clone();
+                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                        pictureBox.Visible = true;
+                        pictureBox.Refresh();
+                    }
+
                 }
             }
 
@@ -458,7 +457,7 @@ namespace Passero.Framework
         {
             // Se non ci sono righe, esci
             if (dataGridView.Rows.Count == 0)
-                return dataGridView .Height;
+                return dataGridView.Height;
 
             // Calcolo dell’altezza totale:
             // 1) Aggiungo l’altezza dell’intestazione colonne
@@ -472,8 +471,8 @@ namespace Passero.Framework
             totalHeight += rowHeight * dataGridView.Rows.Count;
 
             // 4) Imposto la Height della DataGridView
-            return totalHeight+20;
-            
+            return totalHeight + 20;
+
         }
         public static int GetTextBoxHeight(TextBox textBox)
         {
@@ -486,7 +485,7 @@ namespace Passero.Framework
             }
             else
             {
-                return textBox.Height;  
+                return textBox.Height;
             }
         }
         public static Control GetChildControl(Control ParentControl, Control ChildControlToFind)
@@ -520,7 +519,7 @@ namespace Passero.Framework
             var numericTypes = new[] { typeof(Byte), typeof(Decimal), typeof(Double),
             typeof(Int16), typeof(Int32), typeof(Int64), typeof(SByte),
             typeof(Single), typeof(UInt16), typeof(UInt32), typeof(UInt64)};
-            
+
             return numericTypes.Contains(col.DataType);
         }
 
@@ -704,14 +703,14 @@ namespace Passero.Framework
         {
 
             control.CenterToParent();
-            control.Anchor = AnchorStyles.None; 
+            control.Anchor = AnchorStyles.None;
         }
         /// <summary>
         /// Gets the first visible column for data grid view.
         /// </summary>
         /// <param name="DataGridView">The data grid view.</param>
         /// <returns></returns>
-        public static  DataGridViewColumn GetFirstVisibleColumnForDataGridView(DataGridView DataGridView)
+        public static DataGridViewColumn GetFirstVisibleColumnForDataGridView(DataGridView DataGridView)
         {
             foreach (DataGridViewColumn c in DataGridView.Columns)
             {
@@ -851,7 +850,7 @@ namespace Passero.Framework
         /// <param name="TemplateControl">The template control.</param>
         /// <param name="Index">The index.</param>
         /// <returns></returns>
-        public static   Control GetDataRepeaterControl(DataRepeater DataRepeater, Control TemplateControl, int Index = -1)
+        public static Control GetDataRepeaterControl(DataRepeater DataRepeater, Control TemplateControl, int Index = -1)
         {
             if (Index == -1)
             {
@@ -886,15 +885,15 @@ namespace Passero.Framework
         /// <returns></returns>
         public static Dictionary<string, DataBindControl> CreatePasseroBindingFromBindingSource(Form Form, BindingSource BindingSource)
         {
-            
+
             if (Form == null)
                 return null;
 
-            
+
             if (BindingSource == null)
                 return null;
 
-            Dictionary <string ,DataBindControl > ctls = new Dictionary<string ,DataBindControl>();
+            Dictionary<string, DataBindControl> ctls = new Dictionary<string, DataBindControl>();
 
             foreach (Control control in Form.Controls)
             {
@@ -904,13 +903,13 @@ namespace Passero.Framework
                     {
                         if (binding.DataSource == BindingSource)
                         {
-                            DataBindControl ctl=new DataBindControl ();
+                            DataBindControl ctl = new DataBindControl();
                             //this.AddControl(item, binding.PropertyName, binding.BindingMemberInfo.BindingField, this.bindingBehaviour);
                             ctl.Control = control;
                             ctl.ControlPropertyName = binding.PropertyName;
                             ctl.ModelPropertyName = binding.BindingMemberInfo.BindingField;
                             ctl.BindingBehaviour = BindingBehaviour.SelectInsertUpdate;
-                            string Key= control.Name + "|" + binding .PropertyName;
+                            string Key = control.Name + "|" + binding.PropertyName;
                             ctls[Key] = ctl;
                         }
                     }
@@ -932,7 +931,7 @@ namespace Passero.Framework
         /// <returns></returns>
         public static Dictionary<string, Control> BindingSourceControls(Form Form, BindingSource BindingSource = null)
         {
-            
+
             if (Form == null)
                 return null;
 
@@ -957,7 +956,7 @@ namespace Passero.Framework
             if (ctls.Count == 0)
                 return null;
 
-            return ctls;    
+            return ctls;
 
         }
         /// <summary>
@@ -967,16 +966,16 @@ namespace Passero.Framework
         /// <param name="BindingSource">The binding source.</param>
         /// <param name="T">The t.</param>
         /// <returns></returns>
-        public static int ClearBindingSourceControls(Wisej.Web.Form Form, BindingSource BindingSource, Type T = null )
+        public static int ClearBindingSourceControls(Wisej.Web.Form Form, BindingSource BindingSource, Type T = null)
         {
             int writedproperties = 0;
-            
+
             if (Form != null && BindingSource != null)
             {
-                if (T==null)
-                    T = Passero .Framework .ReflectionHelper .GetListType ( BindingSource .List  );  
+                if (T == null)
+                    T = Passero.Framework.ReflectionHelper.GetListType(BindingSource.List);
 
-                object Model = Activator .CreateInstance ( T );
+                object Model = Activator.CreateInstance(T);
 
                 foreach (Control item in Form.Controls)
                 {
@@ -1021,13 +1020,13 @@ namespace Passero.Framework
                                         //}
 
                                         break;
-                                    }   
                                 }
                             }
                         }
                     }
                 }
-            
+            }
+
             return writedproperties;
         }
 
@@ -1065,22 +1064,22 @@ namespace Passero.Framework
         /// <param name="FormCollection">The form collection.</param>
         /// <param name="FormName">Name of the form.</param>
         /// <returns></returns>
-        public static Form GetExistingForm( string FormName, bool activate = false)
+        public static Form GetExistingForm(string FormName, bool activate = false)
         {
-            
+
             var form = Application.OpenForms[FormName];
             if (activate && form != null)
             {
                 if (form.WindowState == FormWindowState.Minimized)
                     form.WindowState = FormWindowState.Normal;
                 form.Activate();
-            }   
+            }
             return form;
 
         }
 
 
-       
+
 
         /// <summary>
         /// Gets the existing page.
@@ -1104,7 +1103,7 @@ namespace Passero.Framework
         /// <typeparam name="T">Il tipo di form da cercare</typeparam>
         /// <param name="FormName">Name of the form.</param>
         /// <returns>La prima istanza trovata del tipo specificato, oppure null</returns>
-        public static T FormExist<T>(string FormName,bool Activate = true, bool CreateIfNotExist = false) where T : Form
+        public static T FormExist<T>(string FormName, bool Activate = true, bool CreateIfNotExist = false) where T : Form
         {
 
             var form = Application.OpenForms[FormName];
@@ -1115,23 +1114,23 @@ namespace Passero.Framework
             }
 
 
-            if (form != null && Activate )
+            if (form != null && Activate)
             {
                 if (form.WindowState == FormWindowState.Minimized)
                     form.WindowState = FormWindowState.Normal;
                 form.Activate();
             }
 
-            return form as T;   
+            return form as T;
 
 
         }
 
-        
-        public static T PageExist<T>(string PageName, bool Visible = false, bool CreateIfNotExist = false) where T : Page 
+
+        public static T PageExist<T>(string PageName, bool Visible = false, bool CreateIfNotExist = false) where T : Page
         {
 
-            var page = Application.OpenPages [PageName];
+            var page = Application.OpenPages[PageName];
 
             if (page == null && CreateIfNotExist)
             {
@@ -1139,10 +1138,10 @@ namespace Passero.Framework
             }
 
 
-            if (page != null && Visible )
+            if (page != null && Visible)
             {
-                if (page.Visible  == false )
-                    page.Visible = true;   
+                if (page.Visible == false)
+                    page.Visible = true;
             }
 
             return page as T;
@@ -1150,7 +1149,7 @@ namespace Passero.Framework
 
         }
 
-      
+
 
         /// <summary>
         /// Forms the exist.
@@ -1387,10 +1386,10 @@ namespace Passero.Framework
             //Control.Height = Control.Parent.ClientSize.Height - HeaderSize - Margins.Top - Margins.Bottom;
 
 
-            Control.Top =  HeaderSize;
+            Control.Top = HeaderSize;
             Control.Left = 0;
             Control.Width = Control.Parent.ClientSize.Width;
-            Control.Height = Control.Parent.ClientSize.Height - HeaderSize  ;
+            Control.Height = Control.Parent.ClientSize.Height - HeaderSize;
 
         }
         /// <summary>
