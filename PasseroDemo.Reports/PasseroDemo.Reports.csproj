@@ -3,7 +3,7 @@
 
 	<PropertyGroup>
 		<RootNamespace>PasseroDemo.Reports</RootNamespace>
-		<TargetFrameworks>net48;net8.0</TargetFrameworks>
+		<TargetFrameworks>net48;net9.0</TargetFrameworks>
 		<WisejNETVersion>4.0.13</WisejNETVersion>
 		<WisejNETFamily>Wisej-4</WisejNETFamily>
 		<LangVersion>latest</LangVersion>
@@ -17,6 +17,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
+	  <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,6 +34,10 @@
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.Designer.vb</LastGenOutput>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Wisej-4" Version="4.0.13" />
 	</ItemGroup>
 
 	

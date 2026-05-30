@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Wisej.Web.ComponentTool componentTool15 = new Wisej.Web.ComponentTool();
-            Wisej.Web.ComponentTool componentTool16 = new Wisej.Web.ComponentTool();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle15 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle16 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.ComponentTool componentTool2 = new Wisej.Web.ComponentTool();
+            Wisej.Web.ComponentTool componentTool1 = new Wisej.Web.ComponentTool();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
             this.tabctlTitle = new Wisej.Web.TabControl();
             this.tabPageTitles = new Wisej.Web.TabPage();
             this.pnl_Title = new Wisej.Web.FlowLayoutPanel();
@@ -88,7 +88,7 @@
             // 
             this.tabPageTitles.AutoScroll = true;
             this.tabPageTitles.Controls.Add(this.pnl_Title);
-            this.tabPageTitles.Location = new System.Drawing.Point(1, 40);
+            this.tabPageTitles.Location = new System.Drawing.Point(0, 0);
             this.tabPageTitles.Name = "tabPageTitles";
             this.tabPageTitles.Size = new System.Drawing.Size(956, 457);
             this.tabPageTitles.Text = "Title";
@@ -110,10 +110,10 @@
             this.pnl_Title.Size = new System.Drawing.Size(956, 457);
             this.pnl_Title.TabIndex = 10;
             this.pnl_Title.Text = "Title";
-            componentTool15.ImageSource = "menu-overflow";
-            componentTool15.Position = Wisej.Web.LeftRightAlignment.Left;
+            componentTool2.ImageSource = "menu-overflow";
+            componentTool2.Position = Wisej.Web.LeftRightAlignment.Left;
             this.pnl_Title.Tools.AddRange(new Wisej.Web.ComponentTool[] {
-            componentTool15});
+            componentTool2});
             this.pnl_Title.ToolClick += new Wisej.Web.ToolClickEventHandler(this.pnl_Title_ToolClick);
             // 
             // pnl_TitleInfo
@@ -195,11 +195,11 @@
             this.cmb_pub_id.Name = "cmb_pub_id";
             this.cmb_pub_id.Size = new System.Drawing.Size(264, 48);
             this.cmb_pub_id.TabIndex = 3;
-            componentTool16.ImageSource = "icon-refresh";
-            componentTool16.Name = "refresh";
-            componentTool16.ToolTipText = "Reload Publishers";
+            componentTool1.ImageSource = "icon-refresh";
+            componentTool1.Name = "refresh";
+            componentTool1.ToolTipText = "Reload Publishers";
             this.cmb_pub_id.Tools.AddRange(new Wisej.Web.ComponentTool[] {
-            componentTool16});
+            componentTool1});
             this.cmb_pub_id.ToolClick += new Wisej.Web.ToolClickEventHandler(this.cmb_pub_id_ToolClick);
             // 
             // dtp_pubbdate
@@ -328,8 +328,8 @@
             // dgvc_qbe_authors
             // 
             this.dgvc_qbe_authors.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle15.NullValue = "...";
-            this.dgvc_qbe_authors.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle1.NullValue = "...";
+            this.dgvc_qbe_authors.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgvc_qbe_authors.HeaderText = "";
             this.dgvc_qbe_authors.Name = "dgvc_qbe_authors";
             this.dgvc_qbe_authors.Text = "...";
@@ -346,9 +346,9 @@
             // dgvc_au_ord
             // 
             this.dgvc_au_ord.DataPropertyName = "au_ord";
-            dataGridViewCellStyle16.Format = "N0";
-            dataGridViewCellStyle16.NullValue = null;
-            this.dgvc_au_ord.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle2.Format = "N0";
+            dataGridViewCellStyle2.NullValue = null;
+            this.dgvc_au_ord.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvc_au_ord.HeaderText = "Auth.Order";
             this.dgvc_au_ord.HideUpDownButtons = true;
             this.dgvc_au_ord.Name = "dgvc_au_ord";
@@ -363,7 +363,7 @@
             // 
             // tabPageTitleAuthors
             // 
-            this.tabPageTitleAuthors.Location = new System.Drawing.Point(1, 40);
+            this.tabPageTitleAuthors.Location = new System.Drawing.Point(0, 0);
             this.tabPageTitleAuthors.Name = "tabPageTitleAuthors";
             this.tabPageTitleAuthors.Size = new System.Drawing.Size(956, 457);
             this.tabPageTitleAuthors.Text = "Title Authors";
@@ -400,6 +400,7 @@
             this.Name = "frmTitle";
             this.Text = "Titles";
             this.Load += new System.EventHandler(this.frmTitle_Load);
+            this.FormClosed += new Wisej.Web.FormClosedEventHandler(this.frmTitle_FormClosed);
             this.Resize += new System.EventHandler(this.frmTitle_Resize);
             this.tabctlTitle.ResumeLayout(false);
             this.tabPageTitles.ResumeLayout(false);

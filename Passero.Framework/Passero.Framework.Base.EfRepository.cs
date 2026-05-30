@@ -334,6 +334,7 @@ namespace Passero.Framework
                 if (!string.IsNullOrWhiteSpace(queryToRun))
                 {
                     var sqlParams = BuildSqlParameters(Parameters);
+                   
                     results = _dbContext.SqlQuery<ModelClass>(queryToRun, sqlParams).ToList();
                 }
                 else
@@ -344,7 +345,10 @@ namespace Passero.Framework
                 ApplyResults(results);
                 er.Value = ModelItems;
             }
-            catch (Exception ex) { HandleError(er.ToExecutionResult(), ex); }
+            catch (Exception ex) 
+            { 
+                HandleError(er.ToExecutionResult(), ex); 
+            }
             LastExecutionResult = er.ToExecutionResult();
             return er;
         }

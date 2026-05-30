@@ -16,7 +16,7 @@ namespace PasseroDemo.Views
 
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public IDbConnection DbConnection { get; set; }
-        public ViewModels .vmAuthor vmAuthor = new ViewModels .vmAuthor ();
+        public ViewModels.vmAuthor vmAuthor = new ViewModels.vmAuthor();
 
 
         private Passero.Framework.Base.IPasseroDbContext _dbContext;
@@ -34,25 +34,29 @@ namespace PasseroDemo.Views
             // ViewModel riceve il DbContext e crea internamente il repository corretto.
 
 
-            Passero.Framework.Base.ORMType  ORMType = Passero.Framework.Base.ORMType.Dapper   ;
+            Passero.Framework.Base.ORMType  ORMType;
+            ORMType = Passero.Framework.Base.ORMType.Dapper;
+
             // Versione generica — tipo noto a compile-time
-            
+
 
             //_dbContext = Passero.Framework.Base.ORMContextFactory.Create(
             //    Passero.Framework.Base.ORMType.EntityFramework      ,
             //    DbConnection.ConnectionString,
             //    new[] { typeof(Models.Author) });
 
-            
-            _dbContext = Passero.Framework.Base.ORMContextFactory.Create(ORMType,DbConnection.ConnectionString,
+
+            _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
+                ORMType,
+                DbConnection.ConnectionString,
                 new[] { typeof(Models.Author) }
                 );
 
             //vmAuthor = new ViewModels.vmAuthor();
             //vmAuthor.Init();
-            vmAuthor.Init(this.DbConnection);
+            //vmAuthor.Init(this.DbConnection);
 
-            //vmAuthor.Init(this._dbContext);
+            vmAuthor.Init(this._dbContext);
 
           
             vmAuthor.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;

@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
     <PackageReference Include="MiniExcel" Version="1.43.0" />
 	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />

@@ -38,6 +38,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 		<PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
 		
 	</ItemGroup>

@@ -1,28 +1,39 @@
 <Project>
+
   <PropertyGroup>
-
-
-	  <Solution_PasseroVersion>1.0.0</Solution_PasseroVersion>
-	  <Solution_WisejNETFamily>Wisej-4</Solution_WisejNETFamily>
-	  <Solution_WisejNETVersion>4.0.13</Solution_WisejNETVersion>
-	  <Solution_WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</Solution_WisejNETVersionFlat>
-	  <Solution_CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</Solution_CompleteVersion>
-	  <Solution_Version>$(CompleteVersion)</Solution_Version>
-	  <Solution_Authors>Gabriele Del Giovine</Solution_Authors>
-	  <Solution_Company>Gabriele Del Giovine</Solution_Company>
-	  <Solution_PackageLicenseExpression>MIT</Solution_PackageLicenseExpression>
-	  <Solution_PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_PackageProjectUrl>
-	  <Solution_RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_RepositoryUrl>
-	  <Solution_RepositoryType>git</Solution_RepositoryType>
-	  <Solution_GeneratePackageOnBuild>true</Solution_GeneratePackageOnBuild>
-	  <Solution_PackageId>Passero.Framework40</Solution_PackageId>
-	  <Solution_Description>A MVVM Framework for Wisej.NET</Solution_Description>
-	  <Solution_PackageTags>MVVM;Wisej.NET;ORM;passero;framework</Solution_PackageTags>
-	  <Solution_PackageReadmeFile>README.md</Solution_PackageReadmeFile>
-	  <Solution_PackageOutputPath>..\NugetPackages</Solution_PackageOutputPath>
-
-
+      <Solution_PasseroVersion>1.0.0</Solution_PasseroVersion>
+      <Solution_WisejNETFamily>Wisej-4</Solution_WisejNETFamily>
+      <Solution_WisejNETVersion>4.0.13</Solution_WisejNETVersion>
+      <Solution_WisejNETVersionFlat>$(Solution_WisejNETVersion.Replace('.', ''))</Solution_WisejNETVersionFlat>
+	  <Solution_DapperVersion>2.1.79</Solution_DapperVersion>
+	  <Solution_CompleteVersion>$(Solution_PasseroVersion).$(Solution_WisejNETVersionFlat)</Solution_CompleteVersion>
+      <Solution_Version>$(Solution_CompleteVersion)</Solution_Version>
+      <Solution_Authors>Gabriele Del Giovine</Solution_Authors>
+      <Solution_Company>Gabriele Del Giovine</Solution_Company>
+      <Solution_PackageLicenseExpression>MIT</Solution_PackageLicenseExpression>
+      <Solution_PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_PackageProjectUrl>
+      <Solution_RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</Solution_RepositoryUrl>
+      <Solution_RepositoryType>git</Solution_RepositoryType>
+      <Solution_GeneratePackageOnBuild>true</Solution_GeneratePackageOnBuild>
+      <Solution_PackageId>Passero.Framework40</Solution_PackageId>
+      <Solution_Description>A MVVM Framework for Wisej.NET</Solution_Description>
+      <Solution_PackageTags>MVVM;Wisej.NET;ORM;passero;framework</Solution_PackageTags>
+      <Solution_PackageReadmeFile>README.md</Solution_PackageReadmeFile>
+      <Solution_PackageOutputPath>..\NugetPackages</Solution_PackageOutputPath>
   </PropertyGroup>
+
+	
+	
+  <!--
+      Fix CS0433: su net8.0/net9.0 il runtime fornisce già System.Drawing.Common nativo.
+      System.Drawing.Managed è il wrapper Wisej per net48 e non deve essere risolto
+      sui TFM moderni, altrimenti Font/FontStyle/GraphicsUnit/ContentAlignment risultano
+      ambigui e la build fallisce con CS0433.
+  -->
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+      <Reference Remove="System.Drawing.Managed" />
+  </ItemGroup>
+
 </Project>
 
 

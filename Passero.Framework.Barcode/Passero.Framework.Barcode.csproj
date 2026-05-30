@@ -36,6 +36,7 @@
 
 	
 	<ItemGroup>
+		<PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
 		<PackageReference Include="FreeSpire.Barcode" Version="6.6.0" />
 		<PackageReference Include="QRCoder" Version="1.7.0" />

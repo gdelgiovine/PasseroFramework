@@ -102,7 +102,7 @@
             this.tabPageSalesMaster.AutoScroll = true;
             this.tabPageSalesMaster.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.tabPageSalesMaster.Controls.Add(this.flowLayoutPanel1);
-            this.tabPageSalesMaster.Location = new System.Drawing.Point(0, 40);
+            this.tabPageSalesMaster.Location = new System.Drawing.Point(0, 0);
             this.tabPageSalesMaster.Name = "tabPageSalesMaster";
             this.tabPageSalesMaster.Size = new System.Drawing.Size(1006, 368);
             this.tabPageSalesMaster.Text = "Sales Master";
@@ -346,7 +346,7 @@
             // 
             this.tabPageSalesDetails.AutoScroll = true;
             this.tabPageSalesDetails.BackColor = System.Drawing.Color.FromName("@buttonFace");
-            this.tabPageSalesDetails.Location = new System.Drawing.Point(0, 40);
+            this.tabPageSalesDetails.Location = new System.Drawing.Point(0, 0);
             this.tabPageSalesDetails.Name = "tabPageSalesDetails";
             this.tabPageSalesDetails.Size = new System.Drawing.Size(1006, 368);
             this.tabPageSalesDetails.Text = "Sales Details";

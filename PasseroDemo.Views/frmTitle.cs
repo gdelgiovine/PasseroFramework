@@ -50,8 +50,10 @@ namespace PasseroDemo.Views
             this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
 
 
+            Passero.Framework.Base.ORMType ORMType;
 
-            Passero.Framework.Base.ORMType ORMType = Passero.Framework.Base.ORMType.Dapper  ;
+            ORMType = Passero.Framework.Base.ORMType.Dapper ; 
+
 
             _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
                 ORMType,
@@ -123,10 +125,23 @@ namespace PasseroDemo.Views
         public string GetAuthorFullName(string au_id)
         {
 
-            
-            Models .Author author = this.DbConnection.Query<Models.Author>("SELECT * FROM Authors WHERE au_id=@au_id", new { au_id = au_id }).First();
-            //return $"{author.au_fname.Trim()} {author.au_lname.Trim()}".Trim();
-            return author.au_fullname;
+
+            if (string.IsNullOrWhiteSpace(au_id))
+            {
+                return string.Empty;
+            }
+
+            Models.Author author = this.DbConnection
+                .Query<Models.Author>(
+                    "SELECT * FROM Authors WHERE au_id=@au_id",
+                    new { au_id = au_id })
+                .FirstOrDefault();
+
+            return author?.au_fullname ?? string.Empty;
+
+            //Models .Author author = this.DbConnection.Query<Models.Author>("SELECT * FROM Authors WHERE au_id=@au_id", new { au_id = au_id }).First();
+            ////return $"{author.au_fname.Trim()} {author.au_lname.Trim()}".Trim();
+            //return author.au_fullname;
         }
 
 
@@ -440,6 +455,26 @@ namespace PasseroDemo.Views
                 }
             }
             
+        }
+
+        private void ReleaseResources()
+        {
+            this.dgv_TitleAuthors.DataSource = null;
+            this.bsTitles.DataSource = null;
+
+            this._dbContext?.Dispose();
+            this._dbContext = null;
+
+            this.DbConnection?.Close();
+            this.DbConnection?.Dispose();
+            this.DbConnection = null;
+
+          
+        }
+
+        private void frmTitle_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.ReleaseResources();
         }
     }
 

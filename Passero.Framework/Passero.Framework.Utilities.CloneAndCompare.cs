@@ -12,8 +12,10 @@ namespace Passero.Framework
             if (ReferenceEquals(source, null))
                 return default;
 
+            //// Usa FastDeepCloner per creare una copia profonda
+            //return (T)FastDeepCloner.DeepCloner.Clone(source);
+
             // Usa FastCloner per creare una copia profonda
-            //return (T)FastCloner.FastCloner.DeepClone(source);
             return (T)FastCloner.FastCloner.DeepClone(source);
         }
 

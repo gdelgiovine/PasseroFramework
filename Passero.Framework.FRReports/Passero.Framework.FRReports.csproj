@@ -47,10 +47,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.72" />
-    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-	  <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
-	  <PackageReference Include="Wisej-4-BootstrapIcons" Version="$(WisejNETVersion)" />
+	 <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
+     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+	 <PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+	 <PackageReference Include="Wisej-4-BootstrapIcons" Version="$(WisejNETVersion)" />
   </ItemGroup>
 
   <ItemGroup>

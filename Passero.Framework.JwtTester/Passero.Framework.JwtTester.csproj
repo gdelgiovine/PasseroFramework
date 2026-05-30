@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Passero.Framework.Jwt\Passero.Framework.Jwt.csproj" />
   </ItemGroup>
 

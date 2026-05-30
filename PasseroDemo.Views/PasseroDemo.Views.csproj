@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net8.0</TargetFrameworks>
+    <TargetFrameworks>net48;net9.0</TargetFrameworks>
 	  <WisejNETVersion>4.0.13</WisejNETVersion>
 	  <WisejNETFamily>Wisej-4</WisejNETFamily>
     <OutputType>Library</OutputType>
@@ -22,7 +22,7 @@
 	
 	
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
 	<PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
 	  

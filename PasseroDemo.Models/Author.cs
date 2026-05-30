@@ -25,7 +25,7 @@ namespace PasseroDemo.Models
         public string? city { get; set; }
         public string? state { get; set; }
         public string? zip { get; set; }
-        public bool contract { get; set; }
+        public bool? contract { get; set; }
         //[ColumnMapping("email_a")]
         //[System.ComponentModel.DataAnnotations.Schema.Column("email_a")]
         public string? email { get; set; }

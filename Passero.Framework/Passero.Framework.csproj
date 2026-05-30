@@ -12,7 +12,6 @@
 		<SignAssembly>False</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
 		<DelaySign>False</DelaySign>
-		
 	</PropertyGroup>
 
 
@@ -38,28 +37,6 @@
 	</PropertyGroup>
 	
 	
-	<!--
-	<PropertyGroup>
-		<PasseroVersion>1.0.0</PasseroVersion>
-		<WisejNETFamily>Wisej-4</WisejNETFamily>
-		<WisejNETVersion>4.0.13</WisejNETVersion>
-		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
-		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
-		<Version>$(CompleteVersion)</Version>
-		<Authors>Gabriele Del Giovine</Authors>
-		<Company>Gabriele Del Giovine</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/gdelgiovine/PasseroFramework</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/gdelgiovine/PasseroFramework</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>Passero.Framework40</PackageId>
-		<Description>A MVVM Framework for Wisej.NET</Description>
-		<PackageTags>MVVM;Wisej.NET;ORM;passero;framework</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageOutputPath>..\NugetPackages</PackageOutputPath>
-	</PropertyGroup>
--->
 	
 	<ItemGroup>
 	  <Compile Remove="OBSOLETI\**" />
@@ -86,24 +63,15 @@
 	  
 	  <Compile Remove="Passero.Framework.Base.PasseroEfDbContext.cs" />
 	  <Compile Remove="Passero.Framework.Base.PasseroEfDbContextFactory.cs" />
-		<!--
-	  <Compile Remove="Passero.Framework.Base.Repository.cs" />
-	  <Compile Remove="Passero.Framework.Base.RepositoryDTO.cs" />
-	  <Compile Remove="Passero.Framework.Base.ViewModel.cs" />
-	  <Compile Remove="Passero.Framework.Base.ViewModelC.cs" />
-	  <Compile Remove="Passero.Framework.Base.ViewModelDTO.cs" />
-	  <Compile Remove="Passero.Framework.Base.ViewModelWrapper.cs" />
-	  <Compile Remove="Passero.Framework.Reports.cs" />
-	  <Compile Remove="Passero.Framework.Utilities.cs" />
-	  -->
+	
 	</ItemGroup>
 
 	
 
 	<ItemGroup>
 		<PackageReference Include="FastCloner" Version="3.5.5" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
-		<PackageReference Include="Dapper" Version="2.1.72" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+		<PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 		<PackageReference Include="Dapper.ColumnMapper" Version="1.3.0" />
 		<PackageReference Include="Dapper.Contrib" Version="2.0.78" />
 		<PackageReference Include="FastDeepCloner" Version="1.3.6" />
@@ -132,15 +100,15 @@
 
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.24" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.24" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.27" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.27" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.27" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.24" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.24" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.16" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.16" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.16" />
 	</ItemGroup>
 
 
