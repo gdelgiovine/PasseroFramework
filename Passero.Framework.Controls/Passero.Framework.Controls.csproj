@@ -74,7 +74,7 @@
     <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
     <PackageReference Include="$(WisejNETFamily)-Camera" Version="$(WisejNETVersion)" />
     <PackageReference Include="$(WisejNETFamily)-NavigationBar" Version="$(WisejNETVersion)" />
-    <PackageReference Include="Wisej-4-VisualStudioIcons" Version="$(WisejNETVersion)" />
+    <PackageReference Include="$(WisejNETFamily)-VisualStudioIcons" Version="$(WisejNETVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -40,11 +40,30 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.1.72" />
+		<PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
-        <PackageReference Include="System.Text.Json" Version="9.0.4" />
-    </ItemGroup>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
+		<PackageReference Include="System.Text.Json" Version="9.0.4" />
+	</ItemGroup>
+
+	
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
+		<PackageReference Include="System.Text.Json" Version="9.0.4" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
+		<PackageReference Include="System.Text.Json" Version="9.0.4" />
+	</ItemGroup>
+
+
+	
 
 </Project>

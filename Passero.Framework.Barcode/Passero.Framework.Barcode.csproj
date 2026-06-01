@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Wisej-4" Version="$(WisejNETVersion)" />
+		<PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
 		<PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.22" />
 	</ItemGroup>
 

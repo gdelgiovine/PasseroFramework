@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net9.0</TargetFrameworks>
-    <WisejNETVersion>4.0.13</WisejNETVersion>
-    <WisejNETFamily>Wisej-4</WisejNETFamily>
+    <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+    <WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
+    <WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
