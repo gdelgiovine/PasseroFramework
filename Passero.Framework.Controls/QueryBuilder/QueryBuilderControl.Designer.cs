@@ -51,6 +51,7 @@ partial class QueryBuilderControl
             this._toolBar.Size = new System.Drawing.Size(390, 51);
             this._toolBar.TabIndex = 1;
             this._toolBar.TabStop = false;
+            this._toolBar.ButtonClick += new Wisej.Web.ToolBarButtonClickEventHandler(this.ToolBar_ButtonClick);
             // 
             // toolBarButtonAddRule
             // 

@@ -30,7 +30,7 @@
 		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>$(Solution_PackageId)</PackageId>
-		<Description>$(Solution_Description</Description>
+		<Description>A MVVM Framework for Wisej.NET</Description>
 		<PackageTags>$(Solution_PackageTags)</PackageTags>
 		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
 		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>

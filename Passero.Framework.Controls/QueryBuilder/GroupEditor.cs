@@ -15,6 +15,7 @@ internal sealed partial class GroupEditor : UserControl
     public GroupEditor()
     {
         InitializeComponent();
+        InitializeConditionComboBox();
         WireEvents();
         SyncHeaderHeights();
         UpdateHeight();
@@ -27,10 +28,19 @@ internal sealed partial class GroupEditor : UserControl
         _isRoot = isRoot;
 
         InitializeComponent();
+        InitializeConditionComboBox();
         WireEvents();
         ApplyRuntimeState();
         SyncHeaderHeights();
         UpdateHeight();
+    }
+
+    private void InitializeConditionComboBox()
+    {
+        _conditionComboBox.Items.Clear();
+        _conditionComboBox.Items.Add(new ConditionItem("and", "AND"));
+        _conditionComboBox.Items.Add(new ConditionItem("or", "OR"));
+        _conditionComboBox.SelectedIndex = 0;
     }
 
     public int Depth { get; }

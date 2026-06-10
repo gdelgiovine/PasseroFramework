@@ -2,7 +2,8 @@
 using System.Drawing;
 using System.ComponentModel;
 using System.Globalization;
-using System.Text.Json;
+
+using Newtonsoft.Json.Linq;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls;
@@ -576,17 +577,19 @@ public partial class RuleEditor : UserControl
 
     private static string ConvertJsonValueToString(object? value)
     {
-        if (value is null) return string.Empty;
-
-        if (value is JsonElement element)
+        if (value is null)
         {
-            return element.ValueKind switch
+            return string.Empty;
+        }
+
+        if (value is JToken token)
+        {
+            return token.Type switch
             {
-                JsonValueKind.String => element.GetString() ?? string.Empty,
-                JsonValueKind.Number => element.ToString(),
-                JsonValueKind.True => "true",
-                JsonValueKind.False => "false",
-                _ => element.ToString()
+                JTokenType.String => token.Value<string>() ?? string.Empty,
+                JTokenType.Integer or JTokenType.Float => token.ToString(),
+                JTokenType.Boolean => token.Value<bool>() ? "true" : "false",
+                _ => token.ToString()
             };
         }
 
@@ -595,15 +598,50 @@ public partial class RuleEditor : UserControl
 
     private static bool TryConvertDecimal(object? value, out decimal result)
     {
-        if (value is decimal decimalValue) { result = decimalValue; return true; }
-        if (value is JsonElement element && element.TryGetDecimal(out result)) return true;
+        if (value is decimal decimalValue)
+        {
+            result = decimalValue;
+            return true;
+        }
+
+        if (value is JToken token)
+        {
+            if (token.Type == JTokenType.Integer || token.Type == JTokenType.Float)
+            {
+                return decimal.TryParse(token.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+            }
+
+            if (decimal.TryParse(token.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            {
+                return true;
+            }
+        }
+
         return decimal.TryParse(ConvertJsonValueToString(value), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
     }
 
     private static bool TryConvertDateTime(object? value, out System.DateTime result)
     {
-        if (value is System.DateTime dateTime) { result = dateTime; return true; }
-        if (value is JsonElement element && element.TryGetDateTime(out result)) return true;
+        if (value is System.DateTime dateTime)
+        {
+            result = dateTime;
+            return true;
+        }
+
+        if (value is JToken token)
+        {
+            if (token.Type == JTokenType.Date && token.Value<System.DateTime?>() is System.DateTime tokenDateTime)
+            {
+                result = tokenDateTime;
+                return true;
+            }
+
+            if (System.DateTime.TryParse(token.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out result))
+            {
+                return true;
+            }
+        }
+
         return System.DateTime.TryParse(ConvertJsonValueToString(value), CultureInfo.CurrentCulture, DateTimeStyles.None, out result);
     }
 

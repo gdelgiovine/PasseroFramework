@@ -18,6 +18,7 @@ namespace PasseroDemo.Views
         //public vmTEST vmJobs = new vmTEST();
         public ViewModels.vmJobs vmJobs = new vmJobs();
         private System.Data.SqlClient.SqlConnection DbConnection;
+        private string json;
 
         public frmJobs()
         {
@@ -58,12 +59,10 @@ namespace PasseroDemo.Views
             this.dataNavigator1.ManageNavigation = true;
             this.dataNavigator1.ManageChanges = true;
             this.dataNavigator1.Init(true);
-
+            
             queryBuilderControl1.SetViewModel(new ViewModel<Models .Job >(),this.DbConnection );
-            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
-            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
-            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
-            queryBuilderControl1.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Job.job_id), "Job Id", "", "", true, true, 20);
+            queryBuilderControl1.QBEColumns.Add(nameof(Models.Job.job_desc ), "Description", "", "", true, true, 20);
             //queryBuilderControl1.EnsureQueryBuilder();
 
             queryBuilderControl1.LoadColumnsFromQBE();
@@ -274,6 +273,33 @@ namespace PasseroDemo.Views
             var sql = this.queryBuilderControl1 .GetParameterizedSqlWhere();  
             var parameters = sql.Parameters;    
             var whereClause = sql.WhereClause;
+
+            this.vmJobs .SQLQuery =this.queryBuilderControl1 .SQLQuery;
+            this.vmJobs.Parameters = this.queryBuilderControl1.Parameters;
+            this.vmJobs.ReloadItems();
+
+
+            //var result = this.vmJobs.GetItems(this.queryBuilderControl1.SQLQuery, this.queryBuilderControl1.Parameters);
+            
+
+        }
+
+        private void queryBuilderControl1_LoadQueryRequest(object sender, QueryBuilderRequestEventArgs e)
+        {
+            this.queryBuilderControl1.LoadRulesJson(json);
+        }
+
+        private void queryBuilderControl1_SaveQueryRequest(object sender, QueryBuilderRequestEventArgs e)
+        {
+            json = this.queryBuilderControl1.GetRulesJson();
+           
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.queryBuilderControl1.ClearRules();
 
         }
     }

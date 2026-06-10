@@ -1,50 +1,42 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Passero.Framework.Controls;
 
 public sealed class QueryBuilderRuleSet
 {
-    [JsonPropertyName("condition")]
+    [JsonProperty("condition")]
     public string Condition { get; set; } = "and";
 
-    [JsonPropertyName("rules")]
+    [JsonProperty("rules")]
     public List<QueryBuilderRuleNode> Rules { get; set; } = new List<QueryBuilderRuleNode>();
 }
 
 public sealed class QueryBuilderRuleNode
 {
-    [JsonPropertyName("condition")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("condition")]
     public string? Condition { get; set; }
 
-    [JsonPropertyName("rules")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("rules")]
     public List<QueryBuilderRuleNode>? Rules { get; set; }
 
-    [JsonPropertyName("field")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("field")]
     public string? Field { get; set; }
 
-    [JsonPropertyName("label")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("label")]
     public string? Label { get; set; }
 
-    [JsonPropertyName("type")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("type")]
     public string? Type { get; set; }
 
-    [JsonPropertyName("operator")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("operator")]
     public string? Operator { get; set; }
 
-    [JsonPropertyName("value")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("value")]
     public object? Value { get; set; }
 
     /// <summary>Secondo valore per operatori Between / Not Between.</summary>
-    [JsonPropertyName("value2")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("value2")]
     public object? Value2 { get; set; }
 
     [JsonIgnore]

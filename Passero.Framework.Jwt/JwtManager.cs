@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;  
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Passero.Framework.Jwt
 {
@@ -18,10 +18,10 @@ namespace Passero.Framework.Jwt
     {
         private const string PayloadClaimType = "payload";
 
-        private readonly string            _issuer;
-        private readonly string            _audience;
+        private readonly string _issuer;
+        private readonly string _audience;
         private readonly SigningCredentials _signingCredentials;
-        private readonly SecurityKey       _validationKey;
+        private readonly SecurityKey _validationKey;
 
         /// <summary>
         /// Initializes a new instance of <see cref="JwtManager"/> using a symmetric secret key (HMAC-SHA256).
@@ -37,12 +37,12 @@ namespace Passero.Framework.Jwt
             if (Encoding.UTF8.GetByteCount(secretKey) < 32)
                 throw new ArgumentException("La chiave simmetrica deve essere di almeno 32 caratteri (256 bit).", nameof(secretKey));
 
-            _issuer   = issuer;
+            _issuer = issuer;
             _audience = audience;
 
-            var symmetricKey    = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             _signingCredentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
-            _validationKey      = symmetricKey;
+            _validationKey = symmetricKey;
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace Passero.Framework.Jwt
             if (certificate == null)
                 throw new ArgumentNullException(nameof(certificate));
 
-            _issuer   = issuer;
+            _issuer = issuer;
             _audience = audience;
 
-            var x509SigningKey   = new X509SecurityKey(certificate);
-            _signingCredentials  = new SigningCredentials(x509SigningKey, SecurityAlgorithms.RsaSha256);
-            _validationKey       = x509SigningKey;
+            var x509SigningKey = new X509SecurityKey(certificate);
+            _signingCredentials = new SigningCredentials(x509SigningKey, SecurityAlgorithms.RsaSha256);
+            _validationKey = x509SigningKey;
         }
 
         // ─── Token standard (claims) ────────────────────────────────────────────
@@ -77,8 +77,8 @@ namespace Passero.Framework.Jwt
         {
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject            = claims != null ? new ClaimsIdentity(claims) : new ClaimsIdentity(),
-                Expires            = DateTime.UtcNow.AddMinutes(expireMinutes),
+                Subject = claims != null ? new ClaimsIdentity(claims) : new ClaimsIdentity(),
+                Expires = DateTime.UtcNow.AddMinutes(expireMinutes),
                 SigningCredentials = _signingCredentials
             };
 
@@ -89,7 +89,7 @@ namespace Passero.Framework.Jwt
                 tokenDescriptor.Audience = _audience;
 
             var handler = new JwtSecurityTokenHandler();
-            var token   = handler.CreateToken(tokenDescriptor);
+            var token = handler.CreateToken(tokenDescriptor);
             return handler.WriteToken(token);
         }
 
@@ -107,13 +107,13 @@ namespace Passero.Framework.Jwt
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey         = _validationKey,
-                    ValidateIssuer           = !string.IsNullOrEmpty(_issuer),
-                    ValidIssuer              = _issuer,
-                    ValidateAudience         = !string.IsNullOrEmpty(_audience),
-                    ValidAudience            = _audience,
-                    ValidateLifetime         = true,
-                    ClockSkew                = TimeSpan.Zero
+                    IssuerSigningKey = _validationKey,
+                    ValidateIssuer = !string.IsNullOrEmpty(_issuer),
+                    ValidIssuer = _issuer,
+                    ValidateAudience = !string.IsNullOrEmpty(_audience),
+                    ValidAudience = _audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
 
                 var handler = new JwtSecurityTokenHandler();
@@ -174,7 +174,7 @@ namespace Passero.Framework.Jwt
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
 
-            var json         = JsonSerializer.Serialize(payload);
+            var json = JsonConvert.SerializeObject(payload);
             var payloadClaim = new Claim(PayloadClaimType, json, JsonClaimValueTypes.Json);
 
             var claims = new List<Claim> { payloadClaim };
@@ -206,7 +206,7 @@ namespace Passero.Framework.Jwt
                 if (string.IsNullOrEmpty(json))
                     return false;
 
-                payload = JsonSerializer.Deserialize<T>(json);
+                payload = JsonConvert.DeserializeObject<T>(json);
                 return payload != null;
             }
             catch
@@ -220,18 +220,21 @@ namespace Passero.Framework.Jwt
         /// <summary>
         /// Generates a cryptographically secure random secret key suitable for HMAC-SHA256 signing.
         /// </summary>
-        /// <param name="length">Key length in bytes (minimum 32, default 64).</param>
-        /// <returns>A Base64-encoded string representing the generated key.</returns>
-        public static string GenerateSecretKey(int length = 64)
+        /// <param name="byteLength">Number of random bytes to generate. Default is 32 bytes (256 bits).</param>
+        /// <returns>A Base64Url-encoded secret key.</returns>
+        public static string GenerateSecretKey(int byteLength = 32)
         {
-            if (length < 32)
-                throw new ArgumentOutOfRangeException(nameof(length), "La lunghezza minima della chiave è 32 byte (256 bit).");
+            if (byteLength < 32)
+                throw new ArgumentOutOfRangeException(nameof(byteLength), "La chiave deve essere di almeno 32 byte.");
 
-            var keyBytes = new byte[length];
+            byte[] bytes = new byte[byteLength];
+
             using (var rng = RandomNumberGenerator.Create())
-                rng.GetBytes(keyBytes);
+            {
+                rng.GetBytes(bytes);
+            }
 
-            return Convert.ToBase64String(keyBytes);
+            return Base64UrlEncoder.Encode(bytes);
         }
     }
 }

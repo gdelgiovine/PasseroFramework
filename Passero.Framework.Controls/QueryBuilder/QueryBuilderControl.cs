@@ -5,14 +5,16 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Wisej.Web;
 
 namespace Passero.Framework.Controls;
 
 public partial class QueryBuilderControl : UserControl
 {
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly JsonSerializerSettings _jsonSettings;
     private GroupEditor? _rootEditor;
     private Control? _draggedEditor;
     internal const string DragDropToken = "QueryBuilderEditorMove";
@@ -25,11 +27,11 @@ public partial class QueryBuilderControl : UserControl
         MaxGroupDepth = 5;
         AllowEmptyGroups = false;
 
-        _jsonOptions = new JsonSerializerOptions
+        _jsonSettings = new JsonSerializerSettings
         {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+            Formatting = Formatting.Indented,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
         };
 
         
@@ -39,6 +41,10 @@ public partial class QueryBuilderControl : UserControl
     private object _viewModelInstance;
     public Type ViewModelType { get; private set; }
 
+    public string DefaultSQLQuery { get; set; } = string.Empty;
+    public string SQLQuery { get; set; } = string.Empty;
+    public Dapper.DynamicParameters DefaultSQLQueryParameters { get; set; } = new Dapper.DynamicParameters();
+    public Dapper.DynamicParameters Parameters { get; set; } = new Dapper.DynamicParameters();
     /// <summary>
     /// Imposta il ViewModel in modo type-safe senza rendere il controllo generico.
     /// Mantiene internamente l'istanza e registra il tipo in ViewModelType.
@@ -48,6 +54,13 @@ public partial class QueryBuilderControl : UserControl
         _viewModelInstance = viewModel;
         ViewModelType = typeof(TViewModel);
         this.QBEColumns.Parent = this;
+
+        this.DefaultSQLQuery =
+            Passero.Framework.ReflectionHelper.GetPropertyValue(viewModel, "DefaultSQLQuery")?.ToString() ?? string.Empty;
+
+        this.DefaultSQLQueryParameters =
+            Passero.Framework.ReflectionHelper.GetPropertyValue(viewModel, "DefaultSQLQueryParameters") as Dapper.DynamicParameters
+            ?? new Dapper.DynamicParameters();
         // eventuale inizializzazione basata sul ViewModel
     }
 
@@ -92,6 +105,8 @@ public partial class QueryBuilderControl : UserControl
     public bool AllowEmptyGroups { get; set; }
 
     public event EventHandler<QueryBuilderChangedEventArgs>? RulesChanged;
+    public event EventHandler<QueryBuilderRequestEventArgs>? SaveQueryRequest;
+    public event EventHandler<QueryBuilderRequestEventArgs>? LoadQueryRequest;
 
     public void SetColumns(IEnumerable<QueryBuilderColumn> columns)
     {
@@ -118,7 +133,7 @@ public partial class QueryBuilderControl : UserControl
 
     public string GetRulesJson()
     {
-        return JsonSerializer.Serialize(GetRules(), _jsonOptions);
+        return JsonConvert.SerializeObject(GetRules(), _jsonSettings);
     }
 
     public void LoadRulesJson(string json)
@@ -129,7 +144,7 @@ public partial class QueryBuilderControl : UserControl
             return;
         }
 
-        var rules = JsonSerializer.Deserialize<QueryBuilderRuleSet>(json, _jsonOptions)
+        var rules = JsonConvert.DeserializeObject<QueryBuilderRuleSet>(json, _jsonSettings)
                     ?? new QueryBuilderRuleSet();
 
         LoadRules(rules);
@@ -147,13 +162,47 @@ public partial class QueryBuilderControl : UserControl
         RaiseRulesChanged();
     }
 
+    public void ClearRules()
+    {
+        CreateEmptyRoot();
+    }
+
     public QueryBuilderSqlResult GetParameterizedSqlWhere()
     {
         var result = new QueryBuilderSqlResult();
         var rules = GetRules();
-        var index = 0;
 
-        result.WhereClause = BuildSqlForGroup(rules.Condition, rules.Rules, result.Parameters, ref index);
+        var mergedParameters = new Dapper.DynamicParameters();
+        var usedParameterNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        CopyDynamicParameters(this.DefaultSQLQueryParameters, mergedParameters, usedParameterNames);
+
+        var filterParameters = new Dictionary<string, object?>();
+        var index = 0;
+        var filterClause = BuildSqlForGroup(
+            rules.Condition,
+            rules.Rules,
+            filterParameters,
+            ref index,
+            usedParameterNames);
+
+        foreach (var parameter in filterParameters)
+        {
+            mergedParameters.Add(parameter.Key, parameter.Value);
+        }
+
+        this.SQLQuery = ComposeSqlQuery(this.DefaultSQLQuery, filterClause);
+        this.Parameters = mergedParameters;
+
+        result.WhereClause = filterClause;
+        result.Parameters = new Dictionary<string, object?>();
+        CopyDynamicParametersToDictionary(this.DefaultSQLQueryParameters, result.Parameters);
+
+        foreach (var parameter in filterParameters)
+        {
+            result.Parameters[parameter.Key] = parameter.Value;
+        }
+
         return result;
     }
 
@@ -271,6 +320,14 @@ public partial class QueryBuilderControl : UserControl
 
     private void ToolStripButtonImportJson_Click(object? sender, EventArgs e)
     {
+        var args = new QueryBuilderRequestEventArgs();
+        LoadQueryRequest?.Invoke(this, args);
+
+        if (args.Handled)
+        {
+            return;
+        }
+
         var form = new JsonEditorForm("Import JSON", GetRulesJson(), true);
         form.ShowDialog((f, result) =>
         {
@@ -278,12 +335,21 @@ public partial class QueryBuilderControl : UserControl
             {
                 LoadRulesJson(form.JsonText);
             }
+
             form.Dispose();
         });
     }
 
     private void ToolStripButtonExportJson_Click(object? sender, EventArgs e)
     {
+        var args = new QueryBuilderRequestEventArgs();
+        SaveQueryRequest?.Invoke(this, args);
+
+        if (args.Handled)
+        {
+            return;
+        }
+
         var form = new JsonEditorForm("Export JSON", GetRulesJson(), false);
         form.ShowDialog((f, result) =>
         {
@@ -473,7 +539,8 @@ public partial class QueryBuilderControl : UserControl
         string condition,
         List<QueryBuilderRuleNode> nodes,
         Dictionary<string, object?> parameters,
-        ref int index)
+        ref int index,
+        ISet<string> usedParameterNames)
     {
         var parts = new List<string>();
         var glue = string.Equals(condition, "or", StringComparison.OrdinalIgnoreCase) ? " OR " : " AND ";
@@ -482,7 +549,7 @@ public partial class QueryBuilderControl : UserControl
         {
             if (node.IsGroup && node.Rules is not null)
             {
-                var nested = BuildSqlForGroup(node.Condition ?? "and", node.Rules, parameters, ref index);
+                var nested = BuildSqlForGroup(node.Condition ?? "and", node.Rules, parameters, ref index, usedParameterNames);
                 if (!string.IsNullOrWhiteSpace(nested))
                 {
                     parts.Add("(" + nested + ")");
@@ -490,7 +557,7 @@ public partial class QueryBuilderControl : UserControl
             }
             else
             {
-                var sql = BuildSqlForRule(node, parameters, ref index);
+                var sql = BuildSqlForRule(node, parameters, ref index, usedParameterNames);
                 if (!string.IsNullOrWhiteSpace(sql))
                 {
                     parts.Add(sql);
@@ -498,13 +565,19 @@ public partial class QueryBuilderControl : UserControl
             }
         }
 
-        return string.Join(glue, parts);
+        if (parts.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return "(" + string.Join(glue, parts) + ")";
     }
 
     private string BuildSqlForRule(
         QueryBuilderRuleNode node,
         Dictionary<string, object?> parameters,
-        ref int index)
+        ref int index,
+        ISet<string> usedParameterNames)
     {
         var column = FindColumn(node.Field);
         if (column == null)
@@ -518,23 +591,23 @@ public partial class QueryBuilderControl : UserControl
         switch (op)
         {
             case "equal":
-                return string.Format("{0} = {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} = {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "notequal":
-                return string.Format("{0} <> {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} <> {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "greaterthan":
-                return string.Format("{0} > {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} > {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "greaterthanorequal":
-                return string.Format("{0} >= {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} >= {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "lessthan":
-                return string.Format("{0} < {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} < {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "lessthanorequal":
-                return string.Format("{0} <= {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} <= {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
             case "contains":
-                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, "%" + Convert.ToString(node.Value, CultureInfo.InvariantCulture) + "%", ref index));
+                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, "%" + Convert.ToString(node.Value, CultureInfo.InvariantCulture) + "%", ref index, usedParameterNames));
             case "startswith":
-                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, Convert.ToString(node.Value, CultureInfo.InvariantCulture) + "%", ref index));
+                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, Convert.ToString(node.Value, CultureInfo.InvariantCulture) + "%", ref index, usedParameterNames));
             case "endswith":
-                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, "%" + Convert.ToString(node.Value, CultureInfo.InvariantCulture), ref index));
+                return string.Format("{0} LIKE {1}", sqlField, AddParameter(parameters, column.Type, "%" + Convert.ToString(node.Value, CultureInfo.InvariantCulture), ref index, usedParameterNames));
             case "isnull":
                 return string.Format("{0} IS NULL", sqlField);
             case "isnotnull":
@@ -546,18 +619,18 @@ public partial class QueryBuilderControl : UserControl
             case "between":
                 return string.Format("{0} BETWEEN {1} AND {2}",
                     sqlField,
-                    AddParameter(parameters, column.Type, node.Value, ref index),
-                    AddParameter(parameters, column.Type, node.Value2, ref index));
+                    AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames),
+                    AddParameter(parameters, column.Type, node.Value2, ref index, usedParameterNames));
             case "notbetween":
                 return string.Format("{0} NOT BETWEEN {1} AND {2}",
                     sqlField,
-                    AddParameter(parameters, column.Type, node.Value, ref index),
-                    AddParameter(parameters, column.Type, node.Value2, ref index));
+                    AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames),
+                    AddParameter(parameters, column.Type, node.Value2, ref index, usedParameterNames));
             case "in":
             case "notin":
-                return BuildInClause(sqlField, op, node.Value, column.Type, parameters, ref index);
+                return BuildInClause(sqlField, op, node.Value, column.Type, parameters, ref index, usedParameterNames);
             default:
-                return string.Format("{0} = {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index));
+                return string.Format("{0} = {1}", sqlField, AddParameter(parameters, column.Type, node.Value, ref index, usedParameterNames));
         }
     }
 
@@ -567,15 +640,16 @@ public partial class QueryBuilderControl : UserControl
         object? value,
         QueryBuilderFieldType type,
         Dictionary<string, object?> parameters,
-        ref int index)
+        ref int index,
+        ISet<string> usedParameterNames)
     {
         var raw = Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
-        var parts = raw.Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+        var parts = raw.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         var paramNames = new List<string>();
 
         foreach (var part in parts)
         {
-            paramNames.Add(AddParameter(parameters, type, part.Trim(), ref index));
+            paramNames.Add(AddParameter(parameters, type, part.Trim(), ref index, usedParameterNames));
         }
 
         if (paramNames.Count == 0)
@@ -591,27 +665,42 @@ public partial class QueryBuilderControl : UserControl
         Dictionary<string, object?> parameters,
         QueryBuilderFieldType type,
         object? value,
-        ref int index)
+        ref int index,
+        ISet<string> usedParameterNames)
     {
-        var name = "@p" + index.ToString(CultureInfo.InvariantCulture);
-        index++;
+        string name;
+
+        do
+        {
+            name = "@p" + index.ToString(CultureInfo.InvariantCulture);
+            index++;
+        }
+        while (!usedParameterNames.Add(NormalizeParameterName(name)));
+
         parameters[name] = NormalizeJsonValue(value, type);
         return name;
     }
 
     private static object? NormalizeJsonValue(object? value, QueryBuilderFieldType type)
     {
-        if (value is JsonElement element)
+        if (value is JToken token)
         {
             return type switch
             {
-                QueryBuilderFieldType.Number when element.TryGetDecimal(out var number) => number,
-                QueryBuilderFieldType.Boolean when element.ValueKind == JsonValueKind.True => true,
-                QueryBuilderFieldType.Boolean when element.ValueKind == JsonValueKind.False => false,
+                QueryBuilderFieldType.Number when token.Type == JTokenType.Integer || token.Type == JTokenType.Float
+                    => token.Value<decimal?>(),
+
+                QueryBuilderFieldType.Boolean when token.Type == JTokenType.Boolean
+                    => token.Value<bool>(),
+
                 QueryBuilderFieldType.Date or QueryBuilderFieldType.DateTime
-                    when element.ValueKind == JsonValueKind.String && element.TryGetDateTime(out var dateTime) => dateTime,
-                _ when element.ValueKind == JsonValueKind.String => element.GetString(),
-                _ => element.ToString()
+                    when token.Type == JTokenType.Date
+                    => token.Value<System.DateTime?>(),
+
+                _ when token.Type == JTokenType.String
+                    => token.Value<string>(),
+
+                _ => token.ToString()
             };
         }
 
@@ -642,8 +731,24 @@ public partial class QueryBuilderControl : UserControl
                 new QueryBuilderOperator { Key = "between",    Text = L("op_between"),    ValueMode = OperatorValueMode.Range },
                 new QueryBuilderOperator { Key = "notbetween", Text = L("op_notbetween"), ValueMode = OperatorValueMode.Range },
                 new QueryBuilderOperator { Key = "in",         Text = L("op_in"),         ValueMode = OperatorValueMode.List },
-                new QueryBuilderOperator { Key = "notin",      Text = L("op_notin"),      ValueMode = OperatorValueMode.List }
+                new QueryBuilderOperator { Key = "notin",      Text = L("op_notin"),      ValueMode = OperatorValueMode.List },
+
+                new QueryBuilderOperator { Key = "greaterthan",        Text = L("op_greaterthan"),        ValueMode = OperatorValueMode.Single },
+                new QueryBuilderOperator { Key = "greaterthanorequal", Text = L("op_greaterthanorequal"), ValueMode = OperatorValueMode.Single },
+                new QueryBuilderOperator { Key = "lessthan",           Text = L("op_lessthan"),           ValueMode = OperatorValueMode.Single },
+                new QueryBuilderOperator { Key = "lessthanorequal",    Text = L("op_lessthanorequal"),    ValueMode = OperatorValueMode.Single }
             });
+
+            //if (ShowStringComparisonOperators)
+            //{
+            //    result.AddRange(new[]
+            //    {
+            //        new QueryBuilderOperator { Key = "greaterthan",        Text = L("op_greaterthan"),        ValueMode = OperatorValueMode.Single },
+            //        new QueryBuilderOperator { Key = "greaterthanorequal", Text = L("op_greaterthanorequal"), ValueMode = OperatorValueMode.Single },
+            //        new QueryBuilderOperator { Key = "lessthan",           Text = L("op_lessthan"),           ValueMode = OperatorValueMode.Single },
+            //        new QueryBuilderOperator { Key = "lessthanorequal",    Text = L("op_lessthanorequal"),    ValueMode = OperatorValueMode.Single }
+            //    });
+            //}
         }
 
         if (type == QueryBuilderFieldType.Number
@@ -681,23 +786,23 @@ public partial class QueryBuilderControl : UserControl
 
     private void ToolBar_ButtonClick(object? sender, ToolBarButtonClickEventArgs e)
     {
-        if (e.Button == _toolBarButtonAddRule)
+        if (e.Button == toolBarButtonAddRule)
         {
             _rootEditor?.AddRule();
             NotifyChanged();
         }
-        else if (e.Button == _toolBarButtonAddGroup)
+        else if (e.Button == toolBarButtonAddGroup)
         {
             _rootEditor?.AddGroup();
             NotifyChanged();
         }
-        else if (e.Button == _toolBarButtonImportJson)
+        else if (e.Button == toolBarButtonImportJson)
         {
-            ToolStripButtonImportJson_Click(sender, e);
+            ToolStripButtonImportJson_Click(sender, EventArgs.Empty);
         }
-        else if (e.Button == _toolBarButtonExportJson)
+        else if (e.Button == toolBarButtonExportJson)
         {
-            ToolStripButtonExportJson_Click(sender, e);
+            ToolStripButtonExportJson_Click(sender, EventArgs.Empty);
         }
     }
 
@@ -792,5 +897,78 @@ public partial class QueryBuilderControl : UserControl
         if (dbColumn.IsDateTime) return QueryBuilderFieldType.DateTime;
         if (dbColumn.IsDate)     return QueryBuilderFieldType.Date;
         return QueryBuilderFieldType.String;
+    }
+
+    private static void CopyDynamicParameters(
+        Dapper.DynamicParameters source,
+        Dapper.DynamicParameters destination,
+        ISet<string> usedParameterNames)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        foreach (var parameterName in source.ParameterNames)
+        {
+            destination.Add(parameterName, source.Get<object>(parameterName));
+            usedParameterNames.Add(NormalizeParameterName(parameterName));
+        }
+    }
+
+    private static void CopyDynamicParametersToDictionary(
+        Dapper.DynamicParameters source,
+        Dictionary<string, object?> destination)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        foreach (var parameterName in source.ParameterNames)
+        {
+            destination[parameterName] = source.Get<object>(parameterName);
+        }
+    }
+
+    private static string NormalizeParameterName(string parameterName)
+    {
+        return string.IsNullOrWhiteSpace(parameterName)
+            ? string.Empty
+            : parameterName.TrimStart('@', ':', '?');
+    }
+
+    private static string ComposeSqlQuery(string defaultSqlQuery, string filterClause)
+    {
+        defaultSqlQuery = defaultSqlQuery?.Trim() ?? string.Empty;
+        filterClause = filterClause?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(defaultSqlQuery))
+        {
+            return filterClause;
+        }
+
+        if (string.IsNullOrWhiteSpace(filterClause))
+        {
+            return defaultSqlQuery;
+        }
+
+        return defaultSqlQuery.IndexOf(" where ", StringComparison.OrdinalIgnoreCase) >= 0
+            ? $"{defaultSqlQuery} AND {filterClause}"
+            : $"{defaultSqlQuery} WHERE {filterClause}";
+    }
+
+    private bool RaiseSaveQueryRequest()
+    {
+        var args = new QueryBuilderRequestEventArgs();
+        SaveQueryRequest?.Invoke(this, args);
+        return args.Handled;
+    }
+
+    private bool RaiseLoadQueryRequest()
+    {
+        var args = new QueryBuilderRequestEventArgs();
+        LoadQueryRequest?.Invoke(this, args);
+        return args.Handled;
     }
 }

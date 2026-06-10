@@ -37,9 +37,10 @@
             this.txt_max_lvl = new Wisej.Web.TextBox();
             this.textBoxJson = new Wisej.Web.TextBox();
             this.textBoxSql = new Wisej.Web.TextBox();
+            this.button1 = new Wisej.Web.Button();
             this.queryBuilderControl1 = new Passero.Framework.Controls.QueryBuilderControl();
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
-            this.button1 = new Wisej.Web.Button();
+            this.button2 = new Wisej.Web.Button();
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bsJobs)).BeginInit();
             this.SuspendLayout();
@@ -124,6 +125,16 @@
             this.textBoxSql.Size = new System.Drawing.Size(256, 167);
             this.textBoxSql.TabIndex = 5;
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(923, 426);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 37);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Query ViewModel";
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // queryBuilderControl1
             // 
             this.queryBuilderControl1.Anchor = ((Wisej.Web.AnchorStyles)(((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left) 
@@ -133,6 +144,8 @@
             this.queryBuilderControl1.Size = new System.Drawing.Size(758, 339);
             this.queryBuilderControl1.TabIndex = 3;
             this.queryBuilderControl1.RulesChanged += new System.EventHandler<Passero.Framework.Controls.QueryBuilderChangedEventArgs>(this.queryBuilderControl1_RulesChanged);
+            this.queryBuilderControl1.SaveQueryRequest += new System.EventHandler<Passero.Framework.Controls.QueryBuilderRequestEventArgs>(this.queryBuilderControl1_SaveQueryRequest);
+            this.queryBuilderControl1.LoadQueryRequest += new System.EventHandler<Passero.Framework.Controls.QueryBuilderRequestEventArgs>(this.queryBuilderControl1_LoadQueryRequest);
             // 
             // dataNavigator1
             // 
@@ -144,20 +157,22 @@
             this.dataNavigator1.TabIndex = 1;
             this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
             // 
-            // button1
+            // button2
             // 
-            this.button1.Location = new System.Drawing.Point(767, 336);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 37);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "button1";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button2.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(923, 383);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(100, 37);
+            this.button2.TabIndex = 7;
+            this.button2.Text = "Clear Rules";
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // frmJobs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1044, 542);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBoxSql);
             this.Controls.Add(this.textBoxJson);
@@ -188,5 +203,6 @@
         private Wisej.Web.TextBox textBoxJson;
         private Wisej.Web.TextBox textBoxSql;
         private Wisej.Web.Button button1;
+        private Wisej.Web.Button button2;
     }
 }

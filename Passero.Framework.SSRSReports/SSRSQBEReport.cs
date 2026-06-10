@@ -930,6 +930,7 @@ namespace Passero.Framework.SSRSReports
             this.txtRenderError.Left = 0;
             this.txtRenderError.Width = this.PanelReportViewer.Width;
             this.txtRenderError.Height = this.PdfViewer.Height;
+            this.PanelReportInfo.Width = this.PanelReportViewer.Width;
         }
         private void PanelReportViewer_Resize(object sender, EventArgs e)
         {

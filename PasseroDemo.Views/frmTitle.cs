@@ -460,14 +460,12 @@ namespace PasseroDemo.Views
         private void ReleaseResources()
         {
             this.dgv_TitleAuthors.DataSource = null;
-            this.bsTitles.DataSource = null;
-
+            //this.bsTitles.DataSource = null;
+            this.bsTitles.Dispose();
             this._dbContext?.Dispose();
             this._dbContext = null;
 
-            this.DbConnection?.Close();
-            this.DbConnection?.Dispose();
-            this.DbConnection = null;
+          
 
           
         }

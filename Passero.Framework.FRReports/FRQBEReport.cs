@@ -910,7 +910,7 @@ namespace Passero.Framework.FRReports
             this.txtRenderError.Left = 0;
             this.txtRenderError.Width = this.PanelReportViewer.Width;
             this.txtRenderError .Height =this.PdfViewer .Height;
-
+            this.PanelReportInfo.Width = this.PanelReportViewer.Width;
 
         }
 

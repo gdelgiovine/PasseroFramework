@@ -19,6 +19,9 @@ namespace Passero.Framework
             ExecutionResult ER = new ExecutionResult(ERContenxt);
             ER = Repository.ReloadItems();
             ER.Context = ERContenxt;
+            //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "UpdateRecordLabel");
+            mDataNavigator.UpdateRecordLabel();
+
             return ER;
         }
 
@@ -41,23 +44,8 @@ namespace Passero.Framework
 
             Repository.ModelItem = ER.Value;
 
-            //switch (UseModelData)
-            //{
-            //    case UseModelData.External:
-            //        mModelItemShadow = ER.Value;
-            //        break;
-            //    case UseModelData.InternalRepository:
-            //        Repository.ModelItem = ER.Value;
-            //        break;
-            //    default:
-            //        break;
-            //}
+           
             ModelItem = ER.Value;
-            //if (ModelItem == null)
-            //{
-            //    ER.ResultCode = ExecutionResultCodes.Failed;
-            //    ER.ResultMessage = $"No data for query\n{Framework .DapperHelper .Utilities .ResolveSQL (SqlQuery,(DynamicParameters)Parameters)}";
-            //}
             DataNavigatorRaiseEventBoundCompleted();
             if (!ER.Success)
             {

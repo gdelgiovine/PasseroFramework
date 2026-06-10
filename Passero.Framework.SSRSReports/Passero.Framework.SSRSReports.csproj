@@ -26,7 +26,7 @@
 		<RepositoryUrl>$(Solution_RepositoryUrl)</RepositoryUrl>
 		<RepositoryType>$(Solution_RepositoryType)</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>$(Solution_PackageId).SRReports</PackageId>
+		<PackageId>$(Solution_PackageId).SSRSReports</PackageId>
 		<Description>SSRS Reports support library for Passero.Framework</Description>
 		<PackageTags>$(Solution_PackageTags)</PackageTags>
 		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
