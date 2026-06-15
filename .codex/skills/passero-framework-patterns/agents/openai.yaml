@@ -1,0 +1,4 @@
+interface:
+  display_name: "Passero Framework Patterns"
+  short_description: "Pattern canonici per PasseroDemo"
+  default_prompt: "Use $passero-framework-patterns to implement or review Passero Framework code following the canonical PasseroDemo patterns."
