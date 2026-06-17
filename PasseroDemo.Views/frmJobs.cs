@@ -65,7 +65,7 @@ namespace PasseroDemo.Views
             queryBuilderControl1.QBEColumns.Add(nameof(Models.Job.job_desc ), "Description", "", "", true, true, 20);
             //queryBuilderControl1.EnsureQueryBuilder();
 
-            queryBuilderControl1.LoadColumnsFromQBE();
+            queryBuilderControl1.LoadColumnsAndRulesFromQBE();
             //queryBuilderControl1.SetColumns(CreateDemoColumns());
             //queryBuilderControl1.LoadRules(CreateInitialRules());
 
@@ -84,42 +84,42 @@ namespace PasseroDemo.Views
             {
                 Field = "CustomerName",
                 Label = "Cliente",
-                Type = QueryBuilderFieldType.String ,
+                Type = QueryGridFieldType.String ,
                 SqlFieldName = "Customers.CustomerName"
             },
             new QueryBuilderColumn
             {
                 Field = "City",
                 Label = "Città",
-                Type = QueryBuilderFieldType.String,
+                Type = QueryGridFieldType.String,
                 SqlFieldName = "Customers.City"
             },
             new QueryBuilderColumn
             {
                 Field = "Amount",
                 Label = "Importo",
-                Type = QueryBuilderFieldType.Number,
+                Type = QueryGridFieldType.Number,
                 SqlFieldName = "Orders.Amount"
             },
             new QueryBuilderColumn
             {
                 Field = "OrderDate",
                 Label = "Data ordine",
-                Type = QueryBuilderFieldType.Date,
+                Type = QueryGridFieldType.Date,
                 SqlFieldName = "Orders.OrderDate"
             },
             new QueryBuilderColumn
             {
                 Field = "IsActive",
                 Label = "Attivo",
-                Type = QueryBuilderFieldType.Boolean,
+                Type = QueryGridFieldType.Boolean,
                 SqlFieldName = "Customers.IsActive"
             },
             new QueryBuilderColumn
             {
                 Field = "CustomerType",
                 Label = "Tipo cliente",
-                Type = QueryBuilderFieldType.Enum,
+                Type = QueryGridFieldType.Enum,
                 SqlFieldName = "Customers.CustomerType",
                 Values =
                 {

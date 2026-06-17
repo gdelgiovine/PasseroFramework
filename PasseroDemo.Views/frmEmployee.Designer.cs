@@ -32,16 +32,16 @@
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             this.flowLayoutPanel1 = new Wisej.Web.FlowLayoutPanel();
             this.txt_emp_id = new Wisej.Web.TextBox();
+            this.bsEmployee = new Wisej.Web.BindingSource(this.components);
             this.txt_fname = new Wisej.Web.TextBox();
             this.txt_minit = new Wisej.Web.TextBox();
             this.txt_lname = new Wisej.Web.TextBox();
+            this.txt_phone = new Wisej.Web.TextBox();
+            this.txt_email = new Wisej.Web.TextBox();
+            this.dtp_hire_date = new Wisej.Web.DateTimePicker();
             this.cmb_job_id = new Wisej.Web.ComboBox();
             this.txt_job_lvl = new Wisej.Web.TextBox();
             this.cmb_pub_id = new Wisej.Web.ComboBox();
-            this.dtp_hire_date = new Wisej.Web.DateTimePicker();
-            this.txt_phone = new Wisej.Web.TextBox();
-            this.txt_email = new Wisej.Web.TextBox();
-            this.bsEmployee = new Wisej.Web.BindingSource(this.components);
             this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bsEmployee)).BeginInit();
             this.SuspendLayout();
@@ -100,6 +100,10 @@
             this.txt_emp_id.Size = new System.Drawing.Size(90, 48);
             this.txt_emp_id.TabIndex = 10;
             // 
+            // bsEmployee
+            // 
+            this.bsEmployee.DataSource = typeof(PasseroDemo.Models.Employee);
+            // 
             // txt_fname
             // 
             this.txt_fname.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsEmployee, "fname", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
@@ -136,6 +140,47 @@
             this.txt_lname.Name = "txt_lname";
             this.txt_lname.Size = new System.Drawing.Size(226, 48);
             this.txt_lname.TabIndex = 13;
+            // 
+            // txt_phone
+            // 
+            this.txt_phone.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsEmployee, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.txt_phone.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txt_phone.Label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.txt_phone.LabelText = "Phone";
+            this.txt_phone.Location = new System.Drawing.Point(5, 57);
+            this.txt_phone.Margin = new Wisej.Web.Padding(2);
+            this.txt_phone.Name = "txt_phone";
+            this.txt_phone.Size = new System.Drawing.Size(154, 48);
+            this.txt_phone.TabIndex = 18;
+            // 
+            // txt_email
+            // 
+            this.txt_email.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsEmployee, "email", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.txt_email.InputType.Mode = Wisej.Web.TextBoxMode.Email;
+            this.txt_email.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txt_email.Label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.txt_email.LabelText = "Email";
+            this.txt_email.Location = new System.Drawing.Point(163, 57);
+            this.txt_email.Margin = new Wisej.Web.Padding(2);
+            this.txt_email.Name = "txt_email";
+            this.txt_email.Size = new System.Drawing.Size(254, 48);
+            this.txt_email.TabIndex = 19;
+            // 
+            // dtp_hire_date
+            // 
+            this.dtp_hire_date.DataBindings.Add(new Wisej.Web.Binding("Value", this.bsEmployee, "hire_date", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
+            this.flowLayoutPanel1.SetFlowBreak(this.dtp_hire_date, true);
+            this.dtp_hire_date.Format = Wisej.Web.DateTimePickerFormat.Short;
+            this.dtp_hire_date.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.dtp_hire_date.LabelText = "Hire date";
+            this.dtp_hire_date.Location = new System.Drawing.Point(421, 57);
+            this.dtp_hire_date.Margin = new Wisej.Web.Padding(2);
+            this.dtp_hire_date.MaxDate = new System.DateTime(2090, 12, 31, 0, 0, 0, 0);
+            this.dtp_hire_date.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            this.dtp_hire_date.Name = "dtp_hire_date";
+            this.dtp_hire_date.Size = new System.Drawing.Size(118, 48);
+            this.dtp_hire_date.TabIndex = 17;
+            this.dtp_hire_date.Value = new System.DateTime(((long)(0)));
             // 
             // cmb_job_id
             // 
@@ -179,54 +224,9 @@
             this.cmb_pub_id.Size = new System.Drawing.Size(222, 48);
             this.cmb_pub_id.TabIndex = 16;
             // 
-            // dtp_hire_date
-            // 
-            this.dtp_hire_date.DataBindings.Add(new Wisej.Web.Binding("Value", this.bsEmployee, "hire_date", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.flowLayoutPanel1.SetFlowBreak(this.dtp_hire_date, true);
-            this.dtp_hire_date.Format = Wisej.Web.DateTimePickerFormat.Short;
-            this.dtp_hire_date.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.dtp_hire_date.LabelText = "Hire date";
-            this.dtp_hire_date.Location = new System.Drawing.Point(421, 57);
-            this.dtp_hire_date.Margin = new Wisej.Web.Padding(2);
-            this.dtp_hire_date.MaxDate = new System.DateTime(2090, 12, 31, 0, 0, 0, 0);
-            this.dtp_hire_date.MinDate = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
-            this.dtp_hire_date.Name = "dtp_hire_date";
-            this.dtp_hire_date.Size = new System.Drawing.Size(118, 48);
-            this.dtp_hire_date.TabIndex = 17;
-            this.dtp_hire_date.Value = new System.DateTime(((long)(0)));
-            // 
-            // txt_phone
-            // 
-            this.txt_phone.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsEmployee, "phone", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.txt_phone.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txt_phone.Label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.txt_phone.LabelText = "Phone";
-            this.txt_phone.Location = new System.Drawing.Point(5, 57);
-            this.txt_phone.Margin = new Wisej.Web.Padding(2);
-            this.txt_phone.Name = "txt_phone";
-            this.txt_phone.Size = new System.Drawing.Size(154, 48);
-            this.txt_phone.TabIndex = 18;
-            // 
-            // txt_email
-            // 
-            this.txt_email.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsEmployee, "email", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.txt_email.InputType.Mode = Wisej.Web.TextBoxMode.Email;
-            this.txt_email.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txt_email.Label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.txt_email.LabelText = "Email";
-            this.txt_email.Location = new System.Drawing.Point(163, 57);
-            this.txt_email.Margin = new Wisej.Web.Padding(2);
-            this.txt_email.Name = "txt_email";
-            this.txt_email.Size = new System.Drawing.Size(254, 48);
-            this.txt_email.TabIndex = 19;
-            // 
-            // bsEmployee
-            // 
-            this.bsEmployee.DataSource = typeof(PasseroDemo.Models.Employee);
-            // 
             // frmEmployee
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(753, 481);
             this.Controls.Add(this.flowLayoutPanel1);

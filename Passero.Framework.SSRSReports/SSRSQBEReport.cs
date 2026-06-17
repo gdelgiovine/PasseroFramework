@@ -5,6 +5,7 @@ using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,39 @@ namespace Passero.Framework.SSRSReports
 
     public partial class ReportManager : Form
     {
+
+
+        /// <summary>
+        /// Shows or hides the Save/Load buttons for QBE queries.   
+        /// </summary>
+        public bool ShowSaveLoadButtons
+        {
+            get
+            {
+                return bSaveQBE.Visible && bLoadQBE.Visible;
+            }
+            set
+            {
+                bSaveQBE.Visible = value;
+                bLoadQBE.Visible = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the QueryGridQuerySave call back action.
+        /// </summary>
+        /// <value>
+        /// The call back action.
+        /// </value>
+        public Action<string> QueryGridQuerySaveCallBackAction { get; set; }
+        /// <summary>
+        /// Gets or sets the QueryGridQueryLoad call back action.
+        /// </summary>
+        /// <value>
+        /// The call back action.
+        /// </value>
+        public Action QueryGridQueryLoadCallBackAction { get; set; }
+
         private string RenderError_NoReport = "No Report!";
         private string RenderError_NoDataSets = "No Report DataSets!";
         private string RenderError = "";
@@ -522,7 +556,7 @@ namespace Passero.Framework.SSRSReports
         }
 
 
-        private void BuildQuery3()
+        private void BuildQuery3_OLD()
         {
             if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
                 return;
@@ -538,10 +572,6 @@ namespace Passero.Framework.SSRSReports
             StringBuilder sqlwhere = new StringBuilder();
             this.QueryGrid.EndEdit();
             DynamicParameters parameters = new DynamicParameters();
-
-            //if (PrimaryDataSet.SQLQuery == null || PrimaryDataSet.SQLQuery.Trim() == "")
-            {
-
 
                 
                 string _WhereAND = "";
@@ -633,15 +663,6 @@ namespace Passero.Framework.SSRSReports
  
                  
                 this.SQLQuery += " " + Report.OrderBy();
-                
-                //PrimaryDataSet.Parameters = parameters;
-                //PrimaryDataSet.SQLQuery = SQLQuery;
-            }
-            //else
-            //{
-            //    SQLQuery = PrimaryDataSet.SQLQuery;
-            //    SQLQueryParameters = PrimaryDataSet.Parameters;
-            //}
 
             Report.SelectedSortColumns.Clear();
             foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
@@ -675,7 +696,149 @@ namespace Passero.Framework.SSRSReports
            
         }
 
-        
+
+        private void BuildQuery3()
+        {
+            if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
+                return;
+
+            QBESSRSReport Report = this.QBEReports[this.CurrentReportName];
+
+            Passero.Framework.SSRSReports.ReportDataSet PrimaryDataSet = Report.PrimaryDataSet;
+            if (PrimaryDataSet == null)
+            {
+                PrimaryDataSet = Report.DataSets.Values.First();
+            }
+
+            StringBuilder sqlWhere = new StringBuilder();
+            this.QueryGrid.EndEdit();
+            DynamicParameters parameters = new DynamicParameters();
+
+            foreach (DataGridViewRow row in this.QueryGrid.Rows)
+            {
+                string value = null;
+                object cellValue = row?.Cells?[1]?.Value;
+
+                // Gestisci i diversi tipi di celle
+                if (cellValue == null || cellValue.Equals(""))
+                {
+                    // Valore nullo o stringa vuota (indeterminato) - salta il filtro
+                    continue;
+                }
+                else if (cellValue is bool boolValue)
+                {
+                    // Converti bool a "true" o "false"
+                    value = boolValue ? "true" : "false";
+                }
+                else if (cellValue is int intValue)
+                {
+                    // Converti int (da checkbox 0/1) a stringa
+                    value = intValue.ToString();
+                }
+                else
+                {
+                    // Per altri tipi, converti a stringa
+                    value = cellValue.ToString();
+                }
+
+                // Salta se il valore è vuoto
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                string columnName = row.Tag?.ToString();
+                if (string.IsNullOrWhiteSpace(columnName))
+                    continue;
+
+                if (!PrimaryDataSet.ModelProperties.ContainsKey(columnName))
+                    continue;
+
+                Type propertyType = PrimaryDataSet.ModelProperties[columnName].PropertyType;
+                bool isCodeColumn = CodeColumns.Contains(columnName);
+
+                var build = Framework.Controls.NavFilterSqlEngine.BuildColumnPredicate(
+                    columnName: columnName,
+                    propertyType: propertyType,
+                    filterText: value.Trim(),
+                    isCodeColumn: isCodeColumn,
+                    parameterPrefix: $"f_{columnName}_{row.Index}",
+                    parameters: parameters,
+                    options: new Passero.Framework.Controls.NavFilterSqlOptions
+                    {
+                        Culture = FilterCulture,
+                        CaseInsensitiveText = FilterCaseInsensitiveText,
+                        AllowRelativeDateTokens = EnableRelativeDateTokens,
+                        AllowTextRelationalOperators = AllowTextRelationalOperators,
+                        UseLikeOperator = UseLikeOperator
+                    });
+
+                if (build.Errors.Count > 0)
+                {
+                    Passero.Framework.Controls.NavFilterError first = build.Errors[0];
+                    string technical = $"{first.Code}: {first.TechnicalMessage}";
+                    string user = first.UserMessage;
+                    MessageBox.Show($"{user}\n{technical}", "Filtro non valido",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    throw new InvalidOperationException(technical);
+                }
+
+                if (!string.IsNullOrWhiteSpace(build.Sql))
+                {
+                    if (sqlWhere.Length > 0)
+                        sqlWhere.Append(" AND ");
+
+                    sqlWhere.Append("(");
+                    sqlWhere.Append(build.Sql);
+                    sqlWhere.Append(")");
+                }
+            }
+
+            Report.SelectedSortColumns.Clear();
+            foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
+            {
+                QBEReportSortColumn column = new QBEReportSortColumn();
+                column.Name = (string)row[this.dgvc_SelectedSortColumns_name].Value;
+                column.Position = (int)row[this.dgvc_SelectedSortColumns_position].Value;
+                column.FriendlyName = (string)row[this.dgvc_SelectedSortColumns_friendlyname].Value;
+                column.AscDesc = (string)row[this.dgvc_SelectedSortColumns_ascdesc].Value;
+                Report.SelectedSortColumns.Add(column.Name, column);
+            }
+
+            if (PrimaryDataSet.SQLQuery == null || PrimaryDataSet.SQLQuery.Trim() == "")
+            {
+                this.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(PrimaryDataSet.Model)}";
+                if (sqlWhere.ToString().Trim() != "")
+                    this.SQLQuery = this.SQLQuery + $" WHERE {sqlWhere.ToString()}";
+                this.SQLQueryParameters = parameters;
+            }
+            else
+            {
+                this.SQLQuery = $"SELECT * FROM ({PrimaryDataSet.SQLQuery}) AS X";
+                if (sqlWhere.ToString().Trim() != "")
+                    this.SQLQuery = this.SQLQuery + $" WHERE {sqlWhere.ToString()}";
+                parameters.AddDynamicParams(PrimaryDataSet.Parameters);
+
+                this.SQLQueryParameters = parameters;
+            }
+
+            this.SQLQuery += " " + Report.OrderBy();
+
+            PrimaryDataSet.LoadData(SQLQuery, SQLQueryParameters);
+
+            //Load Data for other datasets
+            foreach (Passero.Framework.SSRSReports.ReportDataSet DataSet in Report.DataSets.Values)
+            {
+                if (DataSet != PrimaryDataSet)
+                {
+                    if (DataSet.SQLQuery == null || DataSet.SQLQuery.Trim() == "")
+                    {
+                        DataSet.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(DataSet.Model)}";
+                    }
+                    DataSet.LoadData(DataSet.SQLQuery, DataSet.Parameters);
+                }
+            }
+        }
+
+
 
         private string GetComparisionOperator(string Value)
         {
@@ -756,9 +919,47 @@ namespace Passero.Framework.SSRSReports
         }
         private void bSave_Click(object sender, EventArgs e)
         {
+           
+        }
+
+        private void bSaveQBE_Click(object sender, EventArgs e)
+        {
+            string jsonData = QueryGridToJson();
+
+            if (QueryGridQuerySaveCallBackAction != null)
+            {
+                QueryGridQuerySaveCallBackAction?.Invoke(jsonData);
+            }
+            else
+            {
+                var saveEventArgs = new QueryGridSaveEventArgs { QueryGridJson = jsonData };
+                OnQueryGridSaving(saveEventArgs);
+
+                if (!saveEventArgs.Cancel)
+                {
+
+                }
+            }
 
         }
 
+        private void bLoadQBE_Click(object sender, EventArgs e)
+        {
+            if (QueryGridQueryLoadCallBackAction != null)
+            {
+                QueryGridQueryLoadCallBackAction?.Invoke();
+            }
+            else
+            {
+                var loadEventArgs = new QueryGridLoadEventArgs();
+                OnQueryGridLoading(loadEventArgs);
+                if (!loadEventArgs.Cancel)
+                {
+                    // Esegui azioni predefinite se necessario
+                    //System.Diagnostics.Debug.WriteLine("Caricamento QueryGrid completato.");
+                }
+            }
+        }
 
 
 
@@ -978,6 +1179,190 @@ namespace Passero.Framework.SSRSReports
             this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
             this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
         }
+
+     
+
+
+        /// <summary>
+        /// Proprietà per le impostazioni di filtro.
+        /// </summary>
+        public System.Globalization.CultureInfo FilterCulture { get; set; } = System.Globalization.CultureInfo.CurrentCulture;
+        public bool EnableRelativeDateTokens { get; set; } = true;
+        public bool FilterCaseInsensitiveText { get; set; } = true;
+        public bool AllowTextRelationalOperators { get; set; } = false;
+        public int TopRows { get; set; } = 500;
+
+        /// <summary>
+        /// Colonne con codice (per filtri speciali).
+        /// </summary>
+        public System.Collections.Generic.ISet<string> CodeColumns { get; } = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+
+        /// <summary>
+        /// Legge le righe della QueryGrid e serializza i valori delle colonne 0 e 1 in un oggetto JSON.
+        /// </summary>
+        /// <returns>Stringa JSON contenente i dati della QueryGrid.</returns>
+        public string QueryGridToJson()
+        {
+            var rowDataList = new List<Dictionary<string, object>>();
+
+            foreach (DataGridViewRow row in QueryGrid.Rows)
+            {
+                if (row.IsNewRow)
+                    continue;
+
+                var rowData = new Dictionary<string, object>();
+
+                // Leggi il valore e il tag della colonna 0
+                object column0Value = row.Cells[0].Value;
+                object column0Tag = row.Cells[0].Tag;
+
+                // Leggi il valore e il tag della colonna 1
+                object column1Value = row.Cells[1].Value;
+                object column1Tag = row.Cells[1].Tag;
+
+                // Costruisci il dizionario per la riga
+                rowData["column0"] = new
+                {
+                    value = column0Value,
+                    tag = column0Tag
+                };
+
+                rowData["column1"] = new
+                {
+                    value = column1Value,
+                    tag = column1Tag
+                };
+
+                rowData["rowTag"] = row.Tag;
+
+                rowDataList.Add(rowData);
+            }
+
+            // Serializza in JSON usando Newtonsoft.Json (Nuget package già presente nel progetto)
+            string jsonResult = Newtonsoft.Json.JsonConvert.SerializeObject(rowDataList, Newtonsoft.Json.Formatting.Indented);
+
+            return jsonResult;
+        }
+
+        /// <summary>
+        /// Riconfigura la QueryGrid a partire da una stringa JSON.
+        /// </summary>
+        /// <param name="jsonData">Stringa JSON contenente i dati della QueryGrid.</param>
+        public void JsonToQueryGrid(string jsonData)
+        {
+            if (string.IsNullOrWhiteSpace(jsonData))
+                return;
+
+            try
+            {
+                var rowDataList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonData);
+
+                if (rowDataList == null || rowDataList.Count == 0)
+                    return;
+
+                // Itera su tutti i dati JSON
+                foreach (var rowData in rowDataList)
+                {
+                    // Estrai il rowTag per identificare la riga corretta
+                    string rowTag = rowData.ContainsKey("rowTag") ? rowData["rowTag"]?.ToString() : null;
+
+                    if (string.IsNullOrEmpty(rowTag))
+                        continue;
+
+                    // Trova la riga nella QueryGrid corrispondente al rowTag
+                    DataGridViewRow targetRow = null;
+                    foreach (DataGridViewRow row in QueryGrid.Rows)
+                    {
+                        if (row.Tag?.ToString() == rowTag)
+                        {
+                            targetRow = row;
+                            break;
+                        }
+                    }
+
+                    if (targetRow == null)
+                        continue;
+
+                    // Ripristina il valore della colonna 1 (il valore del filtro)
+                    if (rowData.ContainsKey("column1"))
+                    {
+                        var column1Data = rowData["column1"];
+
+                        if (column1Data is Newtonsoft.Json.Linq.JObject jObject)
+                        {
+                            object column1Value = jObject["value"];
+
+                            // Gestisci i diversi tipi di celle (TextBox vs CheckBox)
+                            if (targetRow.Cells[1] is DataGridViewCheckBoxCell checkBoxCell)
+                            {
+                                // Per le checkbox, converti il valore appropriatamente
+                                if (column1Value != null)
+                                {
+                                    if (column1Value is bool boolValue)
+                                    {
+                                        checkBoxCell.Value = boolValue ? 1 : 0;
+                                    }
+                                    else if (column1Value is int intValue)
+                                    {
+                                        checkBoxCell.Value = intValue;
+                                    }
+                                    else if (int.TryParse(column1Value.ToString(), out int parsedValue))
+                                    {
+                                        checkBoxCell.Value = parsedValue;
+                                    }
+                                    else
+                                    {
+                                        checkBoxCell.Value = checkBoxCell.IndeterminateValue;
+                                    }
+                                }
+                                else
+                                {
+                                    checkBoxCell.Value = checkBoxCell.IndeterminateValue;
+                                }
+                            }
+                            else
+                            {
+                                // Per le TextBox, assegna il valore direttamente
+                                targetRow.Cells[1].Value = column1Value;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error on JSON deserialization of QueryGrid: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Evento generato quando la QueryGrid viene salvata in JSON.
+        /// </summary>
+        public event EventHandler<QueryGridSaveEventArgs> QueryGridSaving;
+
+        /// <summary>
+        /// Evento generato quando la QueryGrid viene caricata da JSON.
+        /// </summary>
+        public event EventHandler<QueryGridLoadEventArgs> QueryGridLoading;
+
+        /// <summary>
+        /// Solleva l'evento QueryGridSaving.
+        /// </summary>
+        protected virtual void OnQueryGridSaving(QueryGridSaveEventArgs e)
+        {
+            QueryGridSaving?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Solleva l'evento QueryGridLoading.
+        /// </summary>
+        protected virtual void OnQueryGridLoading(QueryGridLoadEventArgs e)
+        {
+            QueryGridLoading?.Invoke(this, e);
+        }
+
     }
 }
   

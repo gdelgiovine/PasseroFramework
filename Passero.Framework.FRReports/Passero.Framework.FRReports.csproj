@@ -33,6 +33,11 @@
 		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
 	</PropertyGroup>
 
+
+	<ItemGroup>
+	  <Compile Include="..\Passero.Framework.Controls\QBEForm\NavFilterSqlEngine.cs" Link="NavFilterSqlEngine.cs" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>

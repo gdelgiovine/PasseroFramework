@@ -412,4 +412,16 @@ internal sealed partial class GroupEditor : UserControl
             return Text;
         }
     }
+
+    public void AddRuleToGroup(QueryBuilderRuleNode node)
+    {
+        if (_owner is null || node == null)
+        {
+            return;
+        }
+
+        var ruleEditor = new RuleEditor(_owner);
+        ruleEditor.LoadFromNode(node);
+        _childrenPanel.Controls.Add(ruleEditor);
+    }
 }

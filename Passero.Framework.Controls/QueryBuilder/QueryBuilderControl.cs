@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using Dapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -78,23 +79,7 @@ public partial class QueryBuilderControl : UserControl
     /// </summary>
     public object ViewModel => _viewModelInstance;
 
-
-    /// <summary>
-    /// Converte una <see cref="QBEColumns"/> in colonne del QueryBuilder e le applica
-    /// tramite <see cref="SetColumns"/>. Solo le colonne con <c>UseInQBE = true</c>
-    /// vengono incluse, ordinate per <c>OrdinalPosition</c>.
-    /// </summary>
-    /// <param name="qbeColumns">La collezione sorgente di colonne QBE.</param>
-    public void LoadColumnsFromQBE(QBEColumns qbeColumns = null)
-    {
-        if (qbeColumns == null)
-        {
-            qbeColumns = this.QBEColumns;
-        }   
-        SetColumns(ToQueryBuilderColumns(qbeColumns));
-    }
-
-
+       
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public BindingList<QueryBuilderColumn> Columns { get; }
 
@@ -638,7 +623,7 @@ public partial class QueryBuilderControl : UserControl
         string sqlField,
         string op,
         object? value,
-        QueryBuilderFieldType type,
+        QueryGridFieldType type,
         Dictionary<string, object?> parameters,
         ref int index,
         ISet<string> usedParameterNames)
@@ -663,7 +648,7 @@ public partial class QueryBuilderControl : UserControl
 
     private static string AddParameter(
         Dictionary<string, object?> parameters,
-        QueryBuilderFieldType type,
+        QueryGridFieldType type,
         object? value,
         ref int index,
         ISet<string> usedParameterNames)
@@ -681,19 +666,19 @@ public partial class QueryBuilderControl : UserControl
         return name;
     }
 
-    private static object? NormalizeJsonValue(object? value, QueryBuilderFieldType type)
+    private static object? NormalizeJsonValue(object? value, QueryGridFieldType type)
     {
         if (value is JToken token)
         {
             return type switch
             {
-                QueryBuilderFieldType.Number when token.Type == JTokenType.Integer || token.Type == JTokenType.Float
+                QueryGridFieldType.Number when token.Type == JTokenType.Integer || token.Type == JTokenType.Float
                     => token.Value<decimal?>(),
 
-                QueryBuilderFieldType.Boolean when token.Type == JTokenType.Boolean
+                QueryGridFieldType.Boolean when token.Type == JTokenType.Boolean
                     => token.Value<bool>(),
 
-                QueryBuilderFieldType.Date or QueryBuilderFieldType.DateTime
+                QueryGridFieldType.Date or QueryGridFieldType.DateTime
                     when token.Type == JTokenType.Date
                     => token.Value<System.DateTime?>(),
 
@@ -707,7 +692,7 @@ public partial class QueryBuilderControl : UserControl
         return value;
     }
 
-    internal static List<QueryBuilderOperator> GetDefaultOperators(QueryBuilderFieldType type)
+    internal static List<QueryBuilderOperator> GetDefaultOperators(QueryGridFieldType type)
     {
         Func<string, string> L = QueryBuilderLocalizer.GetOperatorText;
 
@@ -719,7 +704,7 @@ public partial class QueryBuilderControl : UserControl
             new QueryBuilderOperator { Key = "isnotnull", Text = L("op_isnotnull"), RequiresValue = false, ValueMode = OperatorValueMode.None }
         };
 
-        if (type == QueryBuilderFieldType.String)
+        if (type == QueryGridFieldType.String)
         {
             result.AddRange(new[]
             {
@@ -751,9 +736,9 @@ public partial class QueryBuilderControl : UserControl
             //}
         }
 
-        if (type == QueryBuilderFieldType.Number
-            || type == QueryBuilderFieldType.Date
-            || type == QueryBuilderFieldType.DateTime)
+        if (type == QueryGridFieldType.Number
+            || type == QueryGridFieldType.Date
+            || type == QueryGridFieldType.DateTime)
         {
             result.AddRange(new[]
             {
@@ -830,6 +815,15 @@ public partial class QueryBuilderControl : UserControl
     /// pronta per essere passata a <see cref="SetColumns"/>.
     /// Solo le colonne con <c>UseInQBE = true</c> vengono incluse, ordinate per <c>OrdinalPosition</c>.
     /// </summary>
+    /// 
+
+    /// <summary>
+    /// Converte una <see cref="QBEColumns"/> in una lista di <see cref="QueryBuilderColumn"/>
+    /// pronta per essere passata a <see cref="SetColumns"/>.
+    /// Solo le colonne con <c>UseInQBE = true</c> vengono incluse, ordinate per <c>OrdinalPosition</c>.
+    /// Se una colonna ha <see cref="QBEColumn.QBEValue"/> non null o vuoto, viene aggiunta una
+    /// condizione al gruppo di default.
+    /// </summary>
     public static IEnumerable<QueryBuilderColumn> ToQueryBuilderColumns(QBEColumns qbeColumns)
     {
         if (qbeColumns == null)
@@ -871,32 +865,170 @@ public partial class QueryBuilderControl : UserControl
         return result;
     }
 
-    private static QueryBuilderFieldType MapQBEColumnType(QBEColumn qbeCol)
+    /// <summary>
+    /// Carica le colonne da QBEColumns nel QueryBuilder e aggiunge automaticamente
+    /// condizioni al gruppo di default per le colonne che hanno un <see cref="QBEColumn.QBEValue"/>
+    /// non null o vuoto.
+    /// </summary>
+    /// <param name="qbeColumns">La collezione sorgente di colonne QBE. Se null, usa <see cref="QBEColumns"/>.</param>
+    /// 
+    /// <summary>
+    /// Carica le colonne da QBEColumns nel QueryBuilder e aggiunge automaticamente
+    /// condizioni al gruppo di default per le colonne che hanno un <see cref="QBEColumn.QBEValue"/>
+    /// non null o vuoto.
+    /// </summary>
+    /// <param name="qbeColumns">La collezione sorgente di colonne QBE. Se null, usa <see cref="QBEColumns"/>.</param>
+    public void LoadColumnsAndRulesFromQBE(QBEColumns qbeColumns = null)
+    {
+        if (qbeColumns == null)
+        {
+            qbeColumns = this.QBEColumns;
+        }
+
+        SetColumns(ToQueryBuilderColumns(qbeColumns));
+
+        // Aggiunge regole di default per le colonne con QBEValue non vuoto
+        if (_rootEditor != null)
+        {
+            foreach (var entry in qbeColumns)
+            {
+                var qbeCol = entry.Value;
+
+                if (!qbeCol.UseInQBE)
+                {
+                    continue;
+                }
+
+                var qbeValue = qbeCol.QBEValue?.ToString();
+                if (string.IsNullOrWhiteSpace(qbeValue))
+                {
+                    continue;
+                }
+
+                // Crea e aggiunge la regola al gruppo di default
+                var ruleNode = new QueryBuilderRuleNode
+                {
+                    Field = qbeCol.DbColumnName,
+                    Operator = "equal",
+                    Value = qbeValue
+                };
+
+                _rootEditor.AddRuleToGroup(ruleNode);
+            }
+
+            ResizeEditors();
+            RaiseRulesChanged();
+        }
+    }
+    public void LoadColumnsAndRulesFromQBE_OLD(QBEColumns qbeColumns = null)
+    {
+        if (qbeColumns == null)
+        {
+            qbeColumns = this.QBEColumns;
+        }
+
+        SetColumns(ToQueryBuilderColumns(qbeColumns));
+
+        // Aggiunge regole di default per le colonne con QBEValue non vuoto
+        if (_rootEditor != null)
+        {
+            foreach (var entry in qbeColumns)
+            {
+                var qbeCol = entry.Value;
+
+                if (!qbeCol.UseInQBE)
+                {
+                    continue;
+                }
+
+                var qbeValue = qbeCol.QBEValue?.ToString();
+                if (string.IsNullOrWhiteSpace(qbeValue))
+                {
+                    continue;
+                }
+
+                // Crea una regola per questa colonna nel gruppo di default
+                var rule = new QueryBuilderRuleNode
+                {
+                    Field = qbeCol.DbColumnName,
+                    Operator = "equal",
+                    Value = qbeValue
+                };
+
+                _rootEditor.AddRuleToGroup(rule);
+            }
+
+            NotifyChanged();
+        }
+    }
+
+    public static IEnumerable<QueryBuilderColumn> ToQueryBuilderColumns_OLD(QBEColumns qbeColumns)
+    {
+        if (qbeColumns == null)
+        {
+            return Enumerable.Empty<QueryBuilderColumn>();
+        }
+
+        var result = new List<QueryBuilderColumn>();
+
+        foreach (var entry in qbeColumns)
+        {
+            var qbeCol = entry.Value;
+
+            if (!qbeCol.UseInQBE)
+            {
+                continue;
+            }
+
+            result.Add(new QueryBuilderColumn
+            {
+                Field = qbeCol.DbColumnName,
+                Label = string.IsNullOrWhiteSpace(qbeCol.FriendlyName)
+                    ? qbeCol.DbColumnName
+                    : qbeCol.FriendlyName,
+                SqlFieldName = qbeCol.DbColumnName,
+                Type = MapQBEColumnType(qbeCol)
+            });
+        }
+
+        result.Sort((a, b) =>
+        {
+            var posA = qbeColumns.ContainsKey(a.Field.ToUpperInvariant())
+                ? qbeColumns[a.Field.ToUpperInvariant()].OrdinalPosition : 0;
+            var posB = qbeColumns.ContainsKey(b.Field.ToUpperInvariant())
+                ? qbeColumns[b.Field.ToUpperInvariant()].OrdinalPosition : 0;
+            return posA.CompareTo(posB);
+        });
+
+        return result;
+    }
+
+    private static QueryGridFieldType MapQBEColumnType(QBEColumn qbeCol)
     {
         switch (qbeCol.QBEColumnType)
         {
             case QBEColumnsTypes.CheckBox:
-                return QueryBuilderFieldType.Boolean;
+                return QueryGridFieldType.Boolean;
             case QBEColumnsTypes.DatePicker:
-                return QueryBuilderFieldType.Date;
+                return QueryGridFieldType.Date;
             case QBEColumnsTypes.DateTimePicker:
-                return QueryBuilderFieldType.DateTime;
+                return QueryGridFieldType.DateTime;
             case QBEColumnsTypes.ComboBox:
-                return QueryBuilderFieldType.Enum;
+                return QueryGridFieldType.Enum;
             default:
                 return qbeCol.QBEDbColumn != null
                     ? MapFromDbColumn(qbeCol.QBEDbColumn)
-                    : QueryBuilderFieldType.String;
+                    : QueryGridFieldType.String;
         }
     }
 
-    private static QueryBuilderFieldType MapFromDbColumn(QBEDbColumn dbColumn)
+    private static QueryGridFieldType MapFromDbColumn(QBEDbColumn dbColumn)
     {
-        if (dbColumn.IsBoolean)  return QueryBuilderFieldType.Boolean;
-        if (dbColumn.IsNumeric)  return QueryBuilderFieldType.Number;
-        if (dbColumn.IsDateTime) return QueryBuilderFieldType.DateTime;
-        if (dbColumn.IsDate)     return QueryBuilderFieldType.Date;
-        return QueryBuilderFieldType.String;
+        if (dbColumn.IsBoolean)  return QueryGridFieldType.Boolean;
+        if (dbColumn.IsNumeric)  return QueryGridFieldType.Number;
+        if (dbColumn.IsDateTime) return QueryGridFieldType.DateTime;
+        if (dbColumn.IsDate)     return QueryGridFieldType.Date;
+        return QueryGridFieldType.String;
     }
 
     private static void CopyDynamicParameters(
@@ -914,6 +1046,33 @@ public partial class QueryBuilderControl : UserControl
             destination.Add(parameterName, source.Get<object>(parameterName));
             usedParameterNames.Add(NormalizeParameterName(parameterName));
         }
+    }
+
+    /// <summary>
+    /// Converte un dizionario di oggetti in DynamicParameters di Dapper.
+    /// </summary>
+    /// <param name="dictionary">Il dizionario con i parametri.</param>
+    /// <returns>Un oggetto DynamicParameters contenente i valori del dizionario.</returns>
+    public static Dapper.DynamicParameters DictionaryToDynamicParameters(Dictionary<string, object?> dictionary)
+    {
+        if (dictionary == null)
+        {
+            return new Dapper.DynamicParameters();
+        }
+
+        var parameters = new Dapper.DynamicParameters();
+
+        foreach (var kvp in dictionary)
+        {
+            if (string.IsNullOrWhiteSpace(kvp.Key))
+            {
+                continue;
+            }
+
+            parameters.Add(kvp.Key, kvp.Value);
+        }
+
+        return parameters;
     }
 
     private static void CopyDynamicParametersToDictionary(
@@ -970,5 +1129,593 @@ public partial class QueryBuilderControl : UserControl
         var args = new QueryBuilderRequestEventArgs();
         LoadQueryRequest?.Invoke(this, args);
         return args.Handled;
+    }
+
+    /// <summary>
+    /// Estrae la clausola WHERE da <see cref="SQLQuery"/>, la parsea usando <see cref="SQLQueryParameters"/>,
+    /// e carica il risultato come query corrente nel QueryBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Questo metodo è utile per ricaricare una query precedentemente salvata.
+    /// Se l'estrazione o il parsing della WHERE fallisce, il QueryBuilder viene svuotato.
+    /// Se <see cref="Columns"/> è vuoto, prova a caricare le colonne da <see cref="QBEColumns"/>.
+    /// </remarks>
+    public void LoadQueryFromSql(string SQLQuery, Dapper.DynamicParameters Parameters)
+    {
+        if (string.IsNullOrWhiteSpace(SQLQuery))
+        {
+            ClearRules();
+            return;
+        }
+
+        // Se le colonne del QueryBuilder sono vuote, carica da QBEColumns
+        if (Columns.Count == 0 && QBEColumns.Count > 0)
+        {
+            LoadColumnsAndRulesFromQBE(QBEColumns);
+        }
+
+        var whereClause = ExtractWhereClause(SQLQuery);
+
+        if (string.IsNullOrWhiteSpace(whereClause))
+        {
+            ClearRules();
+            return;
+        }
+        this.SQLQuery = SQLQuery;
+        this.Parameters = Parameters;
+
+        var ruleSet = ParseSqlToRuleSet(whereClause, Parameters);
+        LoadRules(ruleSet);
+        
+    }
+
+    /// <summary>
+    /// Estrae la clausola WHERE da una query SQL completa.
+    /// </summary>
+    /// <param name="sqlQuery">La query SQL completa.</param>
+    /// <returns>La clausola WHERE senza il prefisso WHERE, oppure una stringa vuota se non trovata.</returns>
+    private string ExtractWhereClause(string sqlQuery)
+    {
+        if (string.IsNullOrWhiteSpace(sqlQuery))
+        {
+            return string.Empty;
+        }
+
+        var upperQuery = sqlQuery.ToUpperInvariant();
+        var whereIndex = upperQuery.IndexOf(" WHERE ");
+
+        if (whereIndex < 0)
+        {
+            return string.Empty;
+        }
+
+        var whereClause = sqlQuery.Substring(whereIndex + 7).Trim();
+
+        // Rimuovi eventuali clausole ORDER BY, GROUP BY, HAVING, etc. che potrebbero seguire
+        var orderByIndex = whereClause.ToUpperInvariant().IndexOf(" ORDER BY ");
+        if (orderByIndex >= 0)
+        {
+            whereClause = whereClause.Substring(0, orderByIndex).Trim();
+        }
+
+        var groupByIndex = whereClause.ToUpperInvariant().IndexOf(" GROUP BY ");
+        if (groupByIndex >= 0)
+        {
+            whereClause = whereClause.Substring(0, groupByIndex).Trim();
+        }
+
+        var havingIndex = whereClause.ToUpperInvariant().IndexOf(" HAVING ");
+        if (havingIndex >= 0)
+        {
+            whereClause = whereClause.Substring(0, havingIndex).Trim();
+        }
+
+        return whereClause;
+    }
+
+    /// <summary>
+    /// Ricostruisce un <see cref="QueryBuilderRuleSet"/> partendo da una clausola WHERE SQL e dai parametri.
+    /// Tenta di parsare l'SQL e associare i parametri alle condizioni per rigenerare la struttura
+    /// delle regole del QueryBuilder.
+    /// </summary>
+    /// <param name="whereClause">La clausola WHERE SQL (senza il prefisso WHERE).</param>
+    /// <param name="parameters">I parametri Dapper associati alla query.</param>
+    /// <returns>Un <see cref="QueryBuilderRuleSet"/> ricostruito, oppure un set vuoto se il parsing fallisce.</returns>
+    public QueryBuilderRuleSet ParseSqlToRuleSet(string whereClause, Dapper.DynamicParameters parameters)
+    {
+        if (string.IsNullOrWhiteSpace(whereClause) || parameters == null)
+        {
+            return new QueryBuilderRuleSet();
+        }
+
+        try
+        {
+            var ruleSet = new QueryBuilderRuleSet();
+            ruleSet.Rules = ParseSqlExpression(whereClause.Trim(), parameters);
+            return ruleSet;
+        }
+        catch
+        {
+            // Se il parsing fallisce, restituisci un set vuoto
+            return new QueryBuilderRuleSet();
+        }
+    }
+
+    private List<QueryBuilderRuleNode> ParseSqlExpression(string expression, Dapper.DynamicParameters parameters)
+    {
+        var rules = new List<QueryBuilderRuleNode>();
+
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            return rules;
+        }
+
+        expression = expression.Trim();
+
+        // Rimuovi parentesi esterne bilanciate
+        while (expression.StartsWith("(") && expression.EndsWith(")"))
+        {
+            var innerContent = expression.Substring(1, expression.Length - 2).Trim();
+            if (!IsBalancedParenthesis(innerContent))
+            {
+                break;
+            }
+            expression = innerContent;
+        }
+
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            return rules;
+        }
+
+        // Dividi per AND/OR al livello di profondità 0
+        var parts = SplitByTopLevelSeparator(expression);
+
+        if (parts.Count == 0)
+        {
+            return rules;
+        }
+
+        // Tutte le parti vengono parsate come singole regole
+        foreach (var part in parts)
+        {
+            var trimmedPart = part.Trim();
+
+            if (string.IsNullOrWhiteSpace(trimmedPart))
+            {
+                continue;
+            }
+
+            // Rimuovi parentesi anche dalle singole parti
+            while (trimmedPart.StartsWith("(") && trimmedPart.EndsWith(")"))
+            {
+                var innerContent = trimmedPart.Substring(1, trimmedPart.Length - 2).Trim();
+                if (!IsBalancedParenthesis(innerContent))
+                {
+                    break;
+                }
+                trimmedPart = innerContent;
+            }
+
+            // Prova a parsare come singola regola
+            var rule = ParseSqlRule(trimmedPart, parameters);
+            if (rule != null)
+            {
+                rules.Add(rule);
+            }
+            else if (trimmedPart.ToUpperInvariant().Contains(" AND ") || 
+                     trimmedPart.ToUpperInvariant().Contains(" OR "))
+            {
+                // Se contiene ancora AND/OR, ricorsione
+                var nestedRules = ParseSqlExpression(trimmedPart, parameters);
+                rules.AddRange(nestedRules);
+            }
+        }
+
+        return rules;
+    }
+
+    private QueryBuilderRuleNode? ParseSqlRule(string ruleSql, Dapper.DynamicParameters parameters)
+    {
+        if (string.IsNullOrWhiteSpace(ruleSql))
+        {
+            return null;
+        }
+
+        ruleSql = ruleSql.Trim();
+
+        // Rimuovi parentesi esterne bilanciate
+        while (ruleSql.StartsWith("(") && ruleSql.EndsWith(")"))
+        {
+            var innerContent = ruleSql.Substring(1, ruleSql.Length - 2).Trim();
+            if (!IsBalancedParenthesis(innerContent))
+            {
+                break;
+            }
+            ruleSql = innerContent;
+        }
+
+        if (string.IsNullOrWhiteSpace(ruleSql))
+        {
+            return null;
+        }
+
+        var ruleSql_Upper = ruleSql.ToUpperInvariant();
+
+        // Gestisci IS NULL / IS NOT NULL
+        if (ruleSql_Upper.EndsWith(" IS NULL"))
+        {
+            var fieldName = ruleSql.Substring(0, ruleSql.Length - 8).Trim();
+            var column = FindColumnByName(fieldName);
+            if (column != null)
+            {
+                return new QueryBuilderRuleNode
+                {
+                    Field = column.Field,
+                    Label = column.Label,
+                    Type = column.Type.ToString().ToLowerInvariant(),
+                    Operator = "isnull",
+                    Value = null
+                };
+            }
+        }
+
+        if (ruleSql_Upper.EndsWith(" IS NOT NULL"))
+        {
+            var fieldName = ruleSql.Substring(0, ruleSql.Length - 12).Trim();
+            var column = FindColumnByName(fieldName);
+            if (column != null)
+            {
+                return new QueryBuilderRuleNode
+                {
+                    Field = column.Field,
+                    Label = column.Label,
+                    Type = column.Type.ToString().ToLowerInvariant(),
+                    Operator = "isnotnull",
+                    Value = null
+                };
+            }
+        }
+
+        // Gestisci LIKE (incluso UPPER/LOWER wrap)
+        if (ruleSql_Upper.Contains(" LIKE "))
+        {
+            var likeIdx = ruleSql_Upper.IndexOf(" LIKE ");
+            var fieldPart = ruleSql.Substring(0, likeIdx).Trim();
+            var paramPart = ruleSql.Substring(likeIdx + 6).Trim();
+
+            // Estrai il nome del campo anche se è wrapped in UPPER() o LOWER()
+            var fieldName = ExtractFieldName(fieldPart);
+            var paramName = ExtractParameterName(paramPart);
+
+            var column = FindColumnByName(fieldName);
+
+            if (column != null && !string.IsNullOrWhiteSpace(paramName) && 
+                parameters.ParameterNames.Contains(paramName.TrimStart('@')))
+            {
+                var paramValue = parameters.Get<object>(paramName.TrimStart('@'))?.ToString() ?? "";
+                var op = "contains";
+
+                if (paramValue.StartsWith("%") && paramValue.EndsWith("%"))
+                {
+                    op = "contains";
+                    paramValue = paramValue.Substring(1, paramValue.Length - 2);
+                }
+                else if (paramValue.StartsWith("%"))
+                {
+                    op = "endswith";
+                    paramValue = paramValue.Substring(1);
+                }
+                else if (paramValue.EndsWith("%"))
+                {
+                    op = "startswith";
+                    paramValue = paramValue.Substring(0, paramValue.Length - 1);
+                }
+
+                return new QueryBuilderRuleNode
+                {
+                    Field = column.Field,
+                    Label = column.Label,
+                    Type = column.Type.ToString().ToLowerInvariant(),
+                    Operator = op,
+                    Value = paramValue
+                };
+            }
+        }
+
+        // Gestisci IN e NOT IN
+        if (ruleSql_Upper.Contains(" IN (") || ruleSql_Upper.Contains(" NOT IN ("))
+        {
+            var isIn = ruleSql_Upper.Contains(" IN (");
+            var keyword = isIn ? " IN (" : " NOT IN (";
+            var inIdx = ruleSql_Upper.IndexOf(keyword);
+
+            if (inIdx >= 0)
+            {
+                var closeParenIdx = ruleSql.IndexOf(')', inIdx);
+
+                if (closeParenIdx > inIdx)
+                {
+                    var fieldName = ruleSql.Substring(0, inIdx).Trim();
+                    var inParamsPart = ruleSql.Substring(inIdx + keyword.Length, closeParenIdx - inIdx - keyword.Length);
+                    var column = FindColumnByName(fieldName);
+
+                    if (column != null)
+                    {
+                        var paramNames = inParamsPart.Split(',');
+                        var values = new List<object?>();
+
+                        foreach (var paramName in paramNames)
+                        {
+                            var cleanName = paramName.Trim().TrimStart('@');
+                            if (!string.IsNullOrWhiteSpace(cleanName) && parameters.ParameterNames.Contains(cleanName))
+                            {
+                                values.Add(parameters.Get<object>(cleanName));
+                            }
+                        }
+
+                        if (values.Count > 0)
+                        {
+                            return new QueryBuilderRuleNode
+                            {
+                                Field = column.Field,
+                                Label = column.Label,
+                                Type = column.Type.ToString().ToLowerInvariant(),
+                                Operator = isIn ? "in" : "notin",
+                                Value = string.Join(", ", values)
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        // Gestisci operatori standard: =, <>, <=, >=, <, >
+        // ORDINE IMPORTANTE: controllare prima i doppi caratteri (<=, >=, <>)
+        var operatorMatches = new[]
+        {
+            new { Op = "<>", Key = "notequal" },
+            new { Op = ">=", Key = "greaterthanorequal" },
+            new { Op = "<=", Key = "lessthanorequal" },
+            new { Op = "=", Key = "equal" },
+            new { Op = ">", Key = "greaterthan" },
+            new { Op = "<", Key = "lessthan" }
+        };
+
+        foreach (var opMatch in operatorMatches)
+        {
+            var idx = ruleSql_Upper.IndexOf(opMatch.Op);
+            if (idx >= 0)
+            {
+                var fieldName = ruleSql.Substring(0, idx).Trim();
+                var paramName = ruleSql.Substring(idx + opMatch.Op.Length).Trim();
+                var column = FindColumnByName(fieldName);
+
+                if (column != null && 
+                    !string.IsNullOrWhiteSpace(paramName) &&
+                    parameters.ParameterNames.Contains(paramName.TrimStart('@')))
+                {
+                    return new QueryBuilderRuleNode
+                    {
+                        Field = column.Field,
+                        Label = column.Label,
+                        Type = column.Type.ToString().ToLowerInvariant(),
+                        Operator = opMatch.Key,
+                        Value = parameters.Get<object>(paramName.TrimStart('@'))
+                    };
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private string ExtractFieldName(string text)
+    {
+        text = text.Trim();
+        var upper = text.ToUpperInvariant();
+
+        // Rimuovi UPPER(...) o LOWER(...)
+        if (upper.StartsWith("UPPER(") && text.EndsWith(")"))
+        {
+            text = text.Substring(6, text.Length - 7).Trim();
+        }
+        else if (upper.StartsWith("LOWER(") && text.EndsWith(")"))
+        {
+            text = text.Substring(6, text.Length - 7).Trim();
+        }
+
+        return text;
+    }
+
+    private string ExtractParameterName(string text)
+    {
+        text = text.Trim();
+        var upper = text.ToUpperInvariant();
+
+        // Rimuovi UPPER(...) o LOWER(...)
+        if (upper.StartsWith("UPPER(") && text.EndsWith(")"))
+        {
+            text = text.Substring(6, text.Length - 7).Trim();
+        }
+        else if (upper.StartsWith("LOWER(") && text.EndsWith(")"))
+        {
+            text = text.Substring(6, text.Length - 7).Trim();
+        }
+
+        return text;
+    }
+
+    private List<string> SplitByTopLevelSeparator(string expression)
+    {
+        var parts = new List<string>();
+        var current = new System.Text.StringBuilder();
+        var depth = 0;
+        var i = 0;
+
+        while (i < expression.Length)
+        {
+            if (expression[i] == '(')
+            {
+                depth++;
+                current.Append(expression[i]);
+                i++;
+            }
+            else if (expression[i] == ')')
+            {
+                depth--;
+                current.Append(expression[i]);
+                i++;
+            }
+            else if (depth == 0)
+            {
+                // Verifica AND
+                if (i + 5 <= expression.Length && 
+                    expression.Substring(i, 5).Equals(" AND ", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (current.Length > 0)
+                    {
+                        parts.Add(current.ToString());
+                        current.Clear();
+                    }
+                    i += 5;
+                    continue;
+                }
+
+                // Verifica OR
+                if (i + 4 <= expression.Length && 
+                    expression.Substring(i, 4).Equals(" OR ", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (current.Length > 0)
+                    {
+                        parts.Add(current.ToString());
+                        current.Clear();
+                    }
+                    i += 4;
+                    continue;
+                }
+
+                current.Append(expression[i]);
+                i++;
+            }
+            else
+            {
+                current.Append(expression[i]);
+                i++;
+            }
+        }
+
+        if (current.Length > 0)
+        {
+            parts.Add(current.ToString());
+        }
+
+        return parts;
+    }
+
+    private bool IsBalancedParenthesis(string expression)
+    {
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            return true;
+        }
+
+        var depth = 0;
+        foreach (var ch in expression)
+        {
+            if (ch == '(')
+            {
+                depth++;
+            }
+            else if (ch == ')')
+            {
+                depth--;
+            }
+
+            if (depth < 0)
+            {
+                return false;
+            }
+        }
+
+        return depth == 0;
+    }
+
+    private string DetermineMainCondition(string expression)
+    {
+        if (string.IsNullOrWhiteSpace(expression))
+        {
+            return "and";
+        }
+
+        var upperExpr = expression.ToUpperInvariant();
+        var depth = 0;
+
+        for (int i = 0; i < upperExpr.Length; i++)
+        {
+            if (upperExpr[i] == '(')
+            {
+                depth++;
+            }
+            else if (upperExpr[i] == ')')
+            {
+                depth--;
+            }
+            else if (depth == 0)
+            {
+                if (i + 4 <= upperExpr.Length && upperExpr.Substring(i, 4) == " OR ")
+                {
+                    return "or";
+                }
+            }
+        }
+
+        return "and";
+    }
+
+    private QueryBuilderColumn? FindColumnByName(string sqlFieldName)
+    {
+        if (string.IsNullOrWhiteSpace(sqlFieldName))
+        {
+            return null;
+        }
+
+        sqlFieldName = sqlFieldName.Trim();
+
+        // Rimuovi parentesi quadre (sintassi SQL Server)
+        if (sqlFieldName.StartsWith("[") && sqlFieldName.EndsWith("]"))
+        {
+            sqlFieldName = sqlFieldName.Substring(1, sqlFieldName.Length - 2);
+        }
+
+        // Prova prima a cercare per Field (match esatto)
+        foreach (var column in Columns)
+        {
+            if (string.Equals(column.Field, sqlFieldName, StringComparison.OrdinalIgnoreCase))
+            {
+                return column;
+            }
+        }
+
+        // Prova a cercare per SqlFieldName
+        foreach (var column in Columns)
+        {
+            if (!string.IsNullOrWhiteSpace(column.SqlFieldName) &&
+                string.Equals(column.SqlFieldName, sqlFieldName, StringComparison.OrdinalIgnoreCase))
+            {
+                return column;
+            }
+        }
+
+        // Ultima risorsa: cerca per una sottostringa (utile se il campo è "dbo.Authors.au_id")
+        foreach (var column in Columns)
+        {
+            if (column.Field.EndsWith(sqlFieldName, StringComparison.OrdinalIgnoreCase))
+            {
+                return column;
+            }
+        }
+
+        return null;
     }
 }

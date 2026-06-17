@@ -8,8 +8,14 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using Wisej.Web;
+using System.Globalization;
+
 namespace Passero.Framework.Controls
 {
+
+
+
+
 
     /// <summary>
     /// 
@@ -18,6 +24,84 @@ namespace Passero.Framework.Controls
     /// <seealso cref="Wisej.Web.Form" />
     public partial class QBEForm<ModelClass> : Wisej.Web.Form where ModelClass : class
     {
+
+
+        public bool ShowSaveLoadButtons
+        {
+            get 
+            { 
+                return bSaveQBE.Visible && bLoadQBE.Visible; 
+            }    
+            set
+            {
+                bSaveQBE.Visible = value;
+                bLoadQBE.Visible = value;
+            }
+        }
+
+        public bool ShowPrintButton
+        {
+            get
+            {
+                return bPrint.Visible;
+            }
+            set
+            {
+                bPrint.Visible = value;
+            }
+        }
+
+        public string QueryContext { get; set; }
+        public string QueryDescription { get; set; }
+        public QBEQueryMode QBEQueryMode { get; set; } = QBEQueryMode.QueryGrid;
+        public CultureInfo FilterCulture { get; set; } = CultureInfo.CurrentCulture;
+        public bool EnableRelativeDateTokens { get; set; } = true;
+        public bool FilterCaseInsensitiveText { get; set; } = true;
+        public bool AllowTextRelationalOperators { get; set; } = false;
+        public ISet<string> CodeColumns { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Tooltip che descrive la sintassi di filtro supportata per i campi di testo (stringhe).
+        /// </summary>
+        public const string QueryGridFilterSyntaxStringTooltip = @"Sintassi di filtro per campi di testo";
+        /// <summary>
+        /// Tooltip che descrive la sintassi di filtro supportata per i campi numerici.
+        /// </summary>
+        public const string QueryGridFilterSyntaxNumberTooltip = @"Sintassi di filtro per campi numerici";
+
+        /// <summary>
+        /// Tooltip che descrive la sintassi di filtro supportata per i campi data.
+        /// </summary>
+        public const string QueryGridFilterSyntaxDateTooltip = @"Sintassi di filtro per campi data";
+        /// <summary>
+        /// Tooltip che descrive la sintassi di filtro supportata per i campi booleani.
+        /// </summary>
+        public const string QueryGridQueryGridFilterSyntaxBooleanTooltip = @"Sintassi di filtro per campi booleani";
+
+        /// <summary>
+        /// Tooltip che descrive la sintassi generale del QueryBuilder.
+        /// </summary>
+        public const string QueryGridGeneralTooltip = @"Guida QueryGrid";
+
+        /// <summary>
+        /// Ottiene il tooltip della sintassi di filtro per un dato tipo di campo.
+        /// </summary>
+        /// <param name="fieldType">Il tipo di campo.</param>
+        /// <returns>Il tooltip della sintassi supportata per quel tipo.</returns>
+        public static string QueryGridGetFilterSyntaxTooltip(QueryGridFieldType fieldType)
+        {
+            return fieldType switch
+            {
+                QueryGridFieldType.String => QueryGridFilterSyntaxStringTooltip,
+                QueryGridFieldType.Number => QueryGridFilterSyntaxNumberTooltip,
+                QueryGridFieldType.Date => QueryGridFilterSyntaxDateTooltip,
+                QueryGridFieldType.DateTime => QueryGridFilterSyntaxDateTooltip,
+                QueryGridFieldType.Boolean => QueryGridQueryGridFilterSyntaxBooleanTooltip,
+                QueryGridFieldType.Enum => QueryGridFilterSyntaxStringTooltip,
+                _ => QueryGridGeneralTooltip
+            };
+        }
+
         /// <summary>
         /// Gets or sets the top rows.
         /// </summary>
@@ -57,6 +141,8 @@ namespace Passero.Framework.Controls
         /// The SQL query
         /// </summary>
         public string SQLQuery = "";
+
+        public string SQLQuerySelector = "";
         /// <summary>
         /// The order by
         /// </summary>
@@ -106,7 +192,7 @@ namespace Passero.Framework.Controls
         /// <returns></returns>
         public string SQLQueryResolved()
         {
-            return Passero.Framework.   Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
+            return Passero.Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
         /// <summary>
         /// Gets or sets the repository.
@@ -204,7 +290,8 @@ namespace Passero.Framework.Controls
         /// <value>
         /// The database connection.
         /// </value>
-        public IDbConnection DbConnection {
+        public IDbConnection DbConnection
+        {
             get
             {
                 return Repository.DbConnection;
@@ -212,9 +299,9 @@ namespace Passero.Framework.Controls
             set
             {
                 Repository = new Repository<ModelClass>();
-                Repository.DbConnection = value ;
+                Repository.DbConnection = value;
             }
-                
+
         }
         /// <summary>
         /// The qbe columns
@@ -260,12 +347,30 @@ namespace Passero.Framework.Controls
         /// The result grid model items call back action.
         /// </value>
         public Action ResultGridModelItemsCallBackAction { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QueryGridQuerySave call back action.
+        /// </summary>
+        /// <value>
+        /// The call back action.
+        /// </value>
+        public Action<string> QueryGridQuerySaveCallBackAction { get; set; }
+        /// <summary>
+        /// Gets or sets the QueryGridQueryLoad call back action.
+        /// </summary>
+        /// <value>
+        /// The call back action.
+        /// </value>
+        public Action QueryGridQueryLoadCallBackAction { get; set; }
+
+
         /// <summary>
         /// Gets or sets a value indicating whether [automatic load data].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [automatic load data]; otherwise, <c>false</c>.
         /// </value>
+        /// 
         public bool AutoLoadData { get; set; } = true;
 
         /// <summary>
@@ -286,17 +391,17 @@ namespace Passero.Framework.Controls
         /// </summary>
         public QBEForm()
         {
-            
+
             InitializeComponent();
             TabPageDebug.Hidden = true;
             TabPageExport.Hidden = true;
-            TabPageReportQuery.Hidden = true;
+            TabPageQueryGrid.Hidden = true;
             RecordLabel.Text = RecordLabelHtmlFormat;
             bSaveQBE.Visible = false;
             bLoadQBE.Visible = false;
             bPrint.Visible = false;
             
-           
+
         }
 
         /// <summary>
@@ -344,15 +449,15 @@ namespace Passero.Framework.Controls
         /// <param name="DbConnection">The database connection.</param>
         public QBEForm(IDbConnection DbConnection, Form Owner = null)
         {
-           
+
             if (Owner != null)
             {
                 this.Owner = Owner;
-            }   
+            }
             Repository = new Repository<ModelClass>();
             Repository.DbConnection = DbConnection;
-            
-            
+
+
             InitializeComponent();
             bSaveQBE.Visible = false;
             bLoadQBE.Visible = false;
@@ -385,7 +490,7 @@ namespace Passero.Framework.Controls
         /// <param name="CallBackAction">The call back action.</param>
         public void SetTargetViewModel<T>(T ViewModel, Action CallBackAction = null) where T : class
         {
-            TargetRepository = Passero.Framework .ReflectionHelper .GetPropertyValue(ViewModel,"Repository");
+            TargetRepository = Passero.Framework.ReflectionHelper.GetPropertyValue(ViewModel, "Repository");
 
             if (CallBackAction != null)
             {
@@ -478,6 +583,8 @@ namespace Passero.Framework.Controls
         {
             SetupQBEForm();
 
+            BuildQuery3(true);
+
             if (AutoLoadData)
                 LoadData();
 
@@ -500,7 +607,7 @@ namespace Passero.Framework.Controls
         public void SetupQBEForm(bool OverrideResultGridDefinition = false)
         {
 
-            TabPageReportQuery.Hidden = false;
+            TabPageQueryGrid.Hidden = false;
             TabPageExport.Hidden = false;
             TabPageDebug.Hidden = true;
             PanelExport.Visible = true;
@@ -511,13 +618,22 @@ namespace Passero.Framework.Controls
 
             ResultGrid.Dock = DockStyle.Fill;
             //this.ResultGrid.Visible = true;
-            QueryGrid.Visible = true;
+            //QueryGrid.Visible = true;
 
             //if (Owner == null && SetFocusControlAfterClose != null)
             //    Owner = Passero.Framework.Utilities.GetParentOfType<Form>(SetFocusControlAfterClose);
 
             if (Owner != null && Owner.MdiParent != null)
                 MdiParent = Owner.MdiParent;
+
+            if (this.QBEQueryMode == QBEQueryMode.QueryGrid)
+                this.TabControl.SelectedTab = this.TabPageQueryGrid;
+
+            if (this.QBEQueryMode == QBEQueryMode.QueryGridQueryBuilder)
+                this.TabControl.SelectedTab = this.TabPageQueryBuilder;
+            if (this.QBEQueryMode == QBEQueryMode.QueryGridQueryBuilder)
+                this.TabControl.SelectedTab = this.TabPageQueryGrid;
+
         }
 
         /// <summary>
@@ -534,89 +650,151 @@ namespace Passero.Framework.Controls
                     column.DbColumnName = item.Name;
                     column.FriendlyName = item.Name;
                     column.UseInQBE = true;
+                    column.DisplayInQBEResult = true;
                     QBEColumns.Add(column.DbColumnName, column);
                 }
 
             }
         }
-
 
         /// <summary>
         /// Setups the query grid.
         /// </summary>
         public void SetupQueryGrid()
         {
-
             QueryGrid.Rows.Clear();
-
-            if (QBEColumns.Count == 0)
-            {
-
-                foreach (var item in ModelProperties.Values)
-                {
-                    QBEColumn column = new QBEColumn();
-                    column.DbColumnName = item.Name;
-                    column.FriendlyName = item.Name;
-                    column.UseInQBE = true;
-                    column.DisplayInQBEResult = true;
-                    QBEColumns.Add(column.DbColumnName, column);
-                }
-
-            }
-
 
             foreach (var QBEColumn in QBEColumns.Values)
             {
                 if (QBEColumn.UseInQBE)
                 {
-                    int i;
-                    i = QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
-                    if (Passero.Framework.Utilities.GetSystemTypeIs(ModelProperties[QBEColumn.DbColumnName].PropertyType) == EnumSystemTypeIs.Boolean)
+                    int rowIndex = QueryGrid.Rows.Add(QBEColumn.FriendlyName, QBEColumn.QBEValue);
+                    DataGridViewRow row = QueryGrid.Rows[rowIndex];
+
+                    Type columnType = ModelProperties[QBEColumn.DbColumnName].PropertyType;
+                    Type underlyingType = Nullable.GetUnderlyingType(columnType) ?? columnType;
+                    bool isBoolean = Passero.Framework.Utilities.IsBooleanType(underlyingType);
+
+                    // Usa QBEColumnType se specificato, altrimenti determina automaticamente
+                    bool useCheckBox = (QBEColumn.QBEColumnType == QBEColumnsTypes.CheckBox) ||
+                                       (isBoolean && QBEColumn.QBEColumnType == QBEColumnsTypes.TextBox == false);
+
+                    if (useCheckBox)
                     {
-                        DataGridViewCheckBoxCell ncell = new DataGridViewCheckBoxCell();
-                        ncell.ThreeState = true;
-                        ncell.IndeterminateValue = "";
-                        ncell.TrueValue = true;
-                        ncell.FalseValue = false;
-                        if (Conversions.ToBoolean(Operators.ConditionalCompareObjectNotEqual(QBEColumn.QBEValue, null, false)))
+                        DataGridViewCheckBoxCell checkBoxCell = new DataGridViewCheckBoxCell
                         {
-                            if (Conversions.ToBoolean(Operators.ConditionalCompareObjectEqual(QBEColumn.QBEValue, "True", false)))
+                            ThreeState = true,
+                            IndeterminateValue = "",
+                            TrueValue = 1,
+                            FalseValue = 0
+                        };
+
+                        // Assegna il valore iniziale
+                        if (QBEColumn.QBEValue != null)
+                        {
+                            if (QBEColumn.QBEValue is bool boolValue)
                             {
-                                ncell.Value = true;
+                                checkBoxCell.Value = boolValue ? 1 : 0;
+                            }
+                            else if (QBEColumn.QBEValue is int intValue)
+                            {
+                                checkBoxCell.Value = intValue;
+                            }
+                            else if (int.TryParse(QBEColumn.QBEValue.ToString(), out int parsedValue))
+                            {
+                                checkBoxCell.Value = parsedValue;
                             }
                             else
                             {
-                                ncell.Value = false;
+                                checkBoxCell.Value = checkBoxCell.IndeterminateValue;
                             }
                         }
                         else
                         {
-                            ncell.Value = ncell.IndeterminateValue;
+                            checkBoxCell.Value = checkBoxCell.IndeterminateValue;
                         }
-                        QueryGrid.Rows[i].Cells[1] = ncell;
-                        QueryGrid.Rows[i].Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
-                    }
-                    QueryGrid.Rows[i].Tag = QBEColumn.DbColumnName;
 
-                    if (QBEColumn.QBEValue != null)
-                    {
-                        if (!string.IsNullOrEmpty(QBEColumn.QBEValue.ToString().Trim()))
-                        {
-                            QueryGrid.Rows[i].Cells[1].ReadOnly = true;
-                        }
+                        row.Cells[1] = checkBoxCell;
+                        row.Cells[1].Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                        // Aggiungi tooltip per booleani
+                        row.Cells[1].ToolTipText = QueryGridQueryGridFilterSyntaxBooleanTooltip;
                     }
+                    else
+                    {
+                        // Aggiungi tooltip per TextBox basato sul tipo di dato
+                        var fieldType = DetermineFieldTypeFromPropertyType(underlyingType);
+                        row.Cells[1].ToolTipText = QueryGridGetFilterSyntaxTooltip(fieldType);
+                    }
+
+                    row.Tag = QBEColumn.DbColumnName;
+
+                    // Se il valore è pre-configurato, rendi la cella ReadOnly
+                    if (QBEColumn.QBEValue != null && !string.IsNullOrWhiteSpace(QBEColumn.QBEValue.ToString().Trim()))
+                    {
+                        row.Cells[1].ReadOnly = true;
+                    }
+
+                    // Nascondi la riga se configurato
                     if (QBEColumn.DisplayInQBE == false)
                     {
-                        QueryGrid.Rows[i].Visible = false;
+                        row.Visible = false;
                     }
-
-
-
                 }
             }
+
+            CheckQBEQueryMode();
+        }
+
+        /// <summary>
+        /// Determina il tipo di campo del QueryBuilder in base al tipo .NET.
+        /// </summary>
+        private QueryGridFieldType DetermineFieldTypeFromPropertyType(Type type)
+        {
+            if (type == typeof(bool))
+                return QueryGridFieldType.Boolean;
+
+            if (type == typeof(DateTime) || type == typeof(System.DateTime))
+                return QueryGridFieldType.DateTime;
+
+            if (type == typeof(decimal) || type == typeof(double) || type == typeof(float) ||
+                type == typeof(int) || type == typeof(long) || type == typeof(short))
+                return QueryGridFieldType.Number;
+
+            if (type.IsEnum)
+                return QueryGridFieldType.Enum;
+
+            return QueryGridFieldType.String;
         }
 
 
+
+
+        /// <summary>
+        /// Setups the query grid or query builder.
+        /// </summary>
+        public void CheckQBEQueryMode()
+        {
+            switch (this.QBEQueryMode)
+            {
+                case QBEQueryMode.QueryGrid:
+                    this.TabPageQueryGrid.Hidden = false;
+                    this.TabPageQueryBuilder.Hidden = true;
+                    break;
+                case QBEQueryMode.QueryBuilder:
+                    this.TabPageQueryGrid.Hidden = true;
+                    this.TabPageQueryBuilder.Hidden = false;
+                    break;
+                case QBEQueryMode.QueryGridQueryBuilder:
+                    this.TabPageQueryGrid.Hidden = false;
+                    this.TabPageQueryBuilder.Hidden = false;
+                    break;
+                default:
+                    this.TabPageQueryGrid.Hidden = false;
+                    this.TabPageQueryBuilder.Hidden = true;
+                    break;
+            }
+        }
         /// <summary>
         /// Setups the result grid.
         /// </summary>
@@ -787,7 +965,28 @@ namespace Passero.Framework.Controls
         public void DoQuery()
         {
             BuildQuery3();
-            ResultGrid.DataSource = mRepository.GetItems(SQLQuery, SQLQueryParameters).Value;
+
+            string _sqlquery = this.SQLQuerySelector;
+            DynamicParameters _sqlqueryparameters;
+
+            // QueryGrid: usa la query generata dal QueryGrid   
+            if (this.TabControl.SelectedTab == this.TabPageQueryGrid)
+                ResultGrid.DataSource = mRepository.GetItems(SQLQuery, SQLQueryParameters).Value;
+
+            // QueryBuilder: usa la query generata dal QueryBuilderControl
+            if (this.TabControl.SelectedTab == this.TabPageQueryBuilder)
+            {
+
+                var sql = this.queryBuilderControl.GetParameterizedSqlWhere();
+                _sqlqueryparameters = QueryBuilderControl.DictionaryToDynamicParameters(sql.Parameters);
+                if (sql.WhereClause != "")
+                {
+                    _sqlquery = $"{this.SQLQuerySelector} WHERE {sql.WhereClause}";
+                }
+
+                ResultGrid.DataSource = mRepository.GetItems(_sqlquery, _sqlqueryparameters).Value;
+            }
+
             ResultGrid.Visible = true;
 
         }
@@ -861,7 +1060,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         /// 
 
-        private void BuildQuery3()
+        private void BuildQuery3_OLD()
         {
             StringBuilder sqlwhere = new StringBuilder();
             string _WhereAND = "";
@@ -975,7 +1174,140 @@ namespace Passero.Framework.Controls
 
             string rSQL = Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
-      
+
+        /// <summary>
+        /// Costruisce la query WHERE usando NavFilterSqlEngine.
+        /// Sintassi supportata:
+        /// - Singolo valore: "Smith"
+        /// - OR (pipe): "Smith|Jones" → (Name = Smith) OR (Name = Jones)
+        /// - AND (ampersand): ">100&<500" → (ID > 100) AND (ID < 500)
+        /// - Range: "100..500" → (ID >= 100) AND (ID <= 500)
+        /// - Wildcards: "Smith*", "*son" (solo su stringhe, con LIKE)
+        /// - Operatori: "=", "<>", ">", ">=", "<", "<="
+        /// - Speciali: "<empty>", "<notempty>"
+        /// - Case insensitive per booleani: "true", "false", "yes", "no", "1", "0"
+        /// </summary>
+        private void BuildQuery3(bool setup = false)
+        {
+
+
+            if (setup == true | this.TabControl.SelectedTab == this.TabPageQueryGrid)
+            {
+                StringBuilder sqlWhere = new StringBuilder();
+                OrderBy = (OrderBy ?? string.Empty).Trim();
+                QueryGrid.EndEdit();
+                DynamicParameters parameters = new DynamicParameters();
+
+                foreach (DataGridViewRow row in QueryGrid.Rows)
+                {
+                    string value = null;
+                    object cellValue = row?.Cells?[1]?.Value;
+
+                    // Gestisci i diversi tipi di celle
+                    if (cellValue == null || cellValue.Equals(""))
+                    {
+                        // Valore nullo o stringa vuota (indeterminato) - salta il filtro
+                        continue;
+                    }
+                    else if (cellValue is bool boolValue)
+                    {
+                        // Converti bool a "true" o "false"
+                        value = boolValue ? "true" : "false";
+                    }
+                    else if (cellValue is int intValue)
+                    {
+                        // Converti int (da checkbox 0/1) a stringa
+                        value = intValue.ToString();
+                    }
+                    else
+                    {
+                        // Per altri tipi, converti a stringa
+                        value = cellValue.ToString();
+                    }
+
+                    // Salta se il valore è vuoto
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
+
+                    string columnName = row.Tag?.ToString();
+                    if (string.IsNullOrWhiteSpace(columnName))
+                        continue;
+
+                    if (!ModelProperties.ContainsKey(columnName))
+                        continue;
+
+                    Type propertyType = ModelProperties[columnName].PropertyType;
+                    bool isCodeColumn = CodeColumns.Contains(columnName);
+
+                    var build = NavFilterSqlEngine.BuildColumnPredicate(
+                        columnName: columnName,
+                        propertyType: propertyType,
+                        filterText: value.Trim(),
+                        isCodeColumn: isCodeColumn,
+                        parameterPrefix: $"f_{columnName}_{row.Index}",
+                        parameters: parameters,
+                        options: new NavFilterSqlOptions
+                        {
+                            Culture = FilterCulture,
+                            CaseInsensitiveText = FilterCaseInsensitiveText,
+                            AllowRelativeDateTokens = EnableRelativeDateTokens,
+                            AllowTextRelationalOperators = AllowTextRelationalOperators,
+                            UseLikeOperator = UseLikeOperator
+                        });
+
+                    if (build.Errors.Count > 0)
+                    {
+                        NavFilterError first = build.Errors[0];
+                        string technical = $"{first.Code}: {first.TechnicalMessage}";
+                        string user = first.UserMessage;
+                        MessageBox.Show($"{user}\n{technical}", "Filtro non valido",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        throw new InvalidOperationException(technical);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(build.Sql))
+                    {
+                        if (sqlWhere.Length > 0)
+                            sqlWhere.Append(" AND ");
+
+                        sqlWhere.Append("(");
+                        sqlWhere.Append(build.Sql);
+                        sqlWhere.Append(")");
+                    }
+                }
+
+                string sTopRows = TopRows > 0 ? $"TOP ({TopRows})" : string.Empty;
+
+                if (string.IsNullOrEmpty(BaseSQLQuery))
+                    SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
+                else
+                    SQLQuery = $"SELECT {sTopRows} * FROM ({BaseSQLQuery.Trim()}) _b";
+
+                SQLQuerySelector = SQLQuery;
+
+                if (sqlWhere.Length > 0)
+                    SQLQuery += $" WHERE {sqlWhere}";
+
+                if (!string.IsNullOrEmpty(OrderBy))
+                    SQLQuery += $" ORDER BY {OrderBy}";
+
+                SQLQueryParameters = parameters;
+
+                foreach (var p in BaseDbParameteres.ParameterNames)
+                    SQLQueryParameters.Add(p, ((SqlMapper.IParameterLookup)BaseDbParameteres)[p]);
+
+
+                if (this.TabControl.SelectedTab == TabPageQueryBuilder)
+                {
+                    this.queryBuilderControl.LoadColumnsAndRulesFromQBE(this.QBEColumns);
+                    this.queryBuilderControl.LoadQueryFromSql(SQLQuery, SQLQueryParameters);
+
+                }
+            }
+
+        }
+
+
 
         /// <summary>
         /// Gets the comparision operator.
@@ -1171,7 +1503,7 @@ namespace Passero.Framework.Controls
         private void CloseQBEForm(bool IgnoreCallBack = false)
         {
             if (this.Owner != null)
-            { 
+            {
             }
 
             else
@@ -1668,10 +2000,214 @@ namespace Passero.Framework.Controls
 
         private void TabPageReportQuery_Resize(object sender, EventArgs e)
         {
-            this.QueryGrid .Width = this.TabPageReportQuery.Width - this.TabPageReportQuery .Left ; 
+            this.QueryGrid.Width = this.TabPageQueryGrid.Width - this.TabPageQueryGrid.Left;
+        }
+
+        /// <summary>
+        /// Legge le righe della QueryGrid e serializza i valori delle colonne 0 e 1 in un oggetto JSON.
+        /// </summary>
+        /// <returns>Stringa JSON contenente i dati della QueryGrid.</returns>
+        public string QueryGridToJson()
+        {
+            var rowDataList = new List<Dictionary<string, object>>();
+
+            foreach (DataGridViewRow row in QueryGrid.Rows)
+            {
+                if (row.IsNewRow)
+                    continue;
+
+                var rowData = new Dictionary<string, object>();
+
+                // Leggi il valore e il tag della colonna 0
+                object column0Value = row.Cells[0].Value;
+                object column0Tag = row.Cells[0].Tag;
+
+                // Leggi il valore e il tag della colonna 1
+                object column1Value = row.Cells[1].Value;
+                object column1Tag = row.Cells[1].Tag;
+
+                // Costruisci il dizionario per la riga
+                rowData["column0"] = new
+                {
+                    value = column0Value,
+                    tag = column0Tag
+                };
+
+                rowData["column1"] = new
+                {
+                    value = column1Value,
+                    tag = column1Tag
+                };
+
+                rowData["rowTag"] = row.Tag;
+
+                rowDataList.Add(rowData);
+            }
+
+            // Serializza in JSON usando Newtonsoft.Json (Nuget package già presente nel progetto)
+            string jsonResult = Newtonsoft.Json.JsonConvert.SerializeObject(rowDataList, Newtonsoft.Json.Formatting.Indented);
+
+            return jsonResult;
+        }
+
+        /// <summary>
+        /// Riconfigura la QueryGrid a partire da una stringa JSON.
+        /// </summary>
+        /// <param name="jsonData">Stringa JSON contenente i dati della QueryGrid.</param>
+        public void JsonToQueryGrid(string jsonData)
+        {
+            if (string.IsNullOrWhiteSpace(jsonData))
+                return;
+
+            try
+            {
+                var rowDataList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonData);
+
+                if (rowDataList == null || rowDataList.Count == 0)
+                    return;
+
+                // Itera su tutti i dati JSON
+                foreach (var rowData in rowDataList)
+                {
+                    // Estrai il rowTag per identificare la riga corretta
+                    string rowTag = rowData.ContainsKey("rowTag") ? rowData["rowTag"]?.ToString() : null;
+
+                    if (string.IsNullOrEmpty(rowTag))
+                        continue;
+
+                    // Trova la riga nella QueryGrid corrispondente al rowTag
+                    DataGridViewRow targetRow = null;
+                    foreach (DataGridViewRow row in QueryGrid.Rows)
+                    {
+                        if (row.Tag?.ToString() == rowTag)
+                        {
+                            targetRow = row;
+                            break;
+                        }
+                    }
+
+                    if (targetRow == null)
+                        continue;
+
+                    // Ripristina il valore della colonna 1 (il valore del filtro)
+                    if (rowData.ContainsKey("column1"))
+                    {
+                        var column1Data = rowData["column1"];
+
+                        if (column1Data is Newtonsoft.Json.Linq.JObject jObject)
+                        {
+                            object column1Value = jObject["value"];
+
+                            // Gestisci i diversi tipi di celle (TextBox vs CheckBox)
+                            if (targetRow.Cells[1] is DataGridViewCheckBoxCell checkBoxCell)
+                            {
+                                // Per le checkbox, converti il valore appropriatamente
+                                if (column1Value != null)
+                                {
+                                    if (column1Value is bool boolValue)
+                                    {
+                                        checkBoxCell.Value = boolValue ? 1 : 0;
+                                    }
+                                    else if (column1Value is int intValue)
+                                    {
+                                        checkBoxCell.Value = intValue;
+                                    }
+                                    else if (int.TryParse(column1Value.ToString(), out int parsedValue))
+                                    {
+                                        checkBoxCell.Value = parsedValue;
+                                    }
+                                    else
+                                    {
+                                        checkBoxCell.Value = checkBoxCell.IndeterminateValue;
+                                    }
+                                }
+                                else
+                                {
+                                    checkBoxCell.Value = checkBoxCell.IndeterminateValue;
+                                }
+                            }
+                            else
+                            {
+                                // Per le TextBox, assegna il valore direttamente
+                                targetRow.Cells[1].Value = column1Value;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Errore nel deserializzare JSON in QueryGrid: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Evento generato quando la QueryGrid viene salvata in JSON.
+        /// </summary>
+        public event EventHandler<QueryGridSaveEventArgs> QueryGridSaving;
+
+        /// <summary>
+        /// Evento generato quando la QueryGrid viene caricata da JSON.
+        /// </summary>
+        public event EventHandler<QueryGridLoadEventArgs> QueryGridLoading;
+
+        /// <summary>
+        /// Solleva l'evento QueryGridSaving.
+        /// </summary>
+        protected virtual void OnQueryGridSaving(QueryGridSaveEventArgs e)
+        {
+            QueryGridSaving?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Solleva l'evento QueryGridLoading.
+        /// </summary>
+        protected virtual void OnQueryGridLoading(QueryGridLoadEventArgs e)
+        {
+            QueryGridLoading?.Invoke(this, e);
+        }
+
+      
+
+        private void bSaveQBE_Click(object sender, EventArgs e)
+        {
+            string jsonData = QueryGridToJson();
+
+            if (QueryGridQuerySaveCallBackAction != null)
+            {
+                QueryGridQuerySaveCallBackAction?.Invoke(jsonData);
+            }
+            else
+            {
+                var saveEventArgs = new QueryGridSaveEventArgs { QueryGridJson = jsonData };
+                OnQueryGridSaving(saveEventArgs);
+
+                if (!saveEventArgs.Cancel)
+                {
+                    // Esegui azioni predefinite se necessario
+                    //System.Diagnostics.Debug.WriteLine($"QueryGrid salvata: {jsonData}");
+                }
+            }
+        }
+
+        private void bLoadQBE_Click(object sender, EventArgs e)
+        {
+            if (QueryGridQueryLoadCallBackAction != null)
+            {
+                QueryGridQueryLoadCallBackAction?.Invoke();
+            }
+            else
+            {
+                var loadEventArgs = new QueryGridLoadEventArgs();
+                OnQueryGridLoading(loadEventArgs);
+                if (!loadEventArgs.Cancel)
+                {
+                    // Esegui azioni predefinite se necessario
+                    //System.Diagnostics.Debug.WriteLine("Caricamento QueryGrid completato.");
+                }
+            }
         }
     }
-
-
-
 }

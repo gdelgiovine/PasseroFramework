@@ -11,7 +11,7 @@ namespace Passero.Framework.Controls;
 public partial class RuleEditor : UserControl
 {
     private QueryBuilderControl? _owner;
-    private QueryBuilderFieldType _valueType = QueryBuilderFieldType.String;
+    private QueryGridFieldType _valueType = QueryGridFieldType.String;
 
     public RuleEditor()
     {
@@ -22,8 +22,8 @@ public partial class RuleEditor : UserControl
         UpdateValueEditorVisibility();
     }
 
-    [DefaultValue(QueryBuilderFieldType.String)]
-    public QueryBuilderFieldType ValueType
+    [DefaultValue(QueryGridFieldType.String)]
+    public QueryGridFieldType ValueType
     {
         get => _valueType;
         set
@@ -206,7 +206,7 @@ public partial class RuleEditor : UserControl
     private void UpdateValueTypeFromSelection()
     {
         var column = SelectedColumn;
-        ValueType = column?.Type ?? QueryBuilderFieldType.String;
+        ValueType = column?.Type ?? QueryGridFieldType.String;
     }
 
     private void RebindOperators()
@@ -314,7 +314,7 @@ public partial class RuleEditor : UserControl
 
         switch (column.Type)
         {
-            case QueryBuilderFieldType.Boolean:
+            case QueryGridFieldType.Boolean:
                 var booleanCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
                 booleanCombo.Items.Add(new QueryBuilderLookupItem { Text = "True", Value = true });
                 booleanCombo.Items.Add(new QueryBuilderLookupItem { Text = "False", Value = false });
@@ -322,11 +322,11 @@ public partial class RuleEditor : UserControl
                 booleanCombo.SelectedIndexChanged += (_, _) => _owner.NotifyChanged();
                 return booleanCombo;
 
-            case QueryBuilderFieldType.Date:
-            case QueryBuilderFieldType.DateTime:
+            case QueryGridFieldType.Date:
+            case QueryGridFieldType.DateTime:
                 var datePicker = new DateTimePicker
                 {
-                    Format = column.Type == QueryBuilderFieldType.Date
+                    Format = column.Type == QueryGridFieldType.Date
                         ? DateTimePickerFormat.Short
                         : DateTimePickerFormat.Custom,
                     CustomFormat = "dd/MM/yyyy HH:mm"
@@ -338,7 +338,7 @@ public partial class RuleEditor : UserControl
                 datePicker.ValueChanged += (_, _) => _owner.NotifyChanged();
                 return datePicker;
 
-            case QueryBuilderFieldType.Number:
+            case QueryGridFieldType.Number:
                 var numeric = new NumericUpDown
                 {
                     DecimalPlaces = 2,
@@ -522,28 +522,28 @@ public partial class RuleEditor : UserControl
             : null;
     }
 
-    private Control? GetControlForValueType(QueryBuilderFieldType type, bool secondary, bool hasLookupValues)
+    private Control? GetControlForValueType(QueryGridFieldType type, bool secondary, bool hasLookupValues)
     {
         if (secondary)
         {
-            if (hasLookupValues || type == QueryBuilderFieldType.Enum) return value2Enum;
+            if (hasLookupValues || type == QueryGridFieldType.Enum) return value2Enum;
 
             return type switch
             {
-                QueryBuilderFieldType.Boolean => value2Boolean,
-                QueryBuilderFieldType.Date or QueryBuilderFieldType.DateTime => value2DateTime,
-                QueryBuilderFieldType.Number => value2Numeric,
+                QueryGridFieldType.Boolean => value2Boolean,
+                QueryGridFieldType.Date or QueryGridFieldType.DateTime => value2DateTime,
+                QueryGridFieldType.Number => value2Numeric,
                 _ => value2String
             };
         }
 
-        if (hasLookupValues || type == QueryBuilderFieldType.Enum) return valueEnum;
+        if (hasLookupValues || type == QueryGridFieldType.Enum) return valueEnum;
 
         return type switch
         {
-            QueryBuilderFieldType.Boolean => valueBoolean,
-            QueryBuilderFieldType.Date or QueryBuilderFieldType.DateTime => valueDateTime,
-            QueryBuilderFieldType.Number => valueNumeric,
+            QueryGridFieldType.Boolean => valueBoolean,
+            QueryGridFieldType.Date or QueryGridFieldType.DateTime => valueDateTime,
+            QueryGridFieldType.Number => valueNumeric,
             _ => valueString
         };
     }

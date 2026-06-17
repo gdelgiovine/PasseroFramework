@@ -345,9 +345,9 @@
   <data name="&gt;&gt;SplitContainer.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="ReportGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="ReportGrid.ShowSampleData" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
+  </data>
   <data name="ReportGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -411,9 +411,9 @@
   <data name="&gt;&gt;TabPageReports.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
+  </data>
   <data name="QueryGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -684,9 +684,9 @@
   <data name="&gt;&gt;panel2.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <metadata name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
+  </data>
   <data name="dgvc_SelectedSortColumns_position.HeaderText" xml:space="preserve">
     <value>Position</value>
   </data>
@@ -1309,7 +1309,7 @@
     <value>tab-close</value>
   </data>
   <data name="bDelete.Text" xml:space="preserve">
-    <value>Delete Filter</value>
+    <value>Reset Filters</value>
   </data>
   <data name="Records.Text" xml:space="preserve">
     <value>Max Rows</value>
@@ -1330,13 +1330,13 @@
     <value>icon-save</value>
   </data>
   <data name="bSaveQBE.Text" xml:space="preserve">
-    <value>Save Filter</value>
+    <value>Save Filters</value>
   </data>
   <data name="bLoadQBE.ImageSource" xml:space="preserve">
     <value>icon-open</value>
   </data>
   <data name="bLoadQBE.Text" xml:space="preserve">
-    <value>Load Filter</value>
+    <value>Load Filters</value>
   </data>
   <data name="bClose.ImageSource" xml:space="preserve">
     <value>icon-exit</value>
@@ -1374,7 +1374,7 @@
   <data name="pbEngineLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAIAAAAHjs1qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vwAADr8BOAVTJAAAN5pJREFUeF7tnWl4W8W5gPvrdmNpC2QhYQskQChtQ2lYbwuFkEAvEEpJubSl3BJI
+        vgAADr4B6kKxwAAAN5pJREFUeF7tnWl4W8W5gPvrdmNpC2QhYQskQChtQ2lYbwuFkEAvEEpJubSl3BJI
         KQkBQhayQjaykUD22M7m3Ukcx7udOF7lVbKszZZsSdZmrbbsI2+SbOfxfaRJhvGcRUeyTGRr3uf88hkd
         nyd+M5r55ptvfjBMIEQNP8B/QCBMXIjuhCiC6E6IIojuYcNms8nl8pLiYq1Wi98jRAZE99FCUZREIrlY
         WJifl1dYUHDp4kWBQIA3IkQGRPcQ6erqkkqlhYWFmRcuZGdn5+bkCAQCvV5fU1NTVFRktVjwDxAiAKJ7
@@ -1635,9 +1635,9 @@
   <data name="&gt;&gt;pbEngineLogo.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="$this.Localizable" type="System.Boolean, mscorlib">
     <value>True</value>
-  </metadata>
+  </data>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>7, 18</value>
   </data>

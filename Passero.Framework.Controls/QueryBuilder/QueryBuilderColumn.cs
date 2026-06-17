@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Passero.Framework.Controls;
 
-public enum QueryBuilderFieldType
+public enum QueryGridFieldType
 {
     String,
     Number,
@@ -17,7 +17,7 @@ public sealed class QueryBuilderColumn
 {
     public string Field { get; set; } = string.Empty;
     public string Label { get; set; } = string.Empty;
-    public QueryBuilderFieldType Type { get; set; } = QueryBuilderFieldType.String;
+    public QueryGridFieldType Type { get; set; } = QueryGridFieldType.String;
     public string? SqlFieldName { get; set; }
     public List<QueryBuilderOperator> Operators { get; set; } = new List<QueryBuilderOperator>();
     public List<QueryBuilderLookupItem> Values { get; set; } = new List<QueryBuilderLookupItem>();

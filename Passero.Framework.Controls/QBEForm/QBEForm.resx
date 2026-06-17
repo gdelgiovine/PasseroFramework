@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="Wisej.Framework" name="Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171" />
+  <assembly alias="Wisej.Framework" name="Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171" />
   <data name="SplitContainer.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -154,7 +154,7 @@
     <value>ResultGrid</value>
   </data>
   <data name="&gt;&gt;ResultGrid.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;ResultGrid.Parent" xml:space="preserve">
     <value>SplitContainer.Panel1</value>
@@ -205,7 +205,7 @@
     <value>SplitContainer.Panel1</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel1.Type" xml:space="preserve">
-    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel1.Parent" xml:space="preserve">
     <value>SplitContainer</value>
@@ -250,10 +250,10 @@
     <value>QueryGrid</value>
   </data>
   <data name="&gt;&gt;QueryGrid.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.DataGridView, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;QueryGrid.Parent" xml:space="preserve">
-    <value>TabPageReportQuery</value>
+    <value>TabPageQueryGrid</value>
   </data>
   <data name="&gt;&gt;QueryGrid.ZOrder" xml:space="preserve">
     <value>0</value>
@@ -277,37 +277,79 @@
     <value>chkLikeOperator</value>
   </data>
   <data name="&gt;&gt;chkLikeOperator.Type" xml:space="preserve">
-    <value>Wisej.Web.CheckBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.CheckBox, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;chkLikeOperator.Parent" xml:space="preserve">
-    <value>TabPageReportQuery</value>
+    <value>TabPageQueryGrid</value>
   </data>
   <data name="&gt;&gt;chkLikeOperator.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="TabPageReportQuery.Hidden" type="System.Boolean, mscorlib">
+  <data name="TabPageQueryGrid.Hidden" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="TabPageReportQuery.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 30</value>
+  <data name="TabPageQueryGrid.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
   </data>
-  <data name="TabPageReportQuery.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="TabPageQueryGrid.Size" type="System.Drawing.Size, System.Drawing">
     <value>896, 147</value>
   </data>
-  <data name="TabPageReportQuery.Text" xml:space="preserve">
+  <data name="TabPageQueryGrid.Text" xml:space="preserve">
     <value>Query Criteria</value>
   </data>
-  <data name="&gt;&gt;TabPageReportQuery.Name" xml:space="preserve">
-    <value>TabPageReportQuery</value>
+  <data name="&gt;&gt;TabPageQueryGrid.Name" xml:space="preserve">
+    <value>TabPageQueryGrid</value>
   </data>
-  <data name="&gt;&gt;TabPageReportQuery.Type" xml:space="preserve">
-    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  <data name="&gt;&gt;TabPageQueryGrid.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
-  <data name="&gt;&gt;TabPageReportQuery.Parent" xml:space="preserve">
+  <data name="&gt;&gt;TabPageQueryGrid.Parent" xml:space="preserve">
     <value>TabControl</value>
   </data>
-  <data name="&gt;&gt;TabPageReportQuery.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;TabPageQueryGrid.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="queryBuilderControl.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Fill</value>
+  </data>
+  <data name="queryBuilderControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 147</value>
+  </data>
+  <data name="queryBuilderControl.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;queryBuilderControl.Name" xml:space="preserve">
+    <value>queryBuilderControl</value>
+  </data>
+  <data name="&gt;&gt;queryBuilderControl.Type" xml:space="preserve">
+    <value>Passero.Framework.Controls.QueryBuilderControl, Passero.Framework.Controls, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;queryBuilderControl.Parent" xml:space="preserve">
+    <value>TabPageQueryBuilder</value>
+  </data>
+  <data name="&gt;&gt;queryBuilderControl.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="TabPageQueryBuilder.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="TabPageQueryBuilder.Size" type="System.Drawing.Size, System.Drawing">
+    <value>896, 147</value>
+  </data>
+  <data name="TabPageQueryBuilder.Text" xml:space="preserve">
+    <value>Query Builder</value>
+  </data>
+  <data name="&gt;&gt;TabPageQueryBuilder.Name" xml:space="preserve">
+    <value>TabPageQueryBuilder</value>
+  </data>
+  <data name="&gt;&gt;TabPageQueryBuilder.Type" xml:space="preserve">
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;TabPageQueryBuilder.Parent" xml:space="preserve">
+    <value>TabControl</value>
+  </data>
+  <data name="&gt;&gt;TabPageQueryBuilder.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="PanelExport.AutoScroll" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -328,7 +370,7 @@
     <value>rbJSON</value>
   </data>
   <data name="&gt;&gt;rbJSON.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;rbJSON.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -352,7 +394,7 @@
     <value>rbXML</value>
   </data>
   <data name="&gt;&gt;rbXML.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;rbXML.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -376,7 +418,7 @@
     <value>rbCSV</value>
   </data>
   <data name="&gt;&gt;rbCSV.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;rbCSV.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -400,7 +442,7 @@
     <value>rbExcel</value>
   </data>
   <data name="&gt;&gt;rbExcel.Type" xml:space="preserve">
-    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.RadioButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;rbExcel.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -424,7 +466,7 @@
     <value>btnExport</value>
   </data>
   <data name="&gt;&gt;btnExport.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.Button, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;btnExport.Parent" xml:space="preserve">
     <value>PanelExport</value>
@@ -448,7 +490,7 @@
     <value>PanelExport</value>
   </data>
   <data name="&gt;&gt;PanelExport.Type" xml:space="preserve">
-    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.FlowLayoutPanel, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;PanelExport.Parent" xml:space="preserve">
     <value>TabPageExport</value>
@@ -460,7 +502,7 @@
     <value>True</value>
   </data>
   <data name="TabPageExport.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 30</value>
+    <value>0, 0</value>
   </data>
   <data name="TabPageExport.Size" type="System.Drawing.Size, System.Drawing">
     <value>896, 147</value>
@@ -472,13 +514,13 @@
     <value>TabPageExport</value>
   </data>
   <data name="&gt;&gt;TabPageExport.Type" xml:space="preserve">
-    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;TabPageExport.Parent" xml:space="preserve">
     <value>TabControl</value>
   </data>
   <data name="&gt;&gt;TabPageExport.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="Button2.Location" type="System.Drawing.Point, System.Drawing">
     <value>359, 6</value>
@@ -499,7 +541,7 @@
     <value>Button2</value>
   </data>
   <data name="&gt;&gt;Button2.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.Button, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;Button2.Parent" xml:space="preserve">
     <value>TabPageDebug</value>
@@ -532,7 +574,7 @@
     <value>txtDebug</value>
   </data>
   <data name="&gt;&gt;txtDebug.Type" xml:space="preserve">
-    <value>Wisej.Web.TextBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.TextBox, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;txtDebug.Parent" xml:space="preserve">
     <value>TabPageDebug</value>
@@ -559,7 +601,7 @@
     <value>Button1</value>
   </data>
   <data name="&gt;&gt;Button1.Type" xml:space="preserve">
-    <value>Wisej.Web.Button, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.Button, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;Button1.Parent" xml:space="preserve">
     <value>TabPageDebug</value>
@@ -601,7 +643,7 @@
     <value>cmbRecords</value>
   </data>
   <data name="&gt;&gt;cmbRecords.Type" xml:space="preserve">
-    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ComboBox, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;cmbRecords.Parent" xml:space="preserve">
     <value>TabPageDebug</value>
@@ -613,7 +655,7 @@
     <value>True</value>
   </data>
   <data name="TabPageDebug.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1, 30</value>
+    <value>0, 0</value>
   </data>
   <data name="TabPageDebug.Size" type="System.Drawing.Size, System.Drawing">
     <value>896, 147</value>
@@ -625,13 +667,13 @@
     <value>TabPageDebug</value>
   </data>
   <data name="&gt;&gt;TabPageDebug.Type" xml:space="preserve">
-    <value>Wisej.Web.TabPage, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.TabPage, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;TabPageDebug.Parent" xml:space="preserve">
     <value>TabControl</value>
   </data>
   <data name="&gt;&gt;TabPageDebug.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="TabControl.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
     <value>Fill</value>
@@ -652,7 +694,7 @@
     <value>TabControl</value>
   </data>
   <data name="&gt;&gt;TabControl.Type" xml:space="preserve">
-    <value>Wisej.Web.TabControl, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.TabControl, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;TabControl.Parent" xml:space="preserve">
     <value>SplitContainer.Panel2</value>
@@ -667,7 +709,7 @@
     <value>SplitContainer.Panel2</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel2.Type" xml:space="preserve">
-    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.SplitterPanel, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Panel2.Parent" xml:space="preserve">
     <value>SplitContainer</value>
@@ -688,7 +730,7 @@
     <value>SplitContainer</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Type" xml:space="preserve">
-    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.SplitContainer, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;SplitContainer.Parent" xml:space="preserve">
     <value>$this</value>
@@ -736,7 +778,7 @@
     <value>tab-close</value>
   </data>
   <data name="bDelete.Text" xml:space="preserve">
-    <value>Delete Filters</value>
+    <value>Reset Filters</value>
   </data>
   <metadata name="ContextMenuRecords.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
@@ -811,7 +853,7 @@
     <value>NavBar</value>
   </data>
   <data name="&gt;&gt;NavBar.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBar, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBar, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;NavBar.Parent" xml:space="preserve">
     <value>$this</value>
@@ -826,7 +868,7 @@
     <value>39</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>7, 19</value>
+    <value>7, 18</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>901, 635</value>
@@ -841,150 +883,150 @@
     <value>dgvcNomeCampo</value>
   </data>
   <data name="&gt;&gt;dgvcNomeCampo.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;dgvcColumnValue.Name" xml:space="preserve">
     <value>dgvcColumnValue</value>
   </data>
   <data name="&gt;&gt;dgvcColumnValue.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;dgvcQueryColumn.Name" xml:space="preserve">
     <value>dgvcQueryColumn</value>
   </data>
   <data name="&gt;&gt;dgvcQueryColumn.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewButtonColumn, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.DataGridViewButtonColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
     <value>bFirst</value>
   </data>
   <data name="&gt;&gt;bFirst.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bPrev.Name" xml:space="preserve">
     <value>bPrev</value>
   </data>
   <data name="&gt;&gt;bPrev.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;RecordLabel.Name" xml:space="preserve">
     <value>RecordLabel</value>
   </data>
   <data name="&gt;&gt;RecordLabel.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bNext.Name" xml:space="preserve">
     <value>bNext</value>
   </data>
   <data name="&gt;&gt;bNext.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bLast.Name" xml:space="preserve">
     <value>bLast</value>
   </data>
   <data name="&gt;&gt;bLast.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bRefresh.Name" xml:space="preserve">
     <value>bRefresh</value>
   </data>
   <data name="&gt;&gt;bRefresh.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bDelete.Name" xml:space="preserve">
     <value>bDelete</value>
   </data>
   <data name="&gt;&gt;bDelete.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;Records.Name" xml:space="preserve">
     <value>Records</value>
   </data>
   <data name="&gt;&gt;Records.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;ContextMenuRecords.Name" xml:space="preserve">
     <value>ContextMenuRecords</value>
   </data>
   <data name="&gt;&gt;ContextMenuRecords.Type" xml:space="preserve">
-    <value>Wisej.Web.ContextMenu, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ContextMenu, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords100.Name" xml:space="preserve">
     <value>menuRecords100</value>
   </data>
   <data name="&gt;&gt;menuRecords100.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords500.Name" xml:space="preserve">
     <value>menuRecords500</value>
   </data>
   <data name="&gt;&gt;menuRecords500.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords1000.Name" xml:space="preserve">
     <value>menuRecords1000</value>
   </data>
   <data name="&gt;&gt;menuRecords1000.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords2000.Name" xml:space="preserve">
     <value>menuRecords2000</value>
   </data>
   <data name="&gt;&gt;menuRecords2000.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords5000.Name" xml:space="preserve">
     <value>menuRecords5000</value>
   </data>
   <data name="&gt;&gt;menuRecords5000.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecords10000.Name" xml:space="preserve">
     <value>menuRecords10000</value>
   </data>
   <data name="&gt;&gt;menuRecords10000.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;menuRecordsALL.Name" xml:space="preserve">
     <value>menuRecordsALL</value>
   </data>
   <data name="&gt;&gt;menuRecordsALL.Type" xml:space="preserve">
-    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.MenuItem, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bPrint.Name" xml:space="preserve">
     <value>bPrint</value>
   </data>
   <data name="&gt;&gt;bPrint.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bSave.Name" xml:space="preserve">
     <value>bSave</value>
   </data>
   <data name="&gt;&gt;bSave.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bSaveQBE.Name" xml:space="preserve">
     <value>bSaveQBE</value>
   </data>
   <data name="&gt;&gt;bSaveQBE.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bLoadQBE.Name" xml:space="preserve">
     <value>bLoadQBE</value>
   </data>
   <data name="&gt;&gt;bLoadQBE.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bClose.Name" xml:space="preserve">
     <value>bClose</value>
   </data>
   <data name="&gt;&gt;bClose.Type" xml:space="preserve">
-    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>QBEForm</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>Wisej.Web.Form, Wisej.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+    <value>Wisej.Web.Form, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
 </root>

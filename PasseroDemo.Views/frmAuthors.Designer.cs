@@ -42,8 +42,9 @@
             this.txt_au_fname = new Wisej.Web.TextBox();
             this.txt_au_lname = new Wisej.Web.TextBox();
             this.flpAuthors = new Wisej.Web.FlowLayoutPanel();
-            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.chkUseFastReports = new Wisej.Web.CheckBox();
             this.serialBarcodeReader1 = new Passero.Framework.Controls.SerialBarcodeReader();
+            this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.flpAuthors.SuspendLayout();
             this.SuspendLayout();
@@ -175,12 +176,30 @@
             this.flpAuthors.Controls.Add(this.txt_phone);
             this.flpAuthors.Controls.Add(this.txt_email);
             this.flpAuthors.Controls.Add(this.chk_Contract);
+            this.flpAuthors.Controls.Add(this.chkUseFastReports);
             this.flpAuthors.Controls.Add(this.serialBarcodeReader1);
             this.flpAuthors.Location = new System.Drawing.Point(3, 7);
             this.flpAuthors.Name = "flpAuthors";
             this.flpAuthors.Padding = new Wisej.Web.Padding(3);
             this.flpAuthors.Size = new System.Drawing.Size(790, 384);
             this.flpAuthors.TabIndex = 1;
+            // 
+            // chkUseFastReports
+            // 
+            this.chkUseFastReports.Location = new System.Drawing.Point(6, 162);
+            this.chkUseFastReports.Name = "chkUseFastReports";
+            this.chkUseFastReports.Size = new System.Drawing.Size(125, 23);
+            this.chkUseFastReports.TabIndex = 11;
+            this.chkUseFastReports.Text = "Usa Fast Reports";
+            // 
+            // serialBarcodeReader1
+            // 
+            this.flpAuthors.SetFlowBreak(this.serialBarcodeReader1, true);
+            this.serialBarcodeReader1.Location = new System.Drawing.Point(137, 162);
+            this.serialBarcodeReader1.Name = "serialBarcodeReader1";
+            this.serialBarcodeReader1.Size = new System.Drawing.Size(94, 23);
+            this.serialBarcodeReader1.TabIndex = 10;
+            this.serialBarcodeReader1.OnBarcodeScanned += new System.EventHandler<Passero.Framework.Controls.SerialBarcodeReader.BarcodeScannedEventArgs>(this.serialBarcodeReader1_OnBarcodeScanned);
             // 
             // dataNavigator1
             // 
@@ -195,13 +214,6 @@
             this.dataNavigator1.ePrint += new Passero.Framework.Controls.DataNavigator.ePrintEventHandler(this.dataNavigator1_ePrint);
             this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
             this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
-            // 
-            // serialBarcodeReader1
-            // 
-            this.serialBarcodeReader1.Location = new System.Drawing.Point(6, 162);
-            this.serialBarcodeReader1.Name = "serialBarcodeReader1";
-            this.serialBarcodeReader1.TabIndex = 10;
-            this.serialBarcodeReader1.OnBarcodeScanned += new System.EventHandler<Passero.Framework.Controls.SerialBarcodeReader.BarcodeScannedEventArgs>(this.serialBarcodeReader1_OnBarcodeScanned);
             // 
             // frmAuthors
             // 
@@ -241,5 +253,6 @@
         internal Wisej.Web.TextBox txt_au_lname;
         private Wisej.Web.FlowLayoutPanel flpAuthors;
         private Passero.Framework.Controls.SerialBarcodeReader serialBarcodeReader1;
+        private Wisej.Web.CheckBox chkUseFastReports;
     }
 }

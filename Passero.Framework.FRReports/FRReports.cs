@@ -379,6 +379,38 @@ namespace Passero.Framework.FRReports
     }
 
 
+    /// <summary>
+    /// EventArgs per il salvataggio della QueryGrid.
+    /// </summary>
+    public class QueryGridSaveEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Ottiene il JSON serializzato della QueryGrid.
+        /// </summary>
+        public string QueryGridJson { get; set; }
+
+        /// <summary>
+        /// Ottiene o imposta un valore che indica se l'operazione deve essere annullata.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// EventArgs per il caricamento della QueryGrid.
+    /// </summary>
+    public class QueryGridLoadEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Ottiene il JSON da deserializzare nella QueryGrid.
+        /// </summary>
+        public string QueryGridJson { get; set; }
+
+        /// <summary>
+        /// Ottiene o imposta un valore che indica se l'operazione deve essere annullata.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
 
     [Serializable]
     public class QBEFRReport

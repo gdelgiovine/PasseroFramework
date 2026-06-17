@@ -3,13 +3,47 @@ using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.Common;
 using System.Linq;
 using Wisej.Web;
 
+
 namespace Passero.Framework.Controls
 {
+
+
+    /// <summary>
+    /// EventArgs per il salvataggio della QueryGrid.
+    /// </summary>
+    public class QueryGridSaveEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Ottiene il JSON serializzato della QueryGrid.
+        /// </summary>
+        public string QueryGridJson { get; set; }
+
+        /// <summary>
+        /// Ottiene o imposta un valore che indica se l'operazione deve essere annullata.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+    /// <summary>
+    /// EventArgs per il caricamento della QueryGrid.
+    /// </summary>
+    public class QueryGridLoadEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Ottiene il JSON da deserializzare nella QueryGrid.
+        /// </summary>
+        public string QueryGridJson { get; set; }
+
+        /// <summary>
+        /// Ottiene o imposta un valore che indica se l'operazione deve essere annullata.
+        /// </summary>
+        public bool Cancel { get; set; }
+    }
+
+
     //internal class CustomComponentResourceManager : ComponentResourceManager
     //{
     //    public CustomComponentResourceManager(Type type, string resourceName)
@@ -43,7 +77,7 @@ namespace Passero.Framework.Controls
     /// </summary>
     public class DataNavigatorViewModel
     {
-        public ViewModelTypes ViewModelType { get; set; } = ViewModelTypes.Base;  
+        public ViewModelTypes ViewModelType { get; set; } = ViewModelTypes.Base;
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
@@ -96,7 +130,7 @@ namespace Passero.Framework.Controls
             get { return mGridMode; }
             set { mGridMode = value; }
         }
-        public bool UseUpdateEx { get; set; } = false;  
+        public bool UseUpdateEx { get; set; } = false;
 
 
         /// <summary>
@@ -109,8 +143,8 @@ namespace Passero.Framework.Controls
         /// <param name="DataRepeater">The data repeater.</param>
         public DataNavigatorViewModel(object ViewModel, string Name = "", string FriendlyName = "", DataGridView DataGridView = null, DataRepeater DataRepeater = null)
         {
-            if (Passero .Framework .Utilities .IsViewModelType(ViewModel ) == false)
-                throw new Exception("The ViewModel parameter is not a valid ViewModel.");   
+            if (Passero.Framework.Utilities.IsViewModelType(ViewModel) == false)
+                throw new Exception("The ViewModel parameter is not a valid ViewModel.");
 
             if (string.IsNullOrEmpty(Name))
                 Name = ReflectionHelper.GetPropertyValue(ViewModel, "Name").ToString();
@@ -378,6 +412,17 @@ namespace Passero.Framework.Controls
     #endregion
 
 
+    [Serializable]
+    public enum QBEColumnSize
+    {
+        None = 0,
+        Autosize = -1,
+        Fill = -2
+
+
+    }
+
+
     //[Serializable]
     //public enum QBEMode
     //{
@@ -419,6 +464,20 @@ namespace Passero.Framework.Controls
         /// </summary>
         DoNotUseInQBE = 0
     }
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Serializable]
+    public enum QBEQueryMode
+    {
+        QueryGrid = 0,
+        QueryBuilder = 1,
+        QueryGridQueryBuilder = 2
+    }
+
 
     /// <summary>
     /// 
@@ -1098,20 +1157,19 @@ namespace Passero.Framework.Controls
     /// <seealso cref="System.Collections.Generic.Dictionary&lt;System.String, Passero.Framework.Controls.QBEColumn&gt;" />
     public class QBEColumns : Dictionary<string, QBEColumn>
     {
-        //public XQBEForm QBEForm;
 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QBEColumns"/> class.
         /// </summary>
-        public QBEColumns(object Parent =null) : base(StringComparer.InvariantCultureIgnoreCase)
+        public QBEColumns(object Parent = null) : base(StringComparer.InvariantCultureIgnoreCase)
         {
             if (Parent != null)
                 this.Parent = Parent;
         }
 
 
-        public Object Parent { get; set; }  
+        public Object Parent { get; set; }
 
         /// <summary>
         /// Adds the specified database column.
@@ -1124,12 +1182,29 @@ namespace Passero.Framework.Controls
         /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumnName, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, int ColumnWidth = 0)
+        public QBEColumn Add(string DbColumnName, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, ColumnWidthValue ColumnWidth = default)
         {
             var x = new QBEColumn();
-            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth.Value);
 
         }
+        /// <summary>
+        /// Adds the specified database column.
+        /// </summary>
+        /// <param name="DbColumnName">The database column.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
+        /// <param name="DisplayFormat">The display format.</param>
+        /// <param name="QBEValue">The qbe value.</param>
+        /// <param name="UseInQBE">if set to <c>true</c> [use in qbe].</param>
+        /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
+        /// <param name="ColumnWidth">Width of the column.</param>
+        /// <returns></returns>
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, ColumnWidthValue ColumnWidth)
+        {
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth.Value);
+        }
+
+
         /// <summary>
         /// Adds the specified database column.
         /// </summary>
@@ -1148,6 +1223,22 @@ namespace Passero.Framework.Controls
         }
 
 
+        /// <summary>
+        /// Adds the specified database column.
+        /// </summary>
+        /// <param name="DbColumnName">The database column.</param>
+        /// <param name="FriendlyName">Name of the friendly.</param>
+        /// <param name="DisplayFormat">The display format.</param>
+        /// <param name="QBEValue">The qbe value.</param>
+        /// <param name="UseInQBE">if set to <c>true</c> [use in qbe].</param>
+        /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
+        /// <param name="QBEColumnType">Type of the qbe column.</param>
+        /// <param name="ColumnWidth">Width of the column.</param>
+        /// <returns></returns>
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, QBEColumnSize ColumnWidth)
+        {
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, (int)ColumnWidth);
+        }
         /// <summary>
         /// Adds for report.
         /// </summary>
@@ -1220,10 +1311,10 @@ namespace Passero.Framework.Controls
             x.QBEInitialValue = QBEValue;
 
 
-           x.QBEDbColumn = new QBEDbColumn();  
-           x.QBEDbColumn.Name = DbColumnName;
-            
-          
+            x.QBEDbColumn = new QBEDbColumn();
+            x.QBEDbColumn.Name = DbColumnName;
+
+
             if (string.IsNullOrEmpty(Strings.Trim(x.FriendlyName)))
                 x.FriendlyName = x.DbColumnName;
             if (ReportName.Trim() != "")
@@ -1234,7 +1325,7 @@ namespace Passero.Framework.Controls
             {
                 Add(DbColumnName.Trim().ToUpper(), x);
             }
-            
+
             return x;
         }
 
@@ -1244,172 +1335,23 @@ namespace Passero.Framework.Controls
 
     }
 
+    /// <summary>
+    /// Represents a column width value that accepts both an <see cref="int"/> and a <see cref="QBEColumnSize"/> enum value.
+    /// </summary>
+    public struct ColumnWidthValue
+    {
+        private readonly int _value;
 
-    //[Serializable]
-    //public class QBEReportSortColumn
-    //{
-    //    public string Name { get; set; }
-    //    public string FriendlyName { get; set; }
-    //    public int Position { get; set; }
-    //    public string AscDesc { get; set; }
-    //}
+        public ColumnWidthValue(int value)
+        {
+            _value = value;
+        }
 
-    //[Serializable ]
-    //public enum ReportTypes
-    //{
-    //    SSRSLocalReport =0,
-    //    SSRSRemoteServer=1
-    //}
+        /// <summary>Gets the underlying integer value.</summary>
+        public int Value => _value;
 
-
-
-    //[Serializable]
-    //public class QBEReport
-    //{
-    //    public Dictionary<string, Passero.Framework.RsReports.DataSet> DataSets = new Dictionary<string, RsReports.DataSet>(StringComparer.InvariantCultureIgnoreCase );
-    //    public ReportTypes ReportType = ReportTypes.SSRSLocalReport;
-    //    public Dapper.DynamicParameters SQLQueryParameters = new Dapper.DynamicParameters();
-    //    public Dictionary<string, QBEReportSortColumn> SortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
-    //    public Dictionary<string, QBEReportSortColumn> SelectedSortColumns = new Dictionary<string, QBEReportSortColumn>(StringComparer.InvariantCultureIgnoreCase);
-    //    public string SQLQuery = "";
-
-    //    private string mReportTitle;
-    //    private string mReportFileName;
-    //    private string mReportDescription;
-    //    private bool mReportUseLike;
-    //    public IDbConnection DbConnection { get; set; }
-    //    public RsReports.DataSet PrimaryDataSet { get; set; }
-
-    //    public bool SetPrimaryDataSet (string Name)
-    //    {
-    //        bool result = false;
-    //        if (this.DataSets.ContainsKey(Name))
-    //        {
-    //            this.PrimaryDataSet = this.DataSets[Name];
-    //            result = true;  
-    //        }
-
-    //        return result;  
-    //    }
-    //    public Passero.Framework.RsReports.DataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery="", DynamicParameters Parameters =null)
-    //    {
-    //        Passero.Framework.RsReports.DataSet ds = new RsReports.DataSet();
-
-    //        ds.Name = Name;
-    //        ds.DbConnection = DbConnection; 
-
-    //        if (SQLQuery != "")
-    //            ds.SQLQuery  = SQLQuery;
-    //        if (Parameters != null)
-    //            ds.Parameters = Parameters;
-    //        ds.ModelType = typeof(T);
-    //        ds.EnsureReportDataSet();
-    //        this.DataSets.Add(Name, ds);
-    //        return ds;  
-    //    }
-
-
-    //    public string OrderBy()
-    //    {
-    //        string s = "";
-    //        foreach (var item in this.SelectedSortColumns .Values )
-    //        {
-    //            s += $"{item.Name} {item.AscDesc}, "; 
-    //        }
-
-    //        s = s.Trim();
-    //        if (s.EndsWith (","))
-    //        {
-    //            s=s.Substring (0,s.Length - 1);
-    //        }
-
-    //        if (s != "")
-    //            s = $" ORDER BY {s}";
-    //        return s;
-    //    }
-
-
-    //    public bool ReportUseLike
-    //    {
-    //        get
-    //        {
-    //            bool ReportUseLikeRet = default;
-    //            ReportUseLikeRet = mReportUseLike;
-    //            return ReportUseLikeRet;
-
-    //        }
-    //        set
-    //        {
-    //            mReportUseLike = value;
-
-    //        }
-    //    }
-    //    public string ReportFileName
-    //    {
-    //        get
-    //        {
-    //            string ReportFileNameRet = default;
-    //            ReportFileNameRet = mReportFileName;
-    //            return ReportFileNameRet;
-    //        }
-    //        set
-    //        {
-    //            mReportFileName = value;
-
-    //        }
-    //    }
-
-
-
-    //    public string ReportDescription
-    //    {
-    //        get
-    //        {
-    //            string ReportDescriptionRet = default;
-    //            ReportDescriptionRet = mReportDescription;
-    //            return ReportDescriptionRet;
-
-    //        }
-    //        set
-    //        {
-    //            mReportDescription = value;
-
-    //        }
-    //    }
-
-
-    //    public string ReportTitle
-    //    {
-    //        get
-    //        {
-    //            string ReportTitleRet = default;
-    //            ReportTitleRet = mReportTitle;
-    //            return ReportTitleRet;
-
-    //        }
-    //        set
-    //        {
-    //            mReportTitle = value;
-
-    //        }
-    //    }
-    //}
-    //public class QBEReports : Dictionary<string,QBEReport >
-    //{
-
-    //    public QBEReport Add(string ReportTitle, string ReportFileName, string ReportDescription = "", IDbConnection DbConnection=null)
-    //    {
-    //        var x = new QBEReport();
-
-    //        x.ReportDescription = ReportDescription;
-    //        x.ReportFileName = ReportFileName;
-    //        x.ReportTitle = ReportTitle;
-    //        x.DbConnection = DbConnection;  
-    //        Add(x.ReportTitle.Trim().ToUpper() ,x);
-    //        return x;
-    //    }
-
-
-    //}
-
+        public static implicit operator ColumnWidthValue(int value) => new ColumnWidthValue(value);
+        public static implicit operator ColumnWidthValue(QBEColumnSize value) => new ColumnWidthValue((int)value);
+        public static implicit operator int(ColumnWidthValue value) => value._value;
+    }
 }

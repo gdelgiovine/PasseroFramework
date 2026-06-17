@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+	<TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
     <NoWarn>CA1416</NoWarn>
-	  <SignAssembly>False</SignAssembly>
-	  <AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+	<SignAssembly>False</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\Passero.Framework.snk</AssemblyOriginatorKeyFile>
+	<LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
 
@@ -32,6 +33,11 @@
 		<PackageReadmeFile>$(Solution_PackageReadmeFile)</PackageReadmeFile>
 		<PackageOutputPath>$(Solution_PackageOutputPath)</PackageOutputPath>
 	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <Compile Include="..\Passero.Framework.Controls\QBEForm\NavFilterSqlEngine.cs" Link="NavFilterSqlEngine.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="\" />

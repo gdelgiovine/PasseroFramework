@@ -1,12 +1,13 @@
-﻿using Passero.Framework;
+﻿using FastDeepCloner;
+using Microsoft.Ajax.Utilities;
+using Passero.Framework;
 using Passero.Framework.Base;
 using Passero.Framework.Controls;
+using PasseroDemo.ViewModels;
 using System;
 using System.Data;
-
 using System.Linq;
 using Wisej.Web;
-
 
 
 namespace PasseroDemo.Views
@@ -77,6 +78,12 @@ namespace PasseroDemo.Views
 
             //IQueryable<Models.Author> query = _dbContext.Set<Models.Author>();
             //var list = await _dbContext.ToListAsync(query.Where(a => a.contract ));
+
+
+           
+
+
+
         }
 
 
@@ -88,10 +95,11 @@ namespace PasseroDemo.Views
             QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(_dbContext);
 
 
-            QBE.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "", true, true, 20);
-            QBE.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "", true, true, 20);
+            QBE.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "1..9", true, true,QBEColumnSize.Autosize );
+            QBE.QBEColumns.Add(nameof(Models.Author.au_fname), "First Name", "", "Gabriele", true, true, QBEColumnSize.Autosize  );
             QBE.QBEColumns.Add(nameof(Models.Author.au_lname), "Last Name", "", "", true, true, 20);
-            QBE.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, 20);
+            QBE.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.CheckBox, -1);
+            //QBE.QBEColumns.Add(nameof(Models.Author.contract), "Have contract", "", "", true, true, Passero.Framework.Controls.QBEColumnsTypes.TextBox , 20);
             ////xQBEForm_Author.QBEColumns["au_id"].ForeColor = System.Drawing.Color.Red;
             //QBEForm_Author.QBEColumns["au_id"].FontStyle = System.Drawing.FontStyle.Bold;
             ////xQBEForm_Author.QBEColumns["au_id"].FontSize = 10;
@@ -118,10 +126,59 @@ namespace PasseroDemo.Views
             QBE.AutoLoadData =true;
             QBE.ResultGrid.RowHeaderColumn.Visible = false;
             QBE.Text = "Authors QBE";
+            QBE.QBEQueryMode = QBEQueryMode.QueryGrid    ;
+
+            // Uso dei CallBack
+            //QBE.QueryGridQuerySaveCallBackAction = (jsonData) =>
+            //{
+            //    this.SaveQueryGridConfiguration(jsonData);
+            //};
+            //QBE.QueryGridQueryLoadCallBackAction = () =>
+            //{
+            //    this.LoadQueryGridConfiguration(QBE );  
+            //};
+
+            // Uso degli eventi
+            QBE.QueryGridSaving += (sender, e) =>
+            {
+            
+                // Salva nel database, file, ecc.
+                this.SaveQueryGridConfiguration(e.QueryGridJson);
+
+                // Puoi annullare l'operazione se necessario
+                // e.Cancel = true;    
+
+
+            };
+
+            QBE.QueryGridLoading += (sender, e) =>
+            {
+                // Carica il JSON da una sorgente esterna
+                this.LoadQueryGridConfiguration(QBE);
+            };
+
+            QBE.ShowSaveLoadButtons = false;
             QBE.ShowQBE();
 
         }
 
+        private void LoadQueryGridConfiguration(QBEForm<Models.Author> QBEForm)
+        {
+            
+            // Implementa la logica per caricare la configurazione della QueryGrid
+            // Ad esempio, puoi caricarla da un file o da un database
+            string jsonData = System.IO.File.ReadAllText(@"C:\Reports\QueryGridConfig.json");
+
+            // Applica la configurazione alla QueryGrid
+            QBEForm.JsonToQueryGrid(jsonData);
+
+        }   
+        private void SaveQueryGridConfiguration(string jsonData)
+        {
+            // Implementa la logica per salvare la configurazione della QueryGrid
+            // Ad esempio, puoi salvarla in un file o in un database
+            System.IO.File.WriteAllText(@"C:\Reports\QueryGridConfig.json", jsonData);
+        }
 
         private void FR_QBEReport_Authors()
         {
@@ -179,9 +236,15 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
-           this.SSRS_QBEReport_Authors();
-           //this.FR_QBEReport_Authors();
-
+           if(chkUseFastReports.Checked)
+            {
+                this.FR_QBEReport_Authors();
+            }
+            else
+            {
+                this.SSRS_QBEReport_Authors();
+            }
+            
         }
 
         private void dataNavigator1_eFind()

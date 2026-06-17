@@ -44,12 +44,13 @@ namespace Passero.Framework.Controls
             this.SplitContainer = new Wisej.Web.SplitContainer();
             this.ResultGrid = new Wisej.Web.DataGridView();
             this.TabControl = new Wisej.Web.TabControl();
-            this.TabPageReportQuery = new Wisej.Web.TabPage();
+            this.TabPageQueryGrid = new Wisej.Web.TabPage();
             this.QueryGrid = new Wisej.Web.DataGridView();
             this.dgvcNomeCampo = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvcColumnValue = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvcQueryColumn = new Wisej.Web.DataGridViewButtonColumn();
             this.chkLikeOperator = new Wisej.Web.CheckBox();
+            this.TabPageQueryBuilder = new Wisej.Web.TabPage();
             this.TabPageExport = new Wisej.Web.TabPage();
             this.PanelExport = new Wisej.Web.FlowLayoutPanel();
             this.rbJSON = new Wisej.Web.RadioButton();
@@ -84,14 +85,16 @@ namespace Passero.Framework.Controls
             this.bSaveQBE = new Wisej.Web.ToolBarButton();
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
+            this.queryBuilderControl = new Passero.Framework.Controls.QueryBuilderControl();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
             this.SplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ResultGrid)).BeginInit();
             this.TabControl.SuspendLayout();
-            this.TabPageReportQuery.SuspendLayout();
+            this.TabPageQueryGrid.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).BeginInit();
+            this.TabPageQueryBuilder.SuspendLayout();
             this.TabPageExport.SuspendLayout();
             this.PanelExport.SuspendLayout();
             this.TabPageDebug.SuspendLayout();
@@ -139,6 +142,7 @@ namespace Passero.Framework.Controls
             // 
             // ResultGrid
             // 
+            this.ResultGrid.AutoSizeColumnsMode = Wisej.Web.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.ResultGrid.DefaultRowHeight = 24;
             resources.ApplyResources(this.ResultGrid, "ResultGrid");
             this.ResultGrid.KeepSameRowHeight = true;
@@ -153,20 +157,21 @@ namespace Passero.Framework.Controls
             // 
             // TabControl
             // 
-            this.TabControl.Controls.Add(this.TabPageReportQuery);
+            this.TabControl.Controls.Add(this.TabPageQueryGrid);
+            this.TabControl.Controls.Add(this.TabPageQueryBuilder);
             this.TabControl.Controls.Add(this.TabPageExport);
             this.TabControl.Controls.Add(this.TabPageDebug);
             resources.ApplyResources(this.TabControl, "TabControl");
             this.TabControl.Name = "TabControl";
             this.TabControl.PageInsets = new Wisej.Web.Padding(1, 30, 1, 1);
             // 
-            // TabPageReportQuery
+            // TabPageQueryGrid
             // 
-            this.TabPageReportQuery.Controls.Add(this.QueryGrid);
-            this.TabPageReportQuery.Controls.Add(this.chkLikeOperator);
-            resources.ApplyResources(this.TabPageReportQuery, "TabPageReportQuery");
-            this.TabPageReportQuery.Name = "TabPageReportQuery";
-            this.TabPageReportQuery.Resize += new System.EventHandler(this.TabPageReportQuery_Resize);
+            this.TabPageQueryGrid.Controls.Add(this.QueryGrid);
+            this.TabPageQueryGrid.Controls.Add(this.chkLikeOperator);
+            resources.ApplyResources(this.TabPageQueryGrid, "TabPageQueryGrid");
+            this.TabPageQueryGrid.Name = "TabPageQueryGrid";
+            this.TabPageQueryGrid.Resize += new System.EventHandler(this.TabPageReportQuery_Resize);
             // 
             // QueryGrid
             // 
@@ -213,6 +218,12 @@ namespace Passero.Framework.Controls
             resources.ApplyResources(this.chkLikeOperator, "chkLikeOperator");
             this.chkLikeOperator.CheckState = Wisej.Web.CheckState.Checked;
             this.chkLikeOperator.Name = "chkLikeOperator";
+            // 
+            // TabPageQueryBuilder
+            // 
+            this.TabPageQueryBuilder.Controls.Add(this.queryBuilderControl);
+            resources.ApplyResources(this.TabPageQueryBuilder, "TabPageQueryBuilder");
+            this.TabPageQueryBuilder.Name = "TabPageQueryBuilder";
             // 
             // TabPageExport
             // 
@@ -464,6 +475,7 @@ namespace Passero.Framework.Controls
             resources.ApplyResources(this.bSaveQBE, "bSaveQBE");
             this.bSaveQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bSaveQBE.Name = "bSaveQBE";
+            this.bSaveQBE.Click += new System.EventHandler(this.bSaveQBE_Click);
             // 
             // bLoadQBE
             // 
@@ -471,6 +483,7 @@ namespace Passero.Framework.Controls
             resources.ApplyResources(this.bLoadQBE, "bLoadQBE");
             this.bLoadQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bLoadQBE.Name = "bLoadQBE";
+            this.bLoadQBE.Click += new System.EventHandler(this.bLoadQBE_Click);
             // 
             // bClose
             // 
@@ -479,6 +492,11 @@ namespace Passero.Framework.Controls
             this.bClose.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bClose.Name = "bClose";
             this.bClose.Click += new System.EventHandler(this.bClose_Click);
+            // 
+            // queryBuilderControl
+            // 
+            resources.ApplyResources(this.queryBuilderControl, "queryBuilderControl");
+            this.queryBuilderControl.Name = "queryBuilderControl";
             // 
             // QBEForm
             // 
@@ -498,8 +516,9 @@ namespace Passero.Framework.Controls
             this.SplitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ResultGrid)).EndInit();
             this.TabControl.ResumeLayout(false);
-            this.TabPageReportQuery.ResumeLayout(false);
+            this.TabPageQueryGrid.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.QueryGrid)).EndInit();
+            this.TabPageQueryBuilder.ResumeLayout(false);
             this.TabPageExport.ResumeLayout(false);
             this.PanelExport.ResumeLayout(false);
             this.PanelExport.PerformLayout();
@@ -514,7 +533,7 @@ namespace Passero.Framework.Controls
 
         internal Wisej.Web.SplitContainer SplitContainer;
         internal Wisej.Web.TabControl TabControl;
-        internal Wisej.Web.TabPage TabPageReportQuery;
+        internal Wisej.Web.TabPage TabPageQueryGrid;
         private Wisej.Web.DataGridView QueryGrid;
         private Wisej.Web.DataGridViewTextBoxColumn dgvcNomeCampo;
         private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnValue;
@@ -555,5 +574,7 @@ namespace Passero.Framework.Controls
         internal Wisej.Web.MenuItem menuRecords5000;
         internal Wisej.Web.MenuItem menuRecords10000;
         internal Wisej.Web.MenuItem menuRecordsALL;
+        private Wisej.Web.TabPage TabPageQueryBuilder;
+        private QueryBuilderControl queryBuilderControl;
     }
 }
