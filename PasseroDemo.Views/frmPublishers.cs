@@ -10,8 +10,8 @@ namespace PasseroDemo.Views
     {
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
         public Passero.Framework.ViewModel<Models.Publisher> vmPublishers = new Passero.Framework.ViewModel<Models.Publisher>();
-        private System.Data.SqlClient.SqlConnection DbConnection;
-        private Microsoft.Data.SqlClient.SqlConnection DbConnectionA;
+        private IDbConnection  DbConnection;
+        
         public frmPublishers()
         {
             InitializeComponent();
@@ -19,9 +19,8 @@ namespace PasseroDemo.Views
 
         public void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
-            this.DbConnectionA = new Microsoft.Data.SqlClient.SqlConnection(ConfigurationManager.DBConnections["PasseroDemo"].ConnectionString);
-
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
+        
             vmPublishers.Init(this.DbConnection);
             //vmPublishers.DataBindControlsAutoSetMaxLenght = true;
             //vmPublishers.AutoWriteControls = true;

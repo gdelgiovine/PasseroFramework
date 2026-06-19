@@ -9,6 +9,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace Passero.Framework.FRReports
 {
@@ -585,6 +586,7 @@ namespace Passero.Framework.FRReports
         //public object Repository { get; set; }
         public Type ModelType { get; set; }
         public Dictionary<string, System.Reflection.PropertyInfo> ModelProperties= new Dictionary<string, System.Reflection.PropertyInfo>();
+        public List<PropertyInfo> ModelPrimaryKeys = new List<PropertyInfo>();
         public object Data { get; set; }    
         public object Model { get; set; }
         public DataSet() 
@@ -616,8 +618,8 @@ namespace Passero.Framework.FRReports
                 {
                     this.ModelProperties.Add(item.Name, item);
                 }
-                
 
+                this.ModelPrimaryKeys = Utilities.GetModelPrimaryKeysPropertiesInfo(ModelType);
                 return true;
             }
             return false;   

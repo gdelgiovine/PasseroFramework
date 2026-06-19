@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using Passero.Framework ;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 //using Passero.Framework.Base;
 #nullable enable
 
@@ -133,57 +135,68 @@ namespace Passero.Framework
         }
 
 
-
+        public ProviderFeatures ProviderFeatures { get; set; }
 
         /// <summary>
         /// SQL dialect inferred from <see cref="DbConnection"/> type via reflection.
         /// Can be overridden explicitly when auto-detection is insufficient.
         /// </summary>
-        public SqlDialect SqlDialect
-        {
-            get => _sqlDialect ?? (_sqlDialect = DetectSqlDialect()).Value;
-            set => _sqlDialect = value;
-        }
-        private SqlDialect? _sqlDialect;
+        //public SqlDialect SqlDialect
+        //{
+        //    get => _sqlDialect ?? (_sqlDialect = DetectSqlDialect()).Value;
+        //    set => _sqlDialect = value;
+        //}
+        //private SqlDialect? _sqlDialect;
 
-        /// <summary>
-        /// Detects the SQL dialect by inspecting the runtime type name of <see cref="DbConnection"/>.
-        /// Consistent with the pattern used in <see cref="DataBaseHelper.GetUpdateSqlCommand(string, System.Data.Common.DbConnection)"/>.
-        /// Falls back to <see cref="SqlDialect.SqlServer"/> if unrecognized.
-        /// </summary>
-        private SqlDialect DetectSqlDialect()
-        {
-            if (DbConnection == null)
-                return SqlDialect.SqlServer;
+        ///// <summary>
+        ///// Detects the SQL dialect by inspecting the runtime type name of <see cref="DbConnection"/>.
+        ///// Consistent with the pattern used in <see cref="DataBaseHelper.GetUpdateSqlCommand(string, System.Data.Common.DbConnection)"/>.
+        ///// Falls back to <see cref="SqlDialect.SqlServer"/> if unrecognized.
+        ///// </summary>
+        //public  SqlDialect DetectSqlDialect()
+        //{
+        //    if (DbConnection == null)
+        //        return SqlDialect.SqlServer;
 
-            var typeName = DbConnection.GetType().FullName ?? string.Empty;
+        //    var typeName = DbConnection.GetType().FullName ?? string.Empty;
 
-            if (typeName.Contains("Npgsql")) return SqlDialect.PostgreSql;
-            if (typeName.Contains("SQLite") || typeName.Contains("Sqlite")) return SqlDialect.SQLite;
-            if (typeName.Contains("MySql") || typeName.Contains("MariaDb")) return SqlDialect.MySql;
-            if (typeName.Contains("Oracle")) return SqlDialect.Oracle;
+        //    if (typeName.Contains("Npgsql")) return SqlDialect.PostgreSql;
+        //    if (typeName.Contains("SQLite") || typeName.Contains("Sqlite")) return SqlDialect.SQLite;
+        //    if (typeName.Contains("MySql") || typeName.Contains("MariaDb")) return SqlDialect.MySql;
+        //    if (typeName.Contains("Oracle")) return SqlDialect.Oracle;
 
-            return SqlDialect.SqlServer; // Microsoft.Data.SqlClient o System.Data.SqlClient
-        }
+        //    return SqlDialect.SqlServer; // Microsoft.Data.SqlClient o System.Data.SqlClient
+        //}
 
         /// <summary>
         /// Returns the SQL fragment that retrieves the last generated identity value
-        /// for the current <see cref="SqlDialect"/>.
+        /// for the current <see cref="DbDialect"/>.
+        /// Returns null if the primary key is ExplicitKey (non-identity).
         /// The fragment is appended to the INSERT statement separated by a semicolon.
         /// </summary>
         private string GetIdentityFragment()
         {
-            return SqlDialect switch
+            // Controlla se la chiave è ExplicitKey
+            var keyProperty = EntityPrimaryKeys.FirstOrDefault();
+            if (keyProperty != null)
             {
-                SqlDialect.PostgreSql => "SELECT lastval()",
-                SqlDialect.SQLite => "SELECT last_insert_rowid()",
-                SqlDialect.MySql => "SELECT LAST_INSERT_ID()",
-                SqlDialect.Oracle => "SELECT 0 FROM DUAL", // Oracle richiede una sequenza esplicita: override manuale
+                var explicitKeyAttr = keyProperty.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>();
+                if (explicitKeyAttr != null)
+                {
+                    // È una chiave esplicita, non un'identity
+                    return null;
+                }
+            }
+
+            return ProviderFeatures.Dialect switch
+            {
+                DbDialect.PostgreSql => "SELECT lastval()",
+                DbDialect.SQLite => "SELECT last_insert_rowid()",
+                DbDialect.MySql => "SELECT LAST_INSERT_ID()",
+                DbDialect.Oracle => "SELECT 0 FROM DUAL", // Oracle richiede una sequenza esplicita: override manuale
                 _ => "SELECT SCOPE_IDENTITY()" // SqlServer default
             };
         }
-
-
 
         /// <summary>
         /// Resets the model item.

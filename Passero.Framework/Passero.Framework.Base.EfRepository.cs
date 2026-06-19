@@ -1,21 +1,27 @@
 ﻿using Dapper;
-#if   NET48
-using System.Data.SqlClient;
-#else
-using Microsoft.Data.SqlClient;
-#endif
+using Passero.Framework.Base;
+using Passero.Framework;
+
+//#if   NET48
+//using System.Data.SqlClient;
+//#else
+//using Microsoft.Data.SqlClient;
+//#endif
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Passero.Framework.Base;
 
 namespace Passero.Framework
 {
+
+
     /// <summary>
     /// Repository generico basato su Entity Framework Core.
     /// Disponibile solo su .NET 5+. Dipende da <see cref="IPasseroDbContext"/>
@@ -27,6 +33,8 @@ namespace Passero.Framework
         private const string _mClassName = "Passero.Framework.EfRepository";
         private readonly IPasseroDbContext _dbContext;
         private bool _disposed;
+
+        private DbParameterCollection _parameterCollection;
 
         private static readonly ConcurrentDictionary<Type, string> _tableNameCache = new();
         // La chiave è "FullName|ORMType" per differenziare EF6 da EF Core per lo stesso tipo.
@@ -48,6 +56,8 @@ namespace Passero.Framework
         public IDbTransaction DbTransaction { get; set; }
         public int DbCommandTimeout { get; set; } = 30;
 
+        public ProviderFeatures ProviderFeatures { get; set; } 
+
         // ── IPasseroRepository: stato ─────────────────────────────────────────
         public IList<ModelClass> ModelItems { get; set; } = new List<ModelClass>();
         public ModelClass ModelItem { get; set; }
@@ -63,6 +73,7 @@ namespace Passero.Framework
 
         // ── IPasseroRepository: metadati DB ───────────────────────────────────
         public string DefaultSQLQuery { get; set; }
+        public string DefaultOrderbyClause { get; set; }  
         public DynamicParameters DefaultSQLQueryParameters { get; set; } = new DynamicParameters();
         public DynamicParameters Parameters { get; set; } = new DynamicParameters();
         public string SQLQuery { get; set; }
@@ -885,7 +896,12 @@ namespace Passero.Framework
 
         // ── HELPER: conversione parametri → SqlParameter[] per EF Core/EF6 ──────
 
-        private static object[] BuildSqlParameters(object parameters)
+       
+
+
+
+
+        private object[] BuildSqlParameters(object parameters)
         {
             if (parameters == null)
                 return Array.Empty<object>();
@@ -894,11 +910,11 @@ namespace Passero.Framework
             if (parameters is object[] arr)
                 return arr;
 
-            // Caso 2: DynamicParameters di Dapper — estrarre nome/valore e creare SqlParameter[]
+            // Caso 2: DynamicParameters di Dapper — estrarre nome/valore e creare SqlParameter
             if (parameters is DynamicParameters dynamicParams)
             {
                 return dynamicParams.ParameterNames
-                    .Select(name => (object)new SqlParameter(
+                    .Select(name => CreateDbParameter(
                         name.StartsWith("@") ? name : $"@{name}",
                         ((SqlMapper.IParameterLookup)dynamicParams)[name] ?? DBNull.Value))
                     .ToArray();
@@ -907,10 +923,27 @@ namespace Passero.Framework
             // Caso 3: oggetto anonimo o POCO — reflection sulle proprietà pubbliche
             return parameters.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Select(p => (object)new SqlParameter(
+                .Select(p => CreateDbParameter(
                     $"@{p.Name}",
                     p.GetValue(parameters) ?? DBNull.Value))
                 .ToArray();
+        }
+
+
+
+        private System.Data.Common.DbParameter CreateDbParameter(string name, object value)
+        {
+            // Registra i provider al primo uso (thread-safe, solo se disponibili)
+            DbProviderInitializer.EnsureInitialized();
+
+            var providerInvariantName = Utilities.GetProviderInvariantName(_dbContext.DbConnection);
+            var providerFactory = System.Data.Common.DbProviderFactories.GetFactory(providerInvariantName);
+
+            var parameter = providerFactory.CreateParameter();
+            parameter.ParameterName = name;
+            parameter.Value = value;
+
+            return parameter;
         }
 
         // ── DISPOSE ───────────────────────────────────────────────────────────
@@ -932,4 +965,207 @@ namespace Passero.Framework
             _disposed = true;
         }
     }
+
+    //--------------------------------------
+
+    //DBProviderInitializer: utility per registrazione lazy dei provider ADO.NET su .NET 6+.
+
+    public static class DbProviderInitializer
+    {
+        private static bool _initialized;
+        private static readonly object _lock = new object();
+
+        /// <summary>
+        /// Registra i provider ADO.NET al primo uso.
+        /// Thread-safe. Registra solo i provider il cui assembly è disponibile.
+        /// </summary>
+        public static void EnsureInitialized()
+        {
+            if (_initialized)
+                return;
+
+            lock (_lock)
+            {
+                if (_initialized)
+                    return;
+
+#if NET5_0_OR_GREATER
+            /*
+             * SQL Server moderno.
+             *
+             * Package:
+             * Microsoft.Data.SqlClient
+             *
+             * Invariant name:
+             * Microsoft.Data.SqlClient
+             */
+            RegisterProviderIfAvailable(
+                "Microsoft.Data.SqlClient",
+                typeof(Microsoft.Data.SqlClient.SqlClientFactory));
+
+            /*
+             * PostgreSQL.
+             *
+             * Package:
+             * Npgsql
+             *
+             * Invariant name:
+             * Npgsql
+             */
+            RegisterProviderIfAvailable(
+                "Npgsql",
+                "Npgsql",
+                "Npgsql.NpgsqlFactory");
+
+            /*
+             * MySQL Oracle provider.
+             *
+             * Package:
+             * MySql.Data
+             *
+             * Invariant name:
+             * MySql.Data.MySqlClient
+             */
+            RegisterProviderIfAvailable(
+                "MySql.Data.MySqlClient",
+                "MySql.Data",
+                "MySql.Data.MySqlClient.MySqlClientFactory");
+
+            /*
+             * SQLite classico.
+             *
+             * Package:
+             * System.Data.SQLite
+             *
+             * Invariant name:
+             * System.Data.SQLite
+             */
+            RegisterProviderIfAvailable(
+                "System.Data.SQLite",
+                "System.Data.SQLite",
+                "System.Data.SQLite.SQLiteFactory");
+
+            /*
+             * Oracle Managed Driver.
+             *
+             * Package:
+             * Oracle.ManagedDataAccess
+             *
+             * Invariant name:
+             * Oracle.ManagedDataAccess.Client
+             */
+            RegisterProviderIfAvailable(
+                "Oracle.ManagedDataAccess.Client",
+                "Oracle.ManagedDataAccess",
+                "Oracle.ManagedDataAccess.Client.OracleClientFactory");
+#endif
+
+                /*
+                 * Su .NET Framework 4.8 molti provider possono essere registrati
+                 * tramite machine.config, app.config o web.config.
+                 *
+                 * Se vuoi supportare registrazione runtime anche su .NET Framework,
+                 * puoi rimuovere il #if NET5_0_OR_GREATER sopra.
+                 */
+
+                _initialized = true;
+            }
+        }
+
+#if NET5_0_OR_GREATER
+
+    /// <summary>
+    /// Registra un provider usando direttamente il tipo factory.
+    /// Utile quando l'assembly è referenziato direttamente dal progetto.
+    /// </summary>
+    private static void RegisterProviderIfAvailable(
+        string invariantName,
+        Type factoryType)
+    {
+        try
+        {
+            var factory = GetFactoryInstance(factoryType);
+
+            if (factory == null)
+                return;
+
+            DbProviderFactories.RegisterFactory(invariantName, factory);
+        }
+        catch
+        {
+            // Provider non disponibile o non registrabile.
+            // Eventualmente loggare in debug.
+        }
+    }
+
+    /// <summary>
+    /// Registra un provider usando assembly name e full type name.
+    /// Utile quando il provider potrebbe non essere referenziato direttamente.
+    /// </summary>
+    private static void RegisterProviderIfAvailable(
+        string invariantName,
+        string assemblyName,
+        string factoryTypeName)
+    {
+        try
+        {
+            var assembly = Assembly.Load(assemblyName);
+
+            var factoryType = assembly.GetType(factoryTypeName, throwOnError: false);
+            if (factoryType == null)
+                return;
+
+            var factory = GetFactoryInstance(factoryType);
+
+            if (factory == null)
+                return;
+
+            DbProviderFactories.RegisterFactory(invariantName, factory);
+        }
+        catch
+        {
+            // Assembly non disponibile, tipo non trovato o factory non compatibile.
+            // Provider semplicemente ignorato.
+        }
+    }
+
+    /// <summary>
+    /// Recupera l'istanza singleton del DbProviderFactory.
+    /// Alcuni provider espongono Instance come property statica,
+    /// altri come field statico.
+    /// </summary>
+    private static DbProviderFactory? GetFactoryInstance(Type factoryType)
+    {
+        var instanceProperty = factoryType.GetProperty(
+            "Instance",
+            BindingFlags.Public | BindingFlags.Static);
+
+        if (instanceProperty != null)
+        {
+            var value = instanceProperty.GetValue(null);
+
+            if (value is DbProviderFactory factoryFromProperty)
+                return factoryFromProperty;
+        }
+
+        var instanceField = factoryType.GetField(
+            "Instance",
+            BindingFlags.Public | BindingFlags.Static);
+
+        if (instanceField != null)
+        {
+            var value = instanceField.GetValue(null);
+
+            if (value is DbProviderFactory factoryFromField)
+                return factoryFromField;
+        }
+
+        return null;
+    }
+
+#endif
+
+
+    }
+
 }

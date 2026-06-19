@@ -34,7 +34,7 @@ namespace PasseroDemo.Views
         {
             // Set DbConnection with you DbConnection Object
             // You can store it inside the ConfigurationManager 
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             vmEmployee.Init(this.DbConnection);
             vmEmployee.DataBindControlsAutoSetMaxLenght = true;
             vmEmployee.AutoWriteControls = true;

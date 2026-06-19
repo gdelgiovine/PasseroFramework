@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 using Dapper;
+using Passero.Framework;
 
 namespace Passero.Framework.Controls
 {
@@ -40,8 +41,13 @@ namespace Passero.Framework.Controls
             bool isCodeColumn,
             string parameterPrefix,
             DynamicParameters parameters,
-            NavFilterSqlOptions options)
+            NavFilterSqlOptions options,
+            ProviderFeatures providerFeatures = null)
         {
+            // Se providerFeatures è null, usa le feature di default (SQL Server)
+            if (providerFeatures == null)
+                providerFeatures = new ProviderFeatures();
+
             var result = new NavFilterBuildResult();
             string text = (filterText ?? string.Empty).Trim();
 
@@ -73,6 +79,7 @@ namespace Passero.Framework.Controls
                         $"{parameterPrefix}_{tokenIndex}",
                         parameters,
                         options,
+                        providerFeatures,
                         result.Errors);
 
                     if (!string.IsNullOrWhiteSpace(atomSql))
@@ -97,6 +104,7 @@ namespace Passero.Framework.Controls
             string parameterNameSeed,
             DynamicParameters parameters,
             NavFilterSqlOptions options,
+            ProviderFeatures providerFeatures,
             List<NavFilterError> errors)
         {
             if (string.IsNullOrWhiteSpace(atom))
@@ -105,7 +113,7 @@ namespace Passero.Framework.Controls
                 return string.Empty;
             }
 
-            string col = EscapeSqlIdentifier(columnName);
+            string col = EscapeSqlIdentifier(columnName, providerFeatures);
             Type targetType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
             if (atom == "''" || atom.Equals("<empty>", StringComparison.OrdinalIgnoreCase))
@@ -133,7 +141,7 @@ namespace Passero.Framework.Controls
                     object v = ConvertValue(left, targetType, isCodeColumn, options, errors);
                     if (errors.Count > 0)
                         return string.Empty;
-                    
+
                     if (v != null)
                     {
                         parameters.Add(p, v, Passero.Framework.Utilities.GetDbType(targetType));
@@ -147,7 +155,7 @@ namespace Passero.Framework.Controls
                     object v = ConvertValue(right, targetType, isCodeColumn, options, errors);
                     if (errors.Count > 0)
                         return string.Empty;
-                    
+
                     if (v != null)
                     {
                         parameters.Add(p, v, Passero.Framework.Utilities.GetDbType(targetType));
@@ -266,8 +274,6 @@ namespace Passero.Framework.Controls
 
                 if (targetType.IsEnum)
                 {
-                    // Enum.TryParse(Type, string, bool, out object) esiste solo da .NET 6+.
-                    // Enum.Parse(Type, string, bool) è compatibile con .NET Framework 4.8+.
                     return Enum.Parse(targetType, raw, ignoreCase: true);
                 }
 
@@ -346,9 +352,13 @@ namespace Passero.Framework.Controls
             return parts;
         }
 
-        private static string EscapeSqlIdentifier(string name)
+        private static string EscapeSqlIdentifier(string name, ProviderFeatures providerFeatures)
         {
-            return "[" + (name ?? string.Empty).Replace("]", "]]") + "]";
+            if (string.IsNullOrEmpty(name))
+                return name;
+
+            // Usa il metodo QuoteIdentifier di ProviderFeatures
+            return providerFeatures.QuoteIdentifier(name);
         }
 
         private static string ToSqlLike(string navPattern, bool uppercase)

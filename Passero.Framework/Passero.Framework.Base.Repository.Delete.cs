@@ -12,7 +12,7 @@ namespace Passero.Framework
     public partial class Repository<ModelClass>
         where ModelClass : class
     {
-        private readonly string mSqlDeleteCommand = Utilities.GetDeleteSqlCommand(typeof(ModelClass));
+        private string mSqlDeleteCommand;
 
         /// <summary>
         /// Deletes the item using a parameterized SQL command that respects column name mappings.

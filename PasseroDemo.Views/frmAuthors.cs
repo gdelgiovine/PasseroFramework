@@ -6,6 +6,7 @@ using Passero.Framework.Controls;
 using PasseroDemo.ViewModels;
 using System;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using Wisej.Web;
 
@@ -29,14 +30,16 @@ namespace PasseroDemo.Views
 
         public async void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            //this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
+            //this.DbConnection = (System.Data.Common .DbConnection )ConfigurationManager.DBConnections["PasseroDemo"];
 
             // ORMContextFactory sceglie EF6 (net48) o EF Core (net8.0+) automaticamente.
             // ViewModel riceve il DbContext e crea internamente il repository corretto.
 
 
             Passero.Framework.Base.ORMType  ORMType;
-            ORMType = Passero.Framework.Base.ORMType.Dapper;
+            ORMType = Passero.Framework.Base.ORMType.Dapper    ;
 
             // Versione generica — tipo noto a compile-time
 
@@ -47,22 +50,22 @@ namespace PasseroDemo.Views
             //    new[] { typeof(Models.Author) });
 
 
-            _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
-                ORMType,
-                DbConnection.ConnectionString,
-                new[] { typeof(Models.Author) }
-                );
+            //_dbContext = Passero.Framework.Base.ORMContextFactory.Create(
+            //    ORMType,
+            //    DbConnection.ConnectionString,
+            //    new[] { typeof(Models.Author) }
+            //    );
 
             //vmAuthor = new ViewModels.vmAuthor();
             //vmAuthor.Init();
-            //vmAuthor.Init(this.DbConnection);
+            vmAuthor.Init(this.DbConnection);
 
-            vmAuthor.Init(this._dbContext);
+            //vmAuthor.Init(this._dbContext);
 
           
             vmAuthor.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
             vmAuthor.BindingSource = this.bsAuthors;
-
+            
             //vmAuthor .UseUpdateEx= true;    
 
             // Versione generica — tipo noto a compile-time
@@ -89,10 +92,10 @@ namespace PasseroDemo.Views
 
         private void QBE_Authors()
         {
-
-            //QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(this.DbConnection);
+            // Costruttore con DbConnection, usa DapperRepository   
+            QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(this.DbConnection);
             // Costruttore con DbContext: usa EfRepository o DapperRepository automaticamente
-            QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(_dbContext);
+            //QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(_dbContext);
 
 
             QBE.QBEColumns.Add(nameof(Models.Author.au_id), "Author Id", "", "1..9", true, true,QBEColumnSize.Autosize );
@@ -184,7 +187,7 @@ namespace PasseroDemo.Views
         {
 
             Passero.Framework.FRReports.ReportManager  xQBEReport = new Passero.Framework.FRReports.ReportManager ();
-            this._dbContext.EnsureConnectionOpen();
+            
 
             xQBEReport.QBEReports.Add("REPORT1", @"C:\Reports\REPORT1.FRX", "REPORT UNO");
             xQBEReport.QBEReports["REPORT1"].AddDataSet<Models.Author>("Authors", this.vmAuthor.Repository.DbConnection);
@@ -200,7 +203,7 @@ namespace PasseroDemo.Views
         private void SSRS_QBEReport_Authors()
         {
             Passero.Framework.SSRSReports.ReportManager SSRSReportManager = new Passero.Framework.SSRSReports.ReportManager();
-            SSRSReportManager = new Passero.Framework.SSRSReports.ReportManager();
+           
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
             //xQBEReport.ReportRenderRequest += XQBEReport_ReportRenderRequest;
 

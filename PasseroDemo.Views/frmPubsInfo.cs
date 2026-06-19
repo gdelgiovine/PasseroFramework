@@ -24,7 +24,7 @@ namespace PasseroDemo.Views
         private void Init(bool ForceFormInit = false)
         {
 
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             this.vmPubIsnfo.Init(this.DbConnection);
             this.vmPubIsnfo.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;
             this.vmPubIsnfo.BindingSource = this.bsPubsInfo ;

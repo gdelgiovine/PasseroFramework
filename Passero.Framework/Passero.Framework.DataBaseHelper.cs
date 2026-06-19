@@ -179,21 +179,35 @@ namespace Passero.Framework
         }
 
 
+        /// <summary>
+        /// Gets the INSERT SQL command for a model class.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <param name="dbConnection">The database connection (optional, used to determine dialect).</param>
+        /// <returns>The parameterized INSERT command.</returns>
+        public static string GetInsertSqlCommand(Type ModelClass, IDbConnection dbConnection = null)
+        {
+            // Esclude le chiavi identity e explicit
+            var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
+                .Where(pi => !Utilities.PropertyIsIdentityKey(pi) && !Utilities.PropertyIsExplicitKey(pi))
+                .ToList();
 
+            var columns = string.Join(", ", properties.Select(pi => Utilities.GetMappedColumnName(pi)));
+            var parameters = string.Join(", ", properties.Select(pi => $"@{pi.Name}"));
+
+            return $"INSERT INTO {Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters})";
+        }
 
         /// <summary>
-        /// Gets the insert SQL command.
+        /// Gets the INSERT SQL command from a SELECT query using CommandBuilder.
+        /// Only for Microsoft.Data.SqlClient connections.
         /// </summary>
-        /// <param name="SQLQuery">The SQL query.</param>
-        /// <param name="SqlConnection">The SQL connection.</param>
-        /// <returns></returns>
-        public static string GetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
+        [Obsolete("Use overload with IDbConnection parameter instead")]
+        public static string xGetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
         {
-
             var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
             var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
             return cmdbuilder.GetInsertCommand().CommandText;
-
         }
 
 

@@ -19,7 +19,7 @@ namespace PasseroDemo.Views
         }
         private void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             vmTitle.Init(this.DbConnection);
             vmRoysched .Init(this.DbConnection);
 

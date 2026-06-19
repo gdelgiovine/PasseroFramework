@@ -12,6 +12,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 
 namespace Passero.Framework.SSRSReports
@@ -482,8 +483,12 @@ namespace Passero.Framework.SSRSReports
             }
 
             if (s != "")
+            {
                 s = $" ORDER BY {s}";
-            return s;
+            }
+           
+
+                return s;
         }
 
 
@@ -605,6 +610,7 @@ namespace Passero.Framework.SSRSReports
         //public object Repository { get; set; }
         public Type ModelType { get; set; }
         public Dictionary<string, System.Reflection.PropertyInfo> ModelProperties= new Dictionary<string, System.Reflection.PropertyInfo>();
+        public List<PropertyInfo> ModelPrimaryKeys = new List<PropertyInfo>();
         public object Data { get; set; }    
         public object Model { get; set; }
         public ReportDataSet() 
@@ -636,7 +642,7 @@ namespace Passero.Framework.SSRSReports
                 {
                     this.ModelProperties.Add(item.Name, item);
                 }
-                
+                this.ModelPrimaryKeys = Utilities.GetModelPrimaryKeysPropertiesInfo(ModelType);
 
                 return true;
             }
@@ -645,7 +651,7 @@ namespace Passero.Framework.SSRSReports
 
         public void LoadData(string SQLQuery, DynamicParameters Parameters )
         {
-            //this.Data = this.DbConnection.Query(this.SQLQuery, this.Parameters);
+         
             this.Data = this.DbConnection.Query(SQLQuery, Parameters);
             
         }

@@ -23,7 +23,7 @@ namespace PasseroDemo.Views
 
         public void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             vmDiscount.Init(this.DbConnection);
             vmDiscount.OwnerView = this;
             vmDiscount.DataBindControlsAutoSetMaxLenght = true;

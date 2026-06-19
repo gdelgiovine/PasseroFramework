@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,6 +12,45 @@ namespace Passero.Framework
 {
     public static partial class Utilities
     {
+
+        public static string GetProviderInvariantName(IDbConnection connection)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            var connectionType = connection.GetType();
+            var fullName = connectionType.FullName;
+
+#if NET48
+            // Su .NET 4.8, EF6 usa System.Data.SqlClient
+            if (fullName.Contains("SqlConnection") || fullName.Contains("System.Data.SqlClient"))
+                return "System.Data.SqlClient";
+#endif
+
+            // Su .NET 8+, usa Microsoft.Data.SqlClient
+            if (fullName.Contains("SqlConnection"))
+                return "Microsoft.Data.SqlClient";
+
+            // PostgreSQL
+            if (fullName.Contains("NpgsqlConnection"))
+                return "Npgsql";
+
+            // MySQL
+            if (fullName.Contains("MySqlConnection"))
+                return "MySql.Data.MySqlClient";
+
+            // SQLite
+            if (fullName.Contains("SqliteConnection"))
+                return "System.Data.SQLite";
+
+            // Oracle
+            if (fullName.Contains("OracleConnection"))
+                return "Oracle.ManagedDataAccess.Client";
+
+            throw new NotSupportedException($"Provider di database non riconosciuto per il tipo di connessione: {fullName}");
+        }
+
+
 
         public static string GetObjectName(object obj,
                   [CallerArgumentExpression("obj")] string objectExpression = null)

@@ -820,7 +820,11 @@ namespace Passero.Framework.SSRSReports
                 this.SQLQueryParameters = parameters;
             }
 
-            this.SQLQuery += " " + Report.OrderBy();
+            if (Report .OrderBy ()!= null && Report.OrderBy().Trim() != "") 
+                this.SQLQuery += " " + Report.OrderBy();
+            else
+                this.SQLQuery += " ORDER BY " + Utilities.GetDefaultOrderByClause(PrimaryDataSet.ModelPrimaryKeys);
+
 
             PrimaryDataSet.LoadData(SQLQuery, SQLQueryParameters);
 

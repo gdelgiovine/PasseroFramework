@@ -5,6 +5,7 @@ using Passero.Framework.Controls.Models;
 using PasseroDemo.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using Wisej.Web;
 
@@ -17,7 +18,7 @@ namespace PasseroDemo.Views
         public Passero.Framework.ViewModel<Models.Job> vmJobs2 = new Passero.Framework.ViewModel<Models.Job>();
         //public vmTEST vmJobs = new vmTEST();
         public ViewModels.vmJobs vmJobs = new vmJobs();
-        private System.Data.SqlClient.SqlConnection DbConnection;
+        private IDbConnection  DbConnection;
         private string json;
 
         public frmJobs()
@@ -27,7 +28,7 @@ namespace PasseroDemo.Views
 
         public void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
 
             vmJobs.Init(this.DbConnection);
             vmJobs.DataBindingMode = Passero.Framework.DataBindingMode.BindingSource;

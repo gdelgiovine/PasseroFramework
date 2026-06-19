@@ -141,7 +141,7 @@ namespace Passero.Framework
         /// <summary>
         /// The m SQL insert command
         /// </summary>
-        private readonly string mSqlInsertCommand = Utilities.GetInsertSqlCommand(typeof(ModelClass));
+        private  string mSqlInsertCommand; //= Utilities.GetInsertSqlCommand(typeof(ModelClass));
 
         /// <summary>
         /// Inserts the item using a parameterized SQL command that respects column name mappings.
@@ -166,18 +166,17 @@ namespace Passero.Framework
 
             try
             {
-                var @params = new DynamicParameters();
+                var parameters = new DynamicParameters();
                 var entityPropsCount = EntityProperties.Count;
 
                 for (int i = 0; i < entityPropsCount; i++)
                 {
                     var prop = EntityProperties[i];
-                    @params.Add(prop.Name, prop.GetValue(Model));
+                    parameters.Add(prop.Name, prop.GetValue(Model));
                 }
-
-                //var scalar = DbConnection.ExecuteScalar(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+        
                 var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
-                var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                var scalar = DbConnection.ExecuteScalar(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
 
                 long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
 

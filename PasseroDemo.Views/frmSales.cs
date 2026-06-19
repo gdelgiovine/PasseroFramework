@@ -25,7 +25,7 @@ namespace PasseroDemo.Views
 
         private void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             vmSalesmaster.Init(this.DbConnection);
             vmSalesdetail.Init(this.DbConnection);
             vmStore.Init(this.DbConnection);

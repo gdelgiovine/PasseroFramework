@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+using System;
+using System.Data;
 using Wisej.Web;
 
 
@@ -8,14 +10,14 @@ namespace PasseroDemo.Application
     public partial class MainPage : Page
     {
 
-       public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager ();
+        public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
 
-       MDIWindow MDIWindow = new MDIWindow();
+        MDIWindow MDIWindow = new MDIWindow();
         public MainPage()
         {
             InitializeComponent();
             this.tbAppLogo.Control = this.pbAppLogo;
-            this.tbAppTitle.Control = this.lbAppTitle;    
+            this.tbAppTitle.Control = this.lbAppTitle;
             SetDesktop();
             this.MDIWindow.FormBorderStyle = FormBorderStyle.None;
             this.MDIWindow.Show();
@@ -36,16 +38,41 @@ namespace PasseroDemo.Application
                 return;
             }
 
+
+            string CSSQLServer = "DBConnectionString";
+            string CSMySQL = "DBConnectionStringMySQL";
+            string CSPostgreSQL = "DBConnectionStringPostgreSQL";
+            string CS = CSPostgreSQL;
             this.ConfigurationManager.DBConnections.Clear();
-            this.ConfigurationManager.SetSessionConfigurationKeyValue("General", 
-                                                                      "DBConnectionString", 
-                                                                      this.ConfigurationManager.GetConfigurationKeyValue("General", "DBConnectionString"));
+            this.ConfigurationManager.SetSessionConfigurationKeyValue(
+                "General",
+                "DBConnectionString",
+                this.ConfigurationManager.GetConfigurationKeyValue("General", CS));
 
-            System.Data.SqlClient.SqlConnection DBConnectionPasseroDemo = new System.Data.SqlClient.SqlConnection(
-            this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
-            this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+
+            IDbConnection DBConnectionPasseroDemo = null;
+            if (CS == CSSQLServer)
+            {
+                DBConnectionPasseroDemo = new Microsoft.Data.SqlClient.SqlConnection(
+                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+            }
+
+            if (CS == CSMySQL)
+            {
+                DBConnectionPasseroDemo = new MySql.Data.MySqlClient.MySqlConnection(
+                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+            }
+
+            if (CS == CSPostgreSQL )
+            {
+                DBConnectionPasseroDemo = new Npgsql .NpgsqlConnection (
+                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+            }
         }
-
+ 
         public void SetMDIWindow()
         {
             MDIWindow.Top = this.ToolBar.Height;

@@ -349,7 +349,25 @@ namespace Passero.Framework
         /// The description.
         /// </value>
         public string Description { get; set; }
-        //public SqlConnection SqlConnection { get; set; }
+
+        private string mDefaultOrderbyClause = string.Empty;    
+
+        public string DefaultOrderbyClause
+            {
+            get
+            {
+                if (string.IsNullOrEmpty(mDefaultOrderbyClause))
+                {
+                    mDefaultOrderbyClause = Utilities.GetDefaultOrderByClause(EntityPrimaryKeys, ProviderFeatures);
+                }
+                return mDefaultOrderbyClause;
+            }
+            set
+            {
+                mDefaultOrderbyClause = value;
+            }
+        }   
+
         /// <summary>
         /// Gets or sets the database connection.
         /// </summary>
@@ -368,8 +386,15 @@ namespace Passero.Framework
             {
                 mDbConnection = value;
                 DbObject = new Base.DbObject<ModelClass>(mDbConnection);
-                SqlDialect = DetectSqlDialect();
+                //SqlDialect = DetectSqlDialect();
+                ProviderFeatures = ProviderFeaturesResolver.FromConnection(mDbConnection );
+       
+                mDefaultOrderbyClause = Utilities.GetDefaultOrderByClause(EntityPrimaryKeys, ProviderFeatures);
+                mSqlInsertCommand = Utilities.GetInsertSqlCommand(typeof(ModelClass), ProviderFeatures);
+                mSqlDeleteCommand  = Utilities.GetDeleteSqlCommand(typeof(ModelClass), ProviderFeatures);
+                mSqlUpdateCommand = Utilities.GetUpdateSqlCommand(typeof(ModelClass), ProviderFeatures);
                 EnsureTypeMapRegistered();
+
             }
         }
 
@@ -512,7 +537,7 @@ namespace Passero.Framework
             DbTransaction = SqlTransaction;
             DbConnection = SqlConnection;
             DbObject = new Base.DbObject<ModelClass>(DbConnection);
-
+           
         }
 
         /// <summary>
@@ -564,6 +589,7 @@ namespace Passero.Framework
             DbTransaction = sqlTransaction;
             DbConnection = dbContext.DbConnection;
             DbObject = new Base.DbObject<ModelClass>(DbConnection);
+            mSqlInsertCommand = Utilities.GetInsertSqlCommand(typeof(ModelClass), ProviderFeatures );
         }
 
         /// <summary>

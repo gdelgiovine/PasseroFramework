@@ -26,6 +26,8 @@ namespace Passero.Framework.Base
         IDbTransaction DbTransaction { get; set; }
         int DbCommandTimeout { get; set; }
 
+        ProviderFeatures ProviderFeatures { get; set; }
+
         // ── Stato ─────────────────────────────────────────────────────────────
         ModelClass ModelItem { get; set; }
         IList<ModelClass> ModelItems { get; set; }
@@ -57,6 +59,7 @@ namespace Passero.Framework.Base
 
         // ── Metadati DB ───────────────────────────────────────────────────────
         string DefaultSQLQuery { get; set; }
+        string DefaultOrderbyClause { get; set; }   
         DynamicParameters DefaultSQLQueryParameters { get; set; }
         DynamicParameters Parameters { get; set; }
         string SQLQuery { get; set; }

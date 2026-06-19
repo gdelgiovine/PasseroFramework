@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
+using System.Data.Odbc;
 using Wisej.Web;
 
 namespace Passero.Framework
@@ -44,9 +46,36 @@ namespace Passero.Framework
         /// </value>
         public IDbConnection DbConnection
         {
-            get { return Repository.DbConnection; }
-            set { Repository.DbConnection = value; }
+            get 
+            { 
+                return Repository.DbConnection; 
+            }
+            set 
+            { 
+                Repository.DbConnection = value;
+                Repository.ProviderFeatures = ProviderFeaturesResolver.FromConnection(Repository.DbConnection);
+               
+            }
         }
+
+        /// <summary>
+        /// Gets or sets the database provider features.
+        /// </summary>
+        /// <value>
+        /// The database provider features.
+        /// </value>
+        public ProviderFeatures ProviderFeatures 
+        {
+            get
+            {
+                return Repository.ProviderFeatures ;
+            }
+            set
+            {
+                Repository.ProviderFeatures = value;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the data bind controls.
         /// </summary>

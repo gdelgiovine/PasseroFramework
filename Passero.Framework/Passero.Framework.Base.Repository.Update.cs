@@ -420,7 +420,7 @@ namespace Passero.Framework
         /// <summary>
         /// The m SQL update command
         /// </summary>
-        private string mSqlUpdateCommand = Utilities.GetUpdateSqlCommand(typeof(ModelClass));
+        private string mSqlUpdateCommand;
         /// <summary>
         /// SQLs the update command.
         /// </summary>
@@ -430,13 +430,34 @@ namespace Passero.Framework
         {
             if (Refresh)
             {
-                mSqlUpdateCommand = Utilities.GetUpdateSqlCommand(typeof(ModelClass));
+                mSqlUpdateCommand = Utilities.GetUpdateSqlCommand(typeof(ModelClass),ProviderFeatures );
                 EntityPrimaryKeys = Utilities.GetModelPrimaryKeysPropertiesInfo(typeof(ModelClass));
                 EntityProperties = Utilities.GetModelPropertiesInfo(typeof(ModelClass), true);
             }
             return mSqlUpdateCommand;
         }
 
+        public string SqlInsertCommand(bool Refresh = false)
+        {
+            if (Refresh)
+            {
+                mSqlInsertCommand = Utilities.GetInsertSqlCommand(typeof(ModelClass), ProviderFeatures);
+                EntityPrimaryKeys = Utilities.GetModelPrimaryKeysPropertiesInfo(typeof(ModelClass));
+                EntityProperties = Utilities.GetModelPropertiesInfo(typeof(ModelClass), true);
+            }
+            return mSqlInsertCommand;
+        }
+
+        public string SqlDeleteCommand(bool Refresh = false)
+        {
+            if (Refresh)
+            {
+                mSqlDeleteCommand  = Utilities.GetDeleteSqlCommand(typeof(ModelClass), ProviderFeatures);
+                EntityPrimaryKeys = Utilities.GetModelPrimaryKeysPropertiesInfo(typeof(ModelClass));
+                EntityProperties = Utilities.GetModelPropertiesInfo(typeof(ModelClass), true);
+            }
+            return mSqlDeleteCommand;
+        }
 
 
         /// <summary>

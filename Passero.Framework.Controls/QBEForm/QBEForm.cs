@@ -1,14 +1,17 @@
 ﻿using Dapper;
+using Microsoft.Ajax.Utilities;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using Passero.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using Wisej.Web;
-using System.Globalization;
 
 namespace Passero.Framework.Controls
 {
@@ -194,32 +197,13 @@ namespace Passero.Framework.Controls
         {
             return Passero.Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
         }
-        /// <summary>
-        /// Gets or sets the repository.
-        /// </summary>
-        /// <value>
-        /// The repository.
-        /// </value>
-        //private Repository<ModelClass> Repository
-        //{
-        //    get
-        //    {
+ 
 
-        //        return mRepository;
-        //    }
-        //    set
-        //    {
-
-        //        mRepository = value;
-        //        var ModelPropertiesInfo = mRepository.GetProperties();
-        //        ModelProperties = new Dictionary<string, System.Reflection.PropertyInfo>();
-        //        foreach (var item in ModelPropertiesInfo)
-        //        {
-        //            ModelProperties.Add(item.Name, item);
-        //        }
-        //    }
-        //}
-
+        public ProviderFeatures ProviderFeatures
+        {
+            get => Repository.ProviderFeatures; 
+            set => Repository.ProviderFeatures  = value;
+        }
         private Base.IPasseroRepository<ModelClass> Repository
         {
             get => mRepository as Repository<ModelClass>;
@@ -454,7 +438,7 @@ namespace Passero.Framework.Controls
             {
                 this.Owner = Owner;
             }
-            Repository = new Repository<ModelClass>();
+            Repository = new Repository<ModelClass>(DbConnection);
             Repository.DbConnection = DbConnection;
 
 
@@ -966,9 +950,7 @@ namespace Passero.Framework.Controls
         {
             BuildQuery3();
 
-            string _sqlquery = this.SQLQuerySelector;
-            DynamicParameters _sqlqueryparameters;
-
+       
             // QueryGrid: usa la query generata dal QueryGrid   
             if (this.TabControl.SelectedTab == this.TabPageQueryGrid)
                 ResultGrid.DataSource = mRepository.GetItems(SQLQuery, SQLQueryParameters).Value;
@@ -976,6 +958,8 @@ namespace Passero.Framework.Controls
             // QueryBuilder: usa la query generata dal QueryBuilderControl
             if (this.TabControl.SelectedTab == this.TabPageQueryBuilder)
             {
+                string _sqlquery = this.SQLQuerySelector;
+                DynamicParameters _sqlqueryparameters;
 
                 var sql = this.queryBuilderControl.GetParameterizedSqlWhere();
                 _sqlqueryparameters = QueryBuilderControl.DictionaryToDynamicParameters(sql.Parameters);
@@ -1276,20 +1260,33 @@ namespace Passero.Framework.Controls
                     }
                 }
 
-                string sTopRows = TopRows > 0 ? $"TOP ({TopRows})" : string.Empty;
-
                 if (string.IsNullOrEmpty(BaseSQLQuery))
-                    SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
+                    SQLQuery = $"SELECT  * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
                 else
-                    SQLQuery = $"SELECT {sTopRows} * FROM ({BaseSQLQuery.Trim()}) _b";
+                    SQLQuery = $"SELECT  * FROM ({BaseSQLQuery.Trim()}) _b";
+
 
                 SQLQuerySelector = SQLQuery;
 
                 if (sqlWhere.Length > 0)
                     SQLQuery += $" WHERE {sqlWhere}";
 
-                if (!string.IsNullOrEmpty(OrderBy))
-                    SQLQuery += $" ORDER BY {OrderBy}";
+                // rimossa di "ORDER BY" se presente all'inizio della stringa OrderBy   
+                OrderBy = (OrderBy ?? string.Empty).Trim(); 
+                if (OrderBy .StartsWith("ORDER BY", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    OrderBy = OrderBy.Substring(8).Trim(); // Rimuove "ORDER BY" se presente    
+                }
+
+                if (string.IsNullOrEmpty(OrderBy))
+                    SQLQuery += $" ORDER BY {Repository.DefaultOrderbyClause}";
+                else
+                    SQLQuery += $" ORDER BY {OrderBy} ";
+
+
+                
+
+                SQLQuery = SqlDialectBuilder.ApplyLimit (SQLQuery, Repository.ProviderFeatures, TopRows );    
 
                 SQLQueryParameters = parameters;
 

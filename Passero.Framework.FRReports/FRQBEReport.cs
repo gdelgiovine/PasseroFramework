@@ -820,7 +820,14 @@ namespace Passero.Framework.FRReports
             if (sqlWhere.ToString().Trim() != "")
                 this.SQLQuery = this.SQLQuery + $" WHERE {sqlWhere.ToString()}";
 
-            this.SQLQuery += " " + Report.OrderBy();
+            
+            if (Report.OrderBy() != null && Report.OrderBy().Trim() != "")
+                this.SQLQuery += " " + Report.OrderBy();
+            else
+                this.SQLQuery += " ORDER BY " + Utilities.GetDefaultOrderByClause(PrimaryDataSet.ModelPrimaryKeys);
+
+
+
             this.SQLQueryParameters = parameters;
             PrimaryDataSet.Parameters = parameters;
             PrimaryDataSet.SQLQuery = SQLQuery;

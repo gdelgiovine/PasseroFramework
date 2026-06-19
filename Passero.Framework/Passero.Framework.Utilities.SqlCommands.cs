@@ -3,6 +3,7 @@ using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,7 +14,33 @@ namespace Passero.Framework
     public static partial class Utilities
     {
 
-        public static string GetUpdateSqlCommand(Type ModelClass)
+
+        /// <summary>
+        /// Gets the INSERT SQL command for a model class.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>The parameterized INSERT command.</returns>
+        public static string GetDefaultOrderByClause(List<System.Reflection.PropertyInfo> EntityPrimaryKeys, ProviderFeatures ProviderFeatures=null)
+        {
+            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var orderByClause = string.Join(", ", EntityPrimaryKeys.Select(pi => $"{GetMappedColumnName(pi)}"));
+            return orderByClause;
+        }
+
+
+
+        /// <summary>
+        /// Gets the UPDATE SQL command for a model class.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>The parameterized UPDATE command.</returns>
+
+
+        public static string GetUpdateSqlCommand(Type ModelClass, ProviderFeatures ProviderFeatures )
         {
             List<PropertyInfo> properties;
             StringBuilder sbset = new StringBuilder();
@@ -27,11 +54,11 @@ namespace Passero.Framework
                 var colName = GetMappedColumnName(pi);
                 if (!Utilities.PropertyIsIdentityKey(pi))
                 {
-                    sbset.Append($"{colName}=@{pi.Name}, ");
+                    sbset.Append($"{colName}={ProviderFeatures.ParameterPrefix}{pi.Name}, ");
                 }
                 if (Utilities.PropertyIsExplicitKey(pi) || Utilities.PropertyIsIdentityKey(pi))
                 {
-                    sbwhere.Append($"{colName}=@{pi.Name}_shadow AND ");
+                    sbwhere.Append($"{colName}={ProviderFeatures .ParameterPrefix}{pi.Name}_shadow AND ");
                 }
             }
             setlist = sbset.ToString().Trim();
@@ -49,80 +76,101 @@ namespace Passero.Framework
         }
 
 
-        public static string GetUpdateSqlCommand_OLD(Type ModelClass)
+ 
+        /// <summary>
+        /// Gets the INSERT SQL command for a model class.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>The parameterized INSERT command.</returns>
+        public static string GetInsertSqlCommand(Type ModelClass, ProviderFeatures ProviderFeatures)
         {
-            List<PropertyInfo> properties;
-            StringBuilder sbset = new StringBuilder();
-            StringBuilder sbwhere = new StringBuilder();
-            string setlist;
-            string wherelist;
-            string sql;
-            properties = Utilities.GetModelPropertiesInfo(ModelClass, true);
-            foreach (PropertyInfo pi in properties)
-            {
-                if (!Utilities.PropertyIsIdentityKey(pi))
-                {
-                    sbset.Append($"{pi.Name}=@{pi.Name}, ");
-                }
-                if (Utilities.PropertyIsExplicitKey(pi) || PropertyIsIdentityKey(pi))
-                {
-                    sbwhere.Append($"{pi.Name}=@{pi.Name}_shadow AND ");
-                }
-            }
-            setlist = sbset.ToString().Trim();
-            wherelist = sbwhere.ToString().Trim();
-            if (setlist.EndsWith(","))
-            {
-                setlist = setlist.Substring(0, setlist.Length - 1);
-            }
-            if (wherelist.EndsWith("AND"))
-            {
-                wherelist = wherelist.Substring(0, wherelist.Length - 3);
-            }
-            sql = $"UPDATE {Utilities.GetModelTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
-            return sql;
-        }
-
-
-        public static string GetInsertSqlCommand(Type ModelClass)
-        {
+            //// Esclude le chiavi identity e explicit
+            //var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
+            //    .Where(pi => !Utilities.PropertyIsIdentityKey(pi) && !Utilities.PropertyIsExplicitKey(pi))
+            //    .ToList();
+            // Esclude SOLO le chiavi identity, mantiene le chiavi esplicite
             var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
                 .Where(pi => !Utilities.PropertyIsIdentityKey(pi))
                 .ToList();
 
-            var columns = string.Join(", ", properties.Select(pi => GetMappedColumnName(pi)));
-            var parameters = string.Join(", ", properties.Select(pi => $"@{pi.Name}"));
+            
+            var columns = string.Join(", ", properties.Select(pi => Utilities.GetMappedColumnName(pi)));
+            var parameters = string.Join(", ", properties.Select(pi => $"{ProviderFeatures .ParameterPrefix}{pi.Name}"));
 
-            return $"INSERT INTO {Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters}); SELECT CAST(SCOPE_IDENTITY() AS BIGINT)";
+            return $"INSERT INTO {Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters})";
         }
 
 
-        public static string GetInsertSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
-        {
-
-            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
-            return cmdbuilder.GetInsertCommand().CommandText;
-
-        }
+        /// <summary>
+        /// Gets the DELETE SQL command for a model class.
+        /// </summary>
+        /// <param name="ModelClass">The model class type.</param>
+        /// <returns>The parameterized DELETE command.</returns>
 
 
-        public static string GetDeleteSqlCommand(Type ModelClass)
+        public static string GetDeleteSqlCommand(Type ModelClass,ProviderFeatures ProviderFeatures )
         {
             var keys = Utilities.GetModelPrimaryKeysPropertiesInfo(ModelClass);
-            var where = string.Join(" AND ", keys.Select(pi => $"{GetMappedColumnName(pi)}=@{pi.Name}"));
+            var where = string.Join(" AND ", keys.Select(pi => $"{GetMappedColumnName(pi)}={ProviderFeatures .ParameterPrefix}{pi.Name}"));
             return $"DELETE FROM {Utilities.GetModelTableName(ModelClass)} WHERE ({where})";
         }
 
 
-        public static string GetDeleteSqlCommand(string SQLQuery, Microsoft.Data.SqlClient.SqlConnection SqlConnection)
+        public static string GetInsertSqlCommandEx(string sqlQuery, IDbConnection connection)
         {
+            using DbCommand command = BuildCommand(sqlQuery, connection, builder =>
+                builder.GetInsertCommand());
 
-            var da = new Microsoft.Data.SqlClient.SqlDataAdapter(SQLQuery, SqlConnection);
-            var cmdbuilder = new Microsoft.Data.SqlClient.SqlCommandBuilder(da);
-            return cmdbuilder.GetDeleteCommand().CommandText;
-
+            return command.CommandText;
         }
+
+        public static string GetUpdateSqlCommandEx(string sqlQuery, IDbConnection connection)
+        {
+            using DbCommand command = BuildCommand(sqlQuery, connection, builder =>
+                builder.GetUpdateCommand());
+
+            return command.CommandText;
+        }
+
+        public static string GetDeleteSqlCommandEx(string sqlQuery, IDbConnection connection)
+        {
+            using DbCommand command = BuildCommand(sqlQuery, connection, builder =>
+                builder.GetDeleteCommand());
+
+            return command.CommandText;
+        }
+
+        private static DbCommand BuildCommand(
+            string sqlQuery,
+            IDbConnection connection,
+            Func<DbCommandBuilder, DbCommand> commandFactory)
+        {
+            if (string.IsNullOrWhiteSpace(sqlQuery))
+                throw new ArgumentException("La query SQL non può essere vuota.", nameof(sqlQuery));
+
+            if (connection is not DbConnection dbConnection)
+                throw new NotSupportedException(
+                    "La connessione deve derivare da System.Data.Common.DbConnection.");
+
+            DbProviderFactory factory = DbProviderFactories.GetFactory(dbConnection);
+
+            using DbCommand selectCommand = dbConnection.CreateCommand();
+            selectCommand.CommandText = sqlQuery;
+
+            using DbDataAdapter adapter = factory.CreateDataAdapter()
+                ?? throw new NotSupportedException("Il provider non supporta DbDataAdapter.");
+
+            adapter.SelectCommand = selectCommand;
+
+            using DbCommandBuilder builder = factory.CreateCommandBuilder()
+                ?? throw new NotSupportedException("Il provider non supporta DbCommandBuilder.");
+
+            builder.DataAdapter = adapter;
+
+            return commandFactory(builder);
+        }
+
+
 
 
         public static DataTable GetDataTableFromDapperQuery(IDbConnection DbConnection, string SQLQuery, DynamicParameters? Parameters = null)

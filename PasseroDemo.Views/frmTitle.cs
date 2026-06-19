@@ -57,7 +57,7 @@ namespace PasseroDemo.Views
 
             _dbContext = Passero.Framework.Base.ORMContextFactory.Create(
                 ORMType,
-                DbConnection.ConnectionString,
+                DbConnection ,
                 new[] {
                     typeof(Models.Author), 
                     typeof(Models.Titleauthor ),
@@ -68,8 +68,9 @@ namespace PasseroDemo.Views
 
 
 
-            //vmTitle.Init(DbConnection);
-            vmTitle.Init(this._dbContext);
+            vmTitle.Init(DbConnection);
+            
+            //vmTitle.Init(this._dbContext);
             vmTitle.DataBindControlsAutoSetMaxLenght = true;
             vmTitle.AutoWriteControls = true;
             vmTitle.AutoReadControls = true;
@@ -79,13 +80,13 @@ namespace PasseroDemo.Views
             vmTitle.ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
             vmTitle.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
 
-            //vmTitleAuthor.Init(DbConnection);
-            vmTitleAuthor.Init(_dbContext );
+            vmTitleAuthor.Init(DbConnection);
+            //vmTitleAuthor.Init(_dbContext );
             vmTitleAuthor .ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
             vmTitleAuthor.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
 
-            //vmPublisher.Init(vmTitle.DbConnection);
-            vmPublisher.Init(_dbContext );
+            vmPublisher.Init(vmTitle.DbConnection);
+            //vmPublisher.Init(_dbContext );
             //rpPublisher.DbConnection = this.DbConnection; ;
             //rpAuthor.DbConnection = this.DbConnection;
 

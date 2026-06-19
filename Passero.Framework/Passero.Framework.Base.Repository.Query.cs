@@ -242,6 +242,10 @@ namespace Passero.Framework
             if (string.IsNullOrEmpty(query))
             {
                 query = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
+                if (mDefaultOrderbyClause.Trim() != "")
+                {
+                    query += $" ORDER BY {mDefaultOrderbyClause.Trim()} ";
+                }
                 Parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;
@@ -349,6 +353,11 @@ namespace Passero.Framework
             if (string.IsNullOrEmpty(query))
             {
                 query = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
+                if (mDefaultOrderbyClause.Trim() != "" )
+                {
+                    query += $" ORDER BY {mDefaultOrderbyClause.Trim()} ";
+                }   
+
                 Parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;

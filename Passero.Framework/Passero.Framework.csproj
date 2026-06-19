@@ -83,7 +83,6 @@
 	</ItemGroup>
 
 
-
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="System.Net.Http" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
@@ -95,7 +94,6 @@
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-		
 	</PropertyGroup>
 
 
@@ -116,12 +114,12 @@
     <!-- ── Package EF 6: solo net48 ──────────────────────────────────── -->
     <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
         <PackageReference Include="EntityFramework" Version="6.5.2" />
+		<PackageReference Include="Microsoft.EntityFramework.SqlServer" Version="6.5.2" />
     </ItemGroup>
 
 	
-    <!-- ── File Ef6Repository: solo net48 ───────────────────────────── -->
+    <!-- ── File Ef6DbContext: solo net48 va rimosso per gli altri───────────────────────────── -->
     <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
-        <!-- <Compile Remove="Passero.Framework.Base.Ef6Repository.cs" /> -->
         <Compile Remove="Passero.Framework.Base.PasseroEf6DbContext.cs" />
     </ItemGroup>
 
