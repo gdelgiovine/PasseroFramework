@@ -43,7 +43,7 @@ namespace PasseroDemo.Application
 
             var app = builder.Build();
 
-            // Dictionary to hold custom PreWisej command handlers, if any are needed
+            // Dictionary to hold custom PreWisej command handlers, if any are needed.
             IDictionary<string, IPreWisejCommandHandler> customHandlers = new Dictionary<string, IPreWisejCommandHandler>(StringComparer.OrdinalIgnoreCase);
 
 
