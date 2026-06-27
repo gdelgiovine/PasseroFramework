@@ -386,19 +386,40 @@ namespace Passero.Framework
             {
                 mDbConnection = value;
                 DbObject = new Base.DbObject<ModelClass>(mDbConnection);
-                //SqlDialect = DetectSqlDialect();
-                ProviderFeatures = ProviderFeaturesResolver.FromConnection(mDbConnection );
-       
-                mDefaultOrderbyClause = Utilities.GetDefaultOrderByClause(EntityPrimaryKeys, ProviderFeatures);
+                ProviderFeatures = ProviderFeaturesResolver.FromConnection(mDbConnection);
+
+                DbObject.GetCachedSchema(Refresh: true);
+
+                mDefaultOrderbyClause = BuildDefaultOrderByClause();
+
                 mSqlInsertCommand = Utilities.GetInsertSqlCommand(typeof(ModelClass), ProviderFeatures);
-                mSqlDeleteCommand  = Utilities.GetDeleteSqlCommand(typeof(ModelClass), ProviderFeatures);
+                mSqlDeleteCommand = Utilities.GetDeleteSqlCommand(typeof(ModelClass), ProviderFeatures);
                 mSqlUpdateCommand = Utilities.GetUpdateSqlCommand(typeof(ModelClass), ProviderFeatures);
                 EnsureTypeMapRegistered();
-
             }
         }
 
+        private string BuildDefaultOrderByClause()
+        {
+            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
+            {
+                return string.Empty;
+            }
 
+            if (DbObject?.DbColumns == null || DbObject.DbColumns.Count == 0)
+            {
+                return Utilities.GetDefaultOrderByClause(EntityPrimaryKeys, ProviderFeatures);
+            }
+
+            var orderByColumns = new List<string>();
+
+            foreach (var primaryKey in EntityPrimaryKeys)
+            {
+                orderByColumns.Add(DbObject.ResolveColumnName(primaryKey));
+            }
+
+            return string.Join(", ", orderByColumns);
+        }
 
         private static readonly ConcurrentDictionary<Type, bool> _typeMapRegistered = new();
 

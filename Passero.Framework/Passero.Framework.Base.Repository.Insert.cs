@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -174,8 +175,14 @@ namespace Passero.Framework
                     var prop = EntityProperties[i];
                     parameters.Add(prop.Name, prop.GetValue(Model));
                 }
-        
-                var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
+
+                string insertCommand = mSqlInsertCommand;
+
+                if (!GetIdentityFragment().IsNullOrWhiteSpace())
+                    insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
+
+                
+                string sqlx = Utilities.ResolveSQL(insertCommand, parameters, ProviderFeatures  );
                 var scalar = DbConnection.ExecuteScalar(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
 
                 long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
@@ -245,7 +252,11 @@ namespace Passero.Framework
 
                 //var scalar = await DbConnection.ExecuteScalarAsync(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 
-                var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
+                string insertCommand = mSqlInsertCommand;
+
+                if (!GetIdentityFragment().IsNullOrWhiteSpace())
+                    insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
+
                 var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 
                 long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
@@ -322,7 +333,12 @@ namespace Passero.Framework
                     }
 
                     //var scalar = DbConnection.ExecuteScalar(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                    var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
+                    
+                    string insertCommand = mSqlInsertCommand;
+
+                    if (!GetIdentityFragment().IsNullOrWhiteSpace())
+                        insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
+
                     var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 
 
@@ -391,7 +407,12 @@ namespace Passero.Framework
                     }
 
                     //var scalar = await DbConnection.ExecuteScalarAsync(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                    var insertCommand = $"{mSqlInsertCommand}; {GetIdentityFragment()}";
+                    
+                    string insertCommand = mSqlInsertCommand;
+
+                    if (!GetIdentityFragment().IsNullOrWhiteSpace())
+                        insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
+
                     var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 
 

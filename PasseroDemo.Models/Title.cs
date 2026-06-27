@@ -2,10 +2,10 @@ using System;
 using Dapper.Contrib.Extensions;
 using Dapper.ColumnMapper;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing.Drawing2D;
 using Dapper;
 using Passero.Framework.BusinessSystem;
 using System.ComponentModel;
+
 
 namespace PasseroDemo.Models
 {
@@ -17,7 +17,7 @@ namespace PasseroDemo.Models
         public string title_id { get; set; }
         public string? title { get; set; }
 
-     
+        [ColumnMapping("""type""")]
         public string? type { get; set; }
         public string? pub_id { get; set; }
         public decimal? price { get; set; } = 0;

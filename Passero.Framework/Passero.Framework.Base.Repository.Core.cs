@@ -174,7 +174,31 @@ namespace Passero.Framework
         /// Returns null if the primary key is ExplicitKey (non-identity).
         /// The fragment is appended to the INSERT statement separated by a semicolon.
         /// </summary>
+        /// 
+
         private string GetIdentityFragment()
+        {
+            var keyProperty = EntityPrimaryKeys.FirstOrDefault();
+            if (keyProperty != null)
+            {
+                var explicitKeyAttr = keyProperty.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>();
+                if (explicitKeyAttr != null)
+                {
+                    return null;
+                }
+            }
+
+            return ProviderFeatures.Dialect switch
+            {
+                DbDialect.PostgreSql => "SELECT lastval()",
+                DbDialect.SQLite => "SELECT last_insert_rowid()",
+                DbDialect.MySql => "SELECT LAST_INSERT_ID()",
+                DbDialect.Oracle => "SELECT 0 FROM DUAL",
+                DbDialect.DB2 => "SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1",
+                _ => "SELECT SCOPE_IDENTITY()"
+            };
+        }
+        private string GetIdentityFragment_OLD()
         {
             // Controlla se la chiave è ExplicitKey
             var keyProperty = EntityPrimaryKeys.FirstOrDefault();

@@ -996,10 +996,13 @@ namespace Passero.Framework
 
                     if (Convert.ToBoolean(ER.Value))
                     {
-                        ModelItem = ModelItems.ElementAt(0);
-                        if (AutoReadControls == true)
+                        if (ModelItems.Count > 0)
                         {
-                            ReadControls();
+                            ModelItem = ModelItems.ElementAt(0);
+                            if (AutoReadControls == true)
+                            {
+                                ReadControls();
+                            }
                         }
                     }
                     break;
@@ -1101,6 +1104,64 @@ namespace Passero.Framework
             {
                 HandleExeception(ER);
             }
+            return ER;
+        }
+
+
+
+        /// <summary>
+        /// Deletes the items .
+        /// </summary>
+        /// <param name="Items">The items.</param>
+        /// <param name="DbTransaction">The database transaction.</param>
+        /// <param name="DbCommandTimeout">The database command timeout.</param>
+        /// <returns></returns>
+        public ExecutionResult  DeleteItems(List<ModelClass> Items, IDbTransaction DbTransaction = null, int? DbCommandTimeout = null)
+        {
+            var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
+            string Context = ER.Context;
+
+            try
+            {
+                if (DbTransaction == null)
+                {
+                    DbTransaction = this.DbTransaction;
+                }
+
+                if (DbCommandTimeout == null)
+                {
+                    DbCommandTimeout = this.DbCommandTimeout;
+                }
+
+                ER = Repository.DeleteItems(Items, DbTransaction, DbCommandTimeout);
+
+                if (Convert.ToBoolean(ER.Value))
+                {
+                    for (int i = 0; i < Items.Count; i++)
+                    {
+                        ModelItems.Remove(Items[i]);
+                    }
+
+                    ModelItem = ModelItems.ElementAt(0);
+                }
+
+                ER.Context = Context;
+                LastExecutionResult = ER;
+            }
+            catch (Exception ex)
+            {
+                ER.ResultCode = ExecutionResultCodes.Failed;
+                ER.Exception = ex;
+                ER.ResultMessage = ex.Message;
+                ER.ErrorCode = 1;
+
+            }
+
+            if (!ER.Success)
+            {
+                HandleExeception(ER);
+            }
+
             return ER;
         }
 

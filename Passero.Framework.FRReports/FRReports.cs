@@ -581,6 +581,7 @@ namespace Passero.Framework.FRReports
     {
         public string Name { get; set; } = string.Empty;
         public System.Data.IDbConnection DbConnection { get; set; }
+        public ProviderFeatures ProviderFeatures { get; set; }
         public Dapper.DynamicParameters Parameters { get; set; }= new DynamicParameters (); 
         public string SQLQuery { get; set; }    
         //public object Repository { get; set; }
@@ -612,7 +613,8 @@ namespace Passero.Framework.FRReports
                 Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "Parameters", Parameters);
                 //this.Repository = obj;
 
-                
+                this.ProviderFeatures = ProviderFeaturesResolver.FromConnection(DbConnection);  
+
                 this.ModelProperties.Clear();
                 foreach (var item in Utilities.GetModelPropertiesInfo(ModelType))
                 {
@@ -801,37 +803,75 @@ namespace Passero.Framework.FRReports
         {
             var dt = new System.Data.DataTable(table.Name);
 
-            // Colonne: VERITÀ = table.Columns (quelle che usa [authors.xxx])
+            // Colonne: schema definito nel .frx (quelle usate da [authors.xxx])
             foreach (FastReport.Data.Column c in table.Columns)
             {
-                var type = c.DataType ?? typeof(string);
-                dt.Columns.Add(c.Name, Nullable.GetUnderlyingType(type) ?? type);
+                var colType = c.DataType ?? typeof(string);
+                dt.Columns.Add(c.Name, Nullable.GetUnderlyingType(colType) ?? colType);
             }
+
+            // Mappa FR-column-name → chiave-effettiva-nel-dizionario Dapper.
+            // Costruita una sola volta al primo record (case-insensitive).
+            // Indispensabile per Oracle che restituisce i nomi colonna in UPPERCASE
+            // (AU_FNAME invece di au_fname): senza questa mappa i campi sono sempre vuoti.
+            Dictionary<string, string> _providerKeyMap = null;
 
             foreach (var item in data)
             {
                 var row = dt.NewRow();
-                var t = item?.GetType();
 
-                foreach (FastReport.Data.Column c in table.Columns)
+                if (item == null)
                 {
-                    object value = null;
+                    dt.Rows.Add(row);
+                    continue;
+                }
 
-                    if (item == null)
+                // DapperRow implementa IDictionary<string, object> ma NON System.Collections.IDictionary:
+                // il check corretto è sul tipo generico, altrimenti il cast fallisce silenziosamente
+                // e si cade nel ramo reflection che non trova nessuna proprietà → celle sempre vuote.
+                if (item is IDictionary<string, object> dict)
+                {
+                    // Costruisce la mappa al primo record
+                    if (_providerKeyMap == null)
                     {
-                        value = DBNull.Value;
-                    }
-                    else if (item is System.Collections.IDictionary dict)
-                    {
-                        value = dict.Contains(c.Name) ? dict[c.Name] : null;
-                    }
-                    else
-                    {
-                        var p = t.GetProperty(c.Name);
-                        value = p != null ? p.GetValue(item) : null;
+                        _providerKeyMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        foreach (FastReport.Data.Column col in table.Columns)
+                        {
+                            foreach (string k in dict.Keys)
+                            {
+                                if (string.Equals(k, col.Name, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    _providerKeyMap[col.Name] = k;
+                                    break;
+                                }
+                            }
+                        }
                     }
 
-                    row[c.Name] = value ?? DBNull.Value;
+                    foreach (FastReport.Data.Column c in table.Columns)
+                    {
+                        if (_providerKeyMap.TryGetValue(c.Name, out string providerKey) &&
+                            dict.TryGetValue(providerKey, out object val))
+                        {
+                            row[c.Name] = val ?? DBNull.Value;
+                        }
+                        else
+                        {
+                            row[c.Name] = DBNull.Value;
+                        }
+                    }
+                }
+                else
+                {
+                    // Oggetto tipizzato (es. da Query<T>): reflection case-insensitive
+                    var t = item.GetType();
+                    foreach (FastReport.Data.Column c in table.Columns)
+                    {
+                        var p = t.GetProperty(
+                            c.Name,
+                            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                        row[c.Name] = p != null ? (p.GetValue(item) ?? DBNull.Value) : DBNull.Value;
+                    }
                 }
 
                 dt.Rows.Add(row);
@@ -841,170 +881,12 @@ namespace Passero.Framework.FRReports
         }
 
 
-
-
-      
-
-        public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF, int ImageDpi=100)
+        public byte[] Render(FRRenderFormat RenderFormat = FRRenderFormat.PDF, int ImageDpi = 100)
         {
-
-         
-            LastExecutionResult.Reset();
-            LastExecutionResult.Context = $"FRReport.Render({RenderFormat})";
-            byte[] result = null;
-            string f = RenderFormat.ToString();
-                       
-            
-
-            MsSqlDataConnection SqlConnection = new MsSqlDataConnection();
-            Report.Dictionary.Connections.Clear();
-            foreach (var dataset in this.DataSets)
-            {
-                if (dataset.Value.DbConnection.GetType() == typeof(System.Data.SqlClient.SqlConnection))
-                {
-                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
-            
-
-                }
-
-                if (dataset.Value.DbConnection.GetType() == typeof(Microsoft.Data.SqlClient.SqlConnection))
-                {
-                    FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection), "MsSqlDataConnection");
-                }
-            }
-
-
-            try
-            {
-                Report.Load(this.ReportPath);
-
-
-                //Invoke OnReportRenderRequest
-                ReportRenderRequestEventArgs requestargs = new ReportRenderRequestEventArgs();
-                requestargs.DataSets = new Dictionary<string, DataSet>();
-                foreach (string DataSetName in this.DataSetNames())
-                {
-                    DataSet ds = new DataSet();
-                    ds.Name = DataSetName;
-                    requestargs.DataSets.Add(DataSetName, ds);
-                }
-                this.OnReportRenderRequest(requestargs);
-                if (requestargs.Cancel)
-                {
-                    LastExecutionResult.ResultMessage = "Cancelled by User";
-                    return null;
-                }
-
-
-
-                bool datasets_validated = true;
-                foreach (var dataset in this.DataSets)
-                {
-                    TableDataSource table = Report.GetDataSource(dataset.Value.Name) as TableDataSource;
-                    if (table != null)
-                    {
-                        table.Parameters.Clear();
-                        table.Connection.ConnectionString = dataset.Value.DbConnection.ConnectionString;
-                        table.SelectCommand = dataset.Value.SQLQuery;
-                        foreach (var name in dataset.Value.Parameters.ParameterNames)
-                        {
-                            CommandParameter parameter = new CommandParameter();
-                            parameter.Name = name;
-                            parameter.DefaultValue = "";
-                            parameter.Value = dataset.Value.Parameters.Get<dynamic>(name);
-                            parameter.DataType = (int)SqlDbType.VarChar;
-                            table.Parameters.Add(parameter);
-                        }
-                    }
-                    else
-                    {
-                        datasets_validated = false;
-                        break;
-                    }
-                }
-
-                if (datasets_validated == true)
-                {
-                    bool success = Report.Prepare();
-                    if (success == false)
-                    {
-                        LastExecutionResult.ResultMessage = "Report Preparation Failed.";
-                        return null;
-                    }   
-                    MemoryStream stream = new MemoryStream();
-                    switch (RenderFormat)
-                    {
-                        case FRRenderFormat.XML:
-                            break;
-                        case FRRenderFormat.NULL:
-                            break;
-                        case FRRenderFormat.CSV:
-                            break;
-                        case FRRenderFormat.IMAGE:
-                            break;
-                        case FRRenderFormat.PDF:
-
-                            
-                            FastReport.Export.PdfSimple.PDFSimpleExport pdfExport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-                            
-                            //pdfExport.Export(Report, @"C:\REPORTS\XREPORT1.pdf");
-                            pdfExport.ImageDpi = ImageDpi;
-                            pdfExport.ShowProgress= true;   
-                            pdfExport.Export(Report,stream );
-                            stream.Flush();
-                            result = stream.ToArray();    
-                            break;
-                        case FRRenderFormat.HTML40:
-                            FastReport.Export.Html.HTMLExport HTML40Export = new FastReport.Export.Html.HTMLExport();
-                            HTML40Export.Format = HTMLExportFormat.HTML;
-                            HTML40Export.Layers = true;
-                            HTML40Export.EmbedPictures = true;
-                            HTML40Export.Export(Report, stream);
-                            stream.Flush();
-                            result =stream.ToArray();
-
-                            break;
-                        case FRRenderFormat.HTML32:
-                            FastReport.Export.Html.HTMLExport HTML32Export = new FastReport.Export.Html.HTMLExport();
-                            HTML32Export.Format = HTMLExportFormat.HTML;
-                            HTML32Export.Layers = true;
-                            HTML32Export.EmbedPictures = true;
-                            HTML32Export.Export(Report, stream);
-                            stream.Flush();
-                            result = stream.ToArray();
-                            break;
-                        case FRRenderFormat.MHTML:
-                            FastReport.Export.Html.HTMLExport MHTMLExport = new FastReport.Export.Html.HTMLExport();
-                            MHTMLExport.Format = HTMLExportFormat.MessageHTML;
-                            MHTMLExport.Layers = true;
-                            MHTMLExport.EmbedPictures = true;
-                            MHTMLExport.Export(Report, stream);
-                            stream.Flush();
-                            result = stream.ToArray();
-                            break;
-                        case FRRenderFormat.EXCEL:
-                            
-                            break;
-                        case FRRenderFormat.WORD:
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                    LastExecutionResult.Exception = ex;
-                    LastExecutionResult.ResultMessage = ex.Message;
-                    LastExecutionResult.ErrorCode = 1;
-            }
-
-
-            return result;
+            return RenderInjectedDataSet(RenderFormat, ImageDpi);
         }
 
+      
         public List<string> DataSetNames()
         {
             List<string> result = new List<string>();   

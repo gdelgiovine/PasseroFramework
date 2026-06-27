@@ -111,7 +111,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters, ProviderFeatures )}";
 
             }
             MoveFirstItem();
@@ -241,7 +241,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters, ProviderFeatures   )}";
 
             }
             if (!ER.Success)
@@ -323,7 +323,7 @@ namespace Passero.Framework
                 ER.Exception = ex;
                 ER.ResultMessage = ex.Message;
                 ER.ErrorCode = 1;
-                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters)}";
+                ER.DebugInfo = $"Query\n{Framework.Utilities.ResolveSQL(SqlQuery, (DynamicParameters)Parameters, ProviderFeatures   )}";
                 //HandleExeception(ER.ToExecutionResult());
             }
 

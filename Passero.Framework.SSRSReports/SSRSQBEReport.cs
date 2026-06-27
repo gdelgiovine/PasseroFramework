@@ -1,4 +1,5 @@
 ﻿
+
 using Dapper;
 using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using Microsoft.VisualBasic;
@@ -20,7 +21,7 @@ namespace Passero.Framework.SSRSReports
     public partial class ReportManager : Form
     {
 
-
+        public ProviderFeatures ProviderFeatures { get; set; }
         /// <summary>
         /// Shows or hides the Save/Load buttons for QBE queries.   
         /// </summary>
@@ -556,147 +557,7 @@ namespace Passero.Framework.SSRSReports
         }
 
 
-        private void BuildQuery3_OLD()
-        {
-            if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
-                return;
-
-            QBESSRSReport Report = this.QBEReports[this.CurrentReportName];
-
-            Passero.Framework.SSRSReports.ReportDataSet PrimaryDataSet = Report.PrimaryDataSet;
-            if (PrimaryDataSet == null)
-            {
-                PrimaryDataSet = Report.DataSets.Values.First();
-            }
-
-            StringBuilder sqlwhere = new StringBuilder();
-            this.QueryGrid.EndEdit();
-            DynamicParameters parameters = new DynamicParameters();
-
-                
-                string _WhereAND = "";
-              
-                foreach (var item in this.QueryGrid.Rows)
-                {
-                    StringBuilder sqlwhereitem = new StringBuilder();
-                    string Value = "";
-                    if (item[1].Value != null)
-                        Value = item[1].Value.ToString();
-
-                    string _WhereItemOR = "";
-                    string[] Values;
-                    Type PropertyType = PrimaryDataSet.ModelProperties[item.Tag.ToString()].PropertyType;
-                    Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
-                    if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
-                    {
-                        Value = Value.Trim();
-
-
-                        if (Value != ";")
-                        {
-                            Values = Strings.Split(Value, ";");
-                        }
-                        else
-                        {
-                            Values = new string[1];
-                            Values[0] = ";";
-                        }
-
-                        int i = 1;
-                        foreach (var _Value in Values)
-                        {
-                            string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                            // GESTIONE PRIORITARIA PER COLONNE BOOLEAN/BIT
-                            if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
-                            {
-                                // Converte il valore stringa in boolean
-                                bool boolValue;
-                                if (bool.TryParse(_Value, out boolValue))
-                                {
-                                    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
-                                    parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
-                                }
-                                // Se il valore non è un boolean valido, salta questa condizione
-                            }
-                            else if (this.chkLikeOperator.Checked)
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                                parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
-                            }
-                            else
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                                parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
-                            }
-
-                            if (sqlwhereitem.Length > 0)
-                            {
-                                _WhereItemOR = " OR ";
-                            }
-                            i++;
-                        }
-                        if (sqlwhere.Length > 0)
-                        {
-                            _WhereAND = " AND ";
-                        }
-                        sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
-                    }
-                }
-
-                if (PrimaryDataSet.SQLQuery == null || PrimaryDataSet.SQLQuery.Trim() == "")
-                {
-                    this.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(PrimaryDataSet.Model)}";
-                    if (sqlwhere.ToString().Trim() != "")
-                        this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
-                    this.SQLQueryParameters = parameters;
-                }
-                else
-                {
-                    
-                    this.SQLQuery = $"SELECT * FROM ({PrimaryDataSet.SQLQuery}) AS X";
-                    if (sqlwhere.ToString().Trim() != "")
-                        this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
-                    parameters.AddDynamicParams(PrimaryDataSet.Parameters); 
-                    
-                    this.SQLQueryParameters = parameters;
-                }
- 
-                 
-                this.SQLQuery += " " + Report.OrderBy();
-
-            Report.SelectedSortColumns.Clear();
-            foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
-            {
-                QBEReportSortColumn column = new QBEReportSortColumn();
-                column.Name = (string)row[this.dgvc_SelectedSortColumns_name].Value;
-                column.Position = (int)row[this.dgvc_SelectedSortColumns_position].Value;
-                column.FriendlyName = (string)row[this.dgvc_SelectedSortColumns_friendlyname].Value;
-                column.AscDesc = (string)row[this.dgvc_SelectedSortColumns_ascdesc].Value;
-                Report.SelectedSortColumns.Add(column.Name, column);
-            }
-
-
-
-            
-            PrimaryDataSet.LoadData(SQLQuery, SQLQueryParameters);
-
-
-            //Load Data for other datasets
-            foreach (Passero.Framework.SSRSReports.ReportDataSet DataSet in Report.DataSets.Values )
-            {
-                if (DataSet != PrimaryDataSet )
-                {
-                    if (DataSet.SQLQuery ==null || DataSet.SQLQuery.Trim()== "")
-                    {
-                        DataSet.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(DataSet.Model)}";
-                    }
-                    DataSet.LoadData (DataSet.SQLQuery,DataSet.Parameters );    
-                }
-            }
-           
-        }
-
-
+     
         private void BuildQuery3()
         {
             if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
@@ -755,21 +616,25 @@ namespace Passero.Framework.SSRSReports
                 Type propertyType = PrimaryDataSet.ModelProperties[columnName].PropertyType;
                 bool isCodeColumn = CodeColumns.Contains(columnName);
 
-                var build = Framework.Controls.NavFilterSqlEngine.BuildColumnPredicate(
-                    columnName: columnName,
-                    propertyType: propertyType,
-                    filterText: value.Trim(),
-                    isCodeColumn: isCodeColumn,
-                    parameterPrefix: $"f_{columnName}_{row.Index}",
-                    parameters: parameters,
-                    options: new Passero.Framework.Controls.NavFilterSqlOptions
-                    {
-                        Culture = FilterCulture,
-                        CaseInsensitiveText = FilterCaseInsensitiveText,
-                        AllowRelativeDateTokens = EnableRelativeDateTokens,
-                        AllowTextRelationalOperators = AllowTextRelationalOperators,
-                        UseLikeOperator = UseLikeOperator
-                    });
+                ProviderFeatures providerFeatures =
+    PrimaryDataSet.ProviderFeatures ?? ProviderFeaturesResolver.FromConnection(PrimaryDataSet.DbConnection);
+
+var build = Framework.Controls.NavFilterSqlEngine.BuildColumnPredicate(
+    columnName: columnName,
+    propertyType: propertyType,
+    filterText: value.Trim(),
+    isCodeColumn: isCodeColumn,
+    parameterPrefix: $"f_{columnName}_{row.Index}",
+    parameters: parameters,
+    options: new Passero.Framework.Controls.NavFilterSqlOptions
+    {
+        Culture = FilterCulture,
+        CaseInsensitiveText = FilterCaseInsensitiveText,
+        AllowRelativeDateTokens = EnableRelativeDateTokens,
+        AllowTextRelationalOperators = AllowTextRelationalOperators,
+        UseLikeOperator = UseLikeOperator
+    },
+    providerFeatures);
 
                 if (build.Errors.Count > 0)
                 {
@@ -812,13 +677,23 @@ namespace Passero.Framework.SSRSReports
             }
             else
             {
-                this.SQLQuery = $"SELECT * FROM ({PrimaryDataSet.SQLQuery}) AS X";
+                string _AS;
+                if (this.ProviderFeatures.Dialect == DbDialect.Oracle)
+                {
+                    _AS = " ";
+                }
+                else
+                {
+                    _AS = " AS ";
+                }
+                this.SQLQuery = $"SELECT * FROM ({PrimaryDataSet.SQLQuery}){_AS}X"; 
                 if (sqlWhere.ToString().Trim() != "")
                     this.SQLQuery = this.SQLQuery + $" WHERE {sqlWhere.ToString()}";
                 parameters.AddDynamicParams(PrimaryDataSet.Parameters);
 
                 this.SQLQueryParameters = parameters;
             }
+
 
             if (Report .OrderBy ()!= null && Report.OrderBy().Trim() != "") 
                 this.SQLQuery += " " + Report.OrderBy();

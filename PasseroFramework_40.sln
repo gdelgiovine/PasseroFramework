@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementi di soluzione", "El
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passero.Framework.QueryEngine", "Passero.Framework.QueryEngine\Passero.Framework.QueryEngine.csproj", "{9F07D014-A677-43EA-8A64-94EE1C7D4800}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -260,6 +262,18 @@ Global
 		{265D0C81-F74E-4417-8D50-373118B44BF7}.Release|x64.Build.0 = Release|Any CPU
 		{265D0C81-F74E-4417-8D50-373118B44BF7}.Release|x86.ActiveCfg = Release|Any CPU
 		{265D0C81-F74E-4417-8D50-373118B44BF7}.Release|x86.Build.0 = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|x64.Build.0 = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Debug|x86.Build.0 = Debug|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|x64.ActiveCfg = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|x64.Build.0 = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|x86.ActiveCfg = Release|Any CPU
+		{9F07D014-A677-43EA-8A64-94EE1C7D4800}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

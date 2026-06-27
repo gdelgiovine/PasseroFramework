@@ -84,7 +84,7 @@ namespace PasseroDemo.Views
             //vmTitleAuthor.Init(_dbContext );
             vmTitleAuthor .ErrorNotificationMessageBox = this.ErrorNotificationMessageBox;
             vmTitleAuthor.ErrorNotificationMode = ErrorNotificationModes.ShowDialog;
-
+            
             vmPublisher.Init(vmTitle.DbConnection);
             //vmPublisher.Init(_dbContext );
             //rpPublisher.DbConnection = this.DbConnection; ;

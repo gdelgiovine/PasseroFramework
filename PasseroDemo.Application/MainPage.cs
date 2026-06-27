@@ -42,34 +42,60 @@ namespace PasseroDemo.Application
             string CSSQLServer = "DBConnectionString";
             string CSMySQL = "DBConnectionStringMySQL";
             string CSPostgreSQL = "DBConnectionStringPostgreSQL";
-            string CS = CSPostgreSQL;
+            string CSFirebird= "DBConnectionStringFirebird";
+            string CSOracle = "DBConnectionStringOracle";
+            string CSDB2 = "DBConnectionStringDB2"; 
+            string CS = CSSQLServer          ;
+            
             this.ConfigurationManager.DBConnections.Clear();
             this.ConfigurationManager.SetSessionConfigurationKeyValue(
                 "General",
                 "DBConnectionString",
                 this.ConfigurationManager.GetConfigurationKeyValue("General", CS));
 
+            string DbConnectionString = this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString");
 
             IDbConnection DBConnectionPasseroDemo = null;
+
             if (CS == CSSQLServer)
             {
-                DBConnectionPasseroDemo = new Microsoft.Data.SqlClient.SqlConnection(
-                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                DBConnectionPasseroDemo = new Microsoft.Data.SqlClient.SqlConnection(DbConnectionString);
                 this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
             }
 
             if (CS == CSMySQL)
             {
-                DBConnectionPasseroDemo = new MySql.Data.MySqlClient.MySqlConnection(
-                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                DBConnectionPasseroDemo = new MySql.Data.MySqlClient.MySqlConnection(DbConnectionString);
                 this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
             }
 
             if (CS == CSPostgreSQL )
             {
-                DBConnectionPasseroDemo = new Npgsql .NpgsqlConnection (
-                this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString"));
+                DBConnectionPasseroDemo = new Npgsql .NpgsqlConnection (DbConnectionString );
                 this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+            }
+
+            if (CS == CSFirebird)
+            {
+                DBConnectionPasseroDemo = new FirebirdSql.Data.FirebirdClient.FbConnection(DbConnectionString);
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+            }
+
+            if (CS == CSOracle )
+            {
+#if NET8_0_OR_GREATER
+                DBConnectionPasseroDemo = new Oracle  .ManagedDataAccess .Client.OracleConnection(DbConnectionString);
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+#endif 
+            }
+
+
+            if (CS == CSDB2 )
+            {
+#if NET8_0_OR_GREATER
+                DBConnectionPasseroDemo = new  IBM .Data .Db2.DB2Connection(DbConnectionString);
+                this.ConfigurationManager.DBConnections.Add("PasseroDemo", DBConnectionPasseroDemo);
+#endif 
             }
         }
  
@@ -120,6 +146,23 @@ namespace PasseroDemo.Application
         
         private void ManageNavigationBar(string ItemName)
         {
+
+
+            if (ItemName == mnuTestTable .Name)
+            {
+
+                PasseroDemo.Views.frmTesterTestTable frmTesterTestTable = Passero.Framework.ControlsUtilities.FormExist<Views.frmTesterTestTable>("frmTesterTestTable");
+                if (frmTesterTestTable is null)
+                {
+                    frmTesterTestTable = new Views.frmTesterTestTable();
+                    frmTesterTestTable.Name = "frmTesterTestTable";
+                    frmTesterTestTable.ConfigurationManager = this.ConfigurationManager;
+                    frmTesterTestTable.MdiParent = this.MDIWindow;
+                    frmTesterTestTable.Show();
+                }
+                frmTesterTestTable.Activate();
+
+            }
 
 
 

@@ -43,25 +43,28 @@ namespace PasseroDemo.Application
 
             var app = builder.Build();
 
-            IDictionary<string, IPreWisejCommandHandler> customHandlers =
-                new Dictionary<string, IPreWisejCommandHandler>(StringComparer.OrdinalIgnoreCase);
+            // Dictionary to hold custom PreWisej command handlers, if any are needed
+            IDictionary<string, IPreWisejCommandHandler> customHandlers = new Dictionary<string, IPreWisejCommandHandler>(StringComparer.OrdinalIgnoreCase);
+
 
             // Example:
-            // customHandlers.AddJwtPreWisejHandler(
-            //     new JwtAuthenticationOptions
-            //     {
-            //         SecretKey = builder.Configuration["Jwt:SecretKey"] ?? string.Empty,
-            //         Issuer = builder.Configuration["Jwt:Issuer"] ?? string.Empty,
-            //         Audience = builder.Configuration["Jwt:Audience"] ?? string.Empty,
-            //     });
+             customHandlers.AddJwtPreWisejHandler(
+                 new JwtAuthenticationOptions
+                 {
+                     SecretKey = builder.Configuration["Jwt:SecretKey"] ?? string.Empty,
+                     Issuer = builder.Configuration["Jwt:Issuer"] ?? string.Empty,
+                     Audience = builder.Configuration["Jwt:Audience"] ?? string.Empty,
+                 });
 
-            //customHandlers.AddJwtPreWisejHandler(secretKey, issuer, audience);
+            customHandlers.Add("MYCMD", new MyPreWisejCommandHandler () );  
 
-            Passero.Framework.HttpHelper.HttpContextHelper.CaptureToSession();
 
-            
             if (usePreWisejCommandRouter)
             {
+                // If using the PreWisejCommandRouter, we need to add the HttpContextAccessor   
+                builder.Services.AddHttpContextAccessor();
+                Passero.Framework.HttpHelper.HttpContextHelper.CaptureToSession();
+
                 var router = new PreWisejCommandRouter(customHandlers);
                 app.Use(async (context, next) =>
                 {

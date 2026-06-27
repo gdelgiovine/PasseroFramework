@@ -271,9 +271,9 @@ namespace Passero.Framework
         public string ResolvedSQLQuery(string SQLQuery = "", DynamicParameters Parameters = null)
         {
             if (SQLQuery != null && Parameters != null)
-                return Passero.Framework.Utilities.ResolveSQL(SQLQuery, Parameters);
+                return Passero.Framework.Utilities.ResolveSQL(SQLQuery, Parameters, ProviderFeatures    );
             else
-                return Passero.Framework.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Passero.Framework.Utilities.ResolveSQL(this.SQLQuery, this.Parameters,     ProviderFeatures   );
         }
 
         /// <summary>
@@ -283,9 +283,9 @@ namespace Passero.Framework
         public string ResolvedSQLQuery()
         {
             if (this.SQLQuery != null && this.Parameters != null)
-                return Passero.Framework.Utilities.ResolveSQL(SQLQuery, Parameters);
+                return Passero.Framework.Utilities.ResolveSQL(SQLQuery, Parameters, ProviderFeatures    );
             else
-                return Passero.Framework.Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Passero.Framework.Utilities.ResolveSQL(this.SQLQuery, this.Parameters, ProviderFeatures  );
         }
         /// <summary>
         /// Gets or sets the binding source.

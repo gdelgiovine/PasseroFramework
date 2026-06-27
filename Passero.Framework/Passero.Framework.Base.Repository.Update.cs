@@ -67,7 +67,9 @@ namespace Passero.Framework
                     var prop = EntityPrimaryKeys[i];
                     @params.Add($"{prop.Name}_shadow", prop.GetValue(shadowSource));
                 }
-
+             
+                //Utilities .ResolveSQL
+                
                 int result = DbConnection.Execute(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
                 if (result > 0)
                 {

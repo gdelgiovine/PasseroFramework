@@ -195,7 +195,7 @@ namespace Passero.Framework.Controls
         /// <returns></returns>
         public string SQLQueryResolved()
         {
-            return Passero.Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
+            return Passero.Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters, this.ProviderFeatures );
         }
  
 
@@ -1044,121 +1044,7 @@ namespace Passero.Framework.Controls
         /// </summary>
         /// 
 
-        private void BuildQuery3_OLD()
-        {
-            StringBuilder sqlwhere = new StringBuilder();
-            string _WhereAND = "";
-            OrderBy = OrderBy.Trim();
-            QueryGrid.EndEdit();
-            DynamicParameters parameters = new DynamicParameters();
-
-            foreach (var item in QueryGrid.Rows)
-            {
-                StringBuilder sqlwhereitem = new StringBuilder();
-                string Value = "";
-                if (item[1].Value != null)
-                    Value = item[1].Value.ToString();
-
-                string _WhereItemOR = "";
-                string[] Values;
-                Type PropertyType = ModelProperties[item.Tag.ToString()].PropertyType;
-                Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
-
-                if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
-                {
-                    Value = Value.Trim();
-
-                    if (Value != ";")
-                    {
-                        Values = Strings.Split(Value, ";");
-                    }
-                    else
-                    {
-                        Values = new string[1];
-                        Values[0] = ";";
-                    }
-
-                    int i = 1;
-                    foreach (var _Value in Values)
-                    {
-                        string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-
-                        // ✅ GESTIONE SPECIFICA PER COLONNE BOOLEAN/BIT
-                        if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
-                        {
-                            // Converte il valore stringa in boolean
-                            bool boolValue;
-                            if (bool.TryParse(_Value, out boolValue))
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
-                                parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
-                            }
-                            // Se il valore non è un boolean valido, salta questa condizione
-                        }
-                        else if (chkLikeOperator.Checked)
-                        {
-                            // controlla il tipo di dato della colonna
-                            if (Passero.Framework.Utilities.IsNumericType(ModelProperties[item.Tag.ToString()].GetMethod.ReturnType))
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                                parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
-                            }
-                            else
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                                parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
-                            }
-                        }
-                        else
-                        {
-                            sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                            parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
-                        }
-
-                        if (sqlwhereitem.Length > 0)
-                        {
-                            _WhereItemOR = " OR ";
-                        }
-                        i++;
-                    }
-
-                    if (sqlwhere.Length > 0)
-                    {
-                        _WhereAND = " AND ";
-                    }
-                    sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
-                }
-            }
-
-            string sTopRows = "";
-            if (TopRows > 0)
-            {
-                sTopRows = $"TOP ({TopRows})";
-            }
-
-            if (string.IsNullOrEmpty(BaseSQLQuery) == true)
-            {
-                SQLQuery = $"SELECT {sTopRows} * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
-            }
-            else
-            {
-                SQLQuery = $"SELECT {sTopRows} * FROM ({BaseSQLQuery.Trim()}) _b ";
-            }
-
-            if (sqlwhere.ToString().Trim() != "")
-                SQLQuery = SQLQuery + $" WHERE {sqlwhere.ToString()}";
-            if (string.IsNullOrEmpty(OrderBy) == false)
-                SQLQuery = SQLQuery + $" ORDER BY {OrderBy}";
-            SQLQueryParameters = parameters;
-
-            foreach (var p in BaseDbParameteres.ParameterNames)
-            {
-                SQLQueryParameters.Add(p, ((SqlMapper.IParameterLookup)BaseDbParameteres)[p]);
-            }
-
-            string rSQL = Framework.Utilities.ResolveSQL(SQLQuery, SQLQueryParameters);
-        }
-
+       
         /// <summary>
         /// Costruisce la query WHERE usando NavFilterSqlEngine.
         /// Sintassi supportata:
@@ -1236,8 +1122,10 @@ namespace Passero.Framework.Controls
                             CaseInsensitiveText = FilterCaseInsensitiveText,
                             AllowRelativeDateTokens = EnableRelativeDateTokens,
                             AllowTextRelationalOperators = AllowTextRelationalOperators,
-                            UseLikeOperator = UseLikeOperator
-                        });
+                            UseLikeOperator = UseLikeOperator,
+                            
+                        },
+                        this.ProviderFeatures );
 
                     if (build.Errors.Count > 0)
                     {

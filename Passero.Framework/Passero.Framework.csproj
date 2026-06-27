@@ -122,5 +122,10 @@
     <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
         <Compile Remove="Passero.Framework.Base.PasseroEf6DbContext.cs" />
     </ItemGroup>
+    <ItemGroup>
+      <Reference Include="SqlKata.Core">
+        <HintPath>D:\.nuget\.packages\sqlkata\4.0.1\lib\net8.0\SqlKata.Core.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 
 </Project>

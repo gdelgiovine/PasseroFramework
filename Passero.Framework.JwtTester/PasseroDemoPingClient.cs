@@ -49,7 +49,9 @@ namespace Passero.Framework.JwtTester
 
         private static string BuildPingUrl(string applicationBaseUrl)
         {
-            return applicationBaseUrl.TrimEnd('/') + "/PING";
+           // return applicationBaseUrl.TrimEnd('/') + "/PING";
+
+            return applicationBaseUrl.TrimEnd('/') + "/MYCMD";
         }
     }
 }

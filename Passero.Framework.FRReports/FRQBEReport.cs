@@ -1,8 +1,8 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using FastReport;
 using FastReport.Export;
 using FastReport.Export.PdfSimple.PdfObjects;
+using Microsoft.Ajax.Utilities;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using MiniExcelLibs;
@@ -25,6 +25,10 @@ namespace Passero.Framework.FRReports
  
     public partial class ReportManager : Form
     {
+
+
+        public ProviderFeatures ProviderFeatures { get; set; }
+
         /// <summary>
         /// Shows or hides the Save/Load buttons for QBE queries.   
         /// </summary>
@@ -404,9 +408,8 @@ namespace Passero.Framework.FRReports
         }
 
 
-        private byte[] RenderReport(QBEFRReport Report, FRRenderFormat  Format = FRRenderFormat.PDF, int ImageDpi=100)
+        private byte[] RenderReport(QBEFRReport Report, FRRenderFormat Format = FRRenderFormat.PDF, int ImageDpi = 100)
         {
-
             if (Report == null)
             {
                 MessageBox.Show("No Report!", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -419,29 +422,26 @@ namespace Passero.Framework.FRReports
                 return null;
             }
 
-            //Passero.Framework.Reports.SSRSReport SSRSReport = new Reports.SSRSReport();
             FRReport = new FRReports.FRReport();
             if (RaiseReportEvents)
             {
                 this.FRReport.ReportRenderRequest -= FRReport_ReportRenderRequest;
                 this.FRReport.ReportRenderRequest += FRReport_ReportRenderRequest;
             }
+
             FRReport.ReportPath = Report.ReportFileName;
             FRReport.ReportFormat = Format;
             FRReport.DataSets = Report.DataSets;
-                   
 
-            byte[] ReportBytes = FRReport.Render(Format,ImageDpi );
-            //byte[] ReportBytes = FRReport.RenderInjectedDataSet(Format, ImageDpi);
+            byte[] ReportBytes = FRReport.RenderInjectedDataSet(Format, ImageDpi);
 
             if (FRReport.LastExecutionResult.Exception != null)
             {
                 this.RenderError = FRReport.LastExecutionResult.ResultMessage + "\n" + FRReport.LastExecutionResult.Exception.ToString();
             }
+
             return ReportBytes;
-
         }
-
       
      
 
@@ -571,143 +571,7 @@ namespace Passero.Framework.FRReports
 
         }
 
-        private void BuildQuery3_OLD()
-        {
-            if (this.QBEReports[this.CurrentReportName].DataSets.Count == 0)
-                return;
-
-            QBEFRReport Report = this.QBEReports[this.CurrentReportName];
-
-            Passero.Framework.FRReports.DataSet PrimaryDataSet = Report.PrimaryDataSet;
-            if (PrimaryDataSet == null)
-            {
-                PrimaryDataSet = Report.DataSets.Values.First();
-            }
-
-            StringBuilder sqlwhere = new StringBuilder();
-            string _WhereAND = "";
-            this.QueryGrid.EndEdit();
-            DynamicParameters parameters = new DynamicParameters();
-            foreach (var item in this.QueryGrid.Rows)
-            {
-                StringBuilder sqlwhereitem = new StringBuilder();
-                string Value = "";
-                if (item[1].Value != null)
-                    Value = item[1].Value.ToString();
-
-                string _WhereItemOR = "";
-                string[] Values;
-                Type PropertyType = PrimaryDataSet.ModelProperties[item.Tag.ToString()].PropertyType;
-                Passero.Framework.EnumSystemTypeIs PropertyTypeIs = Passero.Framework.Utilities.GetSystemTypeIs(PropertyType);
-                if (!string.IsNullOrEmpty(Strings.Trim(Value)) | !string.IsNullOrEmpty(Value))
-                {
-                    Value = Value.Trim();
-
-
-                    if (Value != ";")
-                    {
-                        Values = Strings.Split(Value, ";");
-                    }
-                    else
-                    {
-                        Values = new string[1];
-                        Values[0] = ";";
-                    }
-
-                    int i = 1;
-                    foreach (var _Value in Values)
-                    {
-                        string parametername = $"@{item.Tag.ToString()}_{i.ToString().Trim()}";
-                        //if (this.chkLikeOperator.Checked)
-                        //{
-                        //    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                        //    parameters.Add(parametername, "%"+_Value+"%", Passero.Framework.Utilities.GetDbType(PropertyType));
-                        //}
-                        //else
-                        //{
-                        //    sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                        //    parameters.Add(parametername,RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
-                        //}
-
-                        // GESTIONE PRIORITARIA PER COLONNE BOOLEAN/BIT
-                        if (PropertyTypeIs == Passero.Framework.EnumSystemTypeIs.Boolean)
-                        {
-                            // Converte il valore stringa in boolean
-                            bool boolValue;
-                            if (bool.TryParse(_Value, out boolValue))
-                            {
-                                sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} = {parametername}");
-                                parameters.Add(parametername, boolValue, System.Data.DbType.Boolean);
-                            }
-                            // Se il valore non è un boolean valido, salta questa condizione
-                        }
-                        else if (this.chkLikeOperator.Checked)
-                        {
-                            sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()} Like {parametername} ");
-                            parameters.Add(parametername, "%" + _Value + "%", Passero.Framework.Utilities.GetDbType(PropertyType));
-                        }
-                        else
-                        {
-                            sqlwhereitem.Append($" {_WhereItemOR} {item.Tag.ToString()}{GetComparisionOperator(_Value)}{parametername}");
-                            parameters.Add(parametername, RemoveComparisionOperator(_Value), Passero.Framework.Utilities.GetDbType(PropertyType));
-                        }
-
-                        if (sqlwhereitem.Length > 0)
-                        {
-                            _WhereItemOR = " OR ";
-                        }
-                        i++;
-                    }
-                    if (sqlwhere.Length > 0)
-                    {
-                        _WhereAND = " AND ";
-                    }
-                    sqlwhere.Append($" {_WhereAND} ( {sqlwhereitem.ToString()} )");
-                }
-            }
-
-
-            Report.SelectedSortColumns.Clear();
-            foreach (DataGridViewRow row in this.dgv_SelectedSortColumns.Rows)
-            {
-                QBEReportSortColumn column = new QBEReportSortColumn();
-                column.Name = (string)row[this.dgvc_SelectedSortColumns_name].Value;
-                column.Position = (int)row[this.dgvc_SelectedSortColumns_position].Value;
-                column.FriendlyName = (string)row[this.dgvc_SelectedSortColumns_friendlyname].Value;
-                column.AscDesc = (string)row[this.dgvc_SelectedSortColumns_ascdesc].Value;
-                Report.SelectedSortColumns.Add(column.Name, column);
-            }
-
-
-
-            this.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(PrimaryDataSet.Model)}";
-
-            if (sqlwhere.ToString().Trim() != "")
-                this.SQLQuery = this.SQLQuery + $" WHERE {sqlwhere.ToString()}";
-
-
-            this.SQLQuery += " " + Report.OrderBy();
-            this.SQLQueryParameters = parameters;
-            PrimaryDataSet.Parameters = parameters;
-            PrimaryDataSet.SQLQuery = SQLQuery;
-            PrimaryDataSet.LoadData();
-
-
-            //Load Data for other datasets
-            foreach (Passero.Framework.FRReports.DataSet DataSet in Report.DataSets.Values)
-            {
-                if (DataSet != PrimaryDataSet)
-                {
-                    if (DataSet.SQLQuery == null || DataSet.SQLQuery.Trim() == "")
-                    {
-                        DataSet.SQLQuery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(DataSet.Model)}";
-                    }
-                    DataSet.LoadData();
-                }
-            }
-
-        }
-
+    
 
         private void BuildQuery3()
         {
@@ -781,7 +645,9 @@ namespace Passero.Framework.FRReports
                         AllowRelativeDateTokens = EnableRelativeDateTokens,
                         AllowTextRelationalOperators = AllowTextRelationalOperators,
                         UseLikeOperator = UseLikeOperator
-                    });
+                    },
+                    PrimaryDataSet.ProviderFeatures 
+                    );
 
                 if (build.Errors.Count > 0)
                 {

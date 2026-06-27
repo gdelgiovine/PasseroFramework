@@ -15,6 +15,7 @@ namespace Passero.Framework.Controls
         public bool AllowRelativeDateTokens { get; set; } = true;
         public bool AllowTextRelationalOperators { get; set; } = false;
         public bool UseLikeOperator { get; set; } = false;
+     
     }
 
     public sealed class NavFilterError
@@ -42,7 +43,7 @@ namespace Passero.Framework.Controls
             string parameterPrefix,
             DynamicParameters parameters,
             NavFilterSqlOptions options,
-            ProviderFeatures providerFeatures = null)
+            ProviderFeatures providerFeatures)
         {
             // Se providerFeatures è null, usa le feature di default (SQL Server)
             if (providerFeatures == null)
@@ -96,6 +97,8 @@ namespace Passero.Framework.Controls
             return result;
         }
 
+
+
         private static string BuildAtom(
             string columnName,
             Type propertyType,
@@ -137,29 +140,29 @@ namespace Passero.Framework.Controls
                 var parts = new List<string>();
                 if (left.Length > 0)
                 {
-                    string p = $"@{parameterNameSeed}_from";
+                    string pLo = $"{providerFeatures.ParameterPrefix}{parameterNameSeed}_lo";
                     object v = ConvertValue(left, targetType, isCodeColumn, options, errors);
                     if (errors.Count > 0)
                         return string.Empty;
 
                     if (v != null)
                     {
-                        parameters.Add(p, v, Passero.Framework.Utilities.GetDbType(targetType));
-                        parts.Add($"{col} >= {p}");
+                        parameters.Add(pLo, v, Passero.Framework.Utilities.GetDbType(targetType));
+                        parts.Add($"{col} >= {pLo}");
                     }
                 }
 
                 if (right.Length > 0)
                 {
-                    string p = $"@{parameterNameSeed}_to";
+                    string pHi = $"{providerFeatures.ParameterPrefix}{parameterNameSeed}_hi";
                     object v = ConvertValue(right, targetType, isCodeColumn, options, errors);
                     if (errors.Count > 0)
                         return string.Empty;
 
                     if (v != null)
                     {
-                        parameters.Add(p, v, Passero.Framework.Utilities.GetDbType(targetType));
-                        parts.Add($"{col} <= {p}");
+                        parameters.Add(pHi, v, Passero.Framework.Utilities.GetDbType(targetType));
+                        parts.Add($"{col} <= {pHi}");
                     }
                 }
 
@@ -185,7 +188,9 @@ namespace Passero.Framework.Controls
             // Se UseLikeOperator è true, usa sempre LIKE su campi testuali
             if (options.UseLikeOperator && targetType == typeof(string))
             {
-                string p = $"@{parameterNameSeed}";
+                
+                string p = $"{providerFeatures.ParameterPrefix}{parameterNameSeed}";
+
                 string likeValue = "%" + rawValue + "%";
                 parameters.Add(p, likeValue, DbType.String);
 
@@ -208,7 +213,9 @@ namespace Passero.Framework.Controls
                     return string.Empty;
                 }
 
-                string p = $"@{parameterNameSeed}";
+                
+                string p = $"{providerFeatures.ParameterPrefix}{parameterNameSeed}";
+
                 string likeValue = ToSqlLike(rawValue, isCodeColumn);
                 parameters.Add(p, likeValue, DbType.String);
 
@@ -229,7 +236,9 @@ namespace Passero.Framework.Controls
                 return string.Empty;
             }
 
-            string param = $"@{parameterNameSeed}";
+            
+            string param = $"{providerFeatures.ParameterPrefix}{parameterNameSeed}";
+
             object value = ConvertValue(rawValue, targetType, isCodeColumn, options, errors);
             if (errors.Count > 0)
                 return string.Empty;
@@ -354,11 +363,18 @@ namespace Passero.Framework.Controls
 
         private static string EscapeSqlIdentifier(string name, ProviderFeatures providerFeatures)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
                 return name;
 
-            // Usa il metodo QuoteIdentifier di ProviderFeatures
-            return providerFeatures.QuoteIdentifier(name);
+            string identifier = name.Trim();
+
+            if (providerFeatures != null &&
+                (providerFeatures.Dialect == DbDialect.DB2 || providerFeatures.Dialect == DbDialect.DB2i))
+            {
+                return identifier.ToUpperInvariant();
+            }
+
+            return providerFeatures.QuoteIdentifier(identifier);
         }
 
         private static string ToSqlLike(string navPattern, bool uppercase)

@@ -17,9 +17,9 @@ namespace Passero.Framework
         public string ResolvedSQLQuery(string SQLQuery = "", DynamicParameters Parameters = null)
         {
             if (SQLQuery != null && Parameters != null)
-                return Utilities.ResolveSQL(SQLQuery, Parameters);
+                return Utilities.ResolveSQL(SQLQuery, Parameters,ProviderFeatures );
             else
-                return Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Utilities.ResolveSQL(this.SQLQuery, this.Parameters, ProviderFeatures );
         }
 
         /// <summary>
@@ -29,9 +29,9 @@ namespace Passero.Framework
         public string ResolvedSQLQuery()
         {
             if (this.SQLQuery != null && this.Parameters != null)
-                return Utilities.ResolveSQL(SQLQuery, Parameters);
+                return Utilities.ResolveSQL(SQLQuery, Parameters, ProviderFeatures  );
             else
-                return Utilities.ResolveSQL(this.SQLQuery, this.Parameters);
+                return Utilities.ResolveSQL(this.SQLQuery, this.Parameters, ProviderFeatures    );
         }
 
 
@@ -358,12 +358,14 @@ namespace Passero.Framework
                     query += $" ORDER BY {mDefaultOrderbyClause.Trim()} ";
                 }   
 
-                Parameters = new DynamicParameters();
+                parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;
             try
             {
+                
                 _ModelItemsShadow = new List<ModelClass>();
+                //var x = Utilities.ResolveSQL(query, (DynamicParameters)parameters, this.ProviderFeatures);
                 //_ModelItemsShadow.Clear();
                 _ModelItems = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).ToList();
                 if (_ModelItems.Count > 0)

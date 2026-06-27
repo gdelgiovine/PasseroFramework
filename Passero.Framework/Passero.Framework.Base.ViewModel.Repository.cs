@@ -543,14 +543,11 @@ namespace Passero.Framework
             Repository.Parameters = new DynamicParameters();
             Repository.ViewModel = this;
 
-            // Per Dapper: imposta la query di default qui perché Repository<T>
-            // non dispone di BuildSelectQuery con alias.
-            // Per EfRepository: DefaultSQLQuery e SQLQuery sono già impostati
-            // correttamente dal costruttore tramite BuildSelectQuery — non vanno sovrascritti.
+            RefreshRepositorySchema();
+
             if (Repository is Repository<ModelClass> dapperRepo)
             {
                 dapperRepo.ViewModel = this;
-                dapperRepo.DbConnection = DbContext.DbConnection;
 
                 string defaultQuery = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
                 dapperRepo.DefaultSQLQuery = defaultQuery;
@@ -571,20 +568,13 @@ namespace Passero.Framework
             this.DbConnection = DbConnection;
             this.Name = Name;
             this.Description = Description;
-            Repository.DbConnection = DbConnection;
 
+            Repository.DbConnection = DbConnection;
+            Repository.ViewModel = this;
+
+            RefreshRepositorySchema();
         }
 
-
-
-
-        /// <summary>
-        /// Initializes the specified database connection.
-        /// </summary>
-        /// <param name="DbConnection">The database connection.</param>
-        /// <param name="DataBindingMode">The data binding mode.</param>
-        /// <param name="Name">The name.</param>
-        /// <param name="Description">The description.</param>
         public virtual void Init(DataBindingMode DataBindingMode = DataBindingMode.Passero, string Name = "", string Description = "")
         {
             mDataBindingMode = DataBindingMode;
@@ -592,8 +582,65 @@ namespace Passero.Framework
             this.DbContext.EnsureConnectionOpen();
             this.Name = Name;
             this.Description = Description;
-            Repository.DbConnection = this.DbConnection;
 
+            Repository.DbConnection = this.DbConnection;
+            Repository.ViewModel = this;
+
+            RefreshRepositorySchema();
         }
+
+        private void RefreshRepositorySchema()
+        {
+            if (Repository is not Repository<ModelClass> dapperRepository || dapperRepository.DbObject == null)
+            {
+                return;
+            }
+
+            dapperRepository.DbObject.GetCachedSchema(Refresh: true);
+            ApplyDb2IdentifierQuoteStyle(dapperRepository);
+        }
+
+        private void ApplyDb2IdentifierQuoteStyle(Repository<ModelClass> dapperRepository)
+        {
+            if (dapperRepository?.ProviderFeatures == null || dapperRepository.DbObject == null)
+            {
+                return;
+            }
+
+            var providerFeatures = dapperRepository.ProviderFeatures;
+
+            if (providerFeatures.Dialect != DbDialect.DB2 && providerFeatures.Dialect != DbDialect.DB2i)
+            {
+                return;
+            }
+
+            if (dapperRepository.DbObject.DbColumns == null || dapperRepository.DbObject.DbColumns.Count == 0)
+            {
+                return;
+            }
+
+            bool allSchemaColumnsAreUppercase = true;
+
+            foreach (var dbColumn in dapperRepository.DbObject.DbColumns.Values)
+            {
+                if (dbColumn == null || string.IsNullOrWhiteSpace(dbColumn.ColumnName))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(dbColumn.ColumnName, dbColumn.ColumnName.ToUpperInvariant(), StringComparison.Ordinal))
+                {
+                    allSchemaColumnsAreUppercase = false;
+                    break;
+                }
+            }
+
+            providerFeatures.DefaultIdentifierQuote = allSchemaColumnsAreUppercase
+                ? IdentifierQuoteStyle.None
+                : IdentifierQuoteStyle.DoubleQuotes;
+
+            dapperRepository.ProviderFeatures = providerFeatures;
+            dapperRepository.DbObject.BuildSqlCommands();
+}
     }
 }

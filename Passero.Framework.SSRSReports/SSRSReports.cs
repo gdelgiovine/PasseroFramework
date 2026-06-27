@@ -447,9 +447,11 @@ namespace Passero.Framework.SSRSReports
         public Passero.Framework.SSRSReports.ReportDataSet AddDataSet<T>(string Name, IDbConnection DbConnection, string SQLQuery = "", DynamicParameters Parameters = null)
         {
             Passero.Framework.SSRSReports.ReportDataSet ds = new SSRSReports.ReportDataSet();
-
+            
             ds.Name = Name;
             ds.DbConnection = DbConnection;
+
+           
 
             if (SQLQuery != "")
             {
@@ -605,6 +607,7 @@ namespace Passero.Framework.SSRSReports
     {
         public string Name { get; set; } = string.Empty;
         public System.Data.IDbConnection DbConnection { get; set; }
+        public ProviderFeatures ProviderFeatures { get; set; }
         public Dapper.DynamicParameters Parameters { get; set; }= new DynamicParameters (); 
         public string SQLQuery { get; set; }    
         //public object Repository { get; set; }
@@ -631,12 +634,13 @@ namespace Passero.Framework.SSRSReports
             if (this.ModelType != null && this.DbConnection != null)
             {
                 object obj = Activator.CreateInstance(ModelType);
-                this.Model = obj;   
+                this.Model = obj;
                 //Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "DbConnection", DbConnection);
                 //Passero.Framework.ReflectionHelper.SetPropertyValue(ref obj, "Parameters", Parameters);
                 ////this.Repository = obj;
+                this.ProviderFeatures = ProviderFeaturesResolver.FromConnection(DbConnection);
 
-                
+
                 this.ModelProperties.Clear();
                 foreach (var item in Utilities.GetModelPropertiesInfo(ModelType))
                 {
@@ -649,11 +653,71 @@ namespace Passero.Framework.SSRSReports
             return false;   
         }
 
-        public void LoadData(string SQLQuery, DynamicParameters Parameters )
+        public void LoadData_OLD(string SQLQuery, DynamicParameters Parameters )
         {
          
             this.Data = this.DbConnection.Query(SQLQuery, Parameters);
             
+        }
+
+
+        public void LoadData(string SQLQuery, DynamicParameters Parameters)
+        {
+            var rawData = this.DbConnection.Query(SQLQuery, Parameters).ToList();
+
+            if (this.ModelType != null)
+            {
+                // Converte in DataTable con nomi colonna normalizzati secondo le proprietà del modello.
+                // Necessario per Oracle, che restituisce nomi colonna in UPPERCASE via Dapper dynamic
+                // (es. AU_FNAME invece di au_fname): SSRS non riesce a fare il binding e mostra
+                // le righe vuote.
+                this.Data = BuildNormalizedDataTable(rawData);
+            }
+            else
+            {
+                this.Data = rawData;
+            }
+        }
+
+        private DataTable BuildNormalizedDataTable(IList<dynamic> rawData)
+        {
+            var table = new DataTable();
+
+            // Schema dalla definizione del modello: nomi e tipi corretti indipendentemente dal provider
+            foreach (var kvp in this.ModelProperties)
+            {
+                Type colType = Nullable.GetUnderlyingType(kvp.Value.PropertyType) ?? kvp.Value.PropertyType;
+                table.Columns.Add(kvp.Value.Name, colType);
+            }
+
+            if (rawData.Count == 0)
+                return table;
+
+            // Mappa case-insensitive: nome_colonna_provider → nome_proprietà_modello
+            // Gestisce Oracle (AU_FNAME → au_fname) e tutti gli altri provider
+            var modelPropByUpperName = this.ModelProperties.Values
+                .ToDictionary(p => p.Name.ToUpperInvariant(), p => p.Name);
+
+            var firstRow = (IDictionary<string, object>)rawData[0];
+            var columnMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string rawCol in firstRow.Keys)
+            {
+                if (modelPropByUpperName.TryGetValue(rawCol.ToUpperInvariant(), out string modelName))
+                    columnMapping[rawCol] = modelName;
+            }
+
+            foreach (IDictionary<string, object> rawRow in rawData)
+            {
+                DataRow row = table.NewRow();
+                foreach (var kvp in columnMapping)
+                {
+                    if (rawRow.TryGetValue(kvp.Key, out object val))
+                        row[kvp.Value] = val ?? DBNull.Value;
+                }
+                table.Rows.Add(row);
+            }
+
+            return table;
         }
     }
 

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -23,7 +22,10 @@ namespace Passero.Framework
         Oracle = 7,
         Firebird = 8,
         Odbc = 9,
-        OleDb = 10
+        OleDb = 10,
+        DB2 = 11,   
+        DB2i = 12
+
     }
 
     public enum IdentifierQuoteStyle
@@ -266,6 +268,27 @@ namespace Passero.Framework
                 return Firebird(providerTypeName);
             }
 
+            // DB2 for i / iSeries / AS400
+            if (ContainsAny(p,
+                "ibm.data.db2.iseries",
+                "idb2connection",
+                "iseries",
+                "as400",
+                "db2iseries"))
+            {
+                return DB2i(providerTypeName);
+            }
+
+            // IBM DB2 LUW
+            if (ContainsAny(p,
+                "ibm.data.db2.core",
+                "ibm.data.db2",
+                "db2connection",
+                "db2"))
+            {
+                return DB2(providerTypeName);
+            }
+
             if (ContainsAny(p, "odbc"))
             {
                 return Odbc(providerTypeName);
@@ -463,9 +486,9 @@ namespace Passero.Framework
                 SupportsNamedParameters = true,
                 SupportsPositionalParameters = false,
 
-                DefaultIdentifierQuote = IdentifierQuoteStyle.DoubleQuotes,
+                DefaultIdentifierQuote = IdentifierQuoteStyle.None,   // Oracle: no quoting di default
                 SupportsSquareBracketIdentifiers = false,
-                SupportsDoubleQuoteIdentifiers = true,
+                SupportsDoubleQuoteIdentifiers = true,                 // supportati, ma non usati di default
                 SupportsBacktickIdentifiers = false,
 
                 LimitStyle = LimitStyle.OffsetFetch,
@@ -493,13 +516,13 @@ namespace Passero.Framework
                 SupportsNamedParameters = true,
                 SupportsPositionalParameters = false,
 
-                DefaultIdentifierQuote = IdentifierQuoteStyle.DoubleQuotes,
+                DefaultIdentifierQuote = IdentifierQuoteStyle.None,
                 SupportsSquareBracketIdentifiers = false,
-                SupportsDoubleQuoteIdentifiers = true,
+                SupportsDoubleQuoteIdentifiers = false,
                 SupportsBacktickIdentifiers = false,
 
                 LimitStyle = LimitStyle.Rows,
-                SupportsOffsetPaging = true,
+                SupportsOffsetPaging = false,
 
                 SupportsReturningClause = true,
                 SupportsOutputInserted = false,
@@ -508,6 +531,71 @@ namespace Passero.Framework
 
                 SupportsTransactions = true,
                 SupportsMultipleResultSets = false,
+                SupportsStoredProcedures = true
+            };
+        }
+
+        private static ProviderFeatures DB2(string provider)
+        {
+            return new ProviderFeatures
+            {
+                Dialect = DbDialect.DB2,
+                ProviderName = provider,
+
+                ParameterPrefix = "@",
+                SupportsNamedParameters = true,
+                SupportsPositionalParameters = false,
+
+                // DB2 crea problemi con identificatori quotati in lowercase.
+                // Usiamo identificatori non quotati e lasciamo che DB2 li normalizzi.
+                //DefaultIdentifierQuote = IdentifierQuoteStyle.None,
+                DefaultIdentifierQuote = IdentifierQuoteStyle.DoubleQuotes,
+                SupportsSquareBracketIdentifiers = false,
+                //SupportsDoubleQuoteIdentifiers = false,
+                SupportsDoubleQuoteIdentifiers = true,
+
+                SupportsBacktickIdentifiers = false,
+
+                LimitStyle = LimitStyle.FetchFirst,
+                SupportsOffsetPaging = true,
+
+                SupportsReturningClause = false,
+                SupportsOutputInserted = false,
+                SupportsLastInsertIdFunction = false,
+                IdentityRetrievalStyle = IdentityRetrievalStyle.None,
+
+                SupportsTransactions = true,
+                SupportsMultipleResultSets = true,
+                SupportsStoredProcedures = true
+            };
+        }
+
+        private static ProviderFeatures DB2i(string provider)
+        {
+            return new ProviderFeatures
+            {
+                Dialect = DbDialect.DB2i,
+                ProviderName = provider,
+
+                ParameterPrefix = "@",
+                SupportsNamedParameters = true,
+                SupportsPositionalParameters = false,
+
+                DefaultIdentifierQuote = IdentifierQuoteStyle.None,
+                SupportsSquareBracketIdentifiers = false,
+                SupportsDoubleQuoteIdentifiers = false,
+                SupportsBacktickIdentifiers = false,
+
+                LimitStyle = LimitStyle.FetchFirst,
+                SupportsOffsetPaging = true,
+
+                SupportsReturningClause = false,
+                SupportsOutputInserted = false,
+                SupportsLastInsertIdFunction = false,
+                IdentityRetrievalStyle = IdentityRetrievalStyle.None,
+
+                SupportsTransactions = true,
+                SupportsMultipleResultSets = true,
                 SupportsStoredProcedures = true
             };
         }
@@ -616,7 +704,7 @@ namespace Passero.Framework
             if (features == null)
                 throw new ArgumentNullException("features");
 
-            string _limitValue = limitvalue.ToString(); 
+            string _limitValue = limitvalue.ToString();
 
             switch (features.LimitStyle)
             {
@@ -637,7 +725,8 @@ namespace Passero.Framework
                     return "SELECT * FROM (" + baseSelectSql + ") WHERE ROWNUM <= " + _limitValue;
 
                 case LimitStyle.FirstSkip:
-                    return InsertFirebirdFirstSkip(baseSelectSql, _limitValue, null);
+                case LimitStyle.Rows:
+                    return baseSelectSql + " ROWS 1 TO " + _limitValue;
 
                 default:
                     throw new NotSupportedException(
@@ -773,9 +862,9 @@ namespace Passero.Framework
             string clause;
 
             if (string.IsNullOrEmpty(skip))
-                clause = "FIRST " + take + " ";
+                clause = "FIRST (" + take + ") ";
             else
-                clause = "FIRST " + take + " SKIP " + skip + " ";
+                clause = "FIRST (" + take + ") SKIP (" + skip + ") ";
 
             return sql.Insert(insertIndex, clause);
         }

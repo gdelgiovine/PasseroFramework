@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Passero.Framework.Controls\Passero.Framework.Controls.csproj" />
     <ProjectReference Include="..\Passero.Framework.FRReports\Passero.Framework.FRReports.csproj" />
+    <ProjectReference Include="..\Passero.Framework.QueryEngine\Passero.Framework.QueryEngine.csproj" />
     <ProjectReference Include="..\Passero.Framework.SSRSReports\Passero.Framework.SSRSReports.csproj" />
     <ProjectReference Include="..\Passero.Framework\Passero.Framework.csproj" />
     <ProjectReference Include="..\PasseroDemo.ViewModels\PasseroDemo.ViewModels.csproj" />

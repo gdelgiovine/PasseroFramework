@@ -1,13 +1,8 @@
-﻿using FastDeepCloner;
-using Microsoft.Ajax.Utilities;
-using Passero.Framework;
-using Passero.Framework.Base;
+﻿using Passero.Framework;
 using Passero.Framework.Controls;
 using PasseroDemo.ViewModels;
 using System;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using Wisej.Web;
 
 
@@ -40,6 +35,10 @@ namespace PasseroDemo.Views
 
             Passero.Framework.Base.ORMType  ORMType;
             ORMType = Passero.Framework.Base.ORMType.Dapper    ;
+
+
+            //this.DbConnection.Execute("ALTER SESSION SET NLS_COMP = LINGUISTIC; ALTER SESSION SET NLS_SORT = BINARY_CI;");
+
 
             // Versione generica — tipo noto a compile-time
 
@@ -83,7 +82,7 @@ namespace PasseroDemo.Views
             //var list = await _dbContext.ToListAsync(query.Where(a => a.contract ));
 
 
-           
+         
 
 
 
