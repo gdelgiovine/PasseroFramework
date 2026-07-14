@@ -32,19 +32,6 @@ namespace Passero.Framework
             return orderByClause;
         }
 
-        public static string GetDefaultOrderByClause_OLD(List<System.Reflection.PropertyInfo> EntityPrimaryKeys, ProviderFeatures ProviderFeatures=null)
-        {
-            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
-            {
-                return string.Empty;
-            }
-            
-            
-            var orderByClause = string.Join(", ", EntityPrimaryKeys.Select(pi => $"{GetMappedColumnName(pi)}"));
-            return orderByClause;
-        }
-
-
 
         /// <summary>
         /// Gets the UPDATE SQL command for a model class.
@@ -98,42 +85,6 @@ namespace Passero.Framework
 
 
 
-        public static string GetUpdateSqlCommand_OLD(Type ModelClass, ProviderFeatures ProviderFeatures )
-        {
-            List<PropertyInfo> properties;
-            StringBuilder sbset = new StringBuilder();
-            StringBuilder sbwhere = new StringBuilder();
-            string setlist;
-            string wherelist;
-            string sql;
-            properties = Utilities.GetModelPropertiesInfo(ModelClass, true);
-            foreach (PropertyInfo pi in properties)
-            {
-                var colName = GetMappedColumnName(pi);
-                if (!Utilities.PropertyIsIdentityKey(pi))
-                {
-                    sbset.Append($"{colName}={ProviderFeatures.ParameterPrefix}{pi.Name}, ");
-                }
-                if (Utilities.PropertyIsExplicitKey(pi) || Utilities.PropertyIsIdentityKey(pi))
-                {
-                    sbwhere.Append($"{colName}={ProviderFeatures .ParameterPrefix}{pi.Name}_shadow AND ");
-                }
-            }
-            setlist = sbset.ToString().Trim();
-            wherelist = sbwhere.ToString().Trim();
-            if (setlist.EndsWith(","))
-            {
-                setlist = setlist.Substring(0, setlist.Length - 1);
-            }
-            if (wherelist.EndsWith("AND"))
-            {
-                wherelist = wherelist.Substring(0, wherelist.Length - 3);
-            }
-            sql = $"UPDATE {Utilities.GetModelTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
-            return sql;
-        }
-
-
 
         /// <summary>
         /// Gets the INSERT SQL command for a model class.
@@ -154,24 +105,6 @@ namespace Passero.Framework
 
             return $"INSERT INTO {QuoteTableName(ModelClass, ProviderFeatures)} ({columns}) VALUES ({parameters})";
         }
-        public static string GetInsertSqlCommand_OLD(Type ModelClass, ProviderFeatures ProviderFeatures)
-        {
-            //// Esclude le chiavi identity e explicit
-            //var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
-            //    .Where(pi => !Utilities.PropertyIsIdentityKey(pi) && !Utilities.PropertyIsExplicitKey(pi))
-            //    .ToList();
-            // Esclude SOLO le chiavi identity, mantiene le chiavi esplicite
-            var properties = Utilities.GetModelPropertiesInfo(ModelClass, true)
-                .Where(pi => !Utilities.PropertyIsIdentityKey(pi))
-                .ToList();
-
-            
-            var columns = string.Join(", ", properties.Select(pi => Utilities.GetMappedColumnName(pi)));
-            var parameters = string.Join(", ", properties.Select(pi => $"{ProviderFeatures .ParameterPrefix}{pi.Name}"));
-
-            return $"INSERT INTO {Utilities.GetModelTableName(ModelClass)} ({columns}) VALUES ({parameters})";
-        }
-
 
         /// <summary>
         /// Gets the DELETE SQL command for a model class.
@@ -199,14 +132,6 @@ namespace Passero.Framework
             var tableName = Utilities.GetModelTableName(modelClass);
             return providerFeatures?.QuoteQualifiedIdentifier(tableName) ?? tableName;
         }
-
-        public static string GetDeleteSqlCommand_OLD(Type ModelClass,ProviderFeatures ProviderFeatures )
-        {
-            var keys = Utilities.GetModelPrimaryKeysPropertiesInfo(ModelClass);
-            var where = string.Join(" AND ", keys.Select(pi => $"{GetMappedColumnName(pi)}={ProviderFeatures .ParameterPrefix}{pi.Name}"));
-            return $"DELETE FROM {Utilities.GetModelTableName(ModelClass)} WHERE ({where})";
-        }
-
 
         public static string GetInsertSqlCommandEx(string sqlQuery, IDbConnection connection)
         {
@@ -284,45 +209,6 @@ namespace Passero.Framework
 
                 return result.Select(x => (IDictionary<string, object>)x).ToList();
             }
-        }
-
-
-        public static string ResolveSQL_OLD(string SQL, Dapper.DynamicParameters Parameters)
-        {
-            string _SQL = SQL;
-
-            if (_SQL.Trim() == "" | _SQL == null)
-                return "";
-
-            if (Parameters == null)
-                return _SQL;
-
-
-            foreach (var Name in Parameters.ParameterNames)
-            {
-                var value = Parameters.Get<dynamic>(Name);
-                string ParamName = "@" + Name;
-                string ParamValue = "";
-                if (value is not null)
-                {
-                    if (
-                        value.GetType() == typeof(string) |
-                        value.GetType() == typeof(DateTime)
-
-                        )
-                    {
-
-                        ParamValue = $"'{value.ToString()}'";
-                    }
-                    else
-                    {
-                        ParamValue = $"{value.ToString()}";
-                    }
-                    _SQL = Regex.Replace(_SQL, ParamName, ParamValue, RegexOptions.IgnoreCase);
-                }
-            }
-
-            return _SQL;
         }
 
 

@@ -51,7 +51,7 @@ namespace Passero.Framework.JwtTester
         {
            // return applicationBaseUrl.TrimEnd('/') + "/PING";
 
-            return applicationBaseUrl.TrimEnd('/') + "/MYCMD";
+           return applicationBaseUrl.TrimEnd('/') + "/MYCMD";
         }
     }
 }

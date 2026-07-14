@@ -396,39 +396,6 @@ namespace Passero.Framework.DapperHelper
             return sql;
         }
 
-        public static string GetUpdateSqlCommand_OLD(Type ModelClass)
-        {
-            List<PropertyInfo> properties;
-            StringBuilder sbset = new StringBuilder();
-            StringBuilder sbwhere = new StringBuilder();
-            string setlist;
-            string wherelist;
-            string sql;
-            properties = Utilities.GetPropertiesInfo(ModelClass, true);
-            foreach (PropertyInfo pi in properties)
-            {
-                if (!Utilities.PropertyIsIdentityKey(pi))
-                {
-                    sbset.Append($"{pi.Name}=@{pi.Name}, ");
-                }
-                if (DapperHelper.Utilities.PropertyIsExplicitKey(pi) || DapperHelper.Utilities.PropertyIsIdentityKey(pi))
-                {
-                    sbwhere.Append($"{pi.Name}=@{pi.Name}_shadow AND ");
-                }
-            }
-            setlist = sbset.ToString().Trim();
-            wherelist = sbwhere.ToString().Trim();
-            if (setlist.EndsWith(","))
-            {
-                setlist = setlist.Substring(0, setlist.Length - 1);
-            }
-            if (wherelist.EndsWith("AND"))
-            {
-                wherelist = wherelist.Substring(0, wherelist.Length - 3);
-            }
-            sql = $"UPDATE {DapperHelper.Utilities.GetTableName(ModelClass)} SET {setlist} WHERE ({wherelist})";
-            return sql;
-        }
 
 
 

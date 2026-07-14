@@ -45,6 +45,7 @@
             this.chkUseFastReports = new Wisej.Web.CheckBox();
             this.serialBarcodeReader1 = new Passero.Framework.Controls.SerialBarcodeReader();
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
+            this.button1 = new Wisej.Web.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bsAuthors)).BeginInit();
             this.flpAuthors.SuspendLayout();
             this.SuspendLayout();
@@ -178,6 +179,7 @@
             this.flpAuthors.Controls.Add(this.chk_Contract);
             this.flpAuthors.Controls.Add(this.chkUseFastReports);
             this.flpAuthors.Controls.Add(this.serialBarcodeReader1);
+            this.flpAuthors.Controls.Add(this.button1);
             this.flpAuthors.Location = new System.Drawing.Point(3, 7);
             this.flpAuthors.Name = "flpAuthors";
             this.flpAuthors.Padding = new Wisej.Web.Padding(3);
@@ -214,6 +216,15 @@
             this.dataNavigator1.ePrint += new Passero.Framework.Controls.DataNavigator.ePrintEventHandler(this.dataNavigator1_ePrint);
             this.dataNavigator1.eFind += new Passero.Framework.Controls.DataNavigator.eFindEventHandler(this.dataNavigator1_eFind);
             this.dataNavigator1.eAddNewRequest += new Passero.Framework.Controls.DataNavigator.eAddNewRequestEventHandler(this.dataNavigator1_eAddNewRequest);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 191);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 37);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "button1";
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // frmAuthors
             // 
@@ -254,5 +265,6 @@
         private Wisej.Web.FlowLayoutPanel flpAuthors;
         private Passero.Framework.Controls.SerialBarcodeReader serialBarcodeReader1;
         private Wisej.Web.CheckBox chkUseFastReports;
+        private Wisej.Web.Button button1;
     }
 }

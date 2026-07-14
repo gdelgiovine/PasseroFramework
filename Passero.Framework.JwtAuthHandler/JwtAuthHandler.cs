@@ -22,13 +22,14 @@ namespace Passero.Framework.JwtAuthHandler
         public const string SessionKeyJwtUser = "JWT_USER";
 
         /// <summary>Segmento URL che attiva il flusso di autenticazione JWT.</summary>
-        public const string JwtAuthUrlSegment = "/JWTAUTH";
-
+        //public const string JwtAuthUrlSegment = "/JWTAUTH";
+        public static string JwtAuthUrlSegment { get; set; } = "/JWTAUTH";
         public static bool TryValidateRequest(
             string requestUrl,
             NameValueCollection headers,
             JwtAuthenticationOptions options,
-            out JwtAuthenticationResult authenticationResult)
+            out JwtAuthenticationResult authenticationResult,
+            bool isPreWisejCommand = false )
         {
             authenticationResult = null;
 
@@ -38,7 +39,8 @@ namespace Passero.Framework.JwtAuthHandler
             if (string.IsNullOrEmpty(requestUrl) || headers == null)
                 return false;
 
-            if (requestUrl.IndexOf(JwtAuthUrlSegment, StringComparison.OrdinalIgnoreCase) < 0)
+
+            if (!isPreWisejCommand && requestUrl.IndexOf(JwtAuthUrlSegment, StringComparison.OrdinalIgnoreCase) < 0)
                 return false;
 
             var authHeader = headers["Authorization"] ?? string.Empty;
@@ -78,9 +80,10 @@ namespace Passero.Framework.JwtAuthHandler
         public static bool TryAuthenticate(
             string requestUrl,
             NameValueCollection headers,
-            JwtAuthenticationOptions options)
+            JwtAuthenticationOptions options,
+            bool isPreWisejCommand =false)
         {
-            if (!TryValidateRequest(requestUrl, headers, options, out var authenticationResult))
+            if (!TryValidateRequest(requestUrl, headers, options, out var authenticationResult,isPreWisejCommand))
                 return false;
 
             Application.Session[SessionKeyAuthToken] = authenticationResult.AuthToken;

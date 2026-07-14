@@ -132,6 +132,8 @@ namespace Passero.Framework
         /// The m data binding mode
         /// </summary>
         private DataBindingMode mDataBindingMode = DataBindingMode.None;
+        private bool mShadowSnapshotInitialized;
+        private string mShadowSnapshotKey;
 
 
         /// <summary>
@@ -170,6 +172,38 @@ namespace Passero.Framework
                 mErrorNotificationMessageBox = value;
                 Repository.ErrorNotificationMessageBox = value;
             }
+        }
+
+        private string BuildShadowSnapshotKey(string sqlQuery, int itemCount, int currentIndex)
+        {
+            return $"{sqlQuery ?? string.Empty}|{itemCount}|{currentIndex}";
+        }
+
+        private void UpdateShadowSnapshotFromCurrentState(string snapshotKey, bool force = false)
+        {
+            if (Repository == null)
+            {
+                return;
+            }
+
+            if (!force && mShadowSnapshotInitialized && string.Equals(mShadowSnapshotKey, snapshotKey, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            Repository.ModelItemShadow = Utilities.Clone<ModelClass>(Repository.ModelItem);
+
+            if (Repository.ModelItems != null)
+            {
+                Repository.ModelItemsShadow = Utilities.Clone<IList<ModelClass>>(Repository.ModelItems);
+            }
+            else
+            {
+                Repository.ModelItemsShadow = new List<ModelClass>();
+            }
+
+            mShadowSnapshotInitialized = true;
+            mShadowSnapshotKey = snapshotKey;
         }
 
         /// <summary>

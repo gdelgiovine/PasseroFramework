@@ -10,6 +10,56 @@ namespace Passero.Framework
 {
     public partial class ViewModel<ModelClass> : INotifyPropertyChanged, INotifyPropertyChanging where ModelClass : class
     {
+        private bool HasRepository()
+        {
+            return Repository != null;
+        }
+
+        private ModelClass ResolveCommandItem(ModelClass item, bool readControls = false)
+        {
+            if (item == null)
+            {
+                item = ModelItem;
+            }
+
+            if (mDataBindingMode == DataBindingMode.BindingSource && BindingSource != null)
+            {
+                BindingSource.EndEdit();
+                if (BindingSource.Current != null)
+                {
+                    item = (ModelClass)BindingSource.Current;
+                    ModelItem = item;
+                }
+            }
+            else if (mDataBindingMode == DataBindingMode.Passero && readControls && AutoReadControls)
+            {
+                ReadControls();
+            }
+
+            return item;
+        }
+
+        private void ApplyBindingEndState(bool writeControls = false, bool resetCurrentItem = false)
+        {
+            switch (mDataBindingMode)
+            {
+                case DataBindingMode.None:
+                    break;
+                case DataBindingMode.Passero:
+                    if (writeControls && AutoWriteControls)
+                    {
+                        WriteControls();
+                    }
+                    break;
+                case DataBindingMode.BindingSource:
+                    if (resetCurrentItem && BindingSource != null)
+                    {
+                        BindingSource.ResetCurrentItem();
+                    }
+                    break;
+            }
+        }
+
         /// <summary>
         /// Undoes the changes.
         /// </summary>
@@ -30,26 +80,38 @@ namespace Passero.Framework
 
             try
             {
+                var currentItems = ModelItems ?? new List<ModelClass>();
+
                 if (AddNewState == false)
                 {
                     ModelItem = Utilities.Clone<ModelClass>(ModelItemShadow);
-                    if (ModelItems.Count >= CurrentModelItemIndex)
+                    if (currentItems.Count >= CurrentModelItemIndex)
                     {
-                        ModelItems[CurrentModelItemIndex] = Utilities.Clone<ModelClass>(ModelItemShadow);
+                        currentItems[CurrentModelItemIndex] = Utilities.Clone<ModelClass>(ModelItemShadow);
                     }
                 }
                 else
                 {
-                    if (ModelItemsCount > 0)
+                    if (currentItems.Count > 0)
                     {
-                        ModelItems.RemoveAt(ModelItemsCount - 1);
+                        currentItems.RemoveAt(currentItems.Count - 1);
                     }
                 }
 
+                if (ModelItemsShadow != null)
+                {
+                    var restoredItems = new List<ModelClass>(ModelItemsShadow.Count);
+                    foreach (var shadowItem in ModelItemsShadow)
+                    {
+                        restoredItems.Add(shadowItem == null ? null : Utilities.Clone<ModelClass>(shadowItem));
+                    }
 
-                //If AllItems And AutoUpdateModelItemsShadows = True Then
-                ModelItems = Utilities.Clone<IList<ModelClass>>(ModelItemsShadow);
-                //End If
+                    ModelItems = restoredItems;
+                }
+                else
+                {
+                    ModelItems = new List<ModelClass>();
+                }
 
                 switch (mDataBindingMode)
                 {
@@ -64,17 +126,19 @@ namespace Passero.Framework
                     case DataBindingMode.BindingSource:
                         if (AddNewState)
                         {
-                            mBindingSource.Position = AddNewCurrentModelItemIndex;
+                            if (BindingSource != null)
+                            {
+                                BindingSource.Position = AddNewCurrentModelItemIndex;
+                            }
                             MoveAtItem(AddNewCurrentModelItemIndex);
                             if (mDataNavigator != null)
                             {
-                                //ReflectionHelper.InvokeMethodByName(ref mDataNavigator, "UpdateRecordLabel");
                                 mDataNavigator.UpdateRecordLabel();
                             }
                         }
-                        else
+                        else if (BindingSource != null)
                         {
-                            mBindingSource.CancelEdit();
+                            BindingSource.CancelEdit();
                         }
                         break;
 
@@ -82,7 +146,9 @@ namespace Passero.Framework
                         break;
                 }
                 if (mAddNewState == true)
-                    mAddNewState = false;
+                {
+                    SetAddNewState(false, true);
+                }
 
                 if (ER.Success)
                     UndoCompleted?.Invoke();
@@ -154,7 +220,7 @@ namespace Passero.Framework
 
                 if (ER.Success)
                 {
-                    mAddNewState = false;
+                    SetAddNewState(false, true);
 
                     switch (mDataBindingMode)
                     {
@@ -237,7 +303,7 @@ namespace Passero.Framework
                 }
 
                 LastExecutionResult = ER;
-                AddNewState = false;
+                SetAddNewState(false, true);
             }
             catch (Exception ex)
             {
@@ -303,7 +369,7 @@ namespace Passero.Framework
 
             if (ER.Success)
             {
-                mAddNewState = false;
+                SetAddNewState(false, true);
                 // carica il nuovo item
                 switch (mDataBindingMode)
                 {
@@ -374,7 +440,7 @@ namespace Passero.Framework
                 CurrentModelItemIndex = 0;
             }
             LastExecutionResult = ER;
-            AddNewState = false;
+            SetAddNewState(false, true);
 
 
             if (!ER.Success)
@@ -601,6 +667,7 @@ namespace Passero.Framework
                 {
                     ModelItem = Items.ElementAt(0);
                     ModelItems = Items;
+                    ApplyViewModelStateAfterRepositorySync(true);
                 }
 
             }
@@ -663,6 +730,7 @@ namespace Passero.Framework
                 {
                     ModelItem = Items.ElementAt(0);
                     ModelItems = Items;
+                    ApplyViewModelStateAfterRepositorySync(true);
                 }
 
             }
@@ -704,8 +772,6 @@ namespace Passero.Framework
 
             if (mAddNewState == true)
             {
-                //long r= this.Repository.InsertItem(Item);
-                //Dim r = InsertItem(Item)
                 ER = InsertItem(Item, DbTransaction, DbCommandTimeout);
                 ER.Context = ERcontext;
                 LastExecutionResult = ER;
@@ -755,6 +821,7 @@ namespace Passero.Framework
             if (Convert.ToBoolean(ER.Value))
             {
                 ModelItem = Item;
+                ApplyViewModelStateAfterRepositorySync(true);
             }
 
             ER.Context = ERcontext;
@@ -790,8 +857,6 @@ namespace Passero.Framework
 
             if (mAddNewState == true)
             {
-                //long r= this.Repository.InsertItem(Item);
-                //Dim r = InsertItem(Item)
                 ER = InsertItem(Item);
                 ER.Context = ERcontext;
                 if (!ER.Success)
@@ -845,6 +910,7 @@ namespace Passero.Framework
             if (Convert.ToBoolean(ER.Value))
             {
                 ModelItem = Item;
+                ApplyViewModelStateAfterRepositorySync(true);
             }
 
 
@@ -892,6 +958,7 @@ namespace Passero.Framework
             {
                 ModelItem = Items.ElementAt(0);
                 ModelItems = Items;
+                ApplyViewModelStateAfterRepositorySync(true);
             }
             if (!ER.Success)
             {
@@ -943,6 +1010,7 @@ namespace Passero.Framework
             {
                 ModelItem = Items.ElementAt(0);
                 ModelItems = Items;
+                ApplyViewModelStateAfterRepositorySync(true);
             }
             if (!ER.Success)
             {
@@ -1004,6 +1072,7 @@ namespace Passero.Framework
                                 ReadControls();
                             }
                         }
+                        ApplyViewModelStateAfterRepositorySync(true);
                     }
                     break;
                 case DataBindingMode.BindingSource:
@@ -1077,6 +1146,7 @@ namespace Passero.Framework
                             {
                                 ReadControls();
                             }
+                            ApplyViewModelStateAfterRepositorySync(true);
                         }
                         break;
                     case DataBindingMode.BindingSource:

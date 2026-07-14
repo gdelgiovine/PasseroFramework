@@ -653,14 +653,6 @@ namespace Passero.Framework.SSRSReports
             return false;   
         }
 
-        public void LoadData_OLD(string SQLQuery, DynamicParameters Parameters )
-        {
-         
-            this.Data = this.DbConnection.Query(SQLQuery, Parameters);
-            
-        }
-
-
         public void LoadData(string SQLQuery, DynamicParameters Parameters)
         {
             var rawData = this.DbConnection.Query(SQLQuery, Parameters).ToList();

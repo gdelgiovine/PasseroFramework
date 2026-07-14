@@ -34,6 +34,69 @@ namespace Passero.Framework
                 DataBindingMode = DataBindingMode.BindingSource;
         }
 
+        private void SyncAddNewStateWithRepository()
+        {
+            if (Repository != null)
+            {
+                Repository.AddNewState = mAddNewState;
+            }
+        }
+
+        private void SyncNavigationStateWithRepository()
+        {
+            if (Repository == null)
+            {
+                return;
+            }
+
+            Repository.CurrentModelItemIndex = mCurrentModelItemIndex;
+            Repository.AddNewCurrentModelItemIndex = mAddNewCurrentModelItemIndex;
+            Repository.AddNewState = mAddNewState;
+        }
+
+        private void SyncViewModelStateFromRepository()
+        {
+            if (Repository == null)
+            {
+                return;
+            }
+
+            mCurrentModelItemIndex = Repository.CurrentModelItemIndex;
+            mAddNewCurrentModelItemIndex = Repository.AddNewCurrentModelItemIndex;
+            mAddNewState = Repository.AddNewState;
+        }
+
+        private void SetAddNewState(bool value, bool syncRepository = true)
+        {
+            mAddNewState = value;
+            if (syncRepository)
+            {
+                SyncAddNewStateWithRepository();
+            }
+        }
+
+        private void SetCurrentItemIndexes(int currentIndex, int addNewIndex, bool syncRepository = true)
+        {
+            mCurrentModelItemIndex = currentIndex;
+            mAddNewCurrentModelItemIndex = addNewIndex;
+            if (syncRepository)
+            {
+                SyncNavigationStateWithRepository();
+            }
+        }
+
+        private void ApplyViewModelStateAfterRepositorySync(bool syncRepository = true)
+        {
+            if (syncRepository)
+            {
+                SyncNavigationStateWithRepository();
+            }
+            else
+            {
+                SyncViewModelStateFromRepository();
+            }
+        }
+
         /// <summary>
         /// Gets the type of the model.
         /// </summary>
@@ -97,30 +160,12 @@ namespace Passero.Framework
             {
 
                 return Repository.ModelItem;
-                //switch (UseModelData)
-                //{
-                //    return Repository.ModelItem;
-
-                //    case UseModelData.External:
-                //        return mModelItemShadow;
-                //    default:
-                //        return Repository.ModelItem;
-                //}
+                
             }
             set
             {
                 Repository.ModelItem = value;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mModelItemShadow = value;
-                //        Repository.ModelItem = value;
-                //        break;
-
-                //    case UseModelData.InternalRepository:
-                //        Repository.ModelItem = value;
-                //        break;
-                //}
+                
             }
 
 
@@ -137,29 +182,10 @@ namespace Passero.Framework
             get
             {
                 return Repository.ModelItems;
-
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        return mModelItems;
-                //    default:
-                //        return Repository.ModelItems;
-                //}
             }
             set
             {
                 Repository.ModelItems = value;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mModelItems = value;
-                //        break;
-
-                //    case UseModelData.InternalRepository:
-                //        Repository.ModelItems = value;
-                //        break;
-                //}
-
                 if (mBindingSource != null)
                 {
                     mBindingSource.DataSource = value;
@@ -179,27 +205,12 @@ namespace Passero.Framework
             get
             {
                 return Repository.ModelItemsShadow;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        return mModelItemsShadow;
-                //    default:
-                //        return Repository.ModelItemsShadow;
-                //}
+                
             }
             set
             {
                 Repository.ModelItemsShadow = value;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mModelItemsShadow = value;
-                //        break;
-
-                //    case UseModelData.InternalRepository:
-                //        Repository.ModelItemsShadow = value;
-                //        break;
-                //}
+                
             }
         }
 
@@ -216,14 +227,6 @@ namespace Passero.Framework
             get
             {
                 return Repository.ModelItems.Count;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        return mModelItems.Count;
-
-                //    default:
-                //        return Repository.ModelItems.Count;
-                //}
             }
         }
         /// <summary>
@@ -237,29 +240,10 @@ namespace Passero.Framework
             get
             {
                 return Repository.CurrentModelItemIndex;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        return mCurrentModelItemIndex;
-                //    default:
-                //        return Repository.CurrentModelItemIndex;
-                //}
             }
             set
             {
-                Repository.CurrentModelItemIndex = value;
-                mCurrentModelItemIndex = value;
-
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mCurrentModelItemIndex = value;
-                //        break;
-                //    case UseModelData.InternalRepository:
-                //        Repository.CurrentModelItemIndex = value;
-                //        mCurrentModelItemIndex = value;
-                //        break;
-                //}
+                SetCurrentItemIndexes(value, mAddNewCurrentModelItemIndex, true);
             }
         }
 
@@ -275,30 +259,10 @@ namespace Passero.Framework
             get
             {
                 return Repository.AddNewCurrentModelItemIndex;
-
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        return mAddNewCurrentModelItemIndex;
-                //    default:
-                //        return Repository.AddNewCurrentModelItemIndex;
-                //}
             }
             set
             {
-                Repository.AddNewCurrentModelItemIndex = value;
-                mAddNewCurrentModelItemIndex = value;
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mAddNewCurrentModelItemIndex = value;
-                //        break;
-
-                //    case UseModelData.InternalRepository:
-                //        Repository.AddNewCurrentModelItemIndex = value;
-                //        mAddNewCurrentModelItemIndex = value;
-                //        break;
-                //}
+                SetCurrentItemIndexes(mCurrentModelItemIndex, value, true);
             }
         }
 
@@ -345,30 +309,6 @@ namespace Passero.Framework
             return DataBindControls.Count();
         }
 
-        /// <summary>
-        /// Externals the get model items at.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns></returns>
-        //private ExecutionResult<ModelClass> ExternalGetModelItemsAt(int index)
-        //{
-
-        //    var ERContext = $"{mClassName}.ExternalGetModelItemsAt()";
-        //    ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
-        //    if (mModelItems == null)
-        //    {
-        //        ER.ResultCode = ExecutionResultCodes.Failed;
-        //        ER.ResultMessage = "Invalid Index!";
-        //        ER.ErrorCode = 0;
-        //    }
-        //    if (index > 0 && index < mModelItems.Count())
-        //    {
-        //        ER.Value = mModelItems.ElementAt(index);
-        //    }
-        //    LastExecutionResult = ER.ToExecutionResult();
-        //    return ER;
-
-        //}
 
 
         /// <summary>
@@ -382,15 +322,6 @@ namespace Passero.Framework
             ExecutionResult<ModelClass> ER = new ExecutionResult<ModelClass>(ERContext);
             ER = Repository.GetModelItemsAt(index);
 
-
-            //if (UseModelData == UseModelData.External)
-            //{
-            //    ER = ExternalGetModelItemsAt(index);
-            //}
-            //else
-            //{
-            //    ER = Repository.GetModelItemsAt(index);
-            //}
 
             ER.Context = ERContext;
             LastExecutionResult = ER.ToExecutionResult();
@@ -409,42 +340,13 @@ namespace Passero.Framework
             get
             {
                 return Repository.ModelItemShadow;
-                //if (UseModelData == UseModelData.External)
-                //{
-                //    return ExternalModelShadow;
-                //}
-                //else
-                //{
-                //    return Repository.ModelItemShadow;
-                //}
             }
             set
             {
                 Repository.ModelItemShadow = value;
-                //if (UseModelData == UseModelData.External)
-                //{
-                //    ExternalModelShadow = value;
-                //}
-                //else
-                //{
-                //    Repository.ModelItemShadow = value;
-                //}
+
             }
         }
-
-        /// <summary>
-        /// Externals the model data changed.
-        /// </summary>
-        /// <param name="ModelShadow">The model shadow.</param>
-        /// <returns></returns>
-        //private bool ExternalModelDataChanged(ModelClass ModelShadow = null)
-        //{
-        //    if (ModelShadow is null)
-        //    {
-        //        ModelShadow = ExternalModelShadow;
-        //    }
-        //    return !Utilities.ObjectsEquals(mModelItemShadow, ModelShadow);
-        //}
 
         /// <summary>
         /// Determines whether [is model data changed] [the specified model shadow].
@@ -457,10 +359,6 @@ namespace Passero.Framework
         {
             return Repository.IsModelDataChanged(ModelShadow);
 
-            //if (UseModelData == UseModelData.InternalRepository)
-            //    return Repository.IsModelDataChanged(ModelShadow);
-            //else
-            //    return ExternalModelDataChanged(ModelShadow);
         }
 
         /// <summary>
@@ -530,53 +428,11 @@ namespace Passero.Framework
                         _ => throw new ArgumentException($"Invalid operation: {operation}")
                     };
 
-                    if (ER.Success && operation == NavigationOperation.MoveLast)
+                    if (ER.Success)
                     {
-                        mCurrentModelItemIndex = Repository.CurrentModelItemIndex;
-                        mAddNewCurrentModelItemIndex = Repository.AddNewCurrentModelItemIndex;
+                        SyncViewModelStateFromRepository();
                     }
                 }
-                ////else
-                //{
-                //    if (mModelItems?.Count > 0)
-                //    {
-                //        bool isValidPosition = operation switch
-                //        {
-                //            NavigationOperation.MoveFirst => true,
-                //            NavigationOperation.MoveLast => true,
-                //            NavigationOperation.MovePrevious => mCurrentModelItemIndex > 0,
-                //            NavigationOperation.MoveNext => mCurrentModelItemIndex < mModelItems.Count - 1,
-                //            NavigationOperation.MoveAt => newPosition >= 0 && newPosition < mModelItems.Count,
-                //            _ => false
-                //        };
-
-                //        if (isValidPosition)
-                //        {
-                //            mCurrentModelItemIndex = operation switch
-                //            {
-                //                NavigationOperation.MoveFirst => 0,
-                //                NavigationOperation.MoveLast => mModelItems.Count - 1,
-                //                NavigationOperation.MovePrevious => mCurrentModelItemIndex - 1,
-                //                NavigationOperation.MoveNext => mCurrentModelItemIndex + 1,
-                //                NavigationOperation.MoveAt => newPosition,
-                //                _ => mCurrentModelItemIndex
-                //            };
-
-                //            mModelItemShadow = mModelItems.ElementAt(mCurrentModelItemIndex);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        mModelItemShadow = null;
-                //        mCurrentModelItemIndex = -1;
-                //        ER.ResultCode = ExecutionResultCodes.Failed;
-                //        ER.ErrorCode = 1;
-                //        ER.ResultMessage = "Invalid Index Position.";
-                //        if (!ER.Success)
-                //            HandleExeception(ER);
-                //        return ER;
-                //    }
-                //}
 
                 if (ER.Success)
                 {
@@ -667,7 +523,7 @@ namespace Passero.Framework
 
             set
             {
-                mAddNewState = value;
+                SetAddNewState(value, true);
             }
 
 
@@ -721,8 +577,7 @@ namespace Passero.Framework
                         default:
                             break;
                     }
-                    Repository.AddNewState = mAddNewState;
-                    mAddNewState = true;
+                    SetAddNewState(true, true);
 
                     if (ER.Success)
                         AddNewCompleted?.Invoke();

@@ -28,6 +28,8 @@ namespace PasseroDemo.Application
         {
             Passero.Framework.ExecutionResult ER = new Passero.Framework.ExecutionResult();
             ER.Context = "PasseroDemo.Application.Init()";
+
+            
             this.ConfigurationManager.FileName = AppDomain.CurrentDomain.BaseDirectory + @"\PasseroDemo.ini";
             this.ConfigurationManager.Syntax = Passero.Framework.ConfigurationSyntax.INI;
             this.ConfigurationManager.ReadConfiguration();
@@ -45,15 +47,16 @@ namespace PasseroDemo.Application
             string CSFirebird= "DBConnectionStringFirebird";
             string CSOracle = "DBConnectionStringOracle";
             string CSDB2 = "DBConnectionStringDB2"; 
-            string CS = CSSQLServer          ;
+            string CS = CSSQLServer            ;
             
             this.ConfigurationManager.DBConnections.Clear();
-            this.ConfigurationManager.SetSessionConfigurationKeyValue(
-                "General",
-                "DBConnectionString",
-                this.ConfigurationManager.GetConfigurationKeyValue("General", CS));
+            //this.ConfigurationManager.SetSessionConfigurationKeyValue(
+            //    "General",
+            //    "DBConnectionString",
+            //    this.ConfigurationManager.GetConfigurationKeyValue("General", CS));
 
-            string DbConnectionString = this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString");
+            //string DbConnectionString = this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString");
+            string DbConnectionString = this.ConfigurationManager.GetConfigurationKeyValue("General", CS);  
 
             IDbConnection DBConnectionPasseroDemo = null;
 
@@ -377,6 +380,14 @@ namespace PasseroDemo.Application
         private void pbGDGLogo_DoubleClick(object sender, EventArgs e)
         {
             Wisej.Web.Application.Navigate("https://www.gabrieledelgiovine.it", "_blank");
+        }
+
+        private void txtSearchBox_ToolClick(object sender, ToolClickEventArgs e)
+        {
+            if (e.Tool.Name == "Search")
+            {
+                this.txtSearchBox.Text = "";
+            }   
         }
     }
 }

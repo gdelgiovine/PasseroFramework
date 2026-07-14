@@ -102,6 +102,27 @@ namespace Passero.Framework
             new ConcurrentDictionary<string, MethodInfo[]>();
 
         /// <summary>
+        /// Legacy implementation of CallByName without caching.
+        /// </summary>
+        public static object CallByNameNC(object ObjectRef, string ProcName, CallType UseCallType, params object[] Args)
+        {
+            if (ObjectRef == null)
+                throw new ArgumentNullException(nameof(ObjectRef));
+            if (string.IsNullOrEmpty(ProcName))
+                throw new ArgumentException("Procedure name cannot be null or empty", nameof(ProcName));
+
+            return Microsoft.VisualBasic.Interaction.CallByName(ObjectRef, ProcName, UseCallType, Args);
+        }
+
+        /// <summary>
+        /// Legacy implementation of CallByName without caching.
+        /// </summary>
+        public static object CallByNameNC(object ObjectRef, string ProcName, CallType UseCallType)
+        {
+            return CallByNameNC(ObjectRef, ProcName, UseCallType, null);
+        }
+
+        /// <summary>
         /// Calls the name of the by - Optimized version.
         /// </summary>
         /// <param name="ObjectRef">The object reference.</param>

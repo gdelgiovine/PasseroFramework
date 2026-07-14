@@ -3,6 +3,7 @@ using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 //using Passero.Framework.Base;
 #nullable enable
@@ -13,6 +14,106 @@ namespace Passero.Framework
         where ModelClass : class
     {
         private string mSqlDeleteCommand;
+
+        private void EnsureDeleteSqlCommandInitialized()
+        {
+            if (ProviderFeatures == null)
+            {
+                ProviderFeatures = DbConnection != null
+                    ? ProviderFeaturesResolver.FromConnection(DbConnection)
+                    : new ProviderFeatures();
+            }
+
+            if (string.IsNullOrWhiteSpace(mSqlDeleteCommand))
+            {
+                SqlDeleteCommand(true);
+            }
+
+            if (string.IsNullOrWhiteSpace(mSqlDeleteCommand))
+            {
+                throw new InvalidOperationException("Il comando SQL di delete non è stato inizializzato.");
+            }
+        }
+
+        private void ValidateDeleteContext(ModelClass model)
+        {
+            if (model == null)
+            {
+                throw new InvalidOperationException("Nessun modello da eliminare. Specificare un Model o impostare il modello corrente.");
+            }
+
+            if (DbConnection == null)
+            {
+                throw new InvalidOperationException("La connessione al database non è stata inizializzata.");
+            }
+
+            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna primary key definita sul modello.");
+            }
+        }
+
+        private DynamicParameters CreateDeleteParameters(ModelClass model)
+        {
+            var parameters = new DynamicParameters();
+
+            for (int i = 0; i < EntityPrimaryKeys.Count; i++)
+            {
+                var prop = EntityPrimaryKeys[i];
+                parameters.Add(prop.Name, prop.GetValue(model));
+            }
+
+            return parameters;
+        }
+
+        private bool SyncAfterDelete(ModelClass model)
+        {
+            bool removed = false;
+
+            if (_ModelItems != null)
+            {
+                var existing = _ModelItems.FirstOrDefault(x => Utilities.ObjectsEquals(x, model));
+                if (existing != null)
+                {
+                    _ModelItems.Remove(existing);
+                    removed = true;
+                }
+            }
+
+            if (_ModelItemsShadow != null)
+            {
+                var shadow = _ModelItemsShadow.FirstOrDefault(x => Utilities.ObjectsEquals(x, model));
+                if (shadow != null)
+                {
+                    _ModelItemsShadow.Remove(shadow);
+                }
+            }
+
+            if (_ModelItem != null && Utilities.ObjectsEquals(_ModelItem, model))
+            {
+                _ModelItem = GetEmptyModelItem();
+            }
+
+            if (_ModelItemShadow != null && Utilities.ObjectsEquals(_ModelItemShadow, model))
+            {
+                _ModelItemShadow = GetEmptyModelItem();
+            }
+
+            return removed;
+        }
+
+        private void SyncAfterDeleteBatch(IEnumerable<ModelClass> models)
+        {
+            if (models == null)
+            {
+                return;
+            }
+
+            foreach (var model in models)
+            {
+                SyncAfterDelete(model);
+            }
+        }
 
         /// <summary>
         /// Deletes the item using a parameterized SQL command that respects column name mappings.
@@ -25,42 +126,40 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
 
-            if (ModelItem == null)
-            {
-                ModelItem = _ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
             try
             {
-                var @params = new DynamicParameters();
-                var primaryKeysCount = EntityPrimaryKeys.Count;
-
-                for (int i = 0; i < primaryKeysCount; i++)
+                if (ModelItem == null)
                 {
-                    var prop = EntityPrimaryKeys[i];
-                    @params.Add(prop.Name, prop.GetValue(ModelItem));
+                    ModelItem = _ModelItem;
+                }
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
                 }
 
-                int affected = DbConnection.Execute(mSqlDeleteCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                bool result = affected > 0;
+                ValidateDeleteContext(ModelItem);
+                EnsureDeleteSqlCommandInitialized();
 
-                if (result)
+                var parameters = CreateDeleteParameters(ModelItem);
+                int affected = DbConnection.Execute(mSqlDeleteCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+
+                ER.Value = affected;
+
+                if (affected > 0)
                 {
-                    _ModelItems.Remove(ModelItem);
-                    _ModelItemsShadow.Remove(ModelItem);
-                    _ModelItem = GetEmptyModelItem();
-                    _ModelItemShadow = GetEmptyModelItem();
+                    SyncAfterDelete(ModelItem);
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Elemento eliminato correttamente.";
                 }
-
-                ER.Value = result;
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga eliminata.";
+                }
             }
             catch (Exception ex)
             {
@@ -86,42 +185,40 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.DeleteItemAsync()");
 
-            if (ModelItem == null)
-            {
-                ModelItem = _ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
             try
             {
-                var @params = new DynamicParameters();
-                var primaryKeysCount = EntityPrimaryKeys.Count;
-
-                for (int i = 0; i < primaryKeysCount; i++)
+                if (ModelItem == null)
                 {
-                    var prop = EntityPrimaryKeys[i];
-                    @params.Add(prop.Name, prop.GetValue(ModelItem));
+                    ModelItem = _ModelItem;
+                }
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
                 }
 
-                int affected = await DbConnection.ExecuteAsync(mSqlDeleteCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                bool result = affected > 0;
+                ValidateDeleteContext(ModelItem);
+                EnsureDeleteSqlCommandInitialized();
 
-                if (result)
+                var parameters = CreateDeleteParameters(ModelItem);
+                int affected = await DbConnection.ExecuteAsync(mSqlDeleteCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+
+                ER.Value = affected;
+
+                if (affected > 0)
                 {
-                    _ModelItems.Remove(ModelItem);
-                    _ModelItemsShadow.Remove(ModelItem);
-                    _ModelItem = GetEmptyModelItem();
-                    _ModelItemShadow = GetEmptyModelItem();
+                    SyncAfterDelete(ModelItem);
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Elemento eliminato correttamente.";
                 }
-
-                ER.Value = result;
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga eliminata.";
+                }
             }
             catch (Exception ex)
             {
@@ -149,32 +246,53 @@ namespace Passero.Framework
             var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
             int deletedCount = 0;
 
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
             try
             {
-                var primaryKeysCount = EntityPrimaryKeys.Count;
-
-                foreach (var model in ModelItems)
+                if (ModelItems == null)
                 {
-                    var @params = new DynamicParameters();
-                    for (int i = 0; i < primaryKeysCount; i++)
-                    {
-                        var prop = EntityPrimaryKeys[i];
-                        @params.Add(prop.Name, prop.GetValue(model));
-                    }
+                    ModelItems = this.ModelItems;
+                }
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
+                }
 
-                    deletedCount += DbConnection.Execute(mSqlDeleteCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                var itemsList = (ModelItems ?? Enumerable.Empty<ModelClass>()).Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da eliminare.");
+                }
+
+                foreach (var model in itemsList)
+                {
+                    ValidateDeleteContext(model);
+                }
+
+                EnsureDeleteSqlCommandInitialized();
+
+                foreach (var model in itemsList)
+                {
+                    var parameters = CreateDeleteParameters(model);
+                    deletedCount += DbConnection.Execute(mSqlDeleteCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
                 }
 
                 ER.Value = deletedCount;
+
+                if (deletedCount > 0)
+                {
+                    SyncAfterDeleteBatch(itemsList);
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = $"Eliminati {deletedCount} elementi.";
+                }
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga eliminata.";
+                }
             }
             catch (Exception ex)
             {
@@ -203,32 +321,53 @@ namespace Passero.Framework
             var ER = new ExecutionResult($"{mClassName}.DeleteItemsAsync()");
             int deletedCount = 0;
 
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
             try
             {
-                var primaryKeysCount = EntityPrimaryKeys.Count;
-
-                foreach (var model in ModelItems)
+                if (ModelItems == null)
                 {
-                    var @params = new DynamicParameters();
-                    for (int i = 0; i < primaryKeysCount; i++)
-                    {
-                        var prop = EntityPrimaryKeys[i];
-                        @params.Add(prop.Name, prop.GetValue(model));
-                    }
+                    ModelItems = this.ModelItems;
+                }
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
+                }
 
-                    deletedCount += await DbConnection.ExecuteAsync(mSqlDeleteCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                var itemsList = (ModelItems ?? Enumerable.Empty<ModelClass>()).Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da eliminare.");
+                }
+
+                foreach (var model in itemsList)
+                {
+                    ValidateDeleteContext(model);
+                }
+
+                EnsureDeleteSqlCommandInitialized();
+
+                foreach (var model in itemsList)
+                {
+                    var parameters = CreateDeleteParameters(model);
+                    deletedCount += await DbConnection.ExecuteAsync(mSqlDeleteCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
                 }
 
                 ER.Value = deletedCount;
+
+                if (deletedCount > 0)
+                {
+                    SyncAfterDeleteBatch(itemsList);
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = $"Eliminati {deletedCount} elementi.";
+                }
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga eliminata.";
+                }
             }
             catch (Exception ex)
             {
@@ -246,195 +385,51 @@ namespace Passero.Framework
 
 
         /// <summary>
-        /// Deletes the item.
+        /// Compatibility wrapper for <see cref="DeleteItem(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItem">The model item.</param>
+        /// <param name="ModelItem">The model item to delete.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns></returns>
+        /// <returns>The execution result from the core delete flow.</returns>
         public ExecutionResult DeleteItemContrib(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.DeleteItem()");
-
-            bool _result = false;
-
-            if (ModelItem == null)
-            {
-                ModelItem = _ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                _result = DbConnection.Delete(ModelItem, Transaction, CommandTimeout);
-                if (_result)
-                {
-                    _ModelItems.Remove(ModelItem);
-                    //If (AutoUpdateModelItemsShadows) Then
-                    _ModelItemsShadow.Remove(ModelItem);
-                    //End If
-                    _ModelItem = GetEmptyModelItem();
-                    _ModelItemShadow = GetEmptyModelItem();
-                }
-                ER.Value = _result;
-
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-
-            }
-
-            LastExecutionResult = ER;
-            return ER;
-
+            return DeleteItem(ModelItem, Transaction, CommandTimeout);
         }
 
-
-
         /// <summary>
-        /// Deletes the items.
+        /// Compatibility wrapper for <see cref="DeleteItems(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItems">The model items to delete.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns></returns>
+        /// <returns>The execution result from the core batch delete flow.</returns>
         public ExecutionResult DeleteItemsContrib(IEnumerable<ModelClass> ModelItems, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.DeleteItems()");
-            bool result = false;
-
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-
-                //result = DbConnection.Delete<List<ModelClass>>((List<ModelClass>)ModelItems, Transaction, CommandTimeout);
-                result = DbConnection.Delete(ModelItems, Transaction, CommandTimeout);
-                ER.Value = result;
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-
-                HandleException(ER);
-            }
-
-            LastExecutionResult = ER;
-            return ER;
-
+            return DeleteItems(ModelItems, Transaction, CommandTimeout);
         }
 
-
         /// <summary>
-        /// Deletes the item asynchronously.
+        /// Compatibility wrapper for <see cref="DeleteItemAsync(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItem">The model item.</param>
+        /// <param name="ModelItem">The model item to delete.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
         public async Task<ExecutionResult> DeleteItemContribAsync(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.DeleteItemAsync()");
-
-            bool _result = false;
-
-            if (ModelItem == null)
-            {
-                ModelItem = _ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                _result = await DbConnection.DeleteAsync(ModelItem, Transaction, CommandTimeout);
-                if (_result)
-                {
-                    _ModelItems.Remove(ModelItem);
-                    _ModelItemsShadow.Remove(ModelItem);
-                    _ModelItem = GetEmptyModelItem();
-                    _ModelItemShadow = GetEmptyModelItem();
-                }
-                ER.Value = _result;
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-            }
-
-            LastExecutionResult = ER;
-            return ER;
+            return await DeleteItemAsync(ModelItem, Transaction, CommandTimeout);
         }
 
         /// <summary>
-        /// Deletes the items asynchronously.
+        /// Compatibility wrapper for <see cref="DeleteItemsAsync(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItems">The model items to delete.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
         public async Task<ExecutionResult> DeleteItemsContribAsync(IEnumerable<ModelClass> ModelItems, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.DeleteItemsAsync()");
-            bool result = false;
-
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                result = await DbConnection.DeleteAsync(ModelItems, Transaction, CommandTimeout);
-                ER.Value = result;
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-            }
-
-            LastExecutionResult = ER;
-            return ER;
+            return await DeleteItemsAsync(ModelItems, Transaction, CommandTimeout);
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ namespace PasseroDemo.Application
        
        
             var loginPage = new LoginPage();
+            loginPage.ID = System.DateTime.Now.ToString();
             loginPage.Show();
         }
     }

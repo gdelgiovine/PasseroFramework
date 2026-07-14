@@ -79,7 +79,7 @@ namespace Passero.Framework
 
                 Repository.SQLQuery = SqlQuery;
 
-                //this.Repository.Parameters = (DynamicParameters)Parameters;
+               
                 Repository.Parameters = Utilities.GetDynamicParameters(Parameters);
                 ER = Repository.GetItems(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
 
@@ -91,13 +91,11 @@ namespace Passero.Framework
 
                     Repository.ModelItems = x;
                     Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                    //If (AutoUpdateModelItemsShadows) Then
-                    Repository.SetModelItemsShadow();
-                    //End If
-                    Repository.SetModelItemShadow();
                     Repository.CurrentModelItemIndex = 0;
 
-                    
+                    var snapshotKey = BuildShadowSnapshotKey(SqlQuery, x?.Count ?? 0, Repository.CurrentModelItemIndex);
+                    UpdateShadowSnapshotFromCurrentState(snapshotKey);
+
                     if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
                         mBindingSource.DataSource = ModelItems;
@@ -132,17 +130,7 @@ namespace Passero.Framework
             {
                 mBindingSource.DataSource = Repository.ModelItems;
 
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mBindingSource.DataSource = ModelItems;
-                //        break;
-                //    case UseModelData.InternalRepository:
-                //        mBindingSource.DataSource = Repository.ModelItems;
-                //        break;
-                //    default:
-                //        break;
-                //}
+              
             }
         }
         /// <summary>
@@ -166,6 +154,10 @@ namespace Passero.Framework
 
                     Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
                     Repository.ModelItems = x;
+
+                    var snapshotKey = BuildShadowSnapshotKey(string.Empty, x?.Count ?? 0, Repository.CurrentModelItemIndex);
+                    UpdateShadowSnapshotFromCurrentState(snapshotKey);
+
                     if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
                         mBindingSource.DataSource = Repository.ModelItems;
@@ -220,18 +212,7 @@ namespace Passero.Framework
                 ER = await Repository.GetItemAsync(SqlQuery, Parameters, Transaction, Buffered, CommandTimeout);
                 Repository.ModelItem = ER.Value;
 
-                //switch (UseModelData)
-                //{
-                //    case UseModelData.External:
-                //        mModelItemShadow = ER.Value;
-                //        break;
-                //    case UseModelData.InternalRepository:
-                //        Repository.ModelItem = ER.Value;
-                //        break;
-                //    default:
-                //        break;
-                //}
-
+               
                 ModelItem = ER.Value;
                 DataNavigatorRaiseEventBoundCompleted();
             }
@@ -289,26 +270,6 @@ namespace Passero.Framework
                     Repository.SetModelItemShadow();
                     Repository.CurrentModelItemIndex = 0;
 
-                    //switch (UseModelData)
-                    //{
-                    //    case UseModelData.External:
-                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                    //        mModelItems = x;
-                    //        SetModelItemsShadow();
-                    //        SetModelItemShadow();
-                    //        break;
-
-                    //    case UseModelData.InternalRepository:
-                    //        Repository.ModelItems = x;
-                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                    //        Repository.SetModelItemsShadow();
-                    //        Repository.SetModelItemShadow();
-                    //        Repository.CurrentModelItemIndex = 0;
-                    //        break;
-
-                    //    default:
-                    //        break;
-                    //}
 
                     if (mDataBindingMode == DataBindingMode.BindingSource)
                     {
@@ -364,29 +325,7 @@ namespace Passero.Framework
                         mBindingSource.DataSource = Repository.ModelItems;
                     }
 
-                    //switch (UseModelData)
-                    //{
-                    //    case UseModelData.External:
-                    //        mModelItemShadow = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                    //        mModelItems = x;
-                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
-                    //        {
-                    //            mBindingSource.DataSource = ModelItems;
-                    //        }
-                    //        break;
-
-                    //    case UseModelData.InternalRepository:
-                    //        Repository.ModelItem = x.DefaultIfEmpty(GetEmptyModelItem()).First();
-                    //        Repository.ModelItems = x;
-                    //        if (mDataBindingMode == DataBindingMode.BindingSource)
-                    //        {
-                    //            mBindingSource.DataSource = Repository.ModelItems;
-                    //        }
-                    //        break;
-
-                    //    default:
-                    //        break;
-                    //}
+              
                 }
                 else
                 {

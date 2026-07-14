@@ -23,121 +23,127 @@ namespace Passero.Framework
             return newrepository;
         }
 
-        /// <summary>
-        /// Inserts the item.
-        /// </summary>
-        /// <param name="Model">The model.</param>
-        /// <param name="Transaction">The transaction.</param>
-        /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns></returns>
-        public ExecutionResult InsertItemContrib(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+
+        private void EnsureInsertSqlCommandInitialized()
         {
-
-            var ER = new ExecutionResult($"{mClassName}.InsertItem()");
-            long x = 0;
-            if (Model == null)
+            if (ProviderFeatures == null)
             {
-                Model = ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
+                ProviderFeatures = DbConnection != null
+                    ? ProviderFeaturesResolver.FromConnection(DbConnection)
+                    : new ProviderFeatures();
             }
 
-            try
+            if (string.IsNullOrWhiteSpace(mSqlInsertCommand))
             {
-
-                x = DbConnection.Insert(Model, Transaction, CommandTimeout);
-
-                ModelItem = Model;
-                ModelItemShadow = Model;
-                if (ModelItems == null)
-                {
-                    ModelItems = new List<ModelClass>();
-                }
-
-
-                if (ModelItemsShadow == null)
-                {
-                    ModelItemsShadow = new List<ModelClass>();
-                }
-
-                ModelItemsShadow.Add(Model);
-
-
-                mAddNewState = false;
-
-
+                SqlInsertCommand(true);
             }
-            catch (Exception ex)
+
+            if (string.IsNullOrWhiteSpace(mSqlInsertCommand))
             {
-                //mAddNewState = False
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-
+                throw new InvalidOperationException("Il comando SQL di insert non è stato inizializzato.");
             }
-            LastExecutionResult = ER;
-            return ER;
         }
 
-
-        /// <summary>
-        /// Inserts the items.
-        /// </summary>
-        /// <param name="ModelItems">The model items.</param>
-        /// <param name="Transaction">The transaction.</param>
-        /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns></returns>
-        public ExecutionResult InsertItemsContrib(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        private void ValidateInsertContext(ModelClass model)
         {
-            var ER = new ExecutionResult($"{mClassName}.InsertItems()");
-            long x = 0;
+            if (model == null)
+            {
+                throw new InvalidOperationException("Nessun modello da inserire. Specificare un Model o impostare il modello corrente.");
+            }
+
+            if (DbConnection == null)
+            {
+                throw new InvalidOperationException("La connessione al database non è stata inizializzata.");
+            }
+
+            if (EntityProperties == null || EntityProperties.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna proprietà disponibile per l'insert.");
+            }
+        }
+
+        private long WriteBackIdentity(ModelClass model, object scalarValue)
+        {
+            if (scalarValue == null || scalarValue == DBNull.Value)
+            {
+                return 0;
+            }
+
+            long generatedId = Convert.ToInt64(scalarValue);
+
+            if (generatedId > 0)
+            {
+                var identityKey = EntityPrimaryKeys
+                    .FirstOrDefault(p => p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+
+                if (identityKey != null && identityKey.CanWrite)
+                {
+                    identityKey.SetValue(model, Convert.ChangeType(generatedId, identityKey.PropertyType));
+                }
+            }
+
+            return generatedId;
+        }
+
+        private void SyncInsertedModelState(ModelClass model)
+        {
+            _ModelItem = model;
+            _ModelItemShadow = Utilities.Clone(model);
+            ModelItemShadow = _ModelItemShadow;
 
             if (ModelItems == null)
             {
-                ModelItems = this.ModelItems;
+                ModelItems = new List<ModelClass>();
             }
 
-            if (Transaction == null)
+            if (!ModelItems.Any(x => Utilities.ObjectsEquals(x, model)))
             {
-                Transaction = DbTransaction;
+                ModelItems.Add(model);
             }
-            if (CommandTimeout == null)
+
+            if (ModelItemsShadow == null)
             {
-                CommandTimeout = DbCommandTimeout;
+                ModelItemsShadow = new List<ModelClass>();
             }
-            try
+
+            var existingShadow = ModelItemsShadow
+                .Select((item, index) => new { item, index })
+                .FirstOrDefault(x => Utilities.ObjectsEquals(x.item, model));
+
+            if (existingShadow != null)
             {
-
-                x = DbConnection.Insert(ModelItems, Transaction, CommandTimeout);
-                mAddNewState = false;
-                ER.Value = x;
-
+                ModelItemsShadow[existingShadow.index] = Utilities.Clone(model);
             }
-            catch (Exception ex)
+            else
             {
-                //mAddNewState = False
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.Value = 0;
-                HandleException(ER);
-
+                ModelItemsShadow.Add(Utilities.Clone(model));
             }
-
-            LastExecutionResult = (ER);
-            return ER;
-
         }
 
+
+        /// <summary>
+        /// Compatibility wrapper for <see cref="InsertItem(ModelClass, IDbTransaction, int?)"/>.
+        /// </summary>
+        /// <param name="Model">The model to insert.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>The execution result from the core insert flow.</returns>
+        public ExecutionResult InsertItemContrib(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            return InsertItem(Model, Transaction, CommandTimeout);
+        }
+
+        /// <summary>
+        /// Compatibility wrapper for <see cref="InsertItems(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
+        /// </summary>
+        /// <param name="ModelItems">The model items to insert.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>The execution result from the core batch insert flow.</returns>
+        public ExecutionResult InsertItemsContrib(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            return InsertItems(ModelItems, Transaction, CommandTimeout);
+        }
 
         /// <summary>
         /// The m SQL insert command
@@ -157,57 +163,42 @@ namespace Passero.Framework
         /// <summary>
         /// Inserts the item using a parameterized SQL command that respects column name mappings.
         /// </summary>
-
         public ExecutionResult InsertItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItem()");
-            if (Model == null) Model = ModelItem;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
             try
             {
-                var parameters = new DynamicParameters();
-                var entityPropsCount = EntityProperties.Count;
+                if (Model == null) Model = ModelItem;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
-                for (int i = 0; i < entityPropsCount; i++)
+                ValidateInsertContext(Model);
+                EnsureInsertSqlCommandInitialized();
+
+                var parameters = new DynamicParameters();
+                foreach (var prop in EntityProperties)
                 {
-                    var prop = EntityProperties[i];
                     parameters.Add(prop.Name, prop.GetValue(Model));
                 }
 
                 string insertCommand = mSqlInsertCommand;
-
-                if (!GetIdentityFragment().IsNullOrWhiteSpace())
-                    insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
-
-                
-                string sqlx = Utilities.ResolveSQL(insertCommand, parameters, ProviderFeatures  );
-                var scalar = DbConnection.ExecuteScalar(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
-
-                long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
-
-                // Write back the generated identity key into the model before setting the shadow,
-                // so that subsequent UpdateItem calls use the correct PK in the WHERE clause.
-                if (generatedId > 0)
+                string identityFragment = GetIdentityFragment();
+                if (!string.IsNullOrWhiteSpace(identityFragment))
                 {
-                    var identityKey = EntityPrimaryKeys
-                        .FirstOrDefault(p => p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
-                    if (identityKey != null && identityKey.CanWrite)
-                    {
-                        identityKey.SetValue(Model, Convert.ChangeType(generatedId, identityKey.PropertyType));
-                    }
+                    insertCommand = $"{insertCommand}; {identityFragment}";
                 }
 
+                var scalar = DbConnection.ExecuteScalar(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                long generatedId = WriteBackIdentity(Model, scalar);
+
                 ER.Value = generatedId;
-                _ModelItem = Model;
-                _ModelItemShadow = Utilities.Clone(Model); // shadow coerente con la PK aggiornata
-                ModelItemShadow = _ModelItemShadow;
+                SyncInsertedModelState(Model);
 
-                if (ModelItems == null) ModelItems = new List<ModelClass>();
-                if (ModelItemsShadow == null) ModelItemsShadow = new List<ModelClass>();
-                ModelItemsShadow.Add(Utilities.Clone(Model));
-
+                ER.ResultCode = ExecutionResultCodes.Success;
+                ER.ResultMessage = generatedId > 0
+                    ? "Inserimento eseguito correttamente."
+                    : "Inserimento eseguito correttamente senza identity restituita.";
                 mAddNewState = false;
             }
             catch (Exception ex)
@@ -218,6 +209,7 @@ namespace Passero.Framework
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
             }
+
             LastExecutionResult = ER;
             return ER;
         }
@@ -235,53 +227,39 @@ namespace Passero.Framework
         public async Task<ExecutionResult> InsertItemAsync(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItemAsync()");
-            if (Model == null) Model = ModelItem;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
             try
             {
-                var @params = new DynamicParameters();
-                var entityPropsCount = EntityProperties.Count;
+                if (Model == null) Model = ModelItem;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
-                for (int i = 0; i < entityPropsCount; i++)
+                ValidateInsertContext(Model);
+                EnsureInsertSqlCommandInitialized();
+
+                var parameters = new DynamicParameters();
+                foreach (var prop in EntityProperties)
                 {
-                    var prop = EntityProperties[i];
-                    @params.Add(prop.Name, prop.GetValue(Model));
+                    parameters.Add(prop.Name, prop.GetValue(Model));
                 }
-
-                //var scalar = await DbConnection.ExecuteScalarAsync(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
 
                 string insertCommand = mSqlInsertCommand;
-
-                if (!GetIdentityFragment().IsNullOrWhiteSpace())
-                    insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
-
-                var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-
-                long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
-
-                // Write back the generated identity key into the model before setting the shadow,
-                // so that subsequent UpdateItem calls use the correct PK in the WHERE clause.
-                if (generatedId > 0)
+                string identityFragment = GetIdentityFragment();
+                if (!string.IsNullOrWhiteSpace(identityFragment))
                 {
-                    var identityKey = EntityPrimaryKeys
-                        .FirstOrDefault(p => p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
-                    if (identityKey != null && identityKey.CanWrite)
-                    {
-                        identityKey.SetValue(Model, Convert.ChangeType(generatedId, identityKey.PropertyType));
-                    }
+                    insertCommand = $"{insertCommand}; {identityFragment}";
                 }
 
+                var scalar = await DbConnection.ExecuteScalarAsync(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                long generatedId = WriteBackIdentity(Model, scalar);
+
                 ER.Value = generatedId;
-                _ModelItem = Model;
-                _ModelItemShadow = Utilities.Clone(Model); // shadow coerente con la PK aggiornata
-                ModelItemShadow = _ModelItemShadow;
+                SyncInsertedModelState(Model);
 
-                if (ModelItems == null) ModelItems = new List<ModelClass>();
-                if (ModelItemsShadow == null) ModelItemsShadow = new List<ModelClass>();
-                ModelItemsShadow.Add(Utilities.Clone(Model));
-
+                ER.ResultCode = ExecutionResultCodes.Success;
+                ER.ResultMessage = generatedId > 0
+                    ? "Inserimento asincrono eseguito correttamente."
+                    : "Inserimento asincrono eseguito correttamente senza identity restituita.";
                 mAddNewState = false;
             }
             catch (Exception ex)
@@ -292,9 +270,11 @@ namespace Passero.Framework
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
             }
+
             LastExecutionResult = ER;
             return ER;
         }
+
 
         /// <summary>
         /// Inserts multiple items using a parameterized SQL command that respects column name mappings.
@@ -304,58 +284,65 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
+        /// 
         public ExecutionResult InsertItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.InsertItems()");
             long insertedCount = 0;
 
-            if (ModelItems == null) ModelItems = this.ModelItems;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
-
             try
             {
-                // Cache dell'identity key per il write-back (null se ExplicitKey)
-                var identityKey = EntityPrimaryKeys
-                    .FirstOrDefault(p => p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+                if (ModelItems == null) ModelItems = this.ModelItems;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
+
+                if (ModelItems == null)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                var itemsList = ModelItems.Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                foreach (var model in itemsList)
+                {
+                    ValidateInsertContext(model);
+                }
+
+                EnsureInsertSqlCommandInitialized();
 
                 var entityPropsCount = EntityProperties.Count;
 
-                if (this.ModelItemsShadow == null) this.ModelItemsShadow = new List<ModelClass>();
-
-                foreach (var model in ModelItems)
+                foreach (var model in itemsList)
                 {
-                    var @params = new DynamicParameters();
+                    var parameters = new DynamicParameters();
                     for (int i = 0; i < entityPropsCount; i++)
                     {
                         var prop = EntityProperties[i];
-                        @params.Add(prop.Name, prop.GetValue(model));
+                        parameters.Add(prop.Name, prop.GetValue(model));
                     }
 
-                    //var scalar = DbConnection.ExecuteScalar(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                    
                     string insertCommand = mSqlInsertCommand;
-
-                    if (!GetIdentityFragment().IsNullOrWhiteSpace())
-                        insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
-
-                    var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-
-
-                    long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
-
-                    // Write back dell'identity key nel singolo item prima di clonarlo nello shadow
-                    if (generatedId > 0 && identityKey != null && identityKey.CanWrite)
+                    string identityFragment = GetIdentityFragment();
+                    if (!string.IsNullOrWhiteSpace(identityFragment))
                     {
-                        identityKey.SetValue(model, Convert.ChangeType(generatedId, identityKey.PropertyType));
+                        insertCommand = $"{insertCommand}; {identityFragment}";
                     }
 
-                    this.ModelItemsShadow.Add(Utilities.Clone(model));
+                    var scalar = DbConnection.ExecuteScalar(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                    long generatedId = WriteBackIdentity(model, scalar);
+
+                    SyncInsertedModelState(model);
                     insertedCount++;
                 }
 
-                mAddNewState = false;
                 ER.Value = insertedCount;
+                ER.ResultCode = ExecutionResultCodes.Success;
+                ER.ResultMessage = $"Inseriti {insertedCount} elementi.";
+                mAddNewState = false;
             }
             catch (Exception ex)
             {
@@ -370,6 +357,7 @@ namespace Passero.Framework
             LastExecutionResult = ER;
             return ER;
         }
+
         /// <summary>
         /// Inserts multiple items asynchronously using a parameterized SQL command that respects column name mappings.
         /// For identity key ([Key]) models, <see cref="ExecutionResult.Value"/> contains the count of inserted rows.
@@ -383,53 +371,59 @@ namespace Passero.Framework
             var ER = new ExecutionResult($"{mClassName}.InsertItemsAsync()");
             long insertedCount = 0;
 
-            if (ModelItems == null) ModelItems = this.ModelItems;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
-
             try
             {
-                // Cache dell'identity key per il write-back (null se ExplicitKey)
-                var identityKey = EntityPrimaryKeys
-                    .FirstOrDefault(p => p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+                if (ModelItems == null) ModelItems = this.ModelItems;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
+
+                if (ModelItems == null)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                var itemsList = ModelItems.Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                foreach (var model in itemsList)
+                {
+                    ValidateInsertContext(model);
+                }
+
+                EnsureInsertSqlCommandInitialized();
 
                 var entityPropsCount = EntityProperties.Count;
 
-                if (this.ModelItemsShadow == null) this.ModelItemsShadow = new List<ModelClass>();
-
-                foreach (var model in ModelItems)
+                foreach (var model in itemsList)
                 {
-                    var @params = new DynamicParameters();
+                    var parameters = new DynamicParameters();
                     for (int i = 0; i < entityPropsCount; i++)
                     {
                         var prop = EntityProperties[i];
-                        @params.Add(prop.Name, prop.GetValue(model));
+                        parameters.Add(prop.Name, prop.GetValue(model));
                     }
 
-                    //var scalar = await DbConnection.ExecuteScalarAsync(mSqlInsertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-                    
                     string insertCommand = mSqlInsertCommand;
-
-                    if (!GetIdentityFragment().IsNullOrWhiteSpace())
-                        insertCommand = $"{insertCommand}; {GetIdentityFragment()}";
-
-                    var scalar = DbConnection.ExecuteScalar(insertCommand, @params, Transaction, CommandTimeout, CommandType.Text);
-
-
-                    long generatedId = scalar != null && scalar != DBNull.Value ? Convert.ToInt64(scalar) : 0;
-
-                    // Write back dell'identity key nel singolo item prima di clonarlo nello shadow
-                    if (generatedId > 0 && identityKey != null && identityKey.CanWrite)
+                    string identityFragment = GetIdentityFragment();
+                    if (!string.IsNullOrWhiteSpace(identityFragment))
                     {
-                        identityKey.SetValue(model, Convert.ChangeType(generatedId, identityKey.PropertyType));
+                        insertCommand = $"{insertCommand}; {identityFragment}";
                     }
 
-                    this.ModelItemsShadow.Add(Utilities.Clone(model));
+                    var scalar = await DbConnection.ExecuteScalarAsync(insertCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
+                    long generatedId = WriteBackIdentity(model, scalar);
+
+                    SyncInsertedModelState(model);
                     insertedCount++;
                 }
 
-                mAddNewState = false;
                 ER.Value = insertedCount;
+                ER.ResultCode = ExecutionResultCodes.Success;
+                ER.ResultMessage = $"Inseriti {insertedCount} elementi.";
+                mAddNewState = false;
             }
             catch (Exception ex)
             {
@@ -446,105 +440,28 @@ namespace Passero.Framework
         }
 
         /// <summary>
-        /// Inserts the item asynchronously.
+        /// Compatibility wrapper for <see cref="InsertItemAsync(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="Model">The model.</param>
+        /// <param name="Model">The model to insert.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
         public async Task<ExecutionResult> InsertItemContribAsync(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.InsertItemAsync()");
-            long x = 0;
-            if (Model == null)
-            {
-                Model = ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                x = await DbConnection.InsertAsync(Model, Transaction, CommandTimeout);
-
-                ModelItem = Model;
-                ModelItemShadow = Model;
-                if (ModelItems == null)
-                {
-                    ModelItems = new List<ModelClass>();
-                }
-                if (ModelItemsShadow == null)
-                {
-                    ModelItemsShadow = new List<ModelClass>();
-                }
-                ModelItemsShadow.Add(Model);
-                mAddNewState = false;
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-            }
-            LastExecutionResult = ER;
-            return ER;
+            return await InsertItemAsync(Model, Transaction, CommandTimeout);
         }
 
-
         /// <summary>
-        /// Inserts the items asynchronously.
+        /// Compatibility wrapper for <see cref="InsertItemsAsync(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItems">The model items to insert.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
         public async Task<ExecutionResult> InsertItemsContribAsync(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.InsertItemsAsync()");
-            long x = 0;
-
-            if (ModelItems == null)
-            {
-                ModelItems = this.ModelItems;
-            }
-
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-            try
-            {
-                x = await DbConnection.InsertAsync(ModelItems, Transaction, CommandTimeout);
-                mAddNewState = false;
-                ER.Value = x;
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                ER.Value = 0;
-                HandleException(ER);
-            }
-
-            LastExecutionResult = ER;
-            return ER;
+            return await InsertItemsAsync(ModelItems, Transaction, CommandTimeout);
         }
-
-
 
         /// <summary>
         /// Undoes the changes.

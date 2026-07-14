@@ -526,10 +526,9 @@ namespace Passero.Framework
 
             try
             {
-
                 if (SessionConfigurationDictionary.ContainsKey(Section) == false)
                 {
-                    if (AutoCreation == true)
+                    if (AutoCreation)
                     {
                         SessionConfigurationDictionary.Add(Section, new Dictionary<string, string>());
                     }
@@ -544,15 +543,16 @@ namespace Passero.Framework
 
                 if (SessionConfigurationDictionary.ContainsKey(Section))
                 {
+                    Dictionary<string, string> sectionValues = SessionConfigurationDictionary[Section];
 
-                    if (ConfigurationDictionary[Section].ContainsKey(Key))
+                    if (sectionValues.ContainsKey(Key))
                     {
-                        SessionConfigurationDictionary[Section][Key] = Value.ToString();
+                        sectionValues[Key] = Value?.ToString() ?? string.Empty;
                         ok = true;
                     }
-                    else if (AutoCreation == true)
+                    else if (AutoCreation)
                     {
-                        SessionConfigurationDictionary[Section].Add(Key, Value.ToString());
+                        sectionValues.Add(Key, Value?.ToString() ?? string.Empty);
                         ok = true;
                     }
                     else
@@ -564,8 +564,6 @@ namespace Passero.Framework
                     }
                 }
             }
-
-
             catch (Exception ex)
             {
                 LastExecutionResult.ErrorCode = 3;
@@ -576,7 +574,6 @@ namespace Passero.Framework
 
             return ok;
         }
-
         /// <summary>
         /// Adds the session configuration key value.
         /// </summary>

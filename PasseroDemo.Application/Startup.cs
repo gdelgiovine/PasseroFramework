@@ -32,13 +32,13 @@ namespace PasseroDemo.Application
             });
 
 
-            bool usePreWisejCommandRouter = false; // Set to true to enable the PreWisejCommandRouter middleware    
+            bool usePreWisejCommandRouter = true; // Set to true to enable the PreWisejCommandRouter middleware    
 
             if (usePreWisejCommandRouter)
             {
                 // If using the PreWisejCommandRouter, we need to add the HttpContextAccessor   
                 builder.Services.AddHttpContextAccessor();
-                Passero.Framework.HttpHelper.HttpContextHelper.CaptureToSession();
+                //Passero.Framework.HttpHelper.HttpContextHelper.CaptureToSession();
             }
 
             var app = builder.Build();
@@ -62,7 +62,7 @@ namespace PasseroDemo.Application
             if (usePreWisejCommandRouter)
             {
                 // If using the PreWisejCommandRouter, we need to add the HttpContextAccessor   
-                builder.Services.AddHttpContextAccessor();
+                //builder.Services.AddHttpContextAccessor();
                 Passero.Framework.HttpHelper.HttpContextHelper.CaptureToSession();
 
                 var router = new PreWisejCommandRouter(customHandlers);

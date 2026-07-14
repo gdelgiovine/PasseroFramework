@@ -1486,8 +1486,7 @@ namespace Passero.Framework.Controls
 
             CloseQBEForm();
 
-            //Microsoft.Reporting.WebForms.ReportViewer x = new Microsoft.Reporting.WebForms.ReportViewer();
-            //x.BackColor = System.Drawing.Color.White;   
+            
 
         }
 
@@ -1592,78 +1591,6 @@ namespace Passero.Framework.Controls
 
             CloseQBEForm();
         }
-        private void QBEResultMode_SelectedRows_OLD()
-        {
-            if (ResultGrid.SelectedRows.Count == 0)
-                return;
-            if (QBEModelPropertiesMapping.Count == 0)
-                return;
-
-            object TargetModel = Passero.Framework.ReflectionHelper.GetPropertyValue(TargetRepository, "ModelItem");
-            if (TargetModel is null)
-            {
-                TargetModel = GetEmptyModel();
-            }
-            Type TargetModelType = TargetModel.GetType();
-            DynamicParameters parameters = new DynamicParameters();
-
-            Dictionary<string, PropertyInfo> TargetModelProperties = new Dictionary<string, PropertyInfo>();
-            foreach (var item in TargetModelType.GetProperties())
-            {
-                TargetModelProperties.Add(item.Name, item);
-            }
-
-
-            string propertyname = "";
-            object propertyvalue;
-            string _AND = "";
-            string _OR = "";
-            int i = 1;
-            StringBuilder sqlwhere = new StringBuilder();
-            string sqlquery = "";
-            foreach (DataGridViewRow row in ResultGrid.SelectedRows)
-            {
-                StringBuilder sqlwhererow = new StringBuilder();
-                _AND = "";
-                foreach (ModelPropertyMapping Mapping in QBEModelPropertiesMapping)
-                {
-                    propertyvalue = row[Mapping.QBEModelProperty].Value;
-                    propertyname = Mapping.TargetModelProperty;
-                    Type Type = TargetModelProperties[propertyname].PropertyType;
-                    DbType DbType = Passero.Framework.Utilities.GetDbType(Type);
-                    string parametername = $"@{propertyname}_{i}";
-                    parameters.Add(parametername, propertyvalue, DbType);
-                    sqlwhererow.Append($"{_AND} {propertyname} = {parametername} ");
-                    _AND = " AND ";
-                    i++;
-                }
-                sqlwhere.Append($" {_OR} ( {sqlwhererow.ToString()} )");
-
-                _OR = " OR ";
-            }
-
-            sqlquery = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName(TargetModel)}";
-            if (sqlwhere.ToString() != "")
-                sqlquery = sqlquery + " WHERE " + sqlwhere.ToString();
-
-            if (TargetRepository != null)
-            {
-                try
-                {
-                    Passero.Framework.ReflectionHelper.InvokeMethodByName(ref TargetRepository, "SetSQLQuery", sqlquery, parameters);
-                }
-                catch (Exception ex)
-                {
-
-                    //MessageBox.Show("a");
-                }
-
-            }
-
-            CloseQBEForm();
-        }
-
-
 
         /// <summary>
         /// Copies the data row.

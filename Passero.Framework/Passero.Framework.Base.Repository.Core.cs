@@ -198,30 +198,6 @@ namespace Passero.Framework
                 _ => "SELECT SCOPE_IDENTITY()"
             };
         }
-        private string GetIdentityFragment_OLD()
-        {
-            // Controlla se la chiave è ExplicitKey
-            var keyProperty = EntityPrimaryKeys.FirstOrDefault();
-            if (keyProperty != null)
-            {
-                var explicitKeyAttr = keyProperty.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>();
-                if (explicitKeyAttr != null)
-                {
-                    // È una chiave esplicita, non un'identity
-                    return null;
-                }
-            }
-
-            return ProviderFeatures.Dialect switch
-            {
-                DbDialect.PostgreSql => "SELECT lastval()",
-                DbDialect.SQLite => "SELECT last_insert_rowid()",
-                DbDialect.MySql => "SELECT LAST_INSERT_ID()",
-                DbDialect.Oracle => "SELECT 0 FROM DUAL", // Oracle richiede una sequenza esplicita: override manuale
-                _ => "SELECT SCOPE_IDENTITY()" // SqlServer default
-            };
-        }
-
         /// <summary>
         /// Resets the model item.
         /// </summary>

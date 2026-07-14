@@ -3,7 +3,7 @@
   <PropertyGroup>
       <Solution_PasseroVersion>1.0.0</Solution_PasseroVersion>
       <Solution_WisejNETFamily>Wisej-4</Solution_WisejNETFamily>
-      <Solution_WisejNETVersion>4.0.13</Solution_WisejNETVersion>
+      <Solution_WisejNETVersion>4.1.0</Solution_WisejNETVersion>
       <Solution_WisejNETVersionFlat>$(Solution_WisejNETVersion.Replace('.', ''))</Solution_WisejNETVersionFlat>
 	  <Solution_DapperVersion>2.1.79</Solution_DapperVersion>
 	  <Solution_CompleteVersion>$(Solution_PasseroVersion).$(Solution_WisejNETVersionFlat)</Solution_CompleteVersion>

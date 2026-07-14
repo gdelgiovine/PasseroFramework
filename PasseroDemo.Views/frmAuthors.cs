@@ -25,6 +25,7 @@ namespace PasseroDemo.Views
 
         public async void Init()
         {
+            this.ConfigurationManager =Wisej.Web.Application .Session["ConfigurationManager"] as Passero.Framework.ConfigurationManager;    
             //this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
             this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
             //this.DbConnection = (System.Data.Common .DbConnection )ConfigurationManager.DBConnections["PasseroDemo"];
@@ -299,6 +300,11 @@ namespace PasseroDemo.Views
             {
                 MessageBox.Show(e.BarcodeData);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

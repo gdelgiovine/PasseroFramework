@@ -225,44 +225,6 @@ namespace Passero.Framework
 
             return _writedcontrols;
         }
-        public int WriteControl_OLD(ModelClass Model, Control Control, string ControlPropertyName = "")
-        {
-            //if (mDataBindingMode == DataBindingMode.BindingSource | mDataBindingMode == DataBindingMode.None)
-            if (mDataBindingMode == DataBindingMode.None)
-            {
-                return 0;
-            }
-            int _writedcontrols = 0;
-
-            if (Control is null | Model is null)
-            {
-                return _writedcontrols;
-            }
-            string keytofind = GetBoundControlKey(Control, ControlPropertyName);
-            List<string> keys;
-            keys = DataBindControls.Keys.Where(key => key.StartsWith(keytofind)).ToList();
-            if (keys.Count > 0)
-            {
-                foreach (string key in keys)
-                {
-                    var DataBindControl = DataBindControls[key];
-                    var Value = Interaction.CallByName(Model, DataBindControl.ModelPropertyName, CallType.Get, null);
-                    if (Value is not null)
-                    {
-                        Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Set, Value);
-                    }
-                    else
-                    {
-                        Interaction.CallByName(DataBindControl.Control, DataBindControl.ControlPropertyName, CallType.Set, "");
-                    }
-
-                    _writedcontrols += 1;
-                }
-            }
-            //this.OnWriteControlsdCompleted(new EventArgs());
-            return _writedcontrols;
-
-        }
 
 
         /// <summary>

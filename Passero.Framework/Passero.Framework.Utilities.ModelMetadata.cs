@@ -2,6 +2,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.VisualBasic;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -12,7 +13,69 @@ namespace Passero.Framework
     public static partial class Utilities
     {
 
+        private static readonly ConcurrentDictionary<string, PropertyInfo[]> _modelPropertyCache =
+         new ConcurrentDictionary<string, PropertyInfo[]>();
+
+        private static readonly ConcurrentDictionary<string, List<PropertyInfo>> _modelPrimaryKeysPropertiesInfoCache =
+            new ConcurrentDictionary<string, List<PropertyInfo>>();
+
+        private static readonly ConcurrentDictionary<string, string> _modelPrimaryKeyNamesCache =
+            new ConcurrentDictionary<string, string>();
+
+        public static void InvalidateModelMetadataCache(Type ModelClass)
+        {
+            if (ModelClass == null)
+                return;
+
+            var key = GetModelMetadataCacheKey(ModelClass);
+            _modelPrimaryKeysPropertiesInfoCache.TryRemove(key, out _);
+            _modelPrimaryKeyNamesCache.TryRemove(key, out _);
+        }
+
+        private static string GetModelMetadataCacheKey(Type ModelClass)
+        {
+            if (ModelClass == null)
+                return string.Empty;
+
+            return ModelClass.AssemblyQualifiedName ?? ModelClass.FullName ?? ModelClass.Name;
+        }
+
+        private static bool ShouldCacheModelMetadata(Type ModelClass)
+        {
+            if (ModelClass == null)
+                return false;
+
+            return !string.IsNullOrWhiteSpace(ModelClass.AssemblyQualifiedName);
+        }
+
+
         public static List<PropertyInfo> GetModelPropertiesInfo(Type ModelClass, bool ExcludeComputed = false)
+        {
+            if (ModelClass == null)
+                throw new ArgumentNullException(nameof(ModelClass));
+
+            var cacheKey = $"{ModelClass.AssemblyQualifiedName}|{ExcludeComputed}";
+
+            var properties = _modelPropertyCache.GetOrAdd(cacheKey, _ =>
+            {
+                return ModelClass
+                    .GetProperties()
+                    .Where(p =>
+                    {
+                        var isComputed = p.GetCustomAttribute<ComputedAttribute>() != null;
+                        var isWriteAttribute = p.GetCustomAttribute<WriteAttribute>() != null;
+
+                        if (isComputed || isWriteAttribute)
+                            return !ExcludeComputed;
+
+                        return true;
+                    })
+                    .ToArray();
+            });
+
+            return properties.ToList();
+        }
+        public static List<PropertyInfo> GetModelPropertiesInfoNC(Type ModelClass, bool ExcludeComputed = false)
         {
             var properties = ModelClass.GetProperties();
 
@@ -37,6 +100,30 @@ namespace Passero.Framework
 
         public static List<PropertyInfo> GetModelPrimaryKeysPropertiesInfo(Type ModelClass)
         {
+            if (ModelClass == null)
+                throw new ArgumentNullException(nameof(ModelClass));
+
+            if (!ShouldCacheModelMetadata(ModelClass))
+                return GetModelPrimaryKeysPropertiesInfoNC(ModelClass);
+
+            var cacheKey = GetModelMetadataCacheKey(ModelClass);
+            return _modelPrimaryKeysPropertiesInfoCache.GetOrAdd(cacheKey, _ =>
+            {
+                var properties = ModelClass.GetProperties();
+                List<PropertyInfo> x = new List<PropertyInfo>();
+                foreach (PropertyInfo p in properties)
+                {
+                    if (p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null)
+                    {
+                        x.Add(p);
+                    }
+                }
+                return x;
+            }).ToList();
+        }
+
+        public static List<PropertyInfo> GetModelPrimaryKeysPropertiesInfoNC(Type ModelClass)
+        {
             var properties = ModelClass.GetProperties();
             List<PropertyInfo> x = new List<PropertyInfo>();
             foreach (PropertyInfo p in properties)
@@ -52,11 +139,26 @@ namespace Passero.Framework
 
         public static string GetModelPrimaryKeyNames(Type ModelClass)
         {
+            if (ModelClass == null)
+                throw new ArgumentNullException(nameof(ModelClass));
+
+            if (!ShouldCacheModelMetadata(ModelClass))
+                return GetModelPrimaryKeyNamesNC(ModelClass);
+
+            var cacheKey = GetModelMetadataCacheKey(ModelClass);
+            return _modelPrimaryKeyNamesCache.GetOrAdd(cacheKey, _ =>
+            {
+                var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
+                return string.Join(",", properties.Select((p) => $"{p.Name}"));
+            });
+        }
+
+        public static string GetModelPrimaryKeyNamesNC(Type ModelClass)
+        {
             var properties = ModelClass.GetProperties().Where((p) => p.GetCustomAttribute<Dapper.Contrib.Extensions.ExplicitKeyAttribute>() != null || p.GetCustomAttribute<Dapper.Contrib.Extensions.KeyAttribute>() != null);
 
             var values = string.Join(",", properties.Select((p) => $"{p.Name}"));
             return values;
-
         }
 
 

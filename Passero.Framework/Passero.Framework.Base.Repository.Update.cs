@@ -32,6 +32,141 @@ namespace Passero.Framework
             return result;
         }
 
+
+        private void EnsureUpdateSqlCommandInitialized()
+        {
+            if (ProviderFeatures == null)
+            {
+                ProviderFeatures = DbConnection != null
+                    ? ProviderFeaturesResolver.FromConnection(DbConnection)
+                    : new ProviderFeatures();
+            }
+
+            if (string.IsNullOrWhiteSpace(mSqlUpdateCommand))
+            {
+                SqlUpdateCommand(true);
+            }
+
+            if (string.IsNullOrWhiteSpace(mSqlUpdateCommand))
+            {
+                throw new InvalidOperationException("Il comando SQL di update non è stato inizializzato.");
+            }
+        }
+
+        private void ValidateUpdateContext(ModelClass model)
+        {
+            if (model == null)
+            {
+                throw new InvalidOperationException("Nessun modello da aggiornare. Specificare un Model o impostare il modello corrente.");
+            }
+
+            if (DbConnection == null)
+            {
+                throw new InvalidOperationException("La connessione al database non è stata inizializzata.");
+            }
+
+            if (EntityProperties == null || EntityProperties.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna proprietà disponibile per l'update.");
+            }
+
+            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna primary key definita sul modello.");
+            }
+        }
+
+        private void ValidateUpdateItemsContext(IEnumerable<ModelClass> modelItems, IList<ModelClass> shadows)
+        {
+            if (modelItems == null)
+            {
+                throw new InvalidOperationException("Nessun elenco di elementi da aggiornare.");
+            }
+
+            if (DbConnection == null)
+            {
+                throw new InvalidOperationException("La connessione al database non è stata inizializzata.");
+            }
+
+            if (EntityProperties == null || EntityProperties.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna proprietà disponibile per l'update.");
+            }
+
+            if (EntityPrimaryKeys == null || EntityPrimaryKeys.Count == 0)
+            {
+                throw new InvalidOperationException("Nessuna primary key definita sul modello.");
+            }
+
+            if (shadows == null)
+            {
+                throw new InvalidOperationException("Nessuno shadow disponibile per l'aggiornamento in batch.");
+            }
+
+            if (modelItems.Cast<object>().Count() != shadows.Count)
+            {
+                throw new InvalidOperationException(
+                    "Il numero di elementi da aggiornare non coincide con il numero di shadow disponibili.");
+            }
+        }
+
+
+        private DynamicParameters CreateUpdateParameters(ModelClass model)
+        {
+            var parameters = new DynamicParameters();
+
+            for (int i = 0; i < EntityProperties.Count; i++)
+            {
+                var prop = EntityProperties[i];
+                parameters.Add(prop.Name, prop.GetValue(model));
+            }
+
+            var shadowSource = _ModelItemShadow ?? model;
+            for (int i = 0; i < EntityPrimaryKeys.Count; i++)
+            {
+                var prop = EntityPrimaryKeys[i];
+                var shadowValue = prop.GetValue(shadowSource);
+
+                if (shadowValue == null || shadowValue == DBNull.Value)
+                {
+                    throw new InvalidOperationException(
+                        $"Il valore della primary key '{prop.Name}' non è disponibile per il WHERE.");
+                }
+
+                parameters.Add($"{prop.Name}_shadow", shadowValue);
+            }
+
+            return parameters;
+        }
+        private DynamicParameters CreateUpdateParameters(ModelClass model, ModelClass shadowSource = null)
+        {
+            var parameters = new DynamicParameters();
+
+            for (int i = 0; i < EntityProperties.Count; i++)
+            {
+                var prop = EntityProperties[i];
+                parameters.Add(prop.Name, prop.GetValue(model));
+            }
+
+            var effectiveShadowSource = shadowSource ?? _ModelItemShadow ?? model;
+
+            for (int i = 0; i < EntityPrimaryKeys.Count; i++)
+            {
+                var prop = EntityPrimaryKeys[i];
+                var shadowValue = prop.GetValue(effectiveShadowSource);
+
+                if (shadowValue == null || shadowValue == DBNull.Value)
+                {
+                    throw new InvalidOperationException(
+                        $"Il valore della primary key '{prop.Name}' non è disponibile per il WHERE.");
+                }
+
+                parameters.Add($"{prop.Name}_shadow", shadowValue);
+            }
+
+            return parameters;
+        }
+
         /// <summary>
         /// Updates the item using a parameterized SQL command that respects column name mappings.
         /// </summary>
@@ -39,43 +174,42 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
+        /// 
         public ExecutionResult UpdateItem(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItem()");
 
-            if (Model == null) Model = _ModelItem;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
-
             try
             {
-                var @params = new DynamicParameters();
-                var entityPropsCount = EntityProperties.Count;
-                var primaryKeysCount = EntityPrimaryKeys.Count;
+                if (Model == null) Model = _ModelItem;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
-                for (int i = 0; i < entityPropsCount; i++)
-                {
-                    var prop = EntityProperties[i];
-                    @params.Add(prop.Name, prop.GetValue(Model));
-                }
+                ValidateUpdateContext(Model);
+                EnsureUpdateSqlCommandInitialized();
 
-                // Shadow PK per la WHERE: usa lo shadow interno se disponibile,
-                // altrimenti il valore corrente (es. primo salvataggio senza shadow)
-                var shadowSource = _ModelItemShadow ?? Model;
-                for (int i = 0; i < primaryKeysCount; i++)
-                {
-                    var prop = EntityPrimaryKeys[i];
-                    @params.Add($"{prop.Name}_shadow", prop.GetValue(shadowSource));
-                }
-             
-                //Utilities .ResolveSQL
-                
-                int result = DbConnection.Execute(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                var parameters = CreateUpdateParameters(Model);
+
+                int result = DbConnection.Execute(
+                    mSqlUpdateCommand,
+                    parameters,
+                    Transaction,
+                    CommandTimeout,
+                    CommandType.Text);
+
+                ER.Value = result;
+
                 if (result > 0)
                 {
                     _ModelItemShadow = Model;
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Aggiornamento eseguito correttamente.";
                 }
-                ER.Value = result;
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga aggiornata.";
+                }
             }
             catch (Exception ex)
             {
@@ -85,12 +219,10 @@ namespace Passero.Framework
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
             }
+
             LastExecutionResult = ER;
             return ER;
         }
-
-
-
 
         /// <summary>
         /// Updates the item asynchronously using a parameterized SQL command that respects column name mappings.
@@ -103,35 +235,37 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemAsync()");
 
-            if (Model == null) Model = _ModelItem;
-            if (Transaction == null) Transaction = DbTransaction;
-            if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
-
             try
             {
-                var @params = new DynamicParameters();
-                var entityPropsCount = EntityProperties.Count;
-                var primaryKeysCount = EntityPrimaryKeys.Count;
+                if (Model == null) Model = _ModelItem;
+                if (Transaction == null) Transaction = DbTransaction;
+                if (CommandTimeout == null) CommandTimeout = DbCommandTimeout;
 
-                for (int i = 0; i < entityPropsCount; i++)
-                {
-                    var prop = EntityProperties[i];
-                    @params.Add(prop.Name, prop.GetValue(Model));
-                }
+                ValidateUpdateContext(Model);
+                EnsureUpdateSqlCommandInitialized();
 
-                var shadowSource = _ModelItemShadow ?? Model;
-                for (int i = 0; i < primaryKeysCount; i++)
-                {
-                    var prop = EntityPrimaryKeys[i];
-                    @params.Add($"{prop.Name}_shadow", prop.GetValue(shadowSource));
-                }
+                var parameters = CreateUpdateParameters(Model);
 
-                int result = await DbConnection.ExecuteAsync(mSqlUpdateCommand, @params, Transaction, CommandTimeout, CommandType.Text);
+                int result = await DbConnection.ExecuteAsync(
+                    mSqlUpdateCommand,
+                    parameters,
+                    Transaction,
+                    CommandTimeout,
+                    CommandType.Text);
+
+                ER.Value = result;
+
                 if (result > 0)
                 {
                     _ModelItemShadow = Model;
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Aggiornamento eseguito correttamente.";
                 }
-                ER.Value = result;
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga aggiornata.";
+                }
             }
             catch (Exception ex)
             {
@@ -141,12 +275,10 @@ namespace Passero.Framework
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
             }
+
             LastExecutionResult = ER;
             return ER;
         }
-
-
-
         /// <summary>
         /// Updates the item asynchronously.
         /// </summary>
@@ -203,28 +335,81 @@ namespace Passero.Framework
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
+        /// 
         public async Task<ExecutionResult> UpdateItemsAsync(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemsAsync()");
-            bool esito = false;
-
-            if (ModelItems == null)
-            {
-                ModelItems = this.ModelItems;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
+            int affectedRecords = 0;
 
             try
             {
-                esito = await DbConnection.UpdateAsync(ModelItems, Transaction, CommandTimeout);
-                ER.Value = esito;
+                if (ModelItems == null)
+                {
+                    ModelItems = this.ModelItems;
+                }
+
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
+
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
+                }
+
+                var itemsList = ModelItems as IList<ModelClass> ?? ModelItems.ToList();
+                var shadowsList = ModelItemsShadow as IList<ModelClass> ?? new List<ModelClass>();
+
+                ValidateUpdateItemsContext(itemsList, shadowsList);
+                EnsureUpdateSqlCommandInitialized();
+
+                for (int i = 0; i < itemsList.Count; i++)
+                {
+                    var currentItem = itemsList[i];
+                    var shadowItem = i < shadowsList.Count ? shadowsList[i] : null;
+
+                    if (shadowItem == null)
+                    {
+                        throw new InvalidOperationException("Nessuno shadow disponibile per l'elemento da aggiornare.");
+                    }
+
+                    if (_compareFunc(currentItem, shadowItem))
+                    {
+                        continue;
+                    }
+
+                    ValidateUpdateContext(currentItem);
+
+                    var parameters = CreateUpdateParameters(currentItem, shadowItem);
+
+                    int rowCount = await DbConnection.ExecuteAsync(
+                        mSqlUpdateCommand,
+                        parameters,
+                        Transaction,
+                        CommandTimeout,
+                        CommandType.Text);
+
+                    affectedRecords += rowCount;
+
+                    if (rowCount > 0 && i < ModelItemsShadow.Count)
+                    {
+                        ModelItemsShadow[i] = currentItem;
+                    }
+                }
+
+                ER.Value = affectedRecords;
+
+                if (affectedRecords > 0)
+                {
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Aggiornamenti eseguiti correttamente.";
+                }
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga aggiornata.";
+                }
             }
             catch (Exception ex)
             {
@@ -233,12 +418,12 @@ namespace Passero.Framework
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
-                esito = false;
+                ER.Value = affectedRecords;
             }
+
             LastExecutionResult = ER;
             return ER;
         }
-
 
         public async Task<ExecutionResult> UpdateItemsExAsync(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
@@ -317,57 +502,17 @@ namespace Passero.Framework
 
 
         /// <summary>
-        /// Updates the item.
+        /// Compatibility wrapper for <see cref="UpdateItem(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="Model">The model.</param>
+        /// <param name="Model">The model to update.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns></returns>
-        /// 
-
-
-
+        /// <returns>The execution result from the core update flow.</returns>
         public ExecutionResult UpdateItemContrib(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            var ER = new ExecutionResult($"{mClassName}.UpdateItem()");
-            //ValidateConnection();
-            bool result = false;
-
-            if (Model == null)
-            {
-                Model = _ModelItem;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                result = DbConnection.Update(Model, Transaction, CommandTimeout);
-                if (result)
-                {
-                    _ModelItemShadow = Model;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-
-            }
-            LastExecutionResult = ER;
-            return ER;
-
+            return UpdateItem(Model, Transaction, CommandTimeout);
         }
+
         private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> _entityPropertiesCache = new();
         private static readonly ConcurrentDictionary<Type, List<PropertyInfo>> _entityPrimaryKeysCache = new();
         private List<PropertyInfo> _entityProperties;
@@ -463,145 +608,151 @@ namespace Passero.Framework
 
 
         /// <summary>
-        /// Updates the item asynchronously using a parameterized SQL command that respects column name mappings.
+        /// Compatibility overload that preserves the legacy signature and delegates to <see cref="UpdateItem(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItem  ">The model item.</param>
+        /// <param name="Model">The model to update.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
-        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        /// <returns>The execution result from the core update flow.</returns>
+        public ExecutionResult UpdateItemEx(ModelClass Model = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            return UpdateItem(ModelItem, Transaction, CommandTimeout);
+            return UpdateItem(Model, Transaction, CommandTimeout);
         }
 
         /// <summary>
-        /// Updates the item asynchronously using a parameterized SQL command that respects column name mappings.
+        /// Compatibility overload that preserves the legacy shadow-aware signature and delegates to <see cref="UpdateItem(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        /// <param name="ModelItem">The model item.</param>
-        /// <param name="ModelItemShadow">The model item shadow.</param>
+        /// <param name="Model">The model to update.</param>
+        /// <param name="ModelItemShadow">The shadow state used as the comparison key.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the execution result.</returns>
-        public ExecutionResult UpdateItemEx(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        /// <returns>The execution result from the core update flow.</returns>
+        public ExecutionResult UpdateItemEx(ModelClass Model = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            return UpdateItem(ModelItem, Transaction, CommandTimeout);
+            var previousShadow = ModelItemShadow;
+            try
+            {
+                if (ModelItemShadow != null)
+                {
+                    this.ModelItemShadow = ModelItemShadow;
+                }
+
+                return UpdateItem(Model, Transaction, CommandTimeout);
+            }
+            finally
+            {
+                this.ModelItemShadow = previousShadow;
+            }
         }
 
         /// <summary>
-        /// Alias of <see cref="UpdateItemAsync"/> kept for backward compatibility.
-        /// The <paramref name="ModelItemShadow"/> parameter is accepted but ignored:
-        /// the internal shadow is always used as the WHERE key source.
+        /// Compatibility overload for the async update path that preserves the legacy shadow-aware signature and delegates to <see cref="UpdateItemAsync(ModelClass, IDbTransaction, int?)"/>.
         /// </summary>
-        public async Task<ExecutionResult> UpdateItemExAsync(ModelClass ModelItem = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        /// <param name="Model">The model to update.</param>
+        /// <param name="ModelItemShadow">The shadow state used as the comparison key.</param>
+        /// <param name="Transaction">The transaction.</param>
+        /// <param name="CommandTimeout">The command timeout.</param>
+        /// <returns>The execution result from the core async update flow.</returns>
+        public async Task<ExecutionResult> UpdateItemExAsync(ModelClass Model = null, ModelClass ModelItemShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
-            return await UpdateItemAsync(ModelItem, Transaction, CommandTimeout);
+            var previousShadow = this.ModelItemShadow;
+            try
+            {
+                if (ModelItemShadow != null)
+                {
+                    this.ModelItemShadow = ModelItemShadow;
+                }
+
+                return await UpdateItemAsync(Model, Transaction, CommandTimeout);
+            }
+            finally
+            {
+                this.ModelItemShadow = previousShadow;
+            }
         }
 
         /// <summary>
         /// Updates the items.
         /// </summary>
-        /// <param name="ModelItems">The model items.</param>
+        /// <param name="ModelItems">The model items to update.</param>
         /// <param name="Transaction">The transaction.</param>
         /// <param name="CommandTimeout">The command timeout.</param>
         /// <returns></returns>
+        /// 
         public ExecutionResult UpdateItems(IEnumerable<ModelClass> ModelItems = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItems()");
-
-            bool esito = false;
-
-            if (ModelItems == null)
-            {
-                ModelItems = this.ModelItems;
-            }
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
+            int affectedRecords = 0;
 
             try
             {
-                esito = DbConnection.Update(ModelItems);
-            }
-            catch (Exception ex)
-            {
-                ER.Exception = ex;
-                ER.ResultMessage = ex.Message;
-                ER.ErrorCode = 1;
-                ER.ResultCode = ExecutionResultCodes.Failed;
-                HandleException(ER);
-                esito = false;
-            }
-            LastExecutionResult = ER;
-            return ER;
+                if (ModelItems == null)
+                {
+                    ModelItems = this.ModelItems;
+                }
 
-        }
+                if (Transaction == null)
+                {
+                    Transaction = DbTransaction;
+                }
 
-        public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
-        {
-            var ER = new ExecutionResult($"{mClassName}.UpdateItemsEx()");
-            int affectedrecords = 0;
+                if (CommandTimeout == null)
+                {
+                    CommandTimeout = DbCommandTimeout;
+                }
 
-            if (ModelItems == null)
-            {
-                ModelItems = this.ModelItems;
-            }
-
-            if (ModelItemsShadow == null)
-            {
-                ModelItemsShadow = this.ModelItemsShadow;
-            }
-
-            if (Transaction == null)
-            {
-                Transaction = DbTransaction;
-            }
-            if (CommandTimeout == null)
-            {
-                CommandTimeout = DbCommandTimeout;
-            }
-
-            try
-            {
-                // Converti una sola volta a IList
                 var itemsList = ModelItems as IList<ModelClass> ?? ModelItems.ToList();
-                var shadowsList = ModelItemsShadow as IList<ModelClass> ?? ModelItemsShadow.ToList();
+                var shadowsList = ModelItemsShadow as IList<ModelClass> ?? new List<ModelClass>();
 
-                var entityPropsCount = EntityProperties.Count;
-                var primaryKeysCount = EntityPrimaryKeys.Count;
+                ValidateUpdateItemsContext(itemsList, shadowsList);
+                EnsureUpdateSqlCommandInitialized();
 
                 for (int i = 0; i < itemsList.Count; i++)
                 {
-                    // Skip se non ci sono modifiche
-                    if (_compareFunc(itemsList[i], shadowsList[i]))
+                    var currentItem = itemsList[i];
+                    var shadowItem = i < shadowsList.Count ? shadowsList[i] : null;
+
+                    if (shadowItem == null)
+                    {
+                        throw new InvalidOperationException("Nessuno shadow disponibile per l'elemento da aggiornare.");
+                    }
+
+                    if (_compareFunc(currentItem, shadowItem))
                     {
                         continue;
                     }
 
-                    var parameters = new DynamicParameters();
+                    ValidateUpdateContext(currentItem);
 
-                    // Loop ottimizzato con accesso diretto all'indice
-                    for (int j = 0; j < entityPropsCount; j++)
+                    var parameters = CreateUpdateParameters(currentItem, shadowItem);
+
+                    int rowCount = DbConnection.Execute(
+                        mSqlUpdateCommand,
+                        parameters,
+                        Transaction,
+                        CommandTimeout,
+                        CommandType.Text);
+
+                    affectedRecords += rowCount;
+
+                    if (rowCount > 0 && i < ModelItemsShadow.Count)
                     {
-                        var prop = EntityProperties[j];
-                        parameters.Add(prop.Name, prop.GetValue(itemsList[i]));
+                        ModelItemsShadow[i] = currentItem;
                     }
-
-                    for (int j = 0; j < primaryKeysCount; j++)
-                    {
-                        var prop = EntityPrimaryKeys[j];
-                        parameters.Add($"{prop.Name}_shadow", prop.GetValue(shadowsList[i]));
-                    }
-
-                    affectedrecords += DbConnection.Execute(mSqlUpdateCommand, parameters, Transaction, CommandTimeout, CommandType.Text);
-                    _ModelItemsShadow[i] = itemsList[i];
                 }
 
-                ER.Value = affectedrecords;
+                ER.Value = affectedRecords;
+
+                if (affectedRecords > 0)
+                {
+                    ER.ResultCode = ExecutionResultCodes.Success;
+                    ER.ResultMessage = "Aggiornamenti eseguiti correttamente.";
+                }
+                else
+                {
+                    ER.ResultCode = ExecutionResultCodes.Warning;
+                    ER.ResultMessage = "Nessuna riga aggiornata.";
+                }
             }
             catch (Exception ex)
             {
@@ -610,12 +761,31 @@ namespace Passero.Framework
                 ER.ErrorCode = 1;
                 ER.ResultCode = ExecutionResultCodes.Failed;
                 HandleException(ER);
-                ER.Value = affectedrecords;
+                ER.Value = affectedRecords;
             }
+
             LastExecutionResult = ER;
             return ER;
         }
 
+
+        public ExecutionResult UpdateItemsEx(IEnumerable<ModelClass> ModelItems = null, IEnumerable<ModelClass> ModelItemsShadow = null, IDbTransaction Transaction = null, int? CommandTimeout = null)
+        {
+            var previousShadows = this.ModelItemsShadow;
+            try
+            {
+                if (ModelItemsShadow != null)
+                {
+                    this.ModelItemsShadow = ModelItemsShadow.ToList();
+                }
+
+                return UpdateItems(ModelItems, Transaction, CommandTimeout);
+            }
+            finally
+            {
+                this.ModelItemsShadow = previousShadows;
+            }
+        }
 
         /// <summary>
         /// Gets the empty model item.

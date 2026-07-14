@@ -42,6 +42,7 @@
             this.mnuTitles = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             this.mnuStores = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             this.mnuSales = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
+            this.mnuTestTable = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             this.mnuLanguage = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             this.mnuItaliano = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             this.mnuInglese = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
@@ -53,7 +54,6 @@
             this.lbAppTitle = new Wisej.Web.Label();
             this.txtSearchBox = new Wisej.Web.TextBox();
             this.pbGDGLogo = new Wisej.Web.PictureBox();
-            this.mnuTestTable = new Wisej.Web.Ext.NavigationBar.NavigationBarItem();
             ((System.ComponentModel.ISupportInitialize)(this.pbAppLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbGDGLogo)).BeginInit();
             this.SuspendLayout();
@@ -147,6 +147,11 @@
             this.mnuSales.Name = "mnuSales";
             this.mnuSales.Text = "Sales";
             // 
+            // mnuTestTable
+            // 
+            this.mnuTestTable.Name = "mnuTestTable";
+            this.mnuTestTable.Text = "TestTable";
+            // 
             // mnuLanguage
             // 
             this.mnuLanguage.Icon = "icon-columns";
@@ -177,7 +182,7 @@
             this.tbAppTitle});
             this.ToolBar.Location = new System.Drawing.Point(0, 0);
             this.ToolBar.Name = "ToolBar";
-            this.ToolBar.Size = new System.Drawing.Size(1196, 35);
+            this.ToolBar.Size = new System.Drawing.Size(1202, 35);
             this.ToolBar.TabIndex = 1;
             this.ToolBar.TabStop = false;
             this.ToolBar.ButtonClick += new Wisej.Web.ToolBarButtonClickEventHandler(this.ToolBar_ButtonClick);
@@ -219,7 +224,7 @@
             // txtSearchBox
             // 
             this.txtSearchBox.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
-            this.txtSearchBox.Location = new System.Drawing.Point(956, 3);
+            this.txtSearchBox.Location = new System.Drawing.Point(962, 3);
             this.txtSearchBox.Name = "txtSearchBox";
             this.txtSearchBox.Size = new System.Drawing.Size(180, 30);
             this.txtSearchBox.TabIndex = 2;
@@ -234,21 +239,17 @@
             componentTool1,
             componentTool2});
             this.txtSearchBox.Watermark = "Search";
+            this.txtSearchBox.ToolClick += new Wisej.Web.ToolClickEventHandler(this.txtSearchBox_ToolClick);
             // 
             // pbGDGLogo
             // 
             this.pbGDGLogo.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Right)));
             this.pbGDGLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbGDGLogo.Image")));
-            this.pbGDGLogo.Location = new System.Drawing.Point(1142, 0);
+            this.pbGDGLogo.Location = new System.Drawing.Point(1148, 0);
             this.pbGDGLogo.Name = "pbGDGLogo";
             this.pbGDGLogo.Size = new System.Drawing.Size(51, 35);
             this.pbGDGLogo.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
             this.pbGDGLogo.DoubleClick += new System.EventHandler(this.pbGDGLogo_DoubleClick);
-            // 
-            // mnuTestTable
-            // 
-            this.mnuTestTable.Name = "mnuTestTable";
-            this.mnuTestTable.Text = "TestTable";
             // 
             // MainPage
             // 
@@ -262,7 +263,7 @@
             this.Controls.Add(this.ToolBar);
             this.Controls.Add(this.NavigationBar);
             this.Name = "MainPage";
-            this.Size = new System.Drawing.Size(1196, 643);
+            this.Size = new System.Drawing.Size(1202, 785);
             this.Load += new System.EventHandler(this.MaiPage_Load);
             this.Resize += new System.EventHandler(this.MaiPage_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pbAppLogo)).EndInit();

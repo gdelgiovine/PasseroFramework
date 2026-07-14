@@ -90,33 +90,33 @@ namespace Passero.Framework
         public void HandleException(ExecutionResult ER)
         {
 
-            return;
+            
+            
+            if (ER == null)
+            {
+                return;
+            }
 
-            //if (ER == null)
-            //{
-            //    return;
-            //}
-
-            //switch (ErrorNotificationMode)
-            //{
-            //    case ErrorNotificationModes.ThrowException:
-            //        throw ER.Exception;
-            //    case ErrorNotificationModes.Silent:
-            //        break;
-            //    case ErrorNotificationModes.ShowDialog:
-            //        if (ErrorNotificationMessageBox != null)
-            //        {
-            //            StringBuilder msg = new StringBuilder();
-            //            msg.AppendLine($"Context: {ER.Context}");
-            //            msg.AppendLine($"Repository: {Name}");
-            //            msg.AppendLine($"Error Message: {ER.ResultMessage}");
-            //            msg.AppendLine($"Debug Info: {ER.DebugInfo}");
-            //            ErrorNotificationMessageBox.Show(msg.ToString());
-            //        }
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (ErrorNotificationMode)
+            {
+                case ErrorNotificationModes.ThrowException:
+                    throw ER.Exception;
+                case ErrorNotificationModes.Silent:
+                    break;
+                case ErrorNotificationModes.ShowDialog:
+                    if (ErrorNotificationMessageBox != null)
+                    {
+                        System.Text.StringBuilder msg = new System.Text.StringBuilder();
+                        msg.AppendLine($"Context: {ER.Context}");
+                        msg.AppendLine($"Repository: {Name}");
+                        msg.AppendLine($"Error Message: {ER.ResultMessage}");
+                        msg.AppendLine($"Debug Info: {ER.DebugInfo}");
+                        ErrorNotificationMessageBox.Show(msg.ToString());
+                    }
+                    break;
+                default:
+                    break;
+            }
 
         }
 
@@ -158,7 +158,7 @@ namespace Passero.Framework
             ER.Value = null;
             try
             {
-                _ModelItem = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).SingleOrDefault();
+                _ModelItem = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).FirstOrDefault();
                 if (ViewModel != null)
                     ViewModel.ModelItem = _ModelItem;
                 SetModelItemShadow();
@@ -201,7 +201,7 @@ namespace Passero.Framework
 
             try
             {
-                _ModelItem = (await DbConnection.QueryAsync<ModelClass>(query, parameters, transaction, commandTimeout)).SingleOrDefault();
+                _ModelItem = (await DbConnection.QueryAsync<ModelClass>(query, parameters, transaction, commandTimeout)).FirstOrDefault();
                 if (ViewModel != null)
                     ViewModel.ModelItem = _ModelItem;
                 SetModelItemShadow();

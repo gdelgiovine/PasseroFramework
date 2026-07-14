@@ -109,6 +109,184 @@ namespace Passero.Framework
             Base.ORMContextFactory.RegisterEntity(typeof(ModelClass));
         }
 
+
+        private void ValidateDeleteContext(ModelClass entity, string operation)
+        {
+            if (entity == null)
+            {
+                throw new InvalidOperationException($"Nessun modello da {operation}. Specificare un model o impostare il modello corrente.");
+            }
+
+            if (_dbContext == null)
+            {
+                throw new InvalidOperationException("Il DbContext EF non è stato inizializzato.");
+            }
+        }
+
+        private int ExecuteInTransaction(Func<int> operation, IDbTransaction transaction = null)
+        {
+            bool startedTransaction = false;
+
+            try
+            {
+                if (DbTransaction == null && transaction == null && _dbContext.CurrentTransaction == null)
+                {
+                    _dbContext.BeginTransaction();
+                    startedTransaction = true;
+                }
+                else if (transaction != null)
+                {
+                    DbTransaction = transaction;
+                }
+
+                int result = operation();
+
+                if (startedTransaction)
+                {
+                    _dbContext.CommitTransaction();
+                }
+
+                return result;
+            }
+            catch
+            {
+                if (startedTransaction)
+                {
+                    _dbContext.RollbackTransaction();
+                }
+
+                throw;
+            }
+        }
+
+        private async Task<int> ExecuteInTransactionAsync(Func<Task<int>> operation, IDbTransaction transaction = null)
+        {
+            bool startedTransaction = false;
+
+            try
+            {
+                if (DbTransaction == null && transaction == null && _dbContext.CurrentTransaction == null)
+                {
+                    _dbContext.BeginTransaction();
+                    startedTransaction = true;
+                }
+                else if (transaction != null)
+                {
+                    DbTransaction = transaction;
+                }
+
+                int result = await operation();
+
+                if (startedTransaction)
+                {
+                    _dbContext.CommitTransaction();
+                }
+
+                return result;
+            }
+            catch
+            {
+                if (startedTransaction)
+                {
+                    _dbContext.RollbackTransaction();
+                }
+
+                throw;
+            }
+        }
+
+        private void SyncAfterDelete(ModelClass entity)
+        {
+            if (ModelItems != null)
+            {
+                var match = ModelItems.FirstOrDefault(x => Utilities.ObjectsEquals(x, entity));
+                if (match != null)
+                {
+                    ModelItems.Remove(match);
+                }
+            }
+
+            if (ModelItemsShadow != null)
+            {
+                var shadowMatch = ModelItemsShadow.FirstOrDefault(x => Utilities.ObjectsEquals(x, entity));
+                if (shadowMatch != null)
+                {
+                    ModelItemsShadow.Remove(shadowMatch);
+                }
+            }
+
+            if (ModelItem != null && Utilities.ObjectsEquals(ModelItem, entity))
+            {
+                ModelItem = GetEmptyModelItem();
+            }
+
+            if (ModelItemShadow != null && Utilities.ObjectsEquals(ModelItemShadow, entity))
+            {
+                ModelItemShadow = GetEmptyModelItem();
+            }
+        }
+
+        private void SyncAfterDeleteBatch(IEnumerable<ModelClass> entities)
+        {
+            if (entities == null)
+            {
+                return;
+            }
+
+            foreach (var entity in entities)
+            {
+                SyncAfterDelete(entity);
+            }
+        }
+
+        private void ValidateWriteContext(ModelClass entity, string operation)
+        {
+            if (entity == null)
+            {
+                throw new InvalidOperationException($"Nessun modello da {operation}. Specificare un model o impostare il modello corrente.");
+            }
+
+            if (_dbContext == null)
+            {
+                throw new InvalidOperationException("Il DbContext EF non è stato inizializzato.");
+            }
+        }
+
+        private void SyncAfterWrite(ModelClass entity)
+        {
+            ModelItem = entity;
+            ModelItemShadow = Utilities.Clone(entity);
+
+            if (ModelItems == null)
+            {
+                ModelItems = new List<ModelClass>();
+            }
+
+            if (ModelItemsShadow == null)
+            {
+                ModelItemsShadow = new List<ModelClass>();
+            }
+
+            if (!ModelItems.Any(x => Utilities.ObjectsEquals(x, entity)))
+            {
+                ModelItems.Add(entity);
+            }
+
+            var existingShadow = ModelItemsShadow
+                .Select((item, index) => new { item, index })
+                .FirstOrDefault(x => Utilities.ObjectsEquals(x.item, entity));
+
+            if (existingShadow != null)
+            {
+                ModelItemsShadow[existingShadow.index] = Utilities.Clone(entity);
+            }
+            else
+            {
+                ModelItemsShadow.Add(Utilities.Clone(entity));
+            }
+        }
+
+
         /// <summary>
         /// Normalizza la query SQL per l'ORM in uso.
         /// Su EF6: riscrive "SELECT * FROM tableName" con la lista esplicita delle colonne
@@ -573,151 +751,355 @@ namespace Passero.Framework
         }
 
         // ── WRITE ─────────────────────────────────────────────────────────────
-
         public ExecutionResult InsertItem(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.InsertItem()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.Add(model);
-                _dbContext.SaveChanges();
-                ModelItem = model;
-                ModelItemShadow = Utilities.Clone(model);
-                AddNewState = false;
+                ValidateWriteContext(model, "inserire");
+
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    _dbContext.Add(model);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterWrite(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Inserimento eseguito correttamente.";
+                    AddNewState = false;
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
+
         public async Task<ExecutionResult> InsertItemAsync(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.InsertItemAsync()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.Add(model);
-                await _dbContext.SaveChangesAsync();
-                ModelItem = model;
-                ModelItemShadow = Utilities.Clone(model);
-                AddNewState = false;
+                ValidateWriteContext(model, "inserire");
+
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    _dbContext.Add(model);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterWrite(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Inserimento asincrono eseguito correttamente.";
+                    AddNewState = false;
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
+
+
         public ExecutionResult InsertItems(
-            IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.InsertItems()");
             try
             {
-                items ??= ModelItems;
-                _dbContext.AddRange(items);
-                _dbContext.SaveChanges();
-                er.Value = items.Count();
-                AddNewState = false;
+                var itemsList = (items ?? ModelItems)?.Where(x => x != null).ToList();
+                if (itemsList == null || itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                foreach (var item in itemsList)
+                {
+                    ValidateWriteContext(item, "inserire");
+                }
+
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    _dbContext.AddRange(itemsList);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    foreach (var item in itemsList)
+                    {
+                        SyncAfterWrite(item);
+                    }
+
+                    ModelItem = itemsList.LastOrDefault();
+                    ModelItemShadow = Utilities.Clone(ModelItem);
+
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = $"Inseriti {itemsList.Count} elementi.";
+                    AddNewState = false;
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
+
         public async Task<ExecutionResult> InsertItemsAsync(
-            IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.InsertItemsAsync()");
             try
             {
-                items ??= ModelItems;
-                _dbContext.AddRange(items);
-                await _dbContext.SaveChangesAsync();
-                er.Value = items.Count();
-                AddNewState = false;
+                var itemsList = (items ?? ModelItems)?.Where(x => x != null).ToList();
+                if (itemsList == null || itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da inserire.");
+                }
+
+                foreach (var item in itemsList)
+                {
+                    ValidateWriteContext(item, "inserire");
+                }
+
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    _dbContext.AddRange(itemsList);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    foreach (var item in itemsList)
+                    {
+                        SyncAfterWrite(item);
+                    }
+
+                    ModelItem = itemsList.LastOrDefault();
+                    ModelItemShadow = Utilities.Clone(ModelItem);
+
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = $"Inseriti {itemsList.Count} elementi.";
+                    AddNewState = false;
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
         public ExecutionResult UpdateItem(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.UpdateItem()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.MarkModified(model);
-                _dbContext.SaveChanges();
-                ModelItemShadow = Utilities.Clone(model);
-                er.Value = true;
+                ValidateWriteContext(model, "aggiornare");
+
+                if (ModelItemShadow != null && Utilities.ObjectsEquals(model, ModelItemShadow))
+                {
+                    er.Value = 0;
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica rilevata.";
+                    return er;
+                }
+
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    _dbContext.MarkModified(model);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterWrite(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Aggiornamento eseguito correttamente.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
         public async Task<ExecutionResult> UpdateItemAsync(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+    ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.UpdateItemAsync()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.MarkModified(model);
-                await _dbContext.SaveChangesAsync();
-                ModelItemShadow = Utilities.Clone(model);
-                er.Value = true;
+                ValidateWriteContext(model, "aggiornare");
+
+                if (ModelItemShadow != null && Utilities.ObjectsEquals(model, ModelItemShadow))
+                {
+                    er.Value = 0;
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica rilevata.";
+                    return er;
+                }
+
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    _dbContext.MarkModified(model);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterWrite(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Aggiornamento asincrono eseguito correttamente.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
-
+        /// <summary>
+        /// Compatibility overload that preserves the legacy shadow-aware signature and delegates to <see cref="UpdateItem(ModelClass, IDbTransaction, int?)"/>.
+        /// </summary>
+        /// <param name="model">The model to update.</param>
+        /// <param name="modelShadow">The shadow state used as the comparison key.</param>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="commandTimeout">The command timeout.</param>
+        /// <returns>The execution result from the core update flow.</returns>
         public ExecutionResult UpdateItemEx(
-            ModelClass modelItem = null, ModelClass modelItemShadow = null,
+            ModelClass model = null, ModelClass modelShadow = null,
             IDbTransaction transaction = null, int? commandTimeout = null)
         {
-            var er = new ExecutionResult($"{_mClassName}.UpdateItemEx()");
+            var previousModelItem = ModelItem;
+            var previousShadow = ModelItemShadow;
             try
             {
-                modelItem ??= ModelItem;
-                if (!Utilities.ObjectsEquals(modelItem, modelItemShadow ?? ModelItemShadow))
+                if (model != null)
                 {
-                    _dbContext.MarkModified(modelItem);
-                    _dbContext.SaveChanges();
-                    ModelItemShadow = Utilities.Clone(modelItem);
+                    ModelItem = model;
                 }
-                er.Value = true;
+
+                if (modelShadow != null)
+                {
+                    ModelItemShadow = modelShadow;
+                }
+
+                return UpdateItem(null, transaction, commandTimeout);
             }
-            catch (Exception ex) { HandleError(er, ex); }
-            LastExecutionResult = er;
-            return er;
+            finally
+            {
+                ModelItem = previousModelItem;
+                ModelItemShadow = previousShadow;
+            }
         }
 
+        /// <summary>
+        /// Compatibility overload for the async update path that preserves the legacy shadow-aware signature and delegates to <see cref="UpdateItemAsync(ModelClass, IDbTransaction, int?)"/>.
+        /// </summary>
+        /// <param name="model">The model to update.</param>
+        /// <param name="modelShadow">The shadow state used as the comparison key.</param>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="commandTimeout">The command timeout.</param>
+        /// <returns>The execution result from the core async update flow.</returns>
         public async Task<ExecutionResult> UpdateItemExAsync(
-            ModelClass modelItem = null, ModelClass modelItemShadow = null,
+            ModelClass model = null, ModelClass modelShadow = null,
             IDbTransaction transaction = null, int? commandTimeout = null)
         {
-            var er = new ExecutionResult($"{_mClassName}.UpdateItemExAsync()");
+            var previousModelItem = ModelItem;
+            var previousShadow = ModelItemShadow;
             try
             {
-                modelItem ??= ModelItem;
-                if (!Utilities.ObjectsEquals(modelItem, modelItemShadow ?? ModelItemShadow))
+                if (model != null)
                 {
-                    _dbContext.MarkModified(modelItem);
-                    await _dbContext.SaveChangesAsync();
-                    ModelItemShadow = Utilities.Clone(modelItem);
+                    ModelItem = model;
                 }
-                er.Value = true;
+
+                if (modelShadow != null)
+                {
+                    ModelItemShadow = modelShadow;
+                }
+
+                return await UpdateItemAsync(null, transaction, commandTimeout);
             }
-            catch (Exception ex) { HandleError(er, ex); }
-            LastExecutionResult = er;
-            return er;
+            finally
+            {
+                ModelItem = previousModelItem;
+                ModelItemShadow = previousShadow;
+            }
         }
 
         public ExecutionResult UpdateItems(
@@ -727,10 +1109,13 @@ namespace Passero.Framework
             try
             {
                 items ??= ModelItems;
-                foreach (var item in items)
-                    _dbContext.MarkModified(item);
-                _dbContext.SaveChanges();
-                er.Value = true;
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    foreach (var item in items)
+                        _dbContext.MarkModified(item);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+                er.Value = affectedRows;
             }
             catch (Exception ex) { HandleError(er, ex); }
             LastExecutionResult = er;
@@ -744,10 +1129,13 @@ namespace Passero.Framework
             try
             {
                 items ??= ModelItems;
-                foreach (var item in items)
-                    _dbContext.MarkModified(item);
-                await _dbContext.SaveChangesAsync();
-                er.Value = true;
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    foreach (var item in items)
+                        _dbContext.MarkModified(item);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+                er.Value = affectedRows;
             }
             catch (Exception ex) { HandleError(er, ex); }
             LastExecutionResult = er;
@@ -755,7 +1143,7 @@ namespace Passero.Framework
         }
 
         /// <summary>
-        /// Aggiorna solo gli item della lista che risultano cambiati rispetto alla lista shadow.
+        /// Compatibility batch overload that preserves the legacy signature and delegates to <see cref="UpdateItems(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
         /// EF non usa SQL generato a colonne: confronta con <see cref="Utilities.ObjectsEquals"/> e
         /// marca modificato solo ciò che è effettivamente cambiato.
         /// </summary>
@@ -763,137 +1151,225 @@ namespace Passero.Framework
             IEnumerable<ModelClass> items = null, IEnumerable<ModelClass> itemsShadow = null,
             IDbTransaction transaction = null, int? commandTimeout = null)
         {
-            var er = new ExecutionResult($"{_mClassName}.UpdateItemsEx()");
+            var previousItems = ModelItems;
+            var previousShadows = ModelItemsShadow;
             try
             {
-                var itemList = (items ?? ModelItems).ToList();
-                var shadowList = (itemsShadow ?? ModelItemsShadow).ToList();
-                int affected = 0;
-
-                for (int i = 0; i < itemList.Count; i++)
+                if (items != null)
                 {
-                    var shadow = i < shadowList.Count ? shadowList[i] : null;
-                    if (!Utilities.ObjectsEquals(itemList[i], shadow))
-                    {
-                        _dbContext.MarkModified(itemList[i]);
-                        affected++;
-                    }
+                    ModelItems = items.ToList();
                 }
 
-                if (affected > 0)
-                    _dbContext.SaveChanges();
+                if (itemsShadow != null)
+                {
+                    ModelItemsShadow = itemsShadow.ToList();
+                }
 
-                er.Value = affected;
+                return UpdateItems(null, transaction, commandTimeout);
             }
-            catch (Exception ex) { HandleError(er, ex); }
-            LastExecutionResult = er;
-            return er;
+            finally
+            {
+                ModelItems = previousItems;
+                ModelItemsShadow = previousShadows;
+            }
         }
 
         /// <summary>
-        /// Versione asincrona di <see cref="UpdateItemsEx"/>.
+        /// Compatibility async batch overload that preserves the legacy signature and delegates to <see cref="UpdateItemsAsync(IEnumerable{ModelClass}, IDbTransaction, int?)"/>.
         /// </summary>
         public async Task<ExecutionResult> UpdateItemsExAsync(
             IEnumerable<ModelClass> items = null, IEnumerable<ModelClass> itemsShadow = null,
             IDbTransaction transaction = null, int? commandTimeout = null)
         {
-            var er = new ExecutionResult($"{_mClassName}.UpdateItemsExAsync()");
+            var previousItems = ModelItems;
+            var previousShadows = ModelItemsShadow;
             try
             {
-                var itemList = (items ?? ModelItems).ToList();
-                var shadowList = (itemsShadow ?? ModelItemsShadow).ToList();
-                int affected = 0;
-
-                for (int i = 0; i < itemList.Count; i++)
+                if (items != null)
                 {
-                    var shadow = i < shadowList.Count ? shadowList[i] : null;
-                    if (!Utilities.ObjectsEquals(itemList[i], shadow))
-                    {
-                        _dbContext.MarkModified(itemList[i]);
-                        affected++;
-                    }
+                    ModelItems = items.ToList();
                 }
 
-                if (affected > 0)
-                    await _dbContext.SaveChangesAsync();
+                if (itemsShadow != null)
+                {
+                    ModelItemsShadow = itemsShadow.ToList();
+                }
 
-                er.Value = affected;
+                return await UpdateItemsAsync(null, transaction, commandTimeout);
             }
-            catch (Exception ex) { HandleError(er, ex); }
-            LastExecutionResult = er;
-            return er;
+            finally
+            {
+                ModelItems = previousItems;
+                ModelItemsShadow = previousShadows;
+            }
         }
 
-        public ExecutionResult DeleteItem(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        public ExecutionResult DeleteItem(ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.DeleteItem()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.Remove(model);
-                _dbContext.SaveChanges();
-                ModelItems.Remove(model);
-                ModelItemsShadow.Remove(model);
-                ModelItem = GetEmptyModelItem();
-                ModelItemShadow = GetEmptyModelItem();
-                er.Value = true;
+                ValidateDeleteContext(model, "eliminare");
+
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    _dbContext.Remove(model);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterDelete(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Elemento eliminato correttamente.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
-        public async Task<ExecutionResult> DeleteItemAsync(
-            ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
+        public async Task<ExecutionResult> DeleteItemAsync(ModelClass model = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.DeleteItemAsync()");
             try
             {
                 model ??= ModelItem;
-                _dbContext.Remove(model);
-                await _dbContext.SaveChangesAsync();
-                ModelItems.Remove(model);
-                ModelItemsShadow.Remove(model);
-                ModelItem = GetEmptyModelItem();
-                ModelItemShadow = GetEmptyModelItem();
-                er.Value = true;
+                ValidateDeleteContext(model, "eliminare");
+
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    _dbContext.Remove(model);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterDelete(model);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = "Elemento eliminato correttamente.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
+
         public ExecutionResult DeleteItems(
-            IEnumerable<ModelClass> items, IDbTransaction transaction = null, int? commandTimeout = null)
+    IEnumerable<ModelClass> items, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.DeleteItems()");
             try
             {
-                _dbContext.RemoveRange(items);
-                _dbContext.SaveChanges();
-                er.Value = true;
+                var itemsList = (items ?? Enumerable.Empty<ModelClass>()).Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da eliminare.");
+                }
+
+                foreach (var item in itemsList)
+                {
+                    ValidateDeleteContext(item, "eliminare");
+                }
+
+                int affectedRows = ExecuteInTransaction(() =>
+                {
+                    _dbContext.RemoveRange(itemsList);
+                    return _dbContext.SaveChanges();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterDeleteBatch(itemsList);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = $"Eliminati {itemsList.Count} elementi.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
 
         public async Task<ExecutionResult> DeleteItemsAsync(
-            IEnumerable<ModelClass> items, IDbTransaction transaction = null, int? commandTimeout = null)
+    IEnumerable<ModelClass> items, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.DeleteItemsAsync()");
             try
             {
-                _dbContext.RemoveRange(items);
-                await _dbContext.SaveChangesAsync();
-                er.Value = true;
+                var itemsList = (items ?? Enumerable.Empty<ModelClass>()).Where(x => x != null).ToList();
+                if (itemsList.Count == 0)
+                {
+                    throw new InvalidOperationException("Nessun elenco di elementi da eliminare.");
+                }
+
+                foreach (var item in itemsList)
+                {
+                    ValidateDeleteContext(item, "eliminare");
+                }
+
+                int affectedRows = await ExecuteInTransactionAsync(async () =>
+                {
+                    _dbContext.RemoveRange(itemsList);
+                    return await _dbContext.SaveChangesAsync();
+                }, transaction);
+
+                er.Value = affectedRows;
+
+                if (affectedRows > 0)
+                {
+                    SyncAfterDeleteBatch(itemsList);
+                    er.ResultCode = ExecutionResultCodes.Success;
+                    er.ResultMessage = $"Eliminati {itemsList.Count} elementi.";
+                }
+                else
+                {
+                    er.ResultCode = ExecutionResultCodes.Warning;
+                    er.ResultMessage = "Nessuna modifica persistita.";
+                }
             }
-            catch (Exception ex) { HandleError(er, ex); }
+            catch (Exception ex)
+            {
+                HandleError(er, ex);
+            }
+
             LastExecutionResult = er;
             return er;
         }
-
         // ── HELPER: conversione parametri → SqlParameter[] per EF Core/EF6 ──────
 
        
