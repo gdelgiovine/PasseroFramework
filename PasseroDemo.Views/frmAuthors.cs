@@ -1,8 +1,10 @@
 ﻿using Passero.Framework;
 using Passero.Framework.Controls;
+using PasseroDemo.Models;
 using PasseroDemo.ViewModels;
 using System;
 using System.Data;
+using System.Data.Common;
 using Wisej.Web;
 
 
@@ -304,7 +306,22 @@ namespace PasseroDemo.Views
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            var connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PasseroDemo;Integrated Security=True;Connect Timeout=30;";
+            using (DbConnection connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString))
+            {
+                try
+                {
+                    var statements = DataBaseHelper.GetCreateSchemaStatementsForModel<TestTable>(connection, "PasseroDemo", "dbo", true, true, true, true);
+                    foreach (var statement in statements)
+                    {
+                        Console.WriteLine(statement);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }

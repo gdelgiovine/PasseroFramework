@@ -123,13 +123,13 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Oracle.ManagedDataAccess.Core">
-      <Version>23.26.200</Version>
+      <Version>23.26.300</Version>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="Oracle.ManagedDataAccess.Core">
-      <Version>23.26.200</Version>
+      <Version>23.26.300</Version>
     </PackageReference>
   </ItemGroup>
 

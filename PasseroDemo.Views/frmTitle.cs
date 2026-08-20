@@ -319,10 +319,13 @@ namespace PasseroDemo.Views
         }
         private void QBEAuthor_DataGridView(DataGridView DataGridView)
         {
+            string author_id = DataGridView.CurrentCell.OwningRow[this.dgvc_au_id.Name].Value?.ToString() ?? string.Empty;
+
             QBEForm<Models.Author> xQBEForm_Author = new QBEForm<Models.Author>(this.vmTitle.Repository.DbConnection);
             //using XQBEForm<Models.Author> xQBEForm_Author = new XQBEForm<Models.Author>(this.vmTitle.Repository.DbConnection);
             {
-                xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "", "", "", true, true, 20);
+
+                xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_id), "", "",author_id , true, true, 20);
                 xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_fname), "", "", "", true, true, 20);
                 xQBEForm_Author.QBEColumns.Add(nameof(Models.Author.au_lname), "", "", "", true, true, 20);
                 xQBEForm_Author.QBEResultMode = QBEResultMode.BoundControls;
@@ -331,6 +334,7 @@ namespace PasseroDemo.Views
                 xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_id), DataGridView.CurrentCell.OwningRow[this.dgvc_au_id.Name], "Value");
                 xQBEForm_Author.QBEBoundControls.Add(nameof(Models.Author.au_fullname ), DataGridView.CurrentCell.OwningRow[this.dgvc_au_fullname.Name], "Value");
                 xQBEForm_Author.Owner = this;
+                xQBEForm_Author.QBEColumns[nameof(Models.Author.au_id)].QBEValueUsage  = QBEValueUsage.QBESelectRow ;   
                 xQBEForm_Author.ShowQBE(true);
             }
         }

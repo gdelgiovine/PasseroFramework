@@ -50,7 +50,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
-	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
+	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.11" />
 	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
   </ItemGroup>
 

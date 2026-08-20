@@ -14,6 +14,7 @@ namespace Passero.Framework.Tester
             ApplicationConfiguration.Initialize();
 #endif
 
+            SchemaGenerationExample.Run();
             Application.Run(new Form1());
         }
     }

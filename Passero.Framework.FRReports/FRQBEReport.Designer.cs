@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             Wisej.Resources.ComponentResourceManager resources = new Wisej.Resources.ComponentResourceManager(typeof(ReportManager));
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle4 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle5 = new Wisej.Web.DataGridViewCellStyle();
-            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle6 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
+            Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
             this.SplitContainer = new Wisej.Web.SplitContainer();
             this.PanelReportViewer = new Wisej.Web.Panel();
             this.htmlPanel = new Wisej.Web.HtmlPanel();
@@ -50,8 +50,8 @@
             this.dgvcReportFileName = new Wisej.Web.DataGridViewTextBoxColumn();
             this.TabPageReportQuery = new Wisej.Web.TabPage();
             this.QueryGrid = new Wisej.Web.DataGridView();
-            this.dgvcNomeCampo = new Wisej.Web.DataGridViewTextBoxColumn();
-            this.dgvcValoreCampo = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcColumnName = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcColumnValue = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvcQueryColumn = new Wisej.Web.DataGridViewButtonColumn();
             this.chkLikeOperator = new Wisej.Web.CheckBox();
             this.TabPageReportSort = new Wisej.Web.TabPage();
@@ -86,10 +86,10 @@
             this.bRefresh = new Wisej.Web.ToolBarButton();
             this.bDelete = new Wisej.Web.ToolBarButton();
             this.Records = new Wisej.Web.ToolBarButton();
+            this.bLoadQBE = new Wisej.Web.ToolBarButton();
+            this.bSaveQBE = new Wisej.Web.ToolBarButton();
             this.bPrint = new Wisej.Web.ToolBarButton();
             this.bSave = new Wisej.Web.ToolBarButton();
-            this.bSaveQBE = new Wisej.Web.ToolBarButton();
-            this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
@@ -150,19 +150,20 @@
             // 
             // PanelReportInfo
             // 
-            resources.ApplyResources(this.PanelReportInfo, "PanelReportInfo");
             this.PanelReportInfo.BackColor = System.Drawing.SystemColors.MenuBar;
             this.PanelReportInfo.Controls.Add(this.txtReportTitle);
             this.PanelReportInfo.Controls.Add(this.txtReportDescription);
+            resources.ApplyResources(this.PanelReportInfo, "PanelReportInfo");
             this.PanelReportInfo.Name = "PanelReportInfo";
             this.PanelReportInfo.Resize += new System.EventHandler(this.PanelReportInfo_Resize);
             // 
             // txtReportTitle
             // 
+            this.PanelReportInfo.SetFillWeight(this.txtReportTitle, 35);
             this.txtReportTitle.Focusable = false;
             this.txtReportTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Position = Wisej.Web.LabelPosition.Left;
+            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 1);
             resources.ApplyResources(this.txtReportTitle, "txtReportTitle");
             this.txtReportTitle.Name = "txtReportTitle";
             this.txtReportTitle.ReadOnly = true;
@@ -170,10 +171,12 @@
             // 
             // txtReportDescription
             // 
+            this.PanelReportInfo.SetFillWeight(this.txtReportDescription, 65);
+            this.PanelReportInfo.SetFlowBreak(this.txtReportDescription, true);
             this.txtReportDescription.Focusable = false;
             this.txtReportDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Position = Wisej.Web.LabelPosition.Left;
+            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 1);
             resources.ApplyResources(this.txtReportDescription, "txtReportDescription");
             this.txtReportDescription.Name = "txtReportDescription";
             this.txtReportDescription.ReadOnly = true;
@@ -220,8 +223,8 @@
             // ReportGrid
             // 
             resources.ApplyResources(this.ReportGrid, "ReportGrid");
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromName("@buttonFace");
-            this.ReportGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromName("@buttonFace");
+            this.ReportGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.ReportGrid.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
             this.dgvcReportName,
             this.dgvcReportDescription,
@@ -234,8 +237,8 @@
             // dgvcReportName
             // 
             this.dgvcReportName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.dgvcReportName.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            this.dgvcReportName.DefaultCellStyle = dataGridViewCellStyle2;
             resources.ApplyResources(this.dgvcReportName, "dgvcReportName");
             this.dgvcReportName.Name = "dgvcReportName";
             // 
@@ -266,29 +269,29 @@
             resources.ApplyResources(this.QueryGrid, "QueryGrid");
             this.QueryGrid.AutoSizeColumnsMode = Wisej.Web.DataGridViewAutoSizeColumnsMode.AllCells;
             this.QueryGrid.AutoSizeRowsMode = Wisej.Web.DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromName("@buttonFace");
-            this.QueryGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromName("@buttonFace");
+            this.QueryGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.QueryGrid.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
-            this.dgvcNomeCampo,
-            this.dgvcValoreCampo,
+            this.dgvcColumnName,
+            this.dgvcColumnValue,
             this.dgvcQueryColumn});
             this.QueryGrid.DefaultSortMode = Wisej.Web.DataGridViewColumnsSortMode.NotSortable;
             this.QueryGrid.Name = "QueryGrid";
             // 
             // dgvcNomeCampo
             // 
-            this.dgvcNomeCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
-            resources.ApplyResources(this.dgvcNomeCampo, "dgvcNomeCampo");
-            this.dgvcNomeCampo.MaxInputLength = 50;
-            this.dgvcNomeCampo.Name = "dgvcNomeCampo";
-            this.dgvcNomeCampo.ReadOnly = true;
+            this.dgvcColumnName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            resources.ApplyResources(this.dgvcColumnName, "dgvcNomeCampo");
+            this.dgvcColumnName.MaxInputLength = 50;
+            this.dgvcColumnName.Name = "dgvcNomeCampo";
+            this.dgvcColumnName.ReadOnly = true;
             // 
             // dgvcValoreCampo
             // 
-            this.dgvcValoreCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
-            resources.ApplyResources(this.dgvcValoreCampo, "dgvcValoreCampo");
-            this.dgvcValoreCampo.MaxInputLength = 1024;
-            this.dgvcValoreCampo.Name = "dgvcValoreCampo";
+            this.dgvcColumnValue.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            resources.ApplyResources(this.dgvcColumnValue, "dgvcValoreCampo");
+            this.dgvcColumnValue.MaxInputLength = 1024;
+            this.dgvcColumnValue.Name = "dgvcValoreCampo";
             // 
             // dgvcQueryColumn
             // 
@@ -560,6 +563,22 @@
             this.Records.Style = Wisej.Web.ToolBarButtonStyle.DropDownButton;
             resources.ApplyResources(this.Records, "Records");
             // 
+            // bLoadQBE
+            // 
+            this.bLoadQBE.AllowHtml = true;
+            resources.ApplyResources(this.bLoadQBE, "bLoadQBE");
+            this.bLoadQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
+            this.bLoadQBE.Name = "bLoadQBE";
+            this.bLoadQBE.Click += new System.EventHandler(this.bLoadQBE_Click);
+            // 
+            // bSaveQBE
+            // 
+            this.bSaveQBE.AllowHtml = true;
+            resources.ApplyResources(this.bSaveQBE, "bSaveQBE");
+            this.bSaveQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
+            this.bSaveQBE.Name = "bSaveQBE";
+            this.bSaveQBE.Click += new System.EventHandler(this.bSaveQBE_Click);
+            // 
             // bPrint
             // 
             this.bPrint.AllowHtml = true;
@@ -575,22 +594,6 @@
             this.bSave.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
             this.bSave.Name = "bSave";
             this.bSave.Click += new System.EventHandler(this.bSave_Click);
-            // 
-            // bSaveQBE
-            // 
-            this.bSaveQBE.AllowHtml = true;
-            resources.ApplyResources(this.bSaveQBE, "bSaveQBE");
-            this.bSaveQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
-            this.bSaveQBE.Name = "bSaveQBE";
-            this.bSaveQBE.Click += new System.EventHandler(this.bSaveQBE_Click);
-            // 
-            // bLoadQBE
-            // 
-            this.bLoadQBE.AllowHtml = true;
-            resources.ApplyResources(this.bLoadQBE, "bLoadQBE");
-            this.bLoadQBE.Margin = new Wisej.Web.Padding(0, -5, 0, 0);
-            this.bLoadQBE.Name = "bLoadQBE";
-            this.bLoadQBE.Click += new System.EventHandler(this.bLoadQBE_Click);
             // 
             // bClose
             // 
@@ -659,8 +662,8 @@
         private Wisej.Web.DataGridViewTextBoxColumn dgvcReportFileName;
         internal Wisej.Web.TabPage TabPageReportQuery;
         private Wisej.Web.DataGridView QueryGrid;
-        private Wisej.Web.DataGridViewTextBoxColumn dgvcNomeCampo;
-        private Wisej.Web.DataGridViewTextBoxColumn dgvcValoreCampo;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnName;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnValue;
         private Wisej.Web.DataGridViewButtonColumn dgvcQueryColumn;
         internal Wisej.Web.CheckBox chkLikeOperator;
         internal Wisej.Web.TabPage TabPageReportSort;

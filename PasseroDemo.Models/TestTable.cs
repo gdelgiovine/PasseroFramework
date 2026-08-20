@@ -13,6 +13,7 @@ namespace PasseroDemo.Models
     {
         [Dapper.Contrib .Extensions.Key]
         [System.ComponentModel.DataAnnotations.Key]
+        [System.ComponentModel.DataAnnotations.Schema.DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity)]
         public int pk_id { get; set; }
         public string c_string { get; set; }
         public int? c_int { get; set; }

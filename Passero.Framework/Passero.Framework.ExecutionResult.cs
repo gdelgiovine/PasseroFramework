@@ -30,39 +30,39 @@ namespace Passero.Framework
         /// <summary>
         /// The value
         /// </summary>
-        public object Value = null;
+        public object Value { get; set; } = null;
         /// <summary>
         /// The result code
         /// </summary>
-        public ExecutionResultCodes ResultCode = 0;
+        public ExecutionResultCodes ResultCode { get; set; } = 0;
         /// <summary>
         /// The last DLL error
         /// </summary>
-        public int LastDllError = 0;
+        public int LastDllError { get; set; } = 0;
         /// <summary>
         /// The error code
         /// </summary>
-        public int ErrorCode = 0;
+        public int ErrorCode { get; set; } = 0;
         /// <summary>
         /// The debug information
         /// </summary>
-        public string DebugInfo = "";
+        public string DebugInfo { get; set; } = "";
         /// <summary>
         /// The result message
         /// </summary>
-        public string ResultMessage = "";
+        public string ResultMessage { get; set; } = "";
         /// <summary>
         /// The exception
         /// </summary>
-        public Exception Exception = null;
+        public Exception Exception { get; set; } = null;
         /// <summary>
         /// The context
         /// </summary>
-        public string Context = "";
+        public string Context { get; set; } = "";
         /// <summary>
         /// The inner execution result
         /// </summary>
-        public InnerExecutionResult InnerExecutionResult;
+        public InnerExecutionResult InnerExecutionResult { get; set; }
 #pragma warning disable CS0169 // Il campo 'ExecutionResult.mFailed' non viene mai usato
         /// <summary>
         /// The m failed
@@ -179,31 +179,31 @@ namespace Passero.Framework
         /// <summary>
         /// The value
         /// </summary>
-        public object Value = null;
+        public object Value { get; set; } = null;
         /// <summary>
         /// The result code
         /// </summary>
-        public eResultCode ResultCode = 0;
+        public eResultCode ResultCode { get; set; }     = 0;
         /// <summary>
         /// The error code
         /// </summary>
-        public int ErrorCode = 0;
+        public int ErrorCode { get; set; } = 0;
         /// <summary>
         /// The result message
         /// </summary>
-        public string ResultMessage = "";
+        public string ResultMessage { get; set; } = "";
         /// <summary>
         /// The debug information
         /// </summary>
-        public string DebugInfo = "";
+        public string DebugInfo { get; set; } = "";
         /// <summary>
         /// The exception
         /// </summary>
-        public Exception Exception = null;
+        public Exception Exception { get; set; } = null;
         /// <summary>
         /// The context
         /// </summary>
-        public string Context = "";
+        public string Context { get; set; } = "";
 #pragma warning disable CS0169 // Il campo 'InnerExecutionResult.mFailed' non viene mai usato
         /// <summary>
         /// The m failed
@@ -308,39 +308,39 @@ namespace Passero.Framework
         /// <summary>
         /// The value
         /// </summary>
-        public T Value = default(T); //CType(Activator.CreateInstance(GetType(T)), T)
+        public T Value { get; set; } = default(T); //CType(Activator.CreateInstance(GetType(T)), T)
         /// <summary>
         /// The result code
         /// </summary>
-        public ExecutionResultCodes ResultCode = 0;
+        public ExecutionResultCodes ResultCode { get; set; } = 0;
         /// <summary>
         /// The last DLL error
         /// </summary>
-        public int LastDllError = 0;
+        public int LastDllError { get; set; }       = 0;
         /// <summary>
         /// The error code
         /// </summary>
-        public int ErrorCode = 0;
+        public int ErrorCode { get; set; } = 0;
         /// <summary>
         /// The debug information
         /// </summary>
-        public string DebugInfo = "";
+        public string DebugInfo { get; set; } = "";
         /// <summary>
         /// The result message
         /// </summary>
-        public string ResultMessage = "";
+        public string ResultMessage { get; set; }           = "";
         /// <summary>
         /// The exception
         /// </summary>
-        public Exception Exception = null;
+        public Exception Exception { get; set; } = null;
         /// <summary>
         /// The context
         /// </summary>
-        public string Context = "";
+        public string Context { get; set; } = "";
         /// <summary>
         /// The inner execution result
         /// </summary>
-        public InnerExecutionResult InnerExecutionResult;
+        public InnerExecutionResult InnerExecutionResult { get; set; }
         /// <summary>
         /// The m failed
         /// </summary>
@@ -467,31 +467,31 @@ namespace Passero.Framework
         /// <summary>
         /// The value
         /// </summary>
-        public T Value = default(T);
+        public T Value { get; set; } = default(T);
         /// <summary>
         /// The result code
         /// </summary>
-        public eResultCode ResultCode = 0;
+        public eResultCode ResultCode { get; set; }     = 0;
         /// <summary>
         /// The error code
         /// </summary>
-        public int ErrorCode = 0;
+        public int ErrorCode { get; set; } = 0;
         /// <summary>
         /// The result message
         /// </summary>
-        public string ResultMessage = "";
+        public string ResultMessage { get; set; }   = "";
         /// <summary>
         /// The debug information
         /// </summary>
-        public string DebugInfo = "";
+        public string DebugInfo { get; set; } = "";
         /// <summary>
         /// The exception
         /// </summary>
-        public Exception Exception = null;
+        public Exception Exception { get; set; }    = null;
         /// <summary>
         /// The context
         /// </summary>
-        public string Context = "";
+        public string Context { get; set; }     = "";
         /// <summary>
         /// The m failed
         /// </summary>

@@ -41,10 +41,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
-		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="9.0.18" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
-		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.18.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.22.0" />
 		
 	</ItemGroup>
 

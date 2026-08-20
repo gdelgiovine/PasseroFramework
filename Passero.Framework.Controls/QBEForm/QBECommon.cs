@@ -706,6 +706,12 @@ namespace Passero.Framework.Controls
         }
     }
 
+    public enum QBEValueUsage
+    {
+        QBEFilter = 0,
+        QBESelectRow = 1
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -736,6 +742,10 @@ namespace Passero.Framework.Controls
         /// The m qbe value
         /// </summary>
         private string mQBEValue;
+        /// <summary>
+        /// The m qbe value usage
+        /// </summary>
+        private QBEValueUsage mQBEValueUsage = QBEValueUsage.QBEFilter;
         /// <summary>
         /// The m display format
         /// </summary>
@@ -1010,6 +1020,21 @@ namespace Passero.Framework.Controls
         }
 
         /// <summary>
+        /// Gets or sets how the <see cref="QBEValue"/> should be used.
+        /// </summary>
+        public QBEValueUsage QBEValueUsage
+        {
+            get
+            {
+                return mQBEValueUsage;
+            }
+            set
+            {
+                mQBEValueUsage = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the name of the friendly.
         /// </summary>
         /// <value>
@@ -1182,11 +1207,82 @@ namespace Passero.Framework.Controls
         /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumnName, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, ColumnWidthValue ColumnWidth = default)
+        public QBEColumn Add(string DbColumnName, string FriendlyName = "", string DisplayFormat = "", object QBEValue = null, bool UseInQBE = true, bool DisplayInQBEResult = true, ColumnWidthValue ColumnWidth = default, QBEValueUsage QBEValueUsage = QBEValueUsage.QBEFilter)
         {
             var x = new QBEColumn();
-            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth.Value);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnsTypes.TextBox, ColumnWidth.Value, QBEValueUsage);
 
+        }
+
+        public bool TrySelectMatchingRow(DataGridView dataGridView)
+        {
+            if (dataGridView == null || dataGridView.Rows.Count == 0)
+                return false;
+
+            var selectionCriteria = this
+                .Where(entry => entry.Value != null && entry.Value.UseInQBE && entry.Value.QBEValueUsage == QBEValueUsage.QBESelectRow)
+                .Select(entry => new
+                {
+                    ColumnName = entry.Value.DbColumnName,
+                    ExpectedValue = entry.Value.QBEValue?.ToString()
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.ExpectedValue))
+                .ToList();
+
+            if (selectionCriteria.Count == 0)
+                return false;
+
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (row == null || row.IsNewRow)
+                    continue;
+
+                bool matchesAll = true;
+
+                foreach (var criterion in selectionCriteria)
+                {
+                    object cellValue = null;
+                    if (row.DataBoundItem != null)
+                    {
+                        cellValue = Passero.Framework.ReflectionHelper.GetPropertyValue(row.DataBoundItem, criterion.ColumnName);
+                    }
+
+                    if (cellValue == null && dataGridView.Columns.Contains(criterion.ColumnName))
+                    {
+                        cellValue = row.Cells[criterion.ColumnName].Value;
+                    }
+
+                    var actualValue = (Convert.ToString(cellValue, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty).Trim();
+                    var expectedValue = (criterion.ExpectedValue ?? string.Empty).Trim();
+                    if (!string.Equals(actualValue, expectedValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        matchesAll = false;
+                        break;
+                    }
+                }
+
+                if (matchesAll)
+                {
+                    dataGridView.ClearSelection();
+                    row.Selected = true;
+                    if (dataGridView.Columns.Count > 0)
+                    {
+                        int displayColumnIndex = 0;
+                        for (int i = 0; i < dataGridView.Columns.Count; i++)
+                        {
+                            if (dataGridView.Columns[i].Visible)
+                            {
+                                displayColumnIndex = i;
+                                break;
+                            }
+                        }
+                        dataGridView.CurrentCell = row.Cells[displayColumnIndex];
+                    }
+                    return true;
+                }
+            }
+
+            return false;
         }
         /// <summary>
         /// Adds the specified database column.
@@ -1199,9 +1295,9 @@ namespace Passero.Framework.Controls
         /// <param name="DisplayInQBEResult">if set to <c>true</c> [display in qbe result].</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, ColumnWidthValue ColumnWidth)
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, ColumnWidthValue ColumnWidth, QBEValueUsage QBEValueUsage = QBEValueUsage.QBEFilter)
         {
-            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth.Value);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth.Value, QBEValueUsage);
         }
 
 
@@ -1217,9 +1313,9 @@ namespace Passero.Framework.Controls
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth, QBEValueUsage QBEValueUsage = QBEValueUsage.QBEFilter)
         {
-            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, ColumnWidth, QBEValueUsage);
         }
 
 
@@ -1235,9 +1331,9 @@ namespace Passero.Framework.Controls
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, QBEColumnSize ColumnWidth)
+        public QBEColumn Add(string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, QBEColumnSize ColumnWidth, QBEValueUsage QBEValueUsage = QBEValueUsage.QBEFilter)
         {
-            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, (int)ColumnWidth);
+            return Add("", DbColumnName, FriendlyName, DisplayFormat, QBEValue, UseInQBE, DisplayInQBEResult, QBEColumnType, (int)ColumnWidth, QBEValueUsage);
         }
         /// <summary>
         /// Adds for report.
@@ -1292,7 +1388,7 @@ namespace Passero.Framework.Controls
         /// <param name="QBEColumnType">Type of the qbe column.</param>
         /// <param name="ColumnWidth">Width of the column.</param>
         /// <returns></returns>
-        private QBEColumn Add(string ReportName, string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth)
+        private QBEColumn Add(string ReportName, string DbColumnName, string FriendlyName, string DisplayFormat, object QBEValue, bool UseInQBE, bool DisplayInQBEResult, QBEColumnsTypes QBEColumnType, int ColumnWidth, QBEValueUsage QBEValueUsage = QBEValueUsage.QBEFilter)
         {
             var x = new QBEColumn();
 
@@ -1302,6 +1398,7 @@ namespace Passero.Framework.Controls
             x.DbColumnName = DbColumnName;
             x.UseInQBE = UseInQBE;
             x.QBEValue = QBEValue;
+            x.QBEValueUsage = QBEValueUsage;
             x.FriendlyName = FriendlyName;
             x.DisplayInQBEResult = DisplayInQBEResult;
             x.DisplayFormat = DisplayFormat;

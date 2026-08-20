@@ -255,8 +255,8 @@ namespace Passero.Framework.Controls
         public int CurrentModelItemIndex
         {
             get
-            {
-                if (_ActiveViewModel != null)
+            { //BUGCOPILOT
+                if (_ActiveViewModel == null)
                     return -1;
                 if (DesignMode == false)
                     //return (int)ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "CurrentModelItemIndex");
@@ -284,8 +284,8 @@ namespace Passero.Framework.Controls
         {
             get
             {
-
-                if (_ActiveViewModel != null)
+                //BUGCOPILOT
+                if (_ActiveViewModel == null)
                     return -1;
                 if (DesignMode == false)
                     //return (int)Passero.Framework.ReflectionHelper.GetPropertyValue(this._ActiveViewModel, "AddNewCurrentModelItemIndex");

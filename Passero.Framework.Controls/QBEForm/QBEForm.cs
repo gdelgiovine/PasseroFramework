@@ -1063,47 +1063,44 @@ namespace Passero.Framework.Controls
 
             if (setup == true | this.TabControl.SelectedTab == this.TabPageQueryGrid)
             {
-                StringBuilder sqlWhere = new StringBuilder();
                 OrderBy = (OrderBy ?? string.Empty).Trim();
                 QueryGrid.EndEdit();
                 DynamicParameters parameters = new DynamicParameters();
+
+                var baseSqlWhereParts = new List<string>();
+                var selectSqlWhereParts = new List<string>();
 
                 foreach (DataGridViewRow row in QueryGrid.Rows)
                 {
                     string value = null;
                     object cellValue = row?.Cells?[1]?.Value;
 
-                    // Gestisci i diversi tipi di celle
-                    if (cellValue == null || cellValue.Equals(""))
+                    if (cellValue == null)
                     {
-                        // Valore nullo o stringa vuota (indeterminato) - salta il filtro
+                        continue;
+                    }
+                    else if (cellValue.Equals(""))
+                    {
                         continue;
                     }
                     else if (cellValue is bool boolValue)
                     {
-                        // Converti bool a "true" o "false"
                         value = boolValue ? "true" : "false";
                     }
                     else if (cellValue is int intValue)
                     {
-                        // Converti int (da checkbox 0/1) a stringa
                         value = intValue.ToString();
                     }
                     else
                     {
-                        // Per altri tipi, converti a stringa
                         value = cellValue.ToString();
                     }
 
-                    // Salta se il valore è vuoto
                     if (string.IsNullOrWhiteSpace(value))
                         continue;
 
                     string columnName = row.Tag?.ToString();
-                    if (string.IsNullOrWhiteSpace(columnName))
-                        continue;
-
-                    if (!ModelProperties.ContainsKey(columnName))
+                    if (string.IsNullOrWhiteSpace(columnName) || !ModelProperties.ContainsKey(columnName))
                         continue;
 
                     Type propertyType = ModelProperties[columnName].PropertyType;
@@ -1123,9 +1120,8 @@ namespace Passero.Framework.Controls
                             AllowRelativeDateTokens = EnableRelativeDateTokens,
                             AllowTextRelationalOperators = AllowTextRelationalOperators,
                             UseLikeOperator = UseLikeOperator,
-                            
                         },
-                        this.ProviderFeatures );
+                        this.ProviderFeatures);
 
                     if (build.Errors.Count > 0)
                     {
@@ -1137,44 +1133,87 @@ namespace Passero.Framework.Controls
                         throw new InvalidOperationException(technical);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(build.Sql))
-                    {
-                        if (sqlWhere.Length > 0)
-                            sqlWhere.Append(" AND ");
+                    if (string.IsNullOrWhiteSpace(build.Sql))
+                        continue;
 
-                        sqlWhere.Append("(");
-                        sqlWhere.Append(build.Sql);
-                        sqlWhere.Append(")");
+                    QBEColumn qbeColumn = null;
+                    if (row.Tag is string tag)
+                    {
+                        QBEColumns.TryGetValue(tag, out qbeColumn);
+                    }
+
+                    if (qbeColumn == null)
+                    {
+                        foreach (var item in QBEColumns)
+                        {
+                            if (string.Equals(item.Value.DbColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                qbeColumn = item.Value;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (qbeColumn != null && qbeColumn.QBEValueUsage == QBEValueUsage.QBESelectRow)
+                    {
+                        selectSqlWhereParts.Add($"({build.Sql})");
+                    }
+                    else
+                    {
+                        baseSqlWhereParts.Add($"({build.Sql})");
                     }
                 }
 
-                if (string.IsNullOrEmpty(BaseSQLQuery))
-                    SQLQuery = $"SELECT  * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
-                else
-                    SQLQuery = $"SELECT  * FROM ({BaseSQLQuery.Trim()}) _b";
-
-
-                SQLQuerySelector = SQLQuery;
-
-                if (sqlWhere.Length > 0)
-                    SQLQuery += $" WHERE {sqlWhere}";
-
                 // rimossa di "ORDER BY" se presente all'inizio della stringa OrderBy   
                 OrderBy = (OrderBy ?? string.Empty).Trim(); 
-                if (OrderBy .StartsWith("ORDER BY", StringComparison.InvariantCultureIgnoreCase))
+                if (OrderBy.StartsWith("ORDER BY", StringComparison.InvariantCultureIgnoreCase))
                 {
                     OrderBy = OrderBy.Substring(8).Trim(); // Rimuove "ORDER BY" se presente    
                 }
 
+                string orderByClause;
                 if (string.IsNullOrEmpty(OrderBy))
-                    SQLQuery += $" ORDER BY {Repository.DefaultOrderbyClause}";
+                    orderByClause = Repository.DefaultOrderbyClause;
                 else
-                    SQLQuery += $" ORDER BY {OrderBy} ";
+                    orderByClause = OrderBy;
 
+                string baseTableSql;
+                if (string.IsNullOrEmpty(BaseSQLQuery))
+                    baseTableSql = $"SELECT * FROM {Passero.Framework.Utilities.GetModelTableName<ModelClass>()}";
+                else
+                    baseTableSql = $"SELECT * FROM ({BaseSQLQuery.Trim()}) _b";
 
-                
+                string baseWhereClause = baseSqlWhereParts.Count > 0
+                    ? (baseSqlWhereParts.Count == 1 ? baseSqlWhereParts[0] : $"({string.Join(" AND ", baseSqlWhereParts)})")
+                    : string.Empty;
 
-                SQLQuery = SqlDialectBuilder.ApplyLimit (SQLQuery, Repository.ProviderFeatures, TopRows );    
+                string selectWhereClause = selectSqlWhereParts.Count > 0
+                    ? (selectSqlWhereParts.Count == 1 ? selectSqlWhereParts[0] : $"({string.Join(" OR ", selectSqlWhereParts)})")
+                    : string.Empty;
+
+                string baseSelectSql = baseTableSql;
+                if (!string.IsNullOrWhiteSpace(baseWhereClause))
+                    baseSelectSql += $" WHERE {baseWhereClause}";
+
+                baseSelectSql = SqlDialectBuilder.ApplyLimit(baseSelectSql, Repository.ProviderFeatures, TopRows);
+
+                if (string.IsNullOrWhiteSpace(selectWhereClause))
+                {
+                    SQLQuery = baseSelectSql;
+                }
+                else
+                {
+                    string selectSelectSql = baseTableSql;
+                    selectSelectSql += $" WHERE {selectWhereClause}";
+                    selectSelectSql = SqlDialectBuilder.ApplyLimit(selectSelectSql, Repository.ProviderFeatures, TopRows);
+
+                    SQLQuery = $"{baseSelectSql} UNION {selectSelectSql}";
+                }
+
+                if (!string.IsNullOrWhiteSpace(orderByClause))
+                    SQLQuery += $" ORDER BY {orderByClause}";
+
+                SQLQuerySelector = SQLQuery;
 
                 SQLQueryParameters = parameters;
 
@@ -1714,6 +1753,18 @@ namespace Passero.Framework.Controls
             {
             }
 
+        }
+
+        /// <summary>
+        /// Handles the DataBindingComplete event of the ResultGrid control.
+        /// Seleziona automaticamente la prima riga che corrisponde ai criteri
+        /// QBESelectRow, se presenti.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewBindingCompleteEventArgs"/> instance containing the event data.</param>
+        private void ResultGrid_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            this.QBEColumns.TrySelectMatchingRow(ResultGrid);
         }
 
         /// <summary>

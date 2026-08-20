@@ -94,26 +94,11 @@ namespace Passero.Framework
                 }
 
                 return (string)_nameProperty.GetValue(_nameProperty.DeclaringType, null);
-                //return this.GetLocalizedDescription();
+               
             }
         }
 
-        //public string xGetLocalizedDescription()
-        //{
-        //    //FieldInfo fi = enumValue.GetType().GetField(enumValue.ToString());
-        //    FieldInfo fi = this.GetType().GetField(this.ToString());
-
-        //    DescriptionAttribute[] attributes =
-        //        (DescriptionAttribute[])fi.GetCustomAttributes(
-        //        typeof(DescriptionAttribute),
-        //        false);
-
-        //    if (attributes != null &&
-        //        attributes.Length > 0)
-        //        return attributes[0].Description;
-        //    else
-        //        return this.ToString();
-        //}
+       
     }
 
     /// <summary>

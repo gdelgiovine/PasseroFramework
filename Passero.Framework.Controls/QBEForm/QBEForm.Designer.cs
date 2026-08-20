@@ -153,6 +153,7 @@ namespace Passero.Framework.Controls
             this.ResultGrid.RowTemplate.DefaultCellStyle.Alignment = Wisej.Web.DataGridViewContentAlignment.MiddleLeft;
             this.ResultGrid.RowTemplate.Height = 20;
             this.ResultGrid.RowEnter += new Wisej.Web.DataGridViewCellEventHandler(this.ResultGrid_RowEnter);
+            this.ResultGrid.DataBindingComplete += new Wisej.Web.DataGridViewBindingCompleteEventHandler(this.ResultGrid_DataBindingComplete);
             this.ResultGrid.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.ResultGrid_CellDoubleClick);
             // 
             // TabControl

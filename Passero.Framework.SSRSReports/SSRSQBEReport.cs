@@ -505,10 +505,9 @@ namespace Passero.Framework.SSRSReports
                 }
             }
 
-            this.txtReportTitle.Width = this.PanelReportInfo.Width * 40 / 100;
-            this.txtReportDescription   .Width = this.PanelReportInfo.Width * 60 / 100;
+            
             this.txtReportTitle.Text = QBEReport.ReportTitle  ;
-                this.txtReportDescription.Text = QBEReport.ReportDescription;
+            this.txtReportDescription.Text = QBEReport.ReportDescription;
             
             this.lstSortColumns.DataSource = QBEReport.SortColumns.Values.ToList();
             this.lstSortColumns.ValueMember = "Name";
@@ -1010,7 +1009,7 @@ var build = Framework.Controls.NavFilterSqlEngine.BuildColumnPredicate(
             this.txtRenderError.Left = 0;
             this.txtRenderError.Width = this.PanelReportViewer.Width;
             this.txtRenderError.Height = this.PdfViewer.Height;
-            this.PanelReportInfo.Width = this.PanelReportViewer.Width;
+        
         }
         private void PanelReportViewer_Resize(object sender, EventArgs e)
         {
@@ -1055,8 +1054,7 @@ var build = Framework.Controls.NavFilterSqlEngine.BuildColumnPredicate(
 
         private void PanelReportInfo_Resize(object sender, EventArgs e)
         {
-            this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
-            this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
+           
         }
 
      

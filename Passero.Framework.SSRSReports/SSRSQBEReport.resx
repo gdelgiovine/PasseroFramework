@@ -128,9 +128,8 @@
   <data name="SplitContainer.Orientation" type="Wisej.Web.Orientation, Wisej.Framework">
     <value>Horizontal</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="PanelReportInfo.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="PanelReportInfo.AutoSizeMode" type="Wisej.Web.AutoSizeMode, Wisej.Framework">
+    <value>GrowAndShrink</value>
   </data>
   <data name="txtReportTitle.LabelText" xml:space="preserve">
     <value>Report</value>
@@ -139,8 +138,9 @@
     <value>3, 3</value>
   </data>
   <data name="txtReportTitle.Size" type="System.Drawing.Size, System.Drawing">
-    <value>158, 30</value>
+    <value>271, 47</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="txtReportTitle.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
@@ -160,10 +160,10 @@
     <value>Description</value>
   </data>
   <data name="txtReportDescription.Location" type="System.Drawing.Point, System.Drawing">
-    <value>167, 3</value>
+    <value>280, 3</value>
   </data>
   <data name="txtReportDescription.Size" type="System.Drawing.Size, System.Drawing">
-    <value>190, 30</value>
+    <value>502, 47</value>
   </data>
   <data name="txtReportDescription.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -180,11 +180,14 @@
   <data name="&gt;&gt;txtReportDescription.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="PanelReportInfo.Dock" type="Wisej.Web.DockStyle, Wisej.Framework">
+    <value>Top</value>
+  </data>
   <data name="PanelReportInfo.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
   <data name="PanelReportInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>548, 36</value>
+    <value>785, 54</value>
   </data>
   <data name="PanelReportInfo.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -202,7 +205,7 @@
     <value>0</value>
   </data>
   <data name="txtRenderError.Location" type="System.Drawing.Point, System.Drawing">
-    <value>428, 44</value>
+    <value>428, 112</value>
   </data>
   <data name="txtRenderError.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -229,7 +232,7 @@
     <value>1</value>
   </data>
   <data name="AspNetPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 43</value>
+    <value>3, 77</value>
   </data>
   <data name="AspNetPanel.Size" type="System.Drawing.Size, System.Drawing">
     <value>158, 64</value>
@@ -256,7 +259,7 @@
     <value>2</value>
   </data>
   <data name="WebBrowser.Location" type="System.Drawing.Point, System.Drawing">
-    <value>167, 44</value>
+    <value>167, 78</value>
   </data>
   <data name="WebBrowser.Size" type="System.Drawing.Size, System.Drawing">
     <value>95, 64</value>
@@ -280,7 +283,7 @@
     <value>3</value>
   </data>
   <data name="PdfViewer.Location" type="System.Drawing.Point, System.Drawing">
-    <value>268, 44</value>
+    <value>268, 78</value>
   </data>
   <data name="PdfViewer.Size" type="System.Drawing.Size, System.Drawing">
     <value>154, 64</value>
@@ -304,7 +307,7 @@
     <value>16, 18</value>
   </data>
   <data name="PanelReportViewer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>548, 120</value>
+    <value>785, 215</value>
   </data>
   <data name="PanelReportViewer.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -345,9 +348,9 @@
   <data name="&gt;&gt;SplitContainer.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="ReportGrid.ShowSampleData" type="System.Boolean, mscorlib">
+  <metadata name="ReportGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
-  </data>
+  </metadata>
   <data name="ReportGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -411,9 +414,9 @@
   <data name="&gt;&gt;TabPageReports.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib">
+  <metadata name="QueryGrid.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
-  </data>
+  </metadata>
   <data name="QueryGrid.Anchor" type="Wisej.Web.AnchorStyles, Wisej.Framework">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -684,9 +687,9 @@
   <data name="&gt;&gt;panel2.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib">
+  <metadata name="dgv_SelectedSortColumns.ShowSampleData" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
-  </data>
+  </metadata>
   <data name="dgvc_SelectedSortColumns_position.HeaderText" xml:space="preserve">
     <value>Position</value>
   </data>
@@ -1374,7 +1377,7 @@
   <data name="pbEngineLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAIAAAAHjs1qAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vgAADr4B6kKxwAAAN5pJREFUeF7tnWl4W8W5gPvrdmNpC2QhYQskQChtQ2lYbwuFkEAvEEpJubSl3BJI
+        vAAADrwBlbxySQAAN5pJREFUeF7tnWl4W8W5gPvrdmNpC2QhYQskQChtQ2lYbwuFkEAvEEpJubSl3BJI
         KQkBQhayQjaykUD22M7m3Ukcx7udOF7lVbKszZZsSdZmrbbsI2+SbOfxfaRJhvGcRUeyTGRr3uf88hkd
         nyd+M5r55ptvfjBMIEQNP8B/QCBMXIjuhCiC6E6IIojuYcNms8nl8pLiYq1Wi98jRAZE99FCUZREIrlY
         WJifl1dYUHDp4kWBQIA3IkQGRPcQ6erqkkqlhYWFmRcuZGdn5+bkCAQCvV5fU1NTVFRktVjwDxAiAKJ7
@@ -1635,9 +1638,9 @@
   <data name="&gt;&gt;pbEngineLogo.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="$this.Localizable" type="System.Boolean, mscorlib">
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
+  </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>7, 18</value>
   </data>
@@ -1703,6 +1706,12 @@
   </data>
   <data name="&gt;&gt;dgvc_SelectedSortColumns_friendlyname.Type" xml:space="preserve">
     <value>Wisej.Web.DataGridViewTextBoxColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
+    <value>dgvc_SelectedSortColumns_ascdesc</value>
+  </data>
+  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
+    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;bFirst.Name" xml:space="preserve">
     <value>bFirst</value>
@@ -1781,12 +1790,6 @@
   </data>
   <data name="&gt;&gt;bClose.Type" xml:space="preserve">
     <value>Wisej.Web.ToolBarButton, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Name" xml:space="preserve">
-    <value>dgvc_SelectedSortColumns_ascdesc</value>
-  </data>
-  <data name="&gt;&gt;dgvc_SelectedSortColumns_ascdesc.Type" xml:space="preserve">
-    <value>Wisej.Web.DataGridViewComboBoxColumn, Wisej.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17bef35e11b84171</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>ReportManager</value>

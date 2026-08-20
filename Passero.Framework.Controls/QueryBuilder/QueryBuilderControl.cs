@@ -887,38 +887,90 @@ public partial class QueryBuilderControl : UserControl
 
         SetColumns(ToQueryBuilderColumns(qbeColumns));
 
-        // Aggiunge regole di default per le colonne con QBEValue non vuoto
-        if (_rootEditor != null)
+        if (_rootEditor == null)
         {
-            foreach (var entry in qbeColumns)
+            return;
+        }
+
+        var baseRules = new List<QueryBuilderRuleNode>();
+        var qbeSelectRules = new List<QueryBuilderRuleNode>();
+
+        foreach (var entry in qbeColumns)
+        {
+            var qbeCol = entry.Value;
+
+            if (!qbeCol.UseInQBE)
             {
-                var qbeCol = entry.Value;
-
-                if (!qbeCol.UseInQBE)
-                {
-                    continue;
-                }
-
-                var qbeValue = qbeCol.QBEValue?.ToString();
-                if (string.IsNullOrWhiteSpace(qbeValue))
-                {
-                    continue;
-                }
-
-                // Crea e aggiunge la regola al gruppo di default
-                var ruleNode = new QueryBuilderRuleNode
-                {
-                    Field = qbeCol.DbColumnName,
-                    Operator = "equal",
-                    Value = qbeValue
-                };
-
-                _rootEditor.AddRuleToGroup(ruleNode);
+                continue;
             }
 
-            ResizeEditors();
-            RaiseRulesChanged();
+            var qbeValue = qbeCol.QBEValue?.ToString();
+            if (qbeValue == null)
+            {
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(qbeValue) && qbeCol.QBEValueUsage != QBEValueUsage.QBEFilter)
+            {
+                continue;
+            }
+
+            var ruleNode = new QueryBuilderRuleNode
+            {
+                Field = qbeCol.DbColumnName,
+                Operator = "equal",
+                Value = qbeValue
+            };
+
+            if (string.IsNullOrWhiteSpace(qbeValue) && qbeCol.QBEValueUsage == QBEValueUsage.QBEFilter)
+            {
+                ruleNode.Value = "";
+            }
+
+            if (qbeCol.QBEValueUsage == QBEValueUsage.QBESelectRow)
+            {
+                qbeSelectRules.Add(ruleNode);
+            }
+            else
+            {
+                baseRules.Add(ruleNode);
+            }
         }
+
+        var rootRules = new List<QueryBuilderRuleNode>();
+        if (baseRules.Count > 0)
+        {
+            rootRules.Add(new QueryBuilderRuleNode
+            {
+                Condition = "and",
+                Rules = baseRules
+            });
+        }
+
+        if (qbeSelectRules.Count > 0)
+        {
+            rootRules.Add(new QueryBuilderRuleNode
+            {
+                Condition = "or",
+                Rules = qbeSelectRules
+            });
+        }
+
+        if (rootRules.Count == 0)
+        {
+            _rootEditor.LoadFromRuleSet(new QueryBuilderRuleSet { Condition = "and", Rules = new List<QueryBuilderRuleNode>() });
+        }
+        else
+        {
+            _rootEditor.LoadFromRuleSet(new QueryBuilderRuleSet
+            {
+                Condition = "or",
+                Rules = rootRules
+            });
+        }
+
+        ResizeEditors();
+        RaiseRulesChanged();
     }
     private static QueryGridFieldType MapQBEColumnType(QBEColumn qbeCol)
     {
@@ -1099,6 +1151,15 @@ public partial class QueryBuilderControl : UserControl
         }
 
         var upperQuery = sqlQuery.ToUpperInvariant();
+
+        // Se la query contiene una UNION, non possiamo estrarre una singola WHERE
+        // comprensibile dal QueryBuilder: restituiamo stringa vuota in modo che
+        // il builder rimanga nello stato derivato dalle colonne QBE.
+        if (upperQuery.Contains(" UNION ") || upperQuery.Contains(" UNION ALL "))
+        {
+            return string.Empty;
+        }
+
         var whereIndex = upperQuery.IndexOf(" WHERE ");
 
         if (whereIndex < 0)

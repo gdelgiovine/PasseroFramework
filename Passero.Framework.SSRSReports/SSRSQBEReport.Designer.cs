@@ -54,8 +54,8 @@
             this.dgvcReportFileName = new Wisej.Web.DataGridViewTextBoxColumn();
             this.TabPageReportQuery = new Wisej.Web.TabPage();
             this.QueryGrid = new Wisej.Web.DataGridView();
-            this.dgvcNomeCampo = new Wisej.Web.DataGridViewTextBoxColumn();
-            this.dgvcValoreCampo = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcColumnName = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvcColumnValue = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvcQueryColumn = new Wisej.Web.DataGridViewButtonColumn();
             this.chkLikeOperator = new Wisej.Web.CheckBox();
             this.TabPageReportSort = new Wisej.Web.TabPage();
@@ -71,6 +71,7 @@
             this.dgvc_SelectedSortColumns_position = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvc_SelectedSortColumns_name = new Wisej.Web.DataGridViewTextBoxColumn();
             this.dgvc_SelectedSortColumns_friendlyname = new Wisej.Web.DataGridViewTextBoxColumn();
+            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             this.TabPageExport = new Wisej.Web.TabPage();
             this.PanelExport = new Wisej.Web.FlowLayoutPanel();
             this.rbExcel = new Wisej.Web.RadioButton();
@@ -102,7 +103,6 @@
             this.bLoadQBE = new Wisej.Web.ToolBarButton();
             this.bClose = new Wisej.Web.ToolBarButton();
             this.pbEngineLogo = new Wisej.Web.PictureBox();
-            this.dgvc_SelectedSortColumns_ascdesc = new Wisej.Web.DataGridViewComboBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
             this.SplitContainer.Panel2.SuspendLayout();
@@ -170,10 +170,11 @@
             // 
             // txtReportTitle
             // 
+            this.PanelReportInfo.SetFillWeight(this.txtReportTitle, 35);
             this.txtReportTitle.Focusable = false;
             this.txtReportTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportTitle.Label.Position = Wisej.Web.LabelPosition.Left;
+            this.txtReportTitle.Label.Font = new System.Drawing.Font("default", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportTitle.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 1);
             resources.ApplyResources(this.txtReportTitle, "txtReportTitle");
             this.txtReportTitle.Name = "txtReportTitle";
             this.txtReportTitle.ReadOnly = true;
@@ -181,10 +182,11 @@
             // 
             // txtReportDescription
             // 
+            this.PanelReportInfo.SetFillWeight(this.txtReportDescription, 65);
             this.txtReportDescription.Focusable = false;
             this.txtReportDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.txtReportDescription.Label.Position = Wisej.Web.LabelPosition.Left;
+            this.txtReportDescription.Label.Font = new System.Drawing.Font("default", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            this.txtReportDescription.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 1);
             resources.ApplyResources(this.txtReportDescription, "txtReportDescription");
             this.txtReportDescription.Name = "txtReportDescription";
             this.txtReportDescription.ReadOnly = true;
@@ -280,26 +282,26 @@
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromName("@buttonFace");
             this.QueryGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.QueryGrid.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
-            this.dgvcNomeCampo,
-            this.dgvcValoreCampo,
+            this.dgvcColumnName,
+            this.dgvcColumnValue,
             this.dgvcQueryColumn});
             this.QueryGrid.DefaultSortMode = Wisej.Web.DataGridViewColumnsSortMode.NotSortable;
             this.QueryGrid.Name = "QueryGrid";
             // 
             // dgvcNomeCampo
             // 
-            this.dgvcNomeCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
-            resources.ApplyResources(this.dgvcNomeCampo, "dgvcNomeCampo");
-            this.dgvcNomeCampo.MaxInputLength = 50;
-            this.dgvcNomeCampo.Name = "dgvcNomeCampo";
-            this.dgvcNomeCampo.ReadOnly = true;
+            this.dgvcColumnName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.AllCells;
+            resources.ApplyResources(this.dgvcColumnName, "dgvcNomeCampo");
+            this.dgvcColumnName.MaxInputLength = 50;
+            this.dgvcColumnName.Name = "dgvcNomeCampo";
+            this.dgvcColumnName.ReadOnly = true;
             // 
             // dgvcValoreCampo
             // 
-            this.dgvcValoreCampo.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
-            resources.ApplyResources(this.dgvcValoreCampo, "dgvcValoreCampo");
-            this.dgvcValoreCampo.MaxInputLength = 1024;
-            this.dgvcValoreCampo.Name = "dgvcValoreCampo";
+            this.dgvcColumnValue.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            resources.ApplyResources(this.dgvcColumnValue, "dgvcValoreCampo");
+            this.dgvcColumnValue.MaxInputLength = 1024;
+            this.dgvcColumnValue.Name = "dgvcValoreCampo";
             // 
             // dgvcQueryColumn
             // 
@@ -432,6 +434,19 @@
             resources.ApplyResources(this.dgvc_SelectedSortColumns_friendlyname, "dgvc_SelectedSortColumns_friendlyname");
             this.dgvc_SelectedSortColumns_friendlyname.Name = "dgvc_SelectedSortColumns_friendlyname";
             this.dgvc_SelectedSortColumns_friendlyname.ReadOnly = true;
+            // 
+            // dgvc_SelectedSortColumns_ascdesc
+            // 
+            this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
+            this.dgvc_SelectedSortColumns_ascdesc.DataPropertyName = "AscDesc";
+            this.dgvc_SelectedSortColumns_ascdesc.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
+            this.dgvc_SelectedSortColumns_ascdesc.FillWeight = 20F;
+            resources.ApplyResources(this.dgvc_SelectedSortColumns_ascdesc, "dgvc_SelectedSortColumns_ascdesc");
+            this.dgvc_SelectedSortColumns_ascdesc.Items.AddRange(new object[] {
+            "ASC",
+            "DESC"});
+            this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
+            this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
             // 
             // TabPageExport
             // 
@@ -666,19 +681,6 @@
             resources.ApplyResources(this.pbEngineLogo, "pbEngineLogo");
             this.pbEngineLogo.Name = "pbEngineLogo";
             // 
-            // dgvc_SelectedSortColumns_ascdesc
-            // 
-            this.dgvc_SelectedSortColumns_ascdesc.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
-            this.dgvc_SelectedSortColumns_ascdesc.DataPropertyName = "AscDesc";
-            this.dgvc_SelectedSortColumns_ascdesc.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
-            this.dgvc_SelectedSortColumns_ascdesc.FillWeight = 20F;
-            resources.ApplyResources(this.dgvc_SelectedSortColumns_ascdesc, "dgvc_SelectedSortColumns_ascdesc");
-            this.dgvc_SelectedSortColumns_ascdesc.Items.AddRange(new object[] {
-            "ASC",
-            "DESC"});
-            this.dgvc_SelectedSortColumns_ascdesc.Name = "dgvc_SelectedSortColumns_ascdesc";
-            this.dgvc_SelectedSortColumns_ascdesc.ValueType = typeof(object);
-            // 
             // ReportManager
             // 
             resources.ApplyResources(this, "$this");
@@ -737,8 +739,8 @@
         private Wisej.Web.DataGridViewTextBoxColumn dgvcReportFileName;
         internal Wisej.Web.TabPage TabPageReportQuery;
         private Wisej.Web.DataGridView QueryGrid;
-        private Wisej.Web.DataGridViewTextBoxColumn dgvcNomeCampo;
-        private Wisej.Web.DataGridViewTextBoxColumn dgvcValoreCampo;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnName;
+        private Wisej.Web.DataGridViewTextBoxColumn dgvcColumnValue;
         private Wisej.Web.DataGridViewButtonColumn dgvcQueryColumn;
         internal Wisej.Web.CheckBox chkLikeOperator;
         internal Wisej.Web.TabPage TabPageReportSort;

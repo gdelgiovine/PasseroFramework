@@ -950,7 +950,7 @@ namespace Passero.Framework.FRReports
             this.txtRenderError.Left = 0;
             this.txtRenderError.Width = this.PanelReportViewer.Width;
             this.txtRenderError .Height =this.PdfViewer .Height;
-            this.PanelReportInfo.Width = this.PanelReportViewer.Width;
+            
 
         }
 
@@ -961,8 +961,8 @@ namespace Passero.Framework.FRReports
 
         private void PanelReportInfo_Resize(object sender, EventArgs e)
         {
-            this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
-            this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
+            //this.txtReportTitle.Width = this.PanelReportInfo.Width * 30 / 100;
+            //this.txtReportDescription.Width = this.PanelReportInfo.Width * 60 / 100;
         }
 
         private void bSaveQBE_Click(object sender, EventArgs e)
