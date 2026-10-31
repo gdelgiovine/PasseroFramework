@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+	  <TargetFrameworks>$(Solution_TargetFrameworks)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -15,7 +15,9 @@
 	<PropertyGroup>
 		<PasseroVersion>$(Solution_PasseroVersion)</PasseroVersion>
 		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
-		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
+			<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
+			<WisejNETVersionBase>$(Solution_WisejNETVersionBase)</WisejNETVersionBase>
+			<WisejNETVersionExtensions>$(Solution_WisejNETVersionExtensions)</WisejNETVersionExtensions>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
@@ -54,8 +56,8 @@
   <ItemGroup>
 	 <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
      <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
-	 <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
-	 <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
+	 <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
+	 <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersionExtensions)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -251,7 +251,55 @@ namespace Passero.Framework
         /// (Dapper) oppure un <see cref="EfRepository{ModelClass}"/> (EF Core / EF6),
         /// a seconda del costruttore o dell'assegnazione esterna.
         /// </summary>
-        public Base.IPasseroRepository<ModelClass> Repository { get; set; }
+        private Base.IPasseroRepository<ModelClass> _repository;
+        private Base.ISecurityService _securityService = Base.DisabledSecurityService.Instance;
+
+        public Base.IPasseroRepository<ModelClass> Repository
+        {
+            get => _repository;
+            set
+            {
+                if (_securityService.IsEnabled && value != null && !(value is Base.ISecurityAwareRepository))
+                {
+                    throw new InvalidOperationException("Il repository non supporta l’autorizzazione configurata.");
+                }
+
+                _repository = value;
+
+                if (_repository is Base.ISecurityAwareRepository securityAwareRepository)
+                {
+                    securityAwareRepository.SecurityService = _securityService;
+                }
+
+                if (_repository is Repository<ModelClass> dapperRepository)
+                {
+                    dapperRepository.ViewModel = this;
+                }
+                else if (_repository is EfRepository<ModelClass> efRepository)
+                {
+                    efRepository.ViewModel = this;
+                }
+            }
+        }
+
+        public Base.ISecurityService SecurityService
+        {
+            get => _securityService;
+            set
+            {
+                var securityService = value ?? Base.DisabledSecurityService.Instance;
+                if (securityService.IsEnabled && _repository != null && !(_repository is Base.ISecurityAwareRepository))
+                {
+                    throw new InvalidOperationException("Il repository non supporta l’autorizzazione configurata.");
+                }
+
+                _securityService = securityService;
+                if (_repository is Base.ISecurityAwareRepository securityAwareRepository)
+                {
+                    securityAwareRepository.SecurityService = securityService;
+                }
+            }
+        }
 
         /// <summary>
         /// Restituisce il repository interno come <see cref="Repository{ModelClass}"/> (Dapper)

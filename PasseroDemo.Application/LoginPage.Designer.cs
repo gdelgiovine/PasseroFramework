@@ -32,6 +32,8 @@
             this.panel1 = new Wisej.Web.Panel();
             this.label1 = new Wisej.Web.Label();
             this.btnLogin = new Wisej.Web.Button();
+            this.btnMicrosoft = new Wisej.Web.Button();
+            this.btnGoogle = new Wisej.Web.Button();
             this.txtPassword = new Wisej.Web.TextBox();
             this.txtUserName = new Wisej.Web.TextBox();
             this.pictureBox1 = new Wisej.Web.PictureBox();
@@ -46,6 +48,8 @@
             this.panel1.BorderStyle = Wisej.Web.BorderStyle.Solid;
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.btnLogin);
+            this.panel1.Controls.Add(this.btnMicrosoft);
+            this.panel1.Controls.Add(this.btnGoogle);
             this.panel1.Controls.Add(this.txtPassword);
             this.panel1.Controls.Add(this.txtUserName);
             this.panel1.Controls.Add(this.pictureBox1);
@@ -55,7 +59,7 @@
             this.panel1.Name = "panel1";
             this.panel1.ShowCloseButton = false;
             this.panel1.ShowHeader = true;
-            this.panel1.Size = new System.Drawing.Size(297, 358);
+            this.panel1.Size = new System.Drawing.Size(297, 422);
             this.panel1.TabIndex = 0;
             this.panel1.Text = "Passero Framework Demo (1-4)";
             this.panel1.Visible = false;
@@ -64,7 +68,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Dock = Wisej.Web.DockStyle.Bottom;
-            this.label1.Location = new System.Drawing.Point(0, 310);
+            this.label1.Location = new System.Drawing.Point(0, 374);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(295, 18);
             this.label1.TabIndex = 5;
@@ -80,6 +84,24 @@
             this.btnLogin.TabIndex = 4;
             this.btnLogin.Text = "Login";
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+            // 
+            // btnMicrosoft
+            // 
+            this.btnMicrosoft.Location = new System.Drawing.Point(73, 260);
+            this.btnMicrosoft.Name = "btnMicrosoft";
+            this.btnMicrosoft.Size = new System.Drawing.Size(153, 32);
+            this.btnMicrosoft.TabIndex = 5;
+            this.btnMicrosoft.Text = "Accedi con Microsoft";
+            this.btnMicrosoft.Click += new System.EventHandler(this.btnMicrosoft_Click);
+            // 
+            // btnGoogle
+            // 
+            this.btnGoogle.Location = new System.Drawing.Point(73, 297);
+            this.btnGoogle.Name = "btnGoogle";
+            this.btnGoogle.Size = new System.Drawing.Size(153, 32);
+            this.btnGoogle.TabIndex = 6;
+            this.btnGoogle.Text = "Accedi con Google";
+            this.btnGoogle.Click += new System.EventHandler(this.btnGoogle_Click);
             // 
             // txtPassword
             // 
@@ -114,18 +136,18 @@
             this.pictureBox2.Anchor = ((Wisej.Web.AnchorStyles)(((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Left) 
             | Wisej.Web.AnchorStyles.Right)));
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(126, 273);
+            this.pictureBox2.Location = new System.Drawing.Point(121, 348);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(45, 31);
             this.pictureBox2.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
             // 
             // LoginPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);
             this.Name = "LoginPage";
-            this.Size = new System.Drawing.Size(1137, 584);
+            this.Size = new System.Drawing.Size(1237, 529);
             this.Load += new System.EventHandler(this.LoginPage_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -140,6 +162,8 @@
         private Wisej.Web.Panel panel1;
         private Wisej.Web.PictureBox pictureBox1;
         private Wisej.Web.Button btnLogin;
+        private Wisej.Web.Button btnMicrosoft;
+        private Wisej.Web.Button btnGoogle;
         private Wisej.Web.TextBox txtPassword;
         private Wisej.Web.TextBox txtUserName;
         private Wisej.Web.PictureBox pictureBox2;

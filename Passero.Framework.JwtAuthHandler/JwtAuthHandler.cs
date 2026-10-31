@@ -12,6 +12,8 @@ namespace Passero.Framework.JwtAuthHandler
     /// </summary>
     public static class JwtAuthHandler
     {
+        public static Action<string, string> AuthenticatedIdentityCallback { get; set; }
+
         /// <summary>Chiave di sessione per il token JWT grezzo di autenticazione.</summary>
         public const string SessionKeyAuthToken = "JWT_AUTH_TOKEN";
 
@@ -36,6 +38,11 @@ namespace Passero.Framework.JwtAuthHandler
             if (options == null)
                 return false;
 
+            if ((string.IsNullOrWhiteSpace(options.SecretKey) && options.Certificate == null) ||
+                string.IsNullOrWhiteSpace(options.Issuer) ||
+                string.IsNullOrWhiteSpace(options.Audience))
+                return false;
+
             if (string.IsNullOrEmpty(requestUrl) || headers == null)
                 return false;
 
@@ -48,10 +55,9 @@ namespace Passero.Framework.JwtAuthHandler
                 return false;
 
             var authToken = authHeader.Substring("Bearer ".Length).Trim();
-            var jwtManager = new JwtManager(
-                options.SecretKey,
-                options.Issuer,
-                options.Audience);
+            var jwtManager = options.Certificate != null
+                ? new JwtManager(options.Certificate, options.Issuer, options.Audience)
+                : new JwtManager(options.SecretKey, options.Issuer, options.Audience);
 
             if (!jwtManager.TryDecodeToken(authToken, out var principal) || principal == null)
                 return false;
@@ -88,6 +94,8 @@ namespace Passero.Framework.JwtAuthHandler
 
             Application.Session[SessionKeyAuthToken] = authenticationResult.AuthToken;
             Application.Session[SessionKeyJwtUser] = authenticationResult.UserName;
+            if (!string.IsNullOrWhiteSpace(authenticationResult.UserName))
+                AuthenticatedIdentityCallback?.Invoke(authenticationResult.UserName, "JWT");
 
             if (!string.IsNullOrEmpty(authenticationResult.PayloadJson))
                 Application.Session[SessionKeyPayload] = authenticationResult.PayloadJson;

@@ -1,0 +1,93 @@
+{
+  "SchemaVersion": 1,
+  "Roles": [
+    {
+      "Id": "role:administrator",
+      "Name": "administrator",
+      "IsBuiltIn": true
+    },
+    {
+      "Id": "role:authenticated",
+      "Name": "authenticated",
+      "IsBuiltIn": true
+    },
+    {
+      "Id": "role:anonymous",
+      "Name": "anonymous",
+      "IsBuiltIn": true
+    },
+    {
+      "Id": "role:test",
+      "Name": "Test"
+    }
+  ],
+  "Groups": [
+    {
+      "Id": "group:administrators",
+      "Name": "Administrators",
+      "Roles": [
+        "role:administrator"
+      ],
+      "IsBuiltIn": true
+    },
+    {
+      "Id": "group:guests",
+      "Name": "Guests",
+      "Roles": [],
+      "IsBuiltIn": true
+    },
+    {
+      "Id": "group:users",
+      "Name": "Users",
+      "Roles": [
+        "role:authenticated"
+      ],
+      "IsBuiltIn": true
+    }
+  ],
+  "Users": [
+    {
+      "UserName": "test",
+      "Roles": [
+        "role:test"
+      ],
+      "Groups": [
+        "group:users"
+      ],
+      "Enabled": true,
+      "Lockout": false,
+      "IsBuiltIn": false,
+      "PasswordSalt": "tH0U+0KRK4HN8yRvu44VrA==",
+      "PasswordHash": "p7VXIdozfKbuaX6vH4bO2MqP5HRVMh5T8FBVEtEnVGo=",
+      "PasswordIterations": 210000
+    },
+    {
+      "UserName": "Administrator",
+      "Roles": [
+        "role:administrator"
+      ],
+      "Groups": [
+        "group:administrators"
+      ],
+      "Enabled": true,
+      "Lockout": false,
+      "IsBuiltIn": true,
+      "PasswordSalt": "wO8DmrbGG1puxWOZVjsndA==",
+      "PasswordHash": "KBJei6BFysyxdnLPbmramjfbTWeIEoXXArD7UH4y1BA=",
+      "PasswordIterations": 210000
+    },
+    {
+      "UserName": "Guest",
+      "Roles": [],
+      "Groups": [
+        "group:guests"
+      ],
+      "Enabled": false,
+      "Lockout": false,
+      "IsBuiltIn": true,
+      "PasswordSalt": "",
+      "PasswordHash": "",
+      "PasswordIterations": 0
+    }
+  ]
+}

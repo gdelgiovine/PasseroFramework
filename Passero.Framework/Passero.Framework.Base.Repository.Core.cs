@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Passero.Framework.Base;
 using Passero.Framework ;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,34 @@ namespace Passero.Framework
     }
 
     [Serializable]
-    public partial class Repository<ModelClass> : Base.IPasseroRepository<ModelClass>
+    public partial class Repository<ModelClass> : Base.IPasseroRepository<ModelClass>, Base.ISecurityAwareRepository
         where ModelClass : class
     {
+        [NonSerialized]
+        private ISecurityService _securityService = null!;
+        private bool _securityEnabled;
+
+        public ISecurityService SecurityService
+        {
+            get => _securityService ?? (_securityEnabled
+                ? UnavailableSecurityService.Instance
+                : DisabledSecurityService.Instance);
+            set
+            {
+                _securityService = value;
+                _securityEnabled = value != null && value.IsEnabled;
+            }
+        }
+
+        private void DemandSecurityAccess(AccessPermission permission)
+        {
+            SecurityAuthorization.DemandRepositoryOperation(
+                SecurityService,
+                typeof(ModelClass),
+                ViewModel?.GetType(),
+                permission);
+        }
+
         //public BindingSource BindingSource { get; set; }
         /// <summary>
         /// The m class name

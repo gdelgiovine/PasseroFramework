@@ -156,6 +156,7 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItem()");
             ER.Value = null;
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Read);
             try
             {
                 _ModelItem = DbConnection.Query<ModelClass>(query, parameters, transaction, buffered, commandTimeout).FirstOrDefault();
@@ -199,6 +200,7 @@ namespace Passero.Framework
             var ER = new ExecutionResult<ModelClass>($"{mClassName}.GetItemAsync()");
             ER.Value = null;
 
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Read);
             try
             {
                 _ModelItem = (await DbConnection.QueryAsync<ModelClass>(query, parameters, transaction, commandTimeout)).FirstOrDefault();
@@ -249,6 +251,7 @@ namespace Passero.Framework
                 Parameters = new DynamicParameters();
             }
             _CurrentModelItemIndex = -1;
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Read);
             try
             {
                 _ModelItemsShadow = new List<ModelClass>();
@@ -350,6 +353,8 @@ namespace Passero.Framework
             var ER = new ExecutionResult<IList<ModelClass>>($"{mClassName}.GetItems()");
             //ValidateConnection();
 
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Read);
+
             if (string.IsNullOrEmpty(query))
             {
                 query = $"SELECT * FROM {Utilities.GetModelTableName<ModelClass>()}";
@@ -410,6 +415,7 @@ namespace Passero.Framework
         public ExecutionResult ReloadItems(bool Buffered = true, int? CommandTimeout = null)
         {
             var ER = new ExecutionResult($"{mClassName}.ReloadItems()");
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Read);
             try
             {
                 if (mSQLQuery.IsNullOrWhiteSpace() == false)

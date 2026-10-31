@@ -1,0 +1,33 @@
+GDG.SHAREPOINT.ADOPROVIDER — COMMERCIAL PROPRIETARY SOFTWARE LICENSE (B2B)
+Version 1.0 — 29 October 2026
+Copyright (c) 2026 Gabriele Del Giovine — GDG, Information Technologies Consulting.
+ALL RIGHTS RESERVED. NOT OPEN SOURCE.
+
+1. PARTIES AND ASSENT. "Licensor" is Gabriele Del Giovine, operating as GDG — Information Technologies Consulting. "Licensee" is an entity expressly authorized by a valid signed order, license certificate or written agreement ("Order"). Access to a package, repository or sample alone grants no production or redistribution right. The applicable Order states the authorized scope, price and duration.
+
+2. LICENSE. Subject to payment and compliance with the Order, Licensor grants Licensee a limited, non-exclusive and non-transferable right to install, execute and integrate the object-code Software into authorized internal applications, solely for the environments, tenants, deployments, seats, purposes and term expressly specified in the Order. No unlimited license is implied.
+
+3. PRERELEASE. An RC/evaluation copy is not licensed for production without a separate express production grant. Use only in an authorized evaluation environment. No public redistribution of the binary package is permitted under this license.
+
+4. INTELLECTUAL PROPERTY. Source code, object code, algorithms, architecture, documentation, improvements and proprietary know-how belong to Licensor or the applicable third-party rightholders. No copyright transfer, ownership, source-code access, sublicensing or right to create competing derivative distributions is granted. All ungranted rights are reserved.
+
+5. RESTRICTIONS. Except as expressly provided in the Order or non-waivable law, Licensee shall not disclose, publish, copy beyond necessary authorized installation, redistribute, rent, lease, resell, sublicense, remove rights notices, circumvent lawful licensing safeguards, adapt or reverse engineer the Software. These restrictions do NOT exclude the mandatory exceptions and interoperability rights under Directive 2009/24/EC (including Articles 5 and 6). All third-party library licenses remain applicable without alteration.
+
+6. CONFIDENTIALITY. Confidential technical, security, commercial, and binary distribution information obtained under an agreement shall be protected using reasonable security measures and shared only on a need-to-know basis, subject to mandatory legal disclosures and rights.
+
+7. CUSTOMER SECURITY RESPONSIBILITIES. Licensee controls SharePoint/Entra permissions, credential and PFX storage, secrets management, backups, firewall and update installation. Licensee shall not publish token, certificates or personally identifiable data in trace logs. Mandatory cybersecurity and product safety obligations remain unaffected.
+
+8. THIRD-PARTY COMPONENTS. Dependencies, their license notices and their independent rights are not covered by the exclusive ownership grant. Consult the matching SBOM and third-party notices.
+
+9. WARRANTY AND SUPPORT. A prerelease is supplied "as is" to the maximum extent legally permissible. Production warranties, maintenance, security support period, service levels and remedies depend upon the signed Order and mandatory law. Nothing excludes non-waivable rights.
+
+10. LIABILITY. To the extent permitted by applicable mandatory law, Licensor is not liable for indirect/consequential losses arising from evaluation. Any monetary cap for production licenses must be stated in the Order. No clause limits liability where limitation is prohibited, including mandatory product, cybersecurity, consumer, or data protection law.
+
+11. TERMINATION. Material breach may lead to termination upon written notice and a cure opportunity where legally required. After valid termination, cease unauthorized use and remove copies except legally retained records or backup copies. Ownership, confidentiality and accrued obligations survive.
+
+12. LAW. Italian law governs B2B licensing, subject to overriding mandatory EU/local provisions. Disputes fall within the competent Italian courts unless a different court/forum is required by mandatory law or individually agreed in writing.
+
+13. ORDER PRECEDENCE. Individually negotiated written license terms prevail only where expressly inconsistent. No public package availability or use of an API expands the license grant.
+
+Licensing information: https://www.gabrieledelgiovine.it/
+NOTICE: Review this commercial license with qualified Italian/EU counsel before external contracting.

@@ -1,10 +1,12 @@
 ﻿using Passero.Framework;
+using Passero.Framework.Base;
 using Passero.Framework.Controls;
 using PasseroDemo.Models;
 using PasseroDemo.ViewModels;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using Wisej.Web;
 
 
@@ -27,9 +29,11 @@ namespace PasseroDemo.Views
 
         public async void Init()
         {
-            this.ConfigurationManager =Wisej.Web.Application .Session["ConfigurationManager"] as Passero.Framework.ConfigurationManager;    
+            this.ConfigurationManager = Wisej.Web.Application.Session["ConfigurationManager"] as Passero.Framework.ConfigurationManager;
             //this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
             this.DbConnection = ConfigurationManager.DBConnections["PasseroDemo"];
+            ConfigureSecurity();
+            ApplyPropertySecurityToUi();
             //this.DbConnection = (System.Data.Common .DbConnection )ConfigurationManager.DBConnections["PasseroDemo"];
 
             // ORMContextFactory sceglie EF6 (net48) o EF Core (net8.0+) automaticamente.
@@ -78,6 +82,7 @@ namespace PasseroDemo.Views
             this.dataNavigator1.AddViewModel(this.vmAuthor, "Authors", null, null);
             this.dataNavigator1.SetActiveViewModel(this.vmAuthor);
             this.dataNavigator1.Init(true);
+            ApplySecurityToUi();
 
             //this._dbContext.DiscardChanges(vmAuthor)    ;
 
@@ -94,6 +99,8 @@ namespace PasseroDemo.Views
 
         private void QBE_Authors()
         {
+            DemandAuthorReadAccess();
+
             // Costruttore con DbConnection, usa DapperRepository   
             QBEForm<Models.Author> QBE = new QBEForm<Models.Author>(this.DbConnection);
             // Costruttore con DbContext: usa EfRepository o DapperRepository automaticamente
@@ -187,6 +194,7 @@ namespace PasseroDemo.Views
 
         private void FR_QBEReport_Authors()
         {
+            DemandAuthorReadAccess();
 
             Passero.Framework.FRReports.ReportManager  xQBEReport = new Passero.Framework.FRReports.ReportManager ();
             
@@ -204,6 +212,8 @@ namespace PasseroDemo.Views
 
         private void SSRS_QBEReport_Authors()
         {
+            DemandAuthorReadAccess();
+
             Passero.Framework.SSRSReports.ReportManager SSRSReportManager = new Passero.Framework.SSRSReports.ReportManager();
            
             //xQBEReport.ReportRenderRequest -= XQBEReport_ReportRenderRequest;
@@ -241,6 +251,8 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_ePrint()
         {
+            DemandAuthorReadAccess();
+
            if(chkUseFastReports.Checked)
             {
                 this.FR_QBEReport_Authors();
@@ -278,6 +290,12 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eAddNewRequest(ref bool Cancel)
         {
+            Cancel = Cancel || !IsAuthorOperationAllowed(AccessPermission.Insert);
+            if (Cancel)
+            {
+                return;
+            }
+
             // Versione generica — tipo noto a compile-time
             ControlsUtilities.SetPrimaryKeyControlsReadWrite<Models.Author>(bsAuthors);
 
@@ -285,7 +303,7 @@ namespace PasseroDemo.Views
 
         private void dataNavigator1_eAddNewCompleted()
         {
-            //ControlsUtilities.SetPrimaryKeyControlsReadOnly<Models.Author>(bsAuthors);
+            ControlsUtilities.SetPrimaryKeyControlsReadOnly<Models.Author>(bsAuthors);
         }
 
         private void serialBarcodeReader1_OnBarcodeScanned(object sender, SerialBarcodeReader.BarcodeScannedEventArgs e)
@@ -323,5 +341,120 @@ namespace PasseroDemo.Views
                 }
             }
         }
+
+        private void ConfigureSecurity()
+        {
+            var currentUser = ConfigurationManager.GetSessionConfigurationKeyValue("General", "CurrentUser");
+            var currentPrincipalId = string.IsNullOrWhiteSpace(currentUser)
+                ? null
+                : $"user:{currentUser.Trim()}";
+            var configuredAclFilePath = ConfigurationManager.GetConfigurationKeyValue("Security", "AclFilePath");
+            var aclFilePath = ResolveAclFilePath(configuredAclFilePath);
+            var identityFilePath = ResolveAclFilePath(
+                ConfigurationManager.GetConfigurationKeyValue("Security", "IdentityFilePath"),
+                "Security/UsersAndRoles.json");
+
+            vmAuthor.SecurityService = new AccessControlSecurityService(
+                new JsonSecurityPrincipalProvider(
+                    identityFilePath,
+                    () => ConfigurationManager.GetSessionConfigurationKeyValue("General", "CurrentUser")),
+                new JsonAccessControlListProvider(aclFilePath, currentPrincipalId));
+        }
+
+        private static string ResolveAclFilePath(string configuredPath, string defaultPath = "Security/Authors.acl.json")
+        {
+            string relativePath = string.IsNullOrWhiteSpace(configuredPath)
+                ? defaultPath
+                : configuredPath.Trim();
+
+            if (Path.IsPathRooted(relativePath))
+            {
+                if (File.Exists(relativePath))
+                    return Path.GetFullPath(relativePath);
+
+                throw new FileNotFoundException($"Il file ACL configurato non esiste: '{relativePath}'.");
+            }
+
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var candidates = new System.Collections.Generic.List<string>
+            {
+                Path.Combine(baseDirectory, relativePath)
+            };
+
+            string applicationDirectory = Path.GetFullPath(Path.Combine(baseDirectory, "."));
+            string applicationBinDirectory = Path.Combine(applicationDirectory, "bin");
+            candidates.Add(Path.Combine(applicationBinDirectory, relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Debug", "net9.0", relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Debug", "net8.0", relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Debug", "net48", relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Release", "net9.0", relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Release", "net8.0", relativePath));
+            candidates.Add(Path.Combine(applicationBinDirectory, "Release", "net48", relativePath));
+
+            foreach (string candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return Path.GetFullPath(candidate);
+            }
+
+            throw new FileNotFoundException(
+                $"File ACL '{relativePath}' non trovato. Percorsi verificati: {string.Join("; ", candidates)}");
+        }
+
+        private bool IsAuthorOperationAllowed(AccessPermission permission)
+        {
+            try
+            {
+                SecurityAuthorization.DemandRepositoryOperation(
+                    vmAuthor.SecurityService,
+                    typeof(Models.Author),
+                    vmAuthor.GetType(),
+                    permission);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        private void DemandAuthorReadAccess()
+        {
+            SecurityAuthorization.DemandRepositoryOperation(
+                vmAuthor.SecurityService,
+                typeof(Models.Author),
+                vmAuthor.GetType(),
+                AccessPermission.Read);
+        }
+
+        private void ApplySecurityToUi()
+        {
+            bool canRead = IsAuthorOperationAllowed(AccessPermission.Read);
+            bool canInsert = IsAuthorOperationAllowed(AccessPermission.Insert);
+            bool canWrite = IsAuthorOperationAllowed(AccessPermission.Write);
+            bool canDelete = IsAuthorOperationAllowed(AccessPermission.Delete);
+            bool canEdit = canInsert || canWrite;
+
+            dataNavigator1.FindEnabled = canRead;
+            dataNavigator1.RefreshEnabled = canRead;
+            dataNavigator1.PrintEnabled = canRead;
+            dataNavigator1.AddNewEnabled = canInsert;
+            dataNavigator1.SaveEnabled = canEdit;
+            dataNavigator1.DeleteEnabled = canDelete;
+            dataNavigator1.UndoEnabled = canEdit;
+
+            ApplyPropertySecurityToUi(canEdit);
+        }
+
+        private void ApplyPropertySecurityToUi(bool canWriteModel = false)
+        {
+            ControlsUtilities.ApplyPropertySecurityToBoundControls(
+                this,
+                bsAuthors,
+                typeof(Models.Author),
+                vmAuthor.SecurityService,
+                canWriteModel);
+        }
+
     }
 }

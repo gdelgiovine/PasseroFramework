@@ -1,11 +1,15 @@
 <Project>
 
   <PropertyGroup>
+	  <Solution_TargetFrameworks>net48;net8.0;net9.0</Solution_TargetFrameworks>
+	  <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
       <Solution_PasseroVersion>1.0.0</Solution_PasseroVersion>
       <Solution_WisejNETFamily>Wisej-4</Solution_WisejNETFamily>
-      <Solution_WisejNETVersion>4.1.1</Solution_WisejNETVersion>
+	  <Solution_WisejNETVersion>4.1.6</Solution_WisejNETVersion>
+      <Solution_WisejNETVersionBase>4.1.6</Solution_WisejNETVersionBase>
+	  <Solution_WisejNETVersionExtensions>4.1.6</Solution_WisejNETVersionExtensions>
       <Solution_WisejNETVersionFlat>$(Solution_WisejNETVersion.Replace('.', ''))</Solution_WisejNETVersionFlat>
-	  <Solution_DapperVersion>2.1.79</Solution_DapperVersion>
+	  <Solution_DapperVersion>2.1.89</Solution_DapperVersion>
 	  <Solution_CompleteVersion>$(Solution_PasseroVersion).$(Solution_WisejNETVersionFlat)</Solution_CompleteVersion>
       <Solution_Version>$(Solution_CompleteVersion)</Solution_Version>
       <Solution_Authors>Gabriele Del Giovine</Solution_Authors>

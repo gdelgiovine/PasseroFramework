@@ -74,10 +74,14 @@ namespace Passero.Framework
             {
                 throw new InvalidOperationException("Nessuna primary key definita sul modello.");
             }
+
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Write);
         }
 
         private void ValidateUpdateItemsContext(IEnumerable<ModelClass> modelItems, IList<ModelClass> shadows)
         {
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Write);
+
             if (modelItems == null)
             {
                 throw new InvalidOperationException("Nessun elenco di elementi da aggiornare.");
@@ -290,6 +294,7 @@ namespace Passero.Framework
         {
             var ER = new ExecutionResult($"{mClassName}.UpdateItemAsync()");
             bool result = false;
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Write);
 
             if (Model == null)
             {

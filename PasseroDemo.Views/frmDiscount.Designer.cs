@@ -38,8 +38,7 @@
             this.txt_Discount_highqty = new Wisej.Web.NumericUpDown();
             this.txt_Store_stor_name = new Wisej.Web.TextBox();
             this.txt_Store_stor_city = new Wisej.Web.TextBox();
-            this.textBox1 = new Wisej.Web.TextBox();
-            this.txt_Discount_store_id = new Passero.Framework.Controls.DbLookUpTextBox(this.components);
+            this.txt_Discount_store_id = new Passero.Framework.Controls.DbLookUpTextBoxN(this.components);
             this.dataNavigator1 = new Passero.Framework.Controls.DataNavigator();
             this.flpDiscount = new Wisej.Web.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.bsDiscount)).BeginInit();
@@ -86,7 +85,7 @@
             this.txt_Discount_discount.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Discount_discount.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Discount_discount.LabelText = "Discount %";
-            this.txt_Discount_discount.Location = new System.Drawing.Point(175, 53);
+            this.txt_Discount_discount.Location = new System.Drawing.Point(465, 3);
             this.txt_Discount_discount.Name = "txt_Discount_discount";
             this.txt_Discount_discount.Size = new System.Drawing.Size(80, 46);
             this.txt_Discount_discount.TabIndex = 5;
@@ -98,7 +97,7 @@
             this.txt_Discount_lowqty.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Discount_lowqty.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Discount_lowqty.LabelText = "Low Qty";
-            this.txt_Discount_lowqty.Location = new System.Drawing.Point(3, 53);
+            this.txt_Discount_lowqty.Location = new System.Drawing.Point(293, 3);
             this.txt_Discount_lowqty.Maximum = new decimal(9999999);
             this.txt_Discount_lowqty.Name = "txt_Discount_lowqty";
             this.txt_Discount_lowqty.Size = new System.Drawing.Size(80, 46);
@@ -112,7 +111,7 @@
             this.txt_Discount_highqty.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Discount_highqty.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Discount_highqty.LabelText = "High Qty";
-            this.txt_Discount_highqty.Location = new System.Drawing.Point(89, 53);
+            this.txt_Discount_highqty.Location = new System.Drawing.Point(379, 3);
             this.txt_Discount_highqty.Maximum = new decimal(9999999);
             this.txt_Discount_highqty.Name = "txt_Discount_highqty";
             this.txt_Discount_highqty.Size = new System.Drawing.Size(80, 46);
@@ -126,7 +125,7 @@
             this.txt_Store_stor_name.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Store_stor_name.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Store_stor_name.LabelText = "Store Name";
-            this.txt_Store_stor_name.Location = new System.Drawing.Point(129, 105);
+            this.txt_Store_stor_name.Location = new System.Drawing.Point(129, 55);
             this.txt_Store_stor_name.Name = "txt_Store_stor_name";
             this.txt_Store_stor_name.ReadOnly = true;
             this.txt_Store_stor_name.Size = new System.Drawing.Size(287, 44);
@@ -139,23 +138,11 @@
             this.txt_Store_stor_city.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Store_stor_city.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Store_stor_city.LabelText = "Store City";
-            this.txt_Store_stor_city.Location = new System.Drawing.Point(422, 105);
+            this.txt_Store_stor_city.Location = new System.Drawing.Point(422, 55);
             this.txt_Store_stor_city.Name = "txt_Store_stor_city";
             this.txt_Store_stor_city.ReadOnly = true;
             this.txt_Store_stor_city.Size = new System.Drawing.Size(215, 44);
             this.txt_Store_stor_city.TabIndex = 8;
-            // 
-            // textBox1
-            // 
-            this.textBox1.DataBindings.Add(new Wisej.Web.Binding("Text", this.bsDiscount, "stor_id", true, Wisej.Web.DataSourceUpdateMode.OnValidation, null, ""));
-            this.flpDiscount.SetFlowBreak(this.textBox1, true);
-            this.textBox1.Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.textBox1.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
-            this.textBox1.LabelText = "Discount Type";
-            this.textBox1.Location = new System.Drawing.Point(293, 3);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(122, 44);
-            this.textBox1.TabIndex = 2;
             // 
             // txt_Discount_store_id
             // 
@@ -164,7 +151,7 @@
             this.txt_Discount_store_id.Label.Font = new System.Drawing.Font("default", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txt_Discount_store_id.Label.Padding = new Wisej.Web.Padding(0, 0, 0, 3);
             this.txt_Discount_store_id.LabelText = "Store Id";
-            this.txt_Discount_store_id.Location = new System.Drawing.Point(3, 105);
+            this.txt_Discount_store_id.Location = new System.Drawing.Point(3, 55);
             this.txt_Discount_store_id.Name = "txt_Discount_store_id";
             this.txt_Discount_store_id.Size = new System.Drawing.Size(120, 44);
             this.txt_Discount_store_id.TabIndex = 6;
@@ -173,6 +160,7 @@
             componentTool1.ToolTipText = "Search";
             this.txt_Discount_store_id.Tools.AddRange(new Wisej.Web.ComponentTool[] {
             componentTool1});
+            this.txt_Discount_store_id.ToolClick += new Wisej.Web.ToolClickEventHandler(this.txt_Discount_store_id_ToolClick);
             this.txt_Discount_store_id.TextChanged += new System.EventHandler(this.txt_Discount_store_id_TextChanged);
             // 
             // dataNavigator1
@@ -203,7 +191,6 @@
             // 
             this.flpDiscount.Controls.Add(this.txt_Discount_discount_id);
             this.flpDiscount.Controls.Add(this.txt_Discount_discount_type);
-            this.flpDiscount.Controls.Add(this.textBox1);
             this.flpDiscount.Controls.Add(this.txt_Discount_lowqty);
             this.flpDiscount.Controls.Add(this.txt_Discount_highqty);
             this.flpDiscount.Controls.Add(this.txt_Discount_discount);
@@ -218,7 +205,7 @@
             // 
             // frmDiscount
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(664, 351);
             this.Controls.Add(this.flpDiscount);
@@ -245,10 +232,9 @@
         private Wisej.Web.NumericUpDown txt_Discount_discount;
         private Wisej.Web.NumericUpDown txt_Discount_lowqty;
         private Wisej.Web.NumericUpDown txt_Discount_highqty;
-        private Passero.Framework.Controls.DbLookUpTextBox txt_Discount_store_id;
+        private Passero.Framework.Controls.DbLookUpTextBoxN txt_Discount_store_id;
         private Wisej.Web.TextBox txt_Store_stor_name;
         private Wisej.Web.TextBox txt_Store_stor_city;
-        internal Wisej.Web.TextBox textBox1;
         private Wisej.Web.FlowLayoutPanel flpDiscount;
     }
 }

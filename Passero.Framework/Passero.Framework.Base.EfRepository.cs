@@ -27,12 +27,28 @@ namespace Passero.Framework
     /// Disponibile solo su .NET 5+. Dipende da <see cref="IPasseroDbContext"/>
     /// per intercambiabilità con <see cref="Ef6Repository{ModelClass}"/> su .NET 4.8.
     /// </summary>
-    public class EfRepository<ModelClass> : IPasseroRepository<ModelClass>
+    public class EfRepository<ModelClass> : IPasseroRepository<ModelClass>, ISecurityAwareRepository
         where ModelClass : class
     {
         private const string _mClassName = "Passero.Framework.EfRepository";
         private readonly IPasseroDbContext _dbContext;
         private bool _disposed;
+        private ISecurityService _securityService = DisabledSecurityService.Instance;
+
+        public ISecurityService SecurityService
+        {
+            get => _securityService;
+            set => _securityService = value ?? DisabledSecurityService.Instance;
+        }
+
+        private void DemandSecurityAccess(AccessPermission permission)
+        {
+            SecurityAuthorization.DemandRepositoryOperation(
+                SecurityService,
+                typeof(ModelClass),
+                ViewModel?.GetType(),
+                permission);
+        }
 
         private DbParameterCollection _parameterCollection;
 
@@ -121,6 +137,8 @@ namespace Passero.Framework
             {
                 throw new InvalidOperationException("Il DbContext EF non è stato inizializzato.");
             }
+
+            DemandSecurityAccess(AccessPermission.Delete);
         }
 
         private int ExecuteInTransaction(Func<int> operation, IDbTransaction transaction = null)
@@ -250,6 +268,8 @@ namespace Passero.Framework
             {
                 throw new InvalidOperationException("Il DbContext EF non è stato inizializzato.");
             }
+
+            DemandSecurityAccess(operation == "inserire" ? AccessPermission.Insert : AccessPermission.Write);
         }
 
         private void SyncAfterWrite(ModelClass entity)
@@ -511,6 +531,7 @@ namespace Passero.Framework
             IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetAllItems()");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(SQLQuery);
@@ -546,6 +567,7 @@ namespace Passero.Framework
             IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetAllItemsAsync()");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(SQLQuery);
@@ -579,6 +601,7 @@ namespace Passero.Framework
             Func<IQueryable<ModelClass>, IQueryable<ModelClass>> query)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetItems(LINQ)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 ApplyResults(query(_dbContext.Set<ModelClass>()).ToList());
@@ -593,6 +616,7 @@ namespace Passero.Framework
             Func<IQueryable<ModelClass>, IQueryable<ModelClass>> query)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetItemsAsync(LINQ)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 ApplyResults(await _dbContext.ToListAsync(query(_dbContext.Set<ModelClass>())));
@@ -627,6 +651,7 @@ namespace Passero.Framework
             int? commandTimeout = null)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetItems(SQL)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(query);
@@ -649,6 +674,7 @@ namespace Passero.Framework
             int? commandTimeout = null)
         {
             var er = new ExecutionResult<IList<ModelClass>>($"{_mClassName}.GetItemsAsync(SQL)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(query);
@@ -673,6 +699,7 @@ namespace Passero.Framework
             int? commandTimeout = null)
         {
             var er = new ExecutionResult<ModelClass>($"{_mClassName}.GetItem(SQL)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(query);
@@ -697,6 +724,7 @@ namespace Passero.Framework
             int? commandTimeout = null)
         {
             var er = new ExecutionResult<ModelClass>($"{_mClassName}.GetItemAsync(SQL)");
+            DemandSecurityAccess(AccessPermission.Read);
             try
             {
                 string queryToRun = NormalizeQuery(query);
@@ -727,6 +755,7 @@ namespace Passero.Framework
         public ExecutionResult Execute(string sql, params object[] parameters)
         {
             var er = new ExecutionResult($"{_mClassName}.Execute()");
+            DemandSecurityAccess(AccessPermission.FullControl);
             try
             {
                 er.Value = _dbContext.ExecuteSql(sql, parameters);
@@ -740,6 +769,7 @@ namespace Passero.Framework
         public async Task<ExecutionResult> ExecuteAsync(string sql, params object[] parameters)
         {
             var er = new ExecutionResult($"{_mClassName}.ExecuteAsync()");
+            DemandSecurityAccess(AccessPermission.FullControl);
             try
             {
                 er.Value = await _dbContext.ExecuteSqlAsync(sql, parameters);
@@ -1106,6 +1136,7 @@ namespace Passero.Framework
             IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.UpdateItems()");
+            DemandSecurityAccess(AccessPermission.Write);
             try
             {
                 items ??= ModelItems;
@@ -1126,6 +1157,7 @@ namespace Passero.Framework
             IEnumerable<ModelClass> items = null, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var er = new ExecutionResult($"{_mClassName}.UpdateItemsAsync()");
+            DemandSecurityAccess(AccessPermission.Write);
             try
             {
                 items ??= ModelItems;

@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Passero.Framework.Base;
+﻿using Passero.Framework.Base;
 
 
 namespace PasseroDemo.ViewModels
@@ -18,9 +17,9 @@ namespace PasseroDemo.ViewModels
 
         public Models.Author GetAuthor(string au_id)
         {
-            return this.Repository.DbConnection.Query<Models.Author>(
+            return this.GetItems(
                 $"Select * FROM {this.Repository.GetTableName()} Where au_id=@au_id",
-                new { au_id }).Single();
+                new { au_id }).Value.Single();
         }
 
 
@@ -33,11 +32,9 @@ namespace PasseroDemo.ViewModels
                 return string.Empty;
             }
 
-          var author = this.Repository.DbConnection
-                .Query<Models.Author>(
-                    $"SELECT * FROM {this.Repository.GetTableName()} WHERE au_id=@au_id",
-                    new { au_id = au_id })
-                .FirstOrDefault();
+            var author = this.Repository.GetItem(
+                $"SELECT * FROM {this.Repository.GetTableName()} WHERE au_id=@au_id",
+                new { au_id = au_id }).Value;
 
             return author?.au_fullname ?? string.Empty;
 

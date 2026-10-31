@@ -19,6 +19,7 @@ namespace Passero.Framework
         {
             Repository<ModelClass> newrepository = new Repository<ModelClass>();
             newrepository.DbConnection = DbConnection;
+            newrepository.SecurityService = SecurityService;
             //newrepository.DbContext = DbContext;
             return newrepository;
         }
@@ -60,6 +61,8 @@ namespace Passero.Framework
             {
                 throw new InvalidOperationException("Nessuna proprietà disponibile per l'insert.");
             }
+
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Insert);
         }
 
         private long WriteBackIdentity(ModelClass model, object scalarValue)

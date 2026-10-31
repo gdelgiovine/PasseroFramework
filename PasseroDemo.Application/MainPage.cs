@@ -150,6 +150,26 @@ namespace PasseroDemo.Application
         private void ManageNavigationBar(string ItemName)
         {
 
+            if (ItemName == mnuAuthentication.Name)
+            {
+                var userStore = Wisej.Web.Application.Session["PASSERO_AUTHENTICATION_STORE"]
+                    as Passero.Framework.Base.IAuthenticationUserStore;
+                var currentUser = Passero.Framework.Base.AuthenticatedSecuritySession.Current;
+                var user = currentUser == null ? null : userStore?.GetUser(currentUser.UserName);
+                if (user == null || !user.Enabled || user.Lockout ||
+                    (!System.Linq.Enumerable.Contains(user.Roles, Passero.Framework.Base.AuthenticationBuiltinIds.AdministratorRole) &&
+                     !System.Linq.Enumerable.Contains(user.Groups, Passero.Framework.Base.AuthenticationBuiltinIds.AdministratorsGroup)))
+                {
+                    MessageBox.Show("Accesso negato.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var administrationForm = new AuthenticationAdministrationForm(userStore);
+                administrationForm.MdiParent = this.MDIWindow;
+                administrationForm.Show();
+                return;
+            }
+
 
             if (ItemName == mnuTestTable .Name)
             {
@@ -329,7 +349,6 @@ namespace PasseroDemo.Application
           
 
         }
-
 
         private void MaiPage_Load(object sender, EventArgs e)
         {

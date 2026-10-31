@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+	  <TargetFrameworks>$(Solution_TargetFrameworks)</TargetFrameworks>
     <WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
     <WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
-    <OutputType>Library</OutputType>
+	  <WisejNETVersionBase>$(Solution_WisejNETVersionBase)</WisejNETVersionBase>
+	  <WisejNETVersionExtensions>$(Solution_WisejNETVersionExtensions)</WisejNETVersionExtensions>
+
+	  <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("-", "_"))</RootNamespace>
@@ -22,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
-	<PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
+	<PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
   </ItemGroup>
 
   <ItemGroup>

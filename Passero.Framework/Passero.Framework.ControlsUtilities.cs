@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using Passero.Framework.Base;
 using Wisej.Web;
 
 
@@ -160,6 +161,87 @@ namespace Passero.Framework
             }
 
             return affected;
+        }
+
+        public static IReadOnlyList<Control> ApplyPropertySecurityToBoundControls(
+            Control root,
+            BindingSource bindingSource,
+            Type modelType,
+            ISecurityService securityService,
+            bool canWriteModel = true)
+        {
+            var affected = new List<Control>();
+            if (root == null || bindingSource == null || modelType == null || securityService == null)
+                return affected;
+
+            ApplyPropertySecurityToBoundControlsRecursive(
+                root,
+                bindingSource,
+                modelType,
+                securityService,
+                canWriteModel,
+                affected);
+            return affected;
+        }
+
+        private static void ApplyPropertySecurityToBoundControlsRecursive(
+            Control root,
+            BindingSource bindingSource,
+            Type modelType,
+            ISecurityService securityService,
+            bool canWriteModel,
+            IList<Control> affected)
+        {
+            foreach (Control control in root.Controls)
+            {
+                if (control.HasDataBindings)
+                {
+                    foreach (Binding binding in control.DataBindings)
+                    {
+                        if (binding.DataSource != bindingSource)
+                            continue;
+
+                        string propertyName = binding.BindingMemberInfo.BindingField;
+                        string resourceId = $"{SecurityAuthorization.GetResourceId(modelType)}.{propertyName}";
+                        bool canRead = !securityService.IsEnabled || securityService.IsAllowed(
+                            SecurityScope.Property,
+                            resourceId,
+                            AccessPermission.Read);
+                        bool canWrite = canWriteModel && (!securityService.IsEnabled || securityService.IsAllowed(
+                            SecurityScope.Property,
+                            resourceId,
+                            AccessPermission.Write));
+
+                        control.Visible = canRead;
+
+                        var readOnlyProperty = control.GetType().GetProperty(
+                            "ReadOnly",
+                            BindingFlags.Public | BindingFlags.Instance);
+                        if (readOnlyProperty != null && readOnlyProperty.CanWrite)
+                        {
+                            readOnlyProperty.SetValue(control, !canWrite);
+                        }
+                        else
+                        {
+                            var enabledProperty = control.GetType().GetProperty(
+                                "Enabled",
+                                BindingFlags.Public | BindingFlags.Instance);
+                            if (enabledProperty != null && enabledProperty.CanWrite)
+                                enabledProperty.SetValue(control, canWrite);
+                        }
+
+                        affected.Add(control);
+                    }
+                }
+
+                ApplyPropertySecurityToBoundControlsRecursive(
+                    control,
+                    bindingSource,
+                    modelType,
+                    securityService,
+                    canWriteModel,
+                    affected);
+            }
         }
 
 

@@ -3,9 +3,11 @@
 
 	<PropertyGroup>
 		<RootNamespace>PasseroDemo.Reports</RootNamespace>
-		<TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>$(Solution_TargetFrameworks)</TargetFrameworks>
 		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
+		<WisejNETVersionBase>$(Solution_WisejNETVersionBase)</WisejNETVersionBase>
+		<WisejNETVersionExtensions>$(Solution_WisejNETVersionExtensions)</WisejNETVersionExtensions>
 		<LangVersion>latest</LangVersion>
 		<SignAssembly>False</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\Passero.Framework.PublicKey.snk</AssemblyOriginatorKeyFile>
@@ -14,7 +16,7 @@
 	
 
 	<ItemGroup>
-	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
+	  <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
 	  <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
 	</ItemGroup>
 

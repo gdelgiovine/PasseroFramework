@@ -36,11 +36,11 @@ namespace PasseroDemo.Views
             
             this.txt_Discount_store_id.DbConnection = this.DbConnection;
             this.txt_Discount_store_id.ModelClass = typeof(Models.Store);
-            //this.txt_Discount_store_id.DisplayMember = nameof(Models.Store.stor_id);
+            this.txt_Discount_store_id.DisplayMember = nameof(Models.Store.stor_id);
             //this.txt_Discount_store_id.DisplayMember = nameof(Models.Store.mcode);
             this.txt_Discount_store_id.ValueMember = nameof(Models.Store.stor_id);
-            this.txt_Discount_store_id.LookUpMode = DbLookUpTextBox.LookUpModes.Standard  ;
-            this.txt_Discount_store_id.LookUpOnEdit = false;    
+            this.txt_Discount_store_id.LookUpMode = DbLookUpTextBoxN.LookUpModes.Standard  ;
+            this.txt_Discount_store_id.LookUpOnEdit = true;
             this.txt_Discount_store_id.AddControl(txt_Store_stor_name, "text", nameof(Models.Store.stor_name));
             this.txt_Discount_store_id.AddControl(txt_Store_stor_city, "text", nameof(Models.Store.city));
             ////this.txt_Discount_store_id.SelectClause = "SELECT *, TRIM(au_fname)+' '+TRIM(au_lname) as au_fullname";
@@ -251,6 +251,11 @@ namespace PasseroDemo.Views
         private void dataNavigator1_eAddNewCompleted()
         {
             MessageBox.Show("AddNew Completed");
+        }
+
+        private void txt_Discount_store_id_ToolClick(object sender, ToolClickEventArgs e)
+        {
+
         }
     }
 }

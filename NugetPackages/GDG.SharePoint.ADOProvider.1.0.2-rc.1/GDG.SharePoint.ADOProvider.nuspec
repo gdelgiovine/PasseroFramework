@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>GDG.SharePoint.ADOProvider</id>
+    <version>1.0.2-rc.1</version>
+    <title>GDG.SharePoint.ADOProvider</title>
+    <authors>Gabriele Del Giovine</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">LICENSE.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/gdelgiovine/GDG.SharePoint.ADOProvider</projectUrl>
+    <description>REST-only ADO.NET provider for Microsoft SharePoint Online and SharePoint Server Subscription Edition.</description>
+    <releaseNotes>RC1 prerelease: REST-only ADO.NET provider for SharePoint Online/Server SE, commercial proprietary EULA, security hardening SEC-01..SEC-05, CycloneDX SBOM sidecars for all TFMs. See RELEASE_CANDIDATE_RC1.md and SECURITY.md. This package is NOT a CRA conformity declaration or CE marking.</releaseNotes>
+    <copyright>Copyright (c) Gabriele Del Giovine 2026</copyright>
+    <tags>SharePoint ADO.NET ADO REST SharePoint Online SharePoint Server Data Provider</tags>
+    <repository type="git" url="https://github.com/gdelgiovine/GDG.SharePoint.ADOProvider" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Microsoft.Identity.Client" version="4.87.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.8">
+        <dependency id="Microsoft.Identity.Client" version="4.87.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.Identity.Client" version="4.87.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.8" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

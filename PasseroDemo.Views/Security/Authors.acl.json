@@ -1,0 +1,64 @@
+{
+  "SchemaVersion": 2,
+  "Defaults": [
+    {
+      "Scope": "Model",
+      "ResourcePattern": "PasseroDemo.Models.Author",
+      "Rules": [
+        { "PrincipalId": "passero:everyone", "Permissions": "Read", "Effect": "Allow" },
+        { "PrincipalId": "role:authenticated", "Permissions": "FullControl", "Effect": "Allow" },
+        { "PrincipalId": "user:test", "Permissions": "Write", "Effect": "Allow" }
+      ]
+    },
+    {
+      "Scope": "Repository",
+      "ResourcePattern": "PasseroDemo.Models.Author",
+      "Rules": [
+        { "PrincipalId": "passero:everyone", "Permissions": "Read", "Effect": "Allow" },
+        { "PrincipalId": "role:authenticated", "Permissions": "FullControl", "Effect": "Allow" },
+        { "PrincipalId": "user:test", "Permissions": "Write", "Effect": "Allow" }
+      ]
+    },
+    {
+      "Scope": "ViewModel",
+      "ResourcePattern": "PasseroDemo.ViewModels.vmAuthor",
+      "Rules": [
+        { "PrincipalId": "passero:everyone", "Permissions": "Read", "Effect": "Allow" },
+        { "PrincipalId": "role:authenticated", "Permissions": "FullControl", "Effect": "Allow" },
+        { "PrincipalId": "user:test", "Permissions": "Write", "Effect": "Allow" }
+      ]
+    },
+    {
+      "Scope": "Property",
+      "ResourcePattern": "PasseroDemo.Models.Author.*",
+      "Rules": [
+        { "PrincipalId": "passero:everyone", "Permissions": "Read", "Effect": "Allow" },
+        { "PrincipalId": "role:authenticated", "Permissions": "FullControl", "Effect": "Allow" }
+      ]
+    }
+  ],
+  "Exceptions": [
+    {
+      "Scope": "Property",
+      "ResourceId": "PasseroDemo.Models.Author.email",
+      "InheritDefaults": true,
+      "Rules": [
+        {
+          "PrincipalId": "role:anonymous",
+          "Permissions": "Read",
+          "Effect": "Deny"
+        },
+        {
+          "PrincipalId": "role:test",
+          "Permissions": "Write",
+          "Effect": "Deny"
+        },
+        {
+          "PrincipalId":  "user:test2",
+          "Permissions": "Write",
+          "Effect": "Allow"
+        }
+      ]
+    }
+  ]
+}

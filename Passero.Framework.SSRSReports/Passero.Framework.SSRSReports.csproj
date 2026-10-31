@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+	  <TargetFrameworks>$(Solution_TargetFrameworks)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -18,6 +18,8 @@
 		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
 		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
+		<WisejNETVersionBase>$(Solution_WisejNETVersionBase)</WisejNETVersionBase>
+		<WisejNETVersionExtensions>$(Solution_WisejNETVersionExtensions)</WisejNETVersionExtensions>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
 		<Authors>$(Solution_Authors)</Authors>
@@ -55,9 +57,9 @@
     <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
     <PackageReference Include="MiniExcel" Version="1.45.0" />
-    <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
-	<PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
-	<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.18" />
+    <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
+	<PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersionExtensions)" />
+	<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.22" />
 	  
 	  
 
@@ -70,6 +72,10 @@
 		<PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
     </ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" />
+		<PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" />
 		<PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
 	</ItemGroup>

@@ -51,6 +51,8 @@ namespace Passero.Framework
             {
                 throw new InvalidOperationException("Nessuna primary key definita sul modello.");
             }
+
+            DemandSecurityAccess(Passero.Framework.Base.AccessPermission.Delete);
         }
 
         private DynamicParameters CreateDeleteParameters(ModelClass model)

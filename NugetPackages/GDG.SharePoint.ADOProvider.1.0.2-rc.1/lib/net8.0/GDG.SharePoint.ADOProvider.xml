@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GDG.SharePoint.ADOProvider</name>
+    </assembly>
+    <members>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.EstimateErrorCalculator.Calculate(System.Int64,System.Int64)">
+            <summary>Symmetric q-error with a one-row zero guard; both zero is a perfect factor of one.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.CardinalityEstimator">
+            <summary>
+            Conservative cardinality estimator used by CBO_V2.  It deliberately uses only
+            metadata available through SharePoint REST and never performs data sampling.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.DirectRestClient">
+            <summary>
+            Executes all SharePoint operations in-process through the SharePoint REST service.
+            The same runtime is used for SharePoint Online and SharePoint Server Subscription Edition.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.ODataContinuationGuard">
+            <summary>
+            Limits REST/OData continuation chains, including empty pages and cycles.
+            All link identities are canonicalized using the central SEC-01 origin guard.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.ProviderRequest.ReturnGeneratedValues">
+            <summary>When true, mutation commands may return generated values (for example INSERT item IDs).</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.ProviderResult.CamlQueries">
+            <summary>
+            CAML ViewXml fragments actually sent through SharePoint REST while executing the SQL command.
+            More than one entry may be present for subqueries or mutation batches.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.WireValue.RuntimeValue">
+            <summary>In-process value used for non-serializable parameter types such as Stream.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.RestRuntime">
+            <summary>
+            Document-library SELECT source extensions. Folder selection and CAML scope are SQL
+            statement properties, not connection properties, so each query can independently choose
+            its starting folder and traversal semantics.
+            </summary>
+            <summary>
+            Phase 6 execution surface: UNION/UNION ALL, expression-based UPDATE and INSERT ... SELECT.
+            Pre-Phase-6 statements continue through the established runtime unchanged.
+            </summary>
+            <summary>
+            Phase 6 cardinality guard.
+            UNION branches and INSERT ... SELECT sources must not inherit the connection-level MaxRows
+            as an implicit per-branch/per-source truncation. MaxRows applies to the final UNION rowset,
+            while INSERT ... SELECT is governed by MaxMutationItems.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.RelationalPlanCache">
+            <summary>Process-local, bounded cache of immutable relational physical-plan choices.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.RestBatchJsonRequest.Method">
+            <summary>Actual HTTP verb used by the operation inside the OData changeset.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.RestBatchJsonRequest.MethodOverride">
+            <summary>Optional SharePoint method override for operations that intentionally use POST tunnelling.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.RestBatchJsonRequest.UseNoMetadataResponse">
+            <summary>Use JSON light for the sub-response to reduce OData metadata.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.Internal.RestBatchJsonRequest.PreferReturnNoContent">
+            <summary>Ask the OData service not to return an entity body for a successful mutation.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport">
+            <summary>
+            Cross-target, in-process SharePoint REST transport used by the provider for both
+            SharePoint Online and SharePoint Server Subscription Edition.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.TryGetJson(System.String,System.Int32,System.Threading.CancellationToken,Newtonsoft.Json.Linq.JObject@)">
+            <summary>GET that returns false only for HTTP 404, preserving all other SharePoint errors.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.PostJsonLight(System.String,Newtonsoft.Json.Linq.JObject,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+            <summary>POST returning JSON light (no OData metadata) when generated values are required.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.PostMutation(System.String,Newtonsoft.Json.Linq.JObject,System.Boolean,System.String,System.String,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+            <summary>Executes a write operation whose entity representation is not required by the caller.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.GetBinary(System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Downloads a binary SharePoint file value without interpreting it as JSON.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.PostBinaryJson(System.String,System.Object,System.String,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+            <summary>Uploads binary content and returns a JSON response when SharePoint emits one.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.PutBinary(System.String,System.Object,System.String,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+            <summary>Replaces the binary value of an existing SharePoint file using the REST PUT tunnel.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.GetJsonBatch(System.Collections.Generic.IList{System.String},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Executes multiple independent REST GET requests in one SharePoint OData $batch envelope.
+            Read requests intentionally stay outside a changeset, as required by the OData batch model.
+            The returned list preserves request order.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointRestTransport.PostJsonBatch(System.Collections.Generic.IList{GDG.SharePoint.ADOProvider.Internal.RestBatchJsonRequest},System.Int32,System.Threading.CancellationToken,System.Boolean,System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Executes multiple REST write operations inside one SharePoint OData $batch changeset.
+            Each operation carries its actual HTTP verb (POST/MERGE/DELETE) in the MIME sub-request.
+            The returned list preserves request order. SharePoint changesets are used for transport
+            batching only; SharePoint does not provide an ADO.NET-style transaction guarantee.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.SharePointSqlParser">
+            <summary>
+            Phase 6 parser entry points. The established parser remains the implementation for every
+            pre-Phase-6 statement; this partial only adds set operations and DML scalar expressions.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.Internal.SharePointSqlParser.ParseSelectProjectionPhase5">
+            <summary>
+            Phase 5 projection parser. Aggregate syntax remains a first-class projection; all other
+            non-trivial projections are represented by the internal scalar-expression AST.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.Internal.SqlScalarExpression">
+            <summary>
+            Internal scalar-expression AST. It is deliberately not part of the public ADO.NET surface.
+            Field references are bound by the relational engine before execution.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointProviderFactory">
+            <summary>ADO.NET provider factory for invariant name GDG.SharePoint.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.GDGSharePointProviderFactory">
+            <summary>Compatibility factory name retained for 0.x callers.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastCaml">
+            <summary>
+            Gets the last CAML ViewXml generated by this command.
+            Returns an empty string when the last execution did not require CAML.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastCamlQueries">
+            <summary>
+            Gets all CAML ViewXml fragments generated by the last execution of this command.
+            Multiple entries can occur because of paging, subqueries or a mutation batch.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastRestCommand">
+            <summary>Gets the last formatted SharePoint REST exchange generated by this command.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastRestCommands">
+            <summary>Gets all formatted SharePoint REST exchanges generated by the last execution of this command.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastRestRoundTripCount">
+            <summary>Gets the number of actual HTTP round-trips performed by the last execution of this command.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointCommand.LastRestBatchSubRequestCount">
+            <summary>Gets the number of logical sub-requests carried inside REST $batch calls by the last execution of this command.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointCommandBuilder">
+            <summary>
+            Generates single-table INSERT, UPDATE and DELETE commands for SharePointDataAdapter.
+            The provider uses SharePoint list item identity (normally ID) for UPDATE/DELETE conflict matching.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastCaml">
+            <summary>
+            Gets the last CAML ViewXml generated by the most recent command executed on this connection.
+            Returns an empty string when the command did not require CAML (for example INSERT or DDL).
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastCamlQueries">
+            <summary>
+            Gets all CAML ViewXml fragments generated by the most recent command executed on this connection.
+            Multiple entries can occur because of paging, subqueries or a multi-statement mutation batch.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestCommand">
+            <summary>Gets the last formatted SharePoint REST exchange generated by the most recent operation.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestCommands">
+            <summary>Gets all formatted SharePoint REST exchanges generated by the most recent operation.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestRoundTripCount">
+            <summary>Gets the number of actual HTTP round-trips performed by the most recent operation.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestBatchSubRequestCount">
+            <summary>Gets the number of logical write sub-requests carried inside REST $batch calls by the most recent operation.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestHttpSendMs">
+            <summary>Milliseconds spent awaiting HTTP response headers in the last operation (optional).</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestResponseReadMs">
+            <summary>Milliseconds reading REST response bodies in the last operation (optional).</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointConnection.LastRestBatchParseMs">
+            <summary>Milliseconds parsing OData multipart batch responses in the last operation (optional).</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointRowUpdatingEventArgs">
+            <summary>Provider-specific RowUpdating event arguments.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointRowUpdatedEventArgs">
+            <summary>Provider-specific RowUpdated event arguments.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointDataAdapter">
+            <summary>
+            ADO.NET DataAdapter for GDG.SharePoint.ADOProvider.
+            Fill/FillSchema and row-by-row Update semantics are provided by DbDataAdapter.
+            DML commands may be supplied explicitly or generated by SharePointCommandBuilder.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointDataAdapter.UpdateBatchSize">
+            <summary>
+            DataAdapter batching is not implemented in 1.0.1.R. A value of 1
+            preserves the standard row-by-row DbDataAdapter update semantics.
+            </summary>
+        </member>
+        <member name="E:GDG.SharePoint.ADOProvider.SharePointDataAdapter.RowUpdating">
+            <summary>Raised before each DataRow INSERT/UPDATE/DELETE executed by Update().</summary>
+        </member>
+        <member name="E:GDG.SharePoint.ADOProvider.SharePointDataAdapter.RowUpdated">
+            <summary>Raised after each DataRow INSERT/UPDATE/DELETE executed by Update().</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointOnlineSiteCatalog">
+            <summary>
+            Microsoft Graph application-only inventory of SharePoint Online site collections.
+            Independent of SharePointConnection, SharePointRestTransport and SharePoint Server SE.
+            Requires Graph *application* permission Sites.Read.All (admin consent).
+            The SharePoint-scoped access token must never be reused for Microsoft Graph.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOnlineSiteCatalog.GetAllSiteCollections(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Reads every page. Throws (rather than silently returning a partial tenant inventory)
+            when the configured limit is reached before the Graph continuation is exhausted.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOnlineSiteCatalog.ValidateGraphApplicationToken(System.String,System.String,System.String)">
+            <summary>
+            Diagnose the Graph token acquired by MSAL without exposing the token or
+            changing any authorization decision made by Microsoft Graph itself.
+            App-only Graph site enumeration requires a Graph application *role*,
+            not delegated scopes, SharePoint resource roles, or browser cookies.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointSiteCollectionInfo">
+            <summary>Identity and properties of a SharePoint Online site collection returned by Graph.</summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointSiteCollectionInfo.OwnerLoginName">
+            <summary>SE-only metadata; Graph responses leave these blank/false.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointOperations">
+            <summary>
+            Optional SharePoint REST operations beyond relational data access. This class does not
+            change the ADO.NET SQL language, DbCommand, or the provider's data execution path.
+            Open one instance for a specific SharePoint Web; the caller supplies its own credentials.
+            </summary>
+            <summary>SharePoint site-local users, groups, role definitions, and role assignments.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.GetCurrentWeb(System.Threading.CancellationToken)">
+            <summary>Current Web metadata (not a tenant-wide enumeration).</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.ListSubsites(System.Boolean,System.Int32,System.Threading.CancellationToken)">
+            <summary>Enumerates child Webs. Recursive enumeration is limited and permission-trimmed.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.ResolveSubsiteTraversalUri(System.String,System.String,GDG.SharePoint.ADOProvider.SharePointWebInfo,System.Boolean)">
+            <summary>
+            Resolve a trusted child-Web traversal URL. SE can advertise an alternate
+            public AAM host, but no REST request may leave the authenticated origin.
+            The child must have matching absolute/public and server-relative paths,
+            and must remain strictly beneath the current parent Web.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.UpdateCurrentWeb(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Update Title and/or Description of the Web selected by the connection.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.CreateSubsite(System.String,System.String,System.String,System.Int32,System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>Create a classic-compatible subweb below the connection Web.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.UpdateSubsite(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Change Title and/or Description of an existing descendant Web.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.DeleteSubsite(System.String,System.Threading.CancellationToken)">
+            <summary>Delete one descendant Web. SharePoint may delete its contents permanently.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.ListSiteCollections(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            SharePoint Online: authoritative site collection inventory through Graph
+            application-only getAllSites. Separate token audience and HTTP client: no
+            SharePoint REST token/cookies are ever forwarded to Graph. On SE a separate
+            client-only CSOM Tenant probe is used; SE farm completeness is unverified.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.SearchSiteCollections(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Search-index discovery of site collections. NOT an exhaustive tenant inventory:
+            results are indexed, permission trimmed and may be stale.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.CreateSiteCollection(System.String,System.String,System.String,System.String,System.Int32,System.String,System.Threading.CancellationToken)">
+            <summary>SPO via native REST; SE via explicitly opted-in experimental CSOM Tenant administration.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.GetSiteCollectionStatus(System.String,System.Threading.CancellationToken)">
+            <summary>Site collection status: SPO via REST, SE via CSOM with positive verification.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.DeleteSiteCollection(System.Guid,System.Threading.CancellationToken)">
+            <summary>Delete by GUID. SE requires explicit CSOM test opt-in and locally created identity.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.CheckOutDocument(System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>SharePoint document file CHECKOUT, not an ADO.NET transaction.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.CheckInDocument(System.String,System.Int32,System.String,GDG.SharePoint.ADOProvider.SharePointDocumentCheckInType,System.Threading.CancellationToken)">
+            <summary>Check a document in. Type: 0 minor, 1 major, 2 overwrite.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.DiscardCheckOutDocument(System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Discard a document's outstanding checkout, losing uncommitted changes.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.AddImage(System.String,System.Int32,System.String,System.String,System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            Upload a file for an SPO modern Image (Thumbnail) column and update that item field.
+            Unlike AttachmentFiles, the image is stored in SiteAssets/Lists/{ListGuid} and
+            the Thumbnail column receives a JSON image reference.
+            This operation is intentionally not mapped to $ATTACHMENTS or SQL INSERT.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.ValidateWritableImageField(Newtonsoft.Json.Linq.JToken,System.String)">
+            <summary>
+            Validate the actual SharePoint field metadata before an Image upload.
+            SharePoint Online versions may expose Thumbnail through TypeAsString
+            and/or its canonical FieldTypeKind (34). The resolved internal name
+            and writable status must still match exactly.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.GetImageFieldSupport(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Read-only capability probe against the actual SharePoint list field.
+            ModernThumbnail means the field exists, not that writes are certified on SE.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.AddPicture(System.String,System.Int32,System.String,System.String,System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            Upload to SiteAssets/GDGImages/{listGuid} and write a SharePoint
+            URL/Picture field using SP.FieldUrlValue. Does not mimic Thumbnail JSON.
+            Suitable for legacy Picture columns on Server SE and SPO.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.UseSEAdministration(GDG.SharePoint.ADOProvider.ISharePointSESiteCollectionAdministration)">
+            <summary>
+            Explicit, per-instance opt-in for the separate CSOM client assembly.
+            Registration does NOT run any operations or connect to the farm.
+            </summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.EnsureUser(System.String,System.Threading.CancellationToken)">
+            <summary>Register a directory identity in this SharePoint site; does not create an Entra/AD account.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.RemoveSiteUser(System.Int32,System.Threading.CancellationToken)">
+            <summary>Remove a site user entry. Does not delete the directory identity.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.CreateRole(System.String,System.UInt32,System.UInt32,System.String,System.Threading.CancellationToken)">
+            <summary>Create a custom SharePoint permission level from its two 32-bit base-permission masks.</summary>
+        </member>
+        <member name="M:GDG.SharePoint.ADOProvider.SharePointOperations.ListRoleAssignments(System.String,System.Nullable{System.Int32},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Site, list or item assignments. For site specify null listName; for a list supply
+            its display title; for an item also supply the positive itemId.
+            </summary>
+        </member>
+        <member name="P:GDG.SharePoint.ADOProvider.SharePointSiteCreationResult.Status">
+            <summary>0=missing, 1=provisioning, 2=ready, 3=error, 4=already exists.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.ISharePointSESiteCollectionAdministration">
+            <summary>
+            Client-side SE site collection administration extension point.
+            Site/group/document and SQL operations do not call this interface.
+            </summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointException">
+            <summary>Provider-specific ADO.NET exception raised by GDG.SharePoint.</summary>
+        </member>
+        <member name="T:GDG.SharePoint.ADOProvider.SharePointProviderException">
+            <summary>Compatibility alias retained for applications built against 0.x.</summary>
+        </member>
+    </members>
+</doc>

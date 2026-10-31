@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net48;net8.0;net9.0</TargetFrameworks>
+	  <TargetFrameworks>$(Solution_TargetFrameworks)</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -16,6 +16,8 @@
 		<WisejNETFamily>$(Solution_WisejNETFamily)</WisejNETFamily>
 		<WisejNETVersion>$(Solution_WisejNETVersion)</WisejNETVersion>
 		<WisejNETVersionFlat>$(WisejNETVersion.Replace('.', ''))</WisejNETVersionFlat>
+		<WisejNETVersionBase>$(Solution_WisejNETVersionBase)</WisejNETVersionBase>
+		<WisejNETVersionExtensions>$(Solution_WisejNETVersionExtensions)</WisejNETVersionExtensions>
 		<CompleteVersion>$(PasseroVersion).$(WisejNETVersionFlat)</CompleteVersion>
 		<Version>$(CompleteVersion)</Version>
 		<Authors>$(Solution_Authors)</Authors>
@@ -71,11 +73,11 @@
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="MiniExcel" Version="1.45.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersion)" />
-    <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersion)" />
-    <PackageReference Include="$(WisejNETFamily)-Camera" Version="$(WisejNETVersion)" />
-    <PackageReference Include="$(WisejNETFamily)-NavigationBar" Version="$(WisejNETVersion)" />
-    <PackageReference Include="$(WisejNETFamily)-VisualStudioIcons" Version="$(WisejNETVersion)" />
+    <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
+    <PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersionExtensions)" />
+    <PackageReference Include="$(WisejNETFamily)-Camera" Version="$(WisejNETVersionExtensions)" />
+    <PackageReference Include="$(WisejNETFamily)-NavigationBar" Version="$(WisejNETVersionExtensions)" />
+    <PackageReference Include="$(WisejNETFamily)-VisualStudioIcons" Version="$(WisejNETVersionExtensions)" />
   </ItemGroup>
 
   <ItemGroup>
