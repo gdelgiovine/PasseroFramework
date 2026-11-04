@@ -7,6 +7,7 @@ on:
       - 'Directory.Build.props'
       - 'tests/Passero.Framework.Model.Tests/**'
       - 'tests/Passero.Framework.Model.RuntimeProbe/**'
+      - 'tests/Passero.Framework.DemoDb.ReadOnlyProbe/**'
       - '.github/workflows/model-characterization-tests.yml'
   workflow_dispatch:
 
@@ -46,3 +47,48 @@ jobs:
           name: model-net8-results
           path: TestResults/*.trx
           if-no-files-found: ignore
+
+  framework-target-build:
+    name: Compile core (${{ matrix.tfm }})
+    runs-on: windows-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        tfm: [net48, net8.0, net9.0, net10.0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+      - name: Build production core without changes
+        run: dotnet build Passero.Framework/Passero.Framework.csproj --framework ${{ matrix.tfm }} --configuration Release
+
+  demo-pubs-readonly:
+    name: Demo pubs DB (read-only; optional)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PASSERO_DEMO_DB_CONNECTION_STRING: ${{ secrets.PASSERO_DEMO_DB_CONNECTION_STRING }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Check demo DB connection configuration
+        id: availability
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PASSERO_DEMO_DB_CONNECTION_STRING)) {
+            "configured=false" >> $env:GITHUB_OUTPUT
+            Write-Host "SKIPPED: demo DB credential not configured; no LIVE DB test was executed."
+          } else {
+            "configured=true" >> $env:GITHUB_OUTPUT
+            Write-Host "Demo DB credential configured; starting read-only LIVE checks."
+          }
+      - name: Run real Pubs read-only checks with Dapper and EF Core
+        if: steps.availability.outputs.configured == 'true'
+        run: dotnet run --project tests/Passero.Framework.DemoDb.ReadOnlyProbe/Passero.Framework.DemoDb.ReadOnlyProbe.csproj --framework net8.0 --configuration Release
