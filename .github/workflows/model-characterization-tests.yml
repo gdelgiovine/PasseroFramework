@@ -6,6 +6,7 @@ on:
       - 'Passero.Framework/**'
       - 'Directory.Build.props'
       - 'tests/Passero.Framework.Model.Tests/**'
+      - 'tests/Passero.Framework.Model.RuntimeProbe/**'
       - '.github/workflows/model-characterization-tests.yml'
   workflow_dispatch:
 
@@ -21,10 +22,23 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Restore Model test project
+      - name: Restore runtime probe
+        run: dotnet restore tests/Passero.Framework.Model.RuntimeProbe/Passero.Framework.Model.RuntimeProbe.csproj
+      - name: Run 8 direct runtime assertions (nonzero exit on failure)
+        run: dotnet run --project tests/Passero.Framework.Model.RuntimeProbe/Passero.Framework.Model.RuntimeProbe.csproj --configuration Release --no-restore
+      - name: Restore xUnit test project
         run: dotnet restore tests/Passero.Framework.Model.Tests/Passero.Framework.Model.Tests.csproj
-      - name: Run Model characterization tests
+      - name: Run xUnit characterization tests
         run: dotnet test tests/Passero.Framework.Model.Tests/Passero.Framework.Model.Tests.csproj --no-restore --configuration Release --logger "trx;LogFileName=model-net8.trx" --results-directory TestResults
+      - name: Reject zero discovered xUnit tests
+        shell: pwsh
+        run: |
+          [xml]$trx = Get-Content TestResults/model-net8.trx
+          $counters = $trx.TestRun.ResultSummary.Counters
+          if (-not $counters -or [int]$counters.total -eq 0) {
+            throw "xUnit reported zero discovered tests. A successful build is not a successful test execution."
+          }
+          Write-Host "xUnit discovered $($counters.total) tests; passed $($counters.passed); failed $($counters.failed)"
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
