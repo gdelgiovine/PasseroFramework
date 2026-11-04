@@ -113,6 +113,11 @@ namespace Passero.Framework.Jwt
                     ValidateAudience = !string.IsNullOrEmpty(_audience),
                     ValidAudience = _audience,
                     ValidateLifetime = true,
+                    RequireExpirationTime = true,
+                    RequireSignedTokens = true,
+                    ValidAlgorithms = _validationKey is SymmetricSecurityKey
+                        ? new[] { SecurityAlgorithms.HmacSha256 }
+                        : new[] { SecurityAlgorithms.RsaSha256 },
                     ClockSkew = TimeSpan.Zero
                 };
 
@@ -120,14 +125,15 @@ namespace Passero.Framework.Jwt
                 principal = handler.ValidateToken(token, validationParameters, out _);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceWarning("JWT validation failed: " + ex.GetType().Name);
                 return false;
             }
         }
 
         /// <summary>
-        /// Decodes a JWT token without validating its signature or expiry.
+        /// Decodes a JWT token without validating
         /// Useful for inspecting the payload of an untrusted token.
         /// </summary>
         /// <param name="token">The compact-serialized JWT string.</param>

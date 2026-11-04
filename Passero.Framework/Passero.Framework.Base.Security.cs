@@ -473,6 +473,17 @@ namespace Passero.Framework.Base
         private readonly object _syncRoot = new object();
         private readonly Func<string> _currentUserNameProvider;
         private JsonSecurityIdentityDocument _document;
+        private static readonly object FailedAttemptsLock = new object();
+        private static readonly Dictionary<string, KeyValuePair<int, DateTime>> _failedAttempts =
+            new Dictionary<string, KeyValuePair<int, DateTime>>(StringComparer.OrdinalIgnoreCase);
+        private const string DummySalt = "AAAAAAAAAAAAAAAAAAAAAA==";
+        private const string DummyHash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+
+        public int MaxFailedAttempts { get; set; } = 5;
+
+        public TimeSpan FailedAttemptsWindow { get; set; } = TimeSpan.FromMinutes(15);
+
+        public bool AllowAdminAlias { get; set; }
 
         public JsonSecurityPrincipalProvider(string filePath, Func<string> currentUserNameProvider)
         {
@@ -780,19 +791,43 @@ namespace Passero.Framework.Base
             if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrEmpty(password))
                 return null;
 
+            lock (FailedAttemptsLock)
             lock (_syncRoot)
             {
-                var user = _document.Users.FirstOrDefault(item =>
-                    string.Equals(item.UserName, userName.Trim(), StringComparison.OrdinalIgnoreCase) ||
-                    (string.Equals(userName.Trim(), "admin", StringComparison.OrdinalIgnoreCase) &&
-                     string.Equals(item.UserName, AuthenticationBuiltinIds.AdministratorUser, StringComparison.OrdinalIgnoreCase)));
-                if (user == null || !user.Enabled || user.Lockout || !LocalPasswordHasher.Verify(
-                    password,
-                    user.PasswordSalt,
-                    user.PasswordHash,
-                    user.PasswordIterations))
-                    return null;
+                var key = userName.Trim();
+                if (_failedAttempts.Count > 1000)
+                {
+                    foreach (var expired in _failedAttempts.Where(item => DateTime.UtcNow - item.Value.Value > FailedAttemptsWindow).Select(item => item.Key).ToList())
+                        _failedAttempts.Remove(expired);
+                }
 
+                if (_failedAttempts.TryGetValue(key, out var state))
+                {
+                    if (DateTime.UtcNow - state.Value > FailedAttemptsWindow)
+                        _failedAttempts.Remove(key);
+                    else if (MaxFailedAttempts > 0 && state.Key >= MaxFailedAttempts)
+                        return null;
+                }
+
+                var user = _document.Users.FirstOrDefault(item =>
+                    string.Equals(item.UserName, key, StringComparison.OrdinalIgnoreCase) ||
+                    (AllowAdminAlias && string.Equals(key, "admin", StringComparison.OrdinalIgnoreCase) &&
+                     string.Equals(item.UserName, AuthenticationBuiltinIds.AdministratorUser, StringComparison.OrdinalIgnoreCase)));
+
+                bool passwordValid = false;
+                if (user != null)
+                    passwordValid = LocalPasswordHasher.Verify(password, user.PasswordSalt, user.PasswordHash, user.PasswordIterations);
+                else
+                    LocalPasswordHasher.Verify(password, DummySalt, DummyHash, LocalPasswordHasher.DefaultIterations);
+
+                if (user == null || !user.Enabled || user.Lockout || !passwordValid)
+                {
+                    var count = _failedAttempts.TryGetValue(key, out var previous) ? previous.Key : 0;
+                    _failedAttempts[key] = new KeyValuePair<int, DateTime>(count + 1, DateTime.UtcNow);
+                    return null;
+                }
+
+                _failedAttempts.Remove(key);
                 return new AuthenticatedSecurityIdentity(user.UserName, "Local");
             }
         }
@@ -1628,8 +1663,17 @@ namespace Passero.Framework.Base
 
     public static class SecurityAuthorization
     {
+        /// <summary>Se true, un servizio di sicurezza mancante (null) nega l'accesso invece di ammetterlo.</summary>
+        public static bool FailClosedWhenServiceMissing { get; set; }
+
         public static void Demand(ISecurityService securityService, SecurityScope scope, string resourceId, AccessPermission requestedPermissions)
         {
+            if (securityService == null && FailClosedWhenServiceMissing)
+            {
+                throw new UnauthorizedAccessException(
+                    $"Access denied: {requestedPermissions} on {scope} '{resourceId}' (no security service configured).");
+            }
+
             if (securityService == null || !securityService.IsEnabled)
             {
                 return;

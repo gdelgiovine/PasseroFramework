@@ -26,7 +26,7 @@
 	
   <ItemGroup>
     <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.22" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
 	<PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
 	  
   </ItemGroup>

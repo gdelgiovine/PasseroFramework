@@ -50,6 +50,8 @@ namespace PasseroDemo.Application
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                    options.SlidingExpiration = true;
                 });
 
                 if (microsoftConfigured)
@@ -65,6 +67,19 @@ namespace PasseroDemo.Application
                         options.SaveTokens = false;
                         options.GetClaimsFromUserInfoEndpoint = true;
                         options.TokenValidationParameters.NameClaimType = "name";
+                        var allowedTenants = (builder.Configuration["Authentication:Microsoft:AllowedTenantIds"] ?? string.Empty)
+                            .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                        if (allowedTenants.Length > 0)
+                        {
+                            options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
+                            {
+                                var tenantId = (token as System.IdentityModel.Tokens.Jwt.JwtSecurityToken)?.Claims
+                                    .FirstOrDefault(c => c.Type == "tid")?.Value;
+                                if (tenantId != null && allowedTenants.Contains(tenantId, StringComparer.OrdinalIgnoreCase))
+                                    return issuer;
+                                throw new Microsoft.IdentityModel.Tokens.SecurityTokenInvalidIssuerException("Tenant non autorizzato.");
+                            };
+                        }
                     });
                 }
 
@@ -109,7 +124,13 @@ namespace PasseroDemo.Application
                     if (principal?.Identity?.IsAuthenticated != true)
                         return null;
 
-                    var userName = principal.Identity.Name ?? principal.FindFirst("sub")?.Value;
+                    var useImmutableId = string.Equals(builder.Configuration["Authentication:UseImmutableIdClaim"], "true", StringComparison.OrdinalIgnoreCase);
+                    var userName = useImmutableId
+                        ? (principal.FindFirst("oid")?.Value
+                            ?? principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value
+                            ?? principal.FindFirst("sub")?.Value
+                            ?? principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                        : (principal.Identity.Name ?? principal.FindFirst("sub")?.Value);
                     return string.IsNullOrWhiteSpace(userName)
                         ? null
                         : new Passero.Framework.Base.AuthenticatedSecurityIdentity(userName, principal.Identity.AuthenticationType ?? "OIDC");
