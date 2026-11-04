@@ -69,9 +69,11 @@ jobs:
 
   demo-pubs-readonly:
     name: Demo pubs DB (read-only; optional)
-    runs-on: windows-latest
+    runs-on: ${{ fromJSON(vars.PASSERO_DB_RUNNER_LABELS || '["windows-latest"]') }}
     timeout-minutes: 15
     env:
+      PASSERO_DEMO_SQL_SERVER: ${{ vars.PASSERO_DEMO_SQL_SERVER }}
+      PASSERO_DEMO_TRUST_SERVER_CERTIFICATE: ${{ vars.PASSERO_DEMO_TRUST_SERVER_CERTIFICATE }}
       PASSERO_DEMO_DB_CONNECTION_STRING: ${{ secrets.PASSERO_DEMO_DB_CONNECTION_STRING }}
     steps:
       - uses: actions/checkout@v4
@@ -82,12 +84,12 @@ jobs:
         id: availability
         shell: pwsh
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:PASSERO_DEMO_DB_CONNECTION_STRING)) {
+          if ([string]::IsNullOrWhiteSpace($env:PASSERO_DEMO_SQL_SERVER) -and [string]::IsNullOrWhiteSpace($env:PASSERO_DEMO_DB_CONNECTION_STRING)) {
             "configured=false" >> $env:GITHUB_OUTPUT
-            Write-Host "SKIPPED: demo DB credential not configured; no LIVE DB test was executed."
+            Write-Host "SKIPPED: demo DB SQL server/connection is not configured; no LIVE DB test was executed."
           } else {
             "configured=true" >> $env:GITHUB_OUTPUT
-            Write-Host "Demo DB credential configured; starting read-only LIVE checks."
+            Write-Host "Demo DB target configured; starting read-only LIVE checks."
           }
       - name: Run real Pubs read-only checks with Dapper and EF Core
         if: steps.availability.outputs.configured == 'true'
