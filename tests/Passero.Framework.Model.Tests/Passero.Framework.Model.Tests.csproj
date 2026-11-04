@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../Passero.Framework/Passero.Framework.csproj" />
+    <ProjectReference Include="../../PasseroDemo.Models/PasseroDemo.Models.csproj" />
   </ItemGroup>
 </Project>
