@@ -1,0 +1,34 @@
+name: Model characterization tests
+
+on:
+  pull_request:
+    paths:
+      - 'Passero.Framework/**'
+      - 'Directory.Build.props'
+      - 'tests/Passero.Framework.Model.Tests/**'
+      - '.github/workflows/model-characterization-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  model-net8:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore Model test project
+        run: dotnet restore tests/Passero.Framework.Model.Tests/Passero.Framework.Model.Tests.csproj
+      - name: Run Model characterization tests
+        run: dotnet test tests/Passero.Framework.Model.Tests/Passero.Framework.Model.Tests.csproj --no-restore --configuration Release --logger "trx;LogFileName=model-net8.trx" --results-directory TestResults
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-net8-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
