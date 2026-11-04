@@ -3,22 +3,39 @@ using Microsoft.Data.SqlClient;
 using Passero.Framework.Base;
 using PasseroDemo.Models;
 
-// Connection credentials must NEVER be included in logs or in committed files.
+// Prefer Windows Integrated Security on a self-hosted, domain-authorized Windows runner.
+// Secret-based connection strings remain an optional fallback. Never print a connection string.
+var server = Environment.GetEnvironmentVariable("PASSERO_DEMO_SQL_SERVER");
 var supplied = Environment.GetEnvironmentVariable("PASSERO_DEMO_DB_CONNECTION_STRING");
-if (string.IsNullOrWhiteSpace(supplied))
+var trustCertificate = string.Equals(
+    Environment.GetEnvironmentVariable("PASSERO_DEMO_TRUST_SERVER_CERTIFICATE"),
+    "true", StringComparison.OrdinalIgnoreCase);
+
+if (string.IsNullOrWhiteSpace(server) && string.IsNullOrWhiteSpace(supplied))
 {
-    Console.Error.WriteLine("SKIPPED: PASSERO_DEMO_DB_CONNECTION_STRING is not configured. No database test was executed.");
+    Console.Error.WriteLine("SKIPPED: neither PASSERO_DEMO_SQL_SERVER nor a private connection string is configured.");
     return 2;
 }
 
 int checks = 0;
 try
 {
-    var builder = new SqlConnectionStringBuilder(supplied)
-    {
-        ApplicationName = "Passero.Model.ReadOnlyProbe",
-        ConnectTimeout = 12
-    };
+    var builder = !string.IsNullOrWhiteSpace(server)
+        ? new SqlConnectionStringBuilder
+        {
+            DataSource = server,
+            InitialCatalog = "pubs",
+            IntegratedSecurity = true,
+            Encrypt = true,
+            TrustServerCertificate = trustCertificate
+        }
+        : new SqlConnectionStringBuilder(supplied);
+
+    builder.ApplicationName = "Passero.Model.ReadOnlyProbe";
+    builder.ConnectTimeout = 12;
+
+    if (!string.IsNullOrWhiteSpace(server))
+        Console.WriteLine("Using Windows Integrated Security with the runner service identity.");
     // The SQL connection is used exclusively for SELECT; a read-only login is recommended.
     using var connection = new SqlConnection(builder.ConnectionString);
     await connection.OpenAsync();
