@@ -10,6 +10,7 @@ using System.ComponentModel;
 namespace PasseroDemo.Models
 {
     [BusinessAttributes.SystemName("ERP")]
+    [Table("pub_info_publisher")]
     public class vpub_info_publisher : Passero.Framework.ModelBase
     {
         public string pub_id { get; set; }
