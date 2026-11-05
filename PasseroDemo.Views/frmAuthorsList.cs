@@ -17,7 +17,7 @@ namespace PasseroDemo.Views
     public partial class frmAuthorsList : Form
     {
         public Passero.Framework.ConfigurationManager ConfigurationManager = new Passero.Framework.ConfigurationManager();
-        private System.Data.SqlClient.SqlConnection sqlConnection;
+        private Microsoft.Data.SqlClient.SqlConnection  sqlConnection;
         private IEnumerable<PasseroDemo.Models.Author> authors;
         private ViewModel<Models.Author> vmAuthor = new ViewModel<Author>();
         public frmAuthorsList()
@@ -30,7 +30,7 @@ namespace PasseroDemo.Views
           
             string cs = this.ConfigurationManager.GetSessionConfigurationKeyValue("General", "DBConnectionString");
 
-            sqlConnection = new System.Data.SqlClient.SqlConnection(cs);
+            sqlConnection = new Microsoft.Data.SqlClient.SqlConnection(cs);
             vmAuthor.DbConnection =(sqlConnection);
 
             //authors = sqlConnection.GetAll<Models .Author >();

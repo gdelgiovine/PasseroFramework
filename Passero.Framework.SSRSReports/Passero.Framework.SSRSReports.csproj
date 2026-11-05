@@ -56,10 +56,10 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="$(Solution_DapperVersion)" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-    <PackageReference Include="MiniExcel" Version="1.45.0" />
+    <PackageReference Include="MiniExcel" Version="1.46.0" />
     <PackageReference Include="$(WisejNETFamily)" Version="$(WisejNETVersionBase)" />
 	<PackageReference Include="$(WisejNETFamily)-BootstrapIcons" Version="$(WisejNETVersionExtensions)" />
-	<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.22" />
+	<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
 	  
 	  
 
@@ -78,11 +78,11 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
 		<PackageReference Include="ReportViewerCore.NETCore" Version="15.1.33" />
 		<PackageReference Include="Microsoft.SqlServer.Types" Version="170.1000.7" />
-		<PackageReference Update="System.Security.Cryptography.Xml" Version="10.0.13" />
+		
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-		<PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1652.0" />
+		<PackageReference Include="Microsoft.ReportingServices.ReportViewerControl.WebForms" Version="150.1781.0" /> 
 		<PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
      	<Reference Include="Microsoft.VisualBasic" />
 		<Reference Include="System.Web" />

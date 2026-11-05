@@ -249,7 +249,7 @@ namespace PasseroDemo.Views
 
         private void txt_title_id_TextChanged(object sender, EventArgs e)
         {
-            //this.dgv_TitleAuthors.DataSource = this.vmTitle.GetTitleAuthors(this.txt_title_id.Text).ToList();
+           this.dgv_TitleAuthors.DataSource = this.vmTitle.GetTitleAuthors(this.txt_title_id.Text).ToList();
         }
 
 
@@ -261,15 +261,16 @@ namespace PasseroDemo.Views
 
         private void bsTitles_CurrentChanged(object sender, EventArgs e)
         {
+            //this.dgv_TitleAuthors.DataSource = this.vmTitle.GetTitleAuthors(this.txt_title_id.Text).ToList();
 
-            this.pnl_Title.Text= $"Title: {this.txt_title_id.Text} - {this.txt_title .Text}";   
-            ExecutionResult < IList <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
-                                                $"{Passero.Framework.Utilities.GetModelTableName<Models.Titleauthor>()} " +
-                                                $"WHERE title_id=@title_id", new { title_id = this.txt_title_id.Text });
+            //this.pnl_Title.Text= $"Title: {this.txt_title_id.Text} - {this.txt_title .Text}";   
+            //ExecutionResult < IList <Models .Titleauthor>> ER = this.vmTitleAuthor.GetItems($"Select * FROM " +
+            //                                    $"{Passero.Framework.Utilities.GetModelTableName<Models.Titleauthor>()} " +
+            //                                    $"WHERE title_id=@title_id", new { title_id = this.txt_title_id.Text });
 
 
-            //this.dgv_TitleAuthors.DataSource = this.vmTitleAuthor.ModelItems;
-            this.dgv_TitleAuthors.DataSource = ER.Value;
+            ////this.dgv_TitleAuthors.DataSource = this.vmTitleAuthor.ModelItems;
+            //this.dgv_TitleAuthors.DataSource = ER.Value;
 
 
 

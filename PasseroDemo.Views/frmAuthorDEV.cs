@@ -34,7 +34,7 @@ namespace PasseroDemo.Views
         }
         public void Init()
         {
-            this.DbConnection = (System.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
+            this.DbConnection = (Microsoft.Data.SqlClient.SqlConnection)ConfigurationManager.DBConnections["PasseroDemo"];
             vmAuthor.Init(this.DbConnection );
             vmAuthor.DataBindControlsAutoSetMaxLenght = true;
             vmAuthor.AutoWriteControls= true;
